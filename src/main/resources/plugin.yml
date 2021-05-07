@@ -1,0 +1,13 @@
+name: Markets
+main: ca.tweetzy.markets.Markets
+version: maven-version-number
+api-version: 1.13
+description: The ultimate player shop plugin
+authors: [Kiran Hart]
+website: https://tweetzy.ca
+depend: [Vault]
+softdepend: [WorldGuard]
+
+commands:
+  markets:
+    description: Main command for the market plugin

@@ -1,0 +1,41 @@
+general:
+    prefix: "&8[&eMarkets&8]"
+
+nothing_in_hand: "&cYou aren't holding anything in your hand!"
+not_a_number: "&cPlease enter a valid number"
+price_is_zero_or_less: "&cPlease enter a price greater than 0"
+not_enough_money: "&cYou do not have enough money!"
+money_remove: "&c&l- $%price%"
+money_add: "&a&l+ $%price%"
+
+cannot_buy_from_own_market: "&cYou cannot buy from your own market!"
+market_category_not_found: "&cCould not find a category in your market named&f: &4%market_category_name%"
+market_required: "&cYou need to create a market to do that!"
+market_category_required: "&cYou need at least 1 category in your market!"
+already_have_market: "&cYou cannot create a market since you already have one!"
+category_already_created: "&cYou already have a market category by the name&f: &4%market_category_name%"
+market_not_found: "&cCould not find a market owned by that player."
+market_closed: "&cThat player's market is currently closed"
+removed_market: "&cYour market has been deleted!"
+removed_category: "&cRemoved category &4%market_category_name% &cfrom your market!"
+created_market: "&aYou're now the owner of your very own market!"
+created_category: "&aYou created a new category for your market called&f: &2%market_category_name%"
+added_item_to_category: "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%"
+
+created_request: "&aCreated a new request for x&2%request_amount% %request_item_name%" #You can also use %request_price%
+max_request_amount: "&cYou can only request &4%request_max_amount% &citems per request."
+
+updated_market_name: "&aSuccessfully updated market name"
+updated_market_description: "&aSuccessfully updated market description"
+updated_market_to_close: "&aSuccessfully closed your market"
+updated_market_to_open: "&aSuccessfully opened your market"
+updated_category_name: "&aSuccessfully updated category display name."
+updated_category_description: "&aSuccessfully updated category description."
+updated_category_icon: "&aSuccessfully updated category icon."
+
+prompt:
+    enter_market_name: "&aEnter the new market name:"
+    enter_category_name: "&aEnter name for new category:"
+    enter_category_display_name: "&aEnter a new display name for the category:"
+    enter_category_description: "&aEnter the new description for the category:"
+    enter_market_item_price: "&aEnter the new price:"
