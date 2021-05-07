@@ -6,7 +6,6 @@ description: The ultimate player shop plugin
 authors: [Kiran Hart]
 website: https://tweetzy.ca
 depend: [Vault]
-softdepend: [WorldGuard]
 
 commands:
   markets:
