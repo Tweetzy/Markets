@@ -32,14 +32,18 @@ public class RequestManager {
         this.requests.removeIf(request -> request.getRequester().equals(player.getUniqueId()));
     }
 
-    public List<Request> getRequestsByPlayer(Player player) {
+    public List<Request> getRequestsByPlayer(Player player, boolean isFulfilled) {
         Objects.requireNonNull(player, "Cannot get requests for null player");
-        return this.requests.stream().filter(request -> request.getRequester().equals(player.getUniqueId())).collect(Collectors.toList());
+        return this.requests.stream().filter(request -> request.getRequester().equals(player.getUniqueId()) && request.isFulfilled() == isFulfilled).collect(Collectors.toList());
     }
 
     public List<Request> getRequestsByPlayer(UUID player) {
         Objects.requireNonNull(player, "Cannot get requests for null player");
         return this.requests.stream().filter(request -> request.getRequester().equals(player)).collect(Collectors.toList());
+    }
+
+    public List<Request> getNonFulfilledRequests() {
+        return Collections.unmodifiableList(this.requests.stream().filter(request -> !request.isFulfilled()).collect(Collectors.toList()));
     }
 
     public List<Request> getRequests() {
@@ -62,6 +66,7 @@ public class RequestManager {
         Markets.getInstance().getData().set(node + ".requester", request.getRequester().toString());
         Markets.getInstance().getData().set(node + ".amount", request.getAmount());
         Markets.getInstance().getData().set(node + ".price", request.getPrice());
+        Markets.getInstance().getData().set(node + ".fulfilled", request.isFulfilled());
         Markets.getInstance().getData().set(node + ".item", request.getItem());
     }
 
@@ -71,13 +76,15 @@ public class RequestManager {
             if (section == null || section.getKeys(false).size() == 0) return;
 
             Markets.getInstance().getData().getConfigurationSection("open requests").getKeys(false).forEach(requestId -> {
-                addRequest(new Request(
+                Request request = new Request(
                         UUID.fromString(requestId),
                         UUID.fromString(Markets.getInstance().getData().getString("open requests." + requestId + ".requester")),
                         Markets.getInstance().getData().getItemStack("open requests." + requestId + ".item"),
                         Markets.getInstance().getData().getInt("open requests." + requestId + ".amount"),
-                        Markets.getInstance().getData().getDouble("open requests." + requestId + ".price")
-                ));
+                        Markets.getInstance().getData().getDouble("open requests." + requestId + ".price"));
+                request.setFulfilled(Markets.getInstance().getData().getBoolean("open requests." + requestId + ".fulfilled"));
+
+                addRequest(request);
             });
         }).execute();
     }

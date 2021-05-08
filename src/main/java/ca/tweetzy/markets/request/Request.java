@@ -22,6 +22,7 @@ public class Request {
     private ItemStack item;
     private int amount;
     private double price;
+    private boolean fulfilled;
 
     public Request(UUID id, UUID requester, ItemStack item, int amount, double price) {
         this.id = id;
@@ -29,6 +30,7 @@ public class Request {
         this.item = item;
         this.amount = amount;
         this.price = price;
+        this.fulfilled = false;
     }
 
     public Request(UUID requester, ItemStack item, int amount, double price) {

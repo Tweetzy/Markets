@@ -31,7 +31,7 @@ public class CommandRequest extends AbstractCommand {
         if (args.length != 2) return ReturnType.SYNTAX_ERROR;
         Player player = (Player) sender;
 
-        ItemStack heldItem = Common.getItemInHand(player);
+        ItemStack heldItem = Common.getItemInHand(player).clone();
         if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
             Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
             return ReturnType.FAILURE;

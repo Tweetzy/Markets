@@ -81,11 +81,11 @@ public class Settings {
             "&7that you have made."
     ));
 
-    public static final ConfigSetting GUI_MAIN_ITEMS_CHEST_SHOPS_ITEM = new ConfigSetting(config, "guis.main.items.chest shop.item", XMaterial.CHEST.name());
-    public static final ConfigSetting GUI_MAIN_ITEMS_CHEST_SHOPS_NAME = new ConfigSetting(config, "guis.main.items.chest shop.name", "&eChest Shops");
-    public static final ConfigSetting GUI_MAIN_ITEMS_CHEST_SHOPS_LORE = new ConfigSetting(config, "guis.main.items.chest shop.lore", Arrays.asList(
-            "&7Click to view any chest shops",
-            "&7you made that are currently active."
+    public static final ConfigSetting GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM = new ConfigSetting(config, "guis.main.items.open requests.item", XMaterial.CHEST.name());
+    public static final ConfigSetting GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME = new ConfigSetting(config, "guis.main.items.open requests.name", "&eOpen Requests");
+    public static final ConfigSetting GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE = new ConfigSetting(config, "guis.main.items.open requests.lore", Arrays.asList(
+            "&7Click to view any open requests",
+            "&7that player's have made."
     ));
 
     /*
@@ -322,6 +322,7 @@ public class Settings {
      */
 
     public static final ConfigSetting GUI_OPEN_REQUEST_TITLE = new ConfigSetting(config, "guis.open request.title", "&eYour Requests");
+    public static final ConfigSetting GUI_OPEN_REQUEST_TITLE_ALL = new ConfigSetting(config, "guis.open request.title all", "&eAll Open Requests");
     public static final ConfigSetting GUI_OPEN_REQUEST_GLOW_BORDER = new ConfigSetting(config, "guis.open request.glow border", true);
     public static final ConfigSetting GUI_OPEN_REQUEST_FILL_ITEM = new ConfigSetting(config, "guis.open request.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
     public static final ConfigSetting GUI_OPEN_REQUEST_BORDER_ITEM = new ConfigSetting(config, "guis.open request.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
@@ -337,12 +338,31 @@ public class Settings {
     public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME = new ConfigSetting(config, "guis.open request.items.request.name", "%request_item_name%");
     public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE = new ConfigSetting(config, "guis.open request.items.request.lore", Arrays.asList(
             "",
-            "&7-------------------------------",
             "&7Quantity&f: &e%request_amount%",
             "&7Price&f: &a$%request_price%",
             "",
             "&7Middle-Click to cancel request"
     ));
+
+    public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL = new ConfigSetting(config, "guis.open request.items.request.lore all", Arrays.asList(
+            "",
+            "&7Requester&f: &e%request_requesting_player%",
+            "&7Quantity&f: &e%request_amount%",
+            "&7Price&f: &a$%request_price%",
+            "",
+            "&7Click to fulfill this request"
+    ));
+
+    /*
+    ==================================
+         REQUEST COLLECTION GUI
+    ==================================
+     */
+
+    public static final ConfigSetting GUI_REQUEST_COLLECTION_TITLE = new ConfigSetting(config, "guis.request collection.title", "&eFulfilled Requests");
+    public static final ConfigSetting GUI_REQUEST_COLLECTION_GLOW_BORDER = new ConfigSetting(config, "guis.request collection.glow border", true);
+    public static final ConfigSetting GUI_REQUEST_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.request collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_REQUEST_COLLECTION_BORDER_ITEM = new ConfigSetting(config, "guis.request collection.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
 
 
     public static void setup() {

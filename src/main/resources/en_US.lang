@@ -5,6 +5,8 @@ nothing_in_hand: "&cYou aren't holding anything in your hand!"
 not_a_number: "&cPlease enter a valid number"
 price_is_zero_or_less: "&cPlease enter a price greater than 0"
 not_enough_money: "&cYou do not have enough money!"
+player_does_not_have_funds: "&4%player% &cdoes not have enough money to pay!"
+not_enough_items: "&cYou do not have enough items to fulfill the request."
 money_remove: "&c&l- $%price%"
 money_add: "&a&l+ $%price%"
 
@@ -24,6 +26,7 @@ added_item_to_category: "&aAdded &2%item_name% &ato market category&f: &2%market
 
 created_request: "&aCreated a new request for x&2%request_amount% %request_item_name%" #You can also use %request_price%
 max_request_amount: "&cYou can only request &4%request_max_amount% &citems per request."
+cannot_fulfill_own: "&cYou cannot fulfill your own request"
 
 updated_market_name: "&aSuccessfully updated market name"
 updated_market_description: "&aSuccessfully updated market description"

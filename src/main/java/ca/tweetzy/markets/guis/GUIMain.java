@@ -60,11 +60,11 @@ public class GUIMain extends Gui {
         });
 
         setButton(2, 6, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), e -> {
-            e.manager.showGUI(this.player, new GUIOpenRequests(this.player));
+            e.manager.showGUI(this.player, new GUIOpenRequests(this.player, false));
         });
 
-        setButton(3, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_CHEST_SHOPS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_CHEST_SHOPS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_CHEST_SHOPS_LORE.getStringList()).toItemStack(), e -> {
-
+        setButton(3, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE.getStringList()).toItemStack(), e -> {
+            e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
         });
 
         setButton(3, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), e -> {
