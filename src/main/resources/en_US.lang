@@ -1,5 +1,6 @@
 general:
     prefix: "&8[&eMarkets&8]"
+    reloaded: "&aMarkets has been reloaded (%value%ms)"
 
 nothing_in_hand: "&cYou aren't holding anything in your hand!"
 not_a_number: "&cPlease enter a valid number"

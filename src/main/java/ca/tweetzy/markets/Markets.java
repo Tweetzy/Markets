@@ -133,7 +133,9 @@ public class Markets extends TweetyPlugin {
                 new CommandSet(),
                 new CommandView(),
                 new CommandList(),
-                new CommandSettings()
+                new CommandHelp(),
+                new CommandSettings(),
+                new CommandReload()
         );
 
         this.metrics = new Metrics(this, 7689);

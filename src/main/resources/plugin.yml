@@ -23,6 +23,9 @@ permissions:
     markets.cmd.request: true
     markets.cmd.set: true
     markets.cmd.view: true
+    markets.cmd.settings: true
+    markets.cmd.help: true
+    markets.cmd.reload: true
   markets.cmd:
     description: Allows the user to open the main market menu
     default: op
@@ -49,4 +52,10 @@ permissions:
     default: op
   markets.cmd.settings:
     description: Allows the user to open in game config editor
+    default: op
+  markets.cmd.reload:
+    description: Allows the user to reload the plugin config files
+    default: op
+  markets.cmd.help:
+    description: Allows the user to view the help page
     default: op
