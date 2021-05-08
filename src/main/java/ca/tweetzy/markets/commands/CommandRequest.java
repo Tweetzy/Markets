@@ -42,6 +42,11 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (Double.parseDouble(args[1]) <= 0) {
+            Markets.getInstance().getLocale().getMessage("price_is_zero_or_less").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         int requestedAmount = Integer.parseInt(args[0]);
         if (requestedAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
             Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("max_request_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
@@ -53,8 +58,6 @@ public class CommandRequest extends AbstractCommand {
         int maxStackSize = heldItem.getMaxStackSize();
         int fullStacks = requestedAmount / maxStackSize;
         int remainder = requestedAmount % maxStackSize;
-
-        // (1.55279503 * 64) * 2 + 1.55279503 * 33
 
         for (int i = 0; i < fullStacks; i++) {
             Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), heldItem, maxStackSize, pricePerItem * maxStackSize));

@@ -1,9 +1,7 @@
 package ca.tweetzy.markets.api;
 
-import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import ca.tweetzy.markets.market.MarketManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

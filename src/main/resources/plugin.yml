@@ -10,3 +10,43 @@ depend: [Vault]
 commands:
   markets:
     description: Main command for the market plugin
+    aliases: [market, playermarket, playermarkets]
+    usage: /markets
+
+permissions:
+  markets.*:
+    markets.cmd: true
+    markets.cmd.addcategory: true
+    markets.cmd.additem: true
+    markets.cmd.create: true
+    markets.cmd.list: true
+    markets.cmd.request: true
+    markets.cmd.set: true
+    markets.cmd.view: true
+  markets.cmd:
+    description: Allows the user to open the main market menu
+    default: op
+  markets.cmd.addcategory:
+    description: Allows the user to add a category to their market
+    default: op
+  markets.cmd.additem:
+    description: Allows the user to add an item to their market
+    default: op
+  markets.cmd.create:
+    description: Allows the user to create a market
+    default: op
+  markets.cmd.list:
+    description: Allows the user to list all open markets
+    default: op
+  markets.cmd.request:
+    description: Allows the user to create a new item request
+    default: op
+  markets.cmd.set:
+    description: Allows the user to change their market settings
+    default: op
+  markets.cmd.view:
+    description: Allows the user to directly open a player market
+    default: op
+  markets.cmd.settings:
+    description: Allows the user to open in game config editor
+    default: op

@@ -8,7 +8,6 @@ import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.settings.Settings;
-import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;

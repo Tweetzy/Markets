@@ -66,6 +66,11 @@ public class CommandAddItem extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (Double.parseDouble(args[1]) <= 0) {
+            Markets.getInstance().getLocale().getMessage("price_is_zero_or_less").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         boolean isPriceForStack = args.length == 3 && Arrays.asList("yes", "true", "Yes", "True").contains(args[2]);
         // if the item qty is 1, then the price will have to be for the entire stack
         if (heldItem.getAmount() == 1) isPriceForStack = true;

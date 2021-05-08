@@ -5,7 +5,6 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.ConfigItemUtil;

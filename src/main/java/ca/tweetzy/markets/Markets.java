@@ -13,6 +13,7 @@ import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
+import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestManager;
 import ca.tweetzy.markets.settings.Settings;
@@ -26,7 +27,10 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -40,6 +44,9 @@ public class Markets extends TweetyPlugin {
 
     @Getter
     private static Markets instance;
+
+    @Getter
+    private final Map<UUID, MarketCategory> usingQuickAdd = new HashMap<>();
 
     @Getter
     private final Config data = new Config(this, "data.yml");
