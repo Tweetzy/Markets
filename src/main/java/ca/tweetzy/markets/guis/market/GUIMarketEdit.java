@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis.market;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -16,6 +17,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -37,7 +39,7 @@ public class GUIMarketEdit extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
-        setDefaultItem(Settings.GUI_MARKET_EDIT_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MARKET_EDIT_FILL_ITEM.getMaterial()));
         setRows(6);
 
         draw();
@@ -49,7 +51,7 @@ public class GUIMarketEdit extends Gui {
 
         // make border
         Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 10, 17, 19, 26, 28, 35, 37, 44, 46, 47, 48, 49, 50, 51, 52, 53).forEach(i -> {
-            setItem(i, Settings.GUI_MARKET_EDIT_BORDER_ITEM.getMaterial().parseItem());
+            setItem(i, GuiUtils.getBorderItem(Settings.GUI_MARKET_EDIT_BORDER_ITEM.getMaterial()));
             if (Settings.GUI_MARKET_EDIT_GLOW_BORDER.getBoolean()) highlightItem(i);
         });
 
@@ -100,7 +102,7 @@ public class GUIMarketEdit extends Gui {
 
         setButton(3, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), e -> {
+        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.SHIFT_LEFT, e -> {
             MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(e.player, this.market);
             Bukkit.getPluginManager().callEvent(marketDeleteEvent);
             if (marketDeleteEvent.isCancelled()) return;

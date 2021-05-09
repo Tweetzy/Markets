@@ -16,6 +16,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -98,7 +99,7 @@ public class GUICategorySettings extends Gui {
             draw();
         });
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), e -> {
+        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.SHIFT_LEFT, e -> {
             MarketCategoryRemoveEvent marketCategoryRemoveEvent = new MarketCategoryRemoveEvent(this.market, this.marketCategory);
             Bukkit.getPluginManager().callEvent(marketCategoryRemoveEvent);
             if (marketCategoryRemoveEvent.isCancelled()) return;

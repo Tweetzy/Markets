@@ -20,7 +20,9 @@ category_already_created: "&cYou already have a market category by the name&f: &
 market_not_found: "&cCould not find a market owned by that player."
 market_closed: "&cThat player's market is currently closed"
 removed_market: "&cYour market has been deleted!"
+removed_player_market: "&cSuccessfully removed &4%player%&c's market!"
 removed_category: "&cRemoved category &4%market_category_name% &cfrom your market!"
+confiscated_market: "&cSuccessfully confiscated market items."
 created_market: "&aYou're now the owner of your very own market!"
 created_category: "&aYou created a new category for your market called&f: &2%market_category_name%"
 added_item_to_category: "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%"
@@ -51,6 +53,8 @@ command_syntax:
     request: "request <amount> <price>"
     settings: "settings"
     view: "view <player>"
+    remove: "remove"
+    confiscate: "confiscate <player> [deleteItems]"
 
 command_description:
     add_category: "Create a new category inside your market."
@@ -64,6 +68,8 @@ command_description:
     set: "Update a specific market setting"
     settings: "Open the in game config editor"
     view: "Open a specific player's market"
+    remove: "Delete your market"
+    confiscate: "Confiscate an entire market's items or delete them."
 
 prompt:
     enter_market_name: "&aEnter the new market name:"

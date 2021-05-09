@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis.requests;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
@@ -34,7 +35,7 @@ public class GUIRequestCollection extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
-        setDefaultItem(Settings.GUI_REQUEST_COLLECTION_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_REQUEST_COLLECTION_FILL_ITEM.getMaterial()));
         setRows(6);
 
         draw();
@@ -45,7 +46,7 @@ public class GUIRequestCollection extends Gui {
 
         // make border
         for (int i : Numbers.GUI_BORDER_6_ROWS) {
-            setItem(i, Settings.GUI_REQUEST_COLLECTION_BORDER_ITEM.getMaterial().parseItem());
+            setItem(i, GuiUtils.getBorderItem(Settings.GUI_REQUEST_COLLECTION_BORDER_ITEM.getMaterial()));
             if (Settings.GUI_REQUEST_COLLECTION_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 

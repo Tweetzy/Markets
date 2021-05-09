@@ -26,6 +26,8 @@ permissions:
     markets.cmd.settings: true
     markets.cmd.help: true
     markets.cmd.reload: true
+    markets.cmd.remove: true
+    markets.cmd.confiscate: true
   markets.cmd:
     description: Allows the user to open the main market menu
     default: op
@@ -58,4 +60,10 @@ permissions:
     default: op
   markets.cmd.help:
     description: Allows the user to view the help page
+    default: op
+  markets.cmd.remove:
+    description: Allows the user to remove their market using the command
+    default: op
+  markets.cmd.confiscate:
+    description: Allows the user to confiscate a market's items
     default: op

@@ -127,6 +127,7 @@ public class Markets extends TweetyPlugin {
         // Commands
         this.commandManager.addCommand(new CommandMarkets()).addSubCommands(
                 new CommandCreate(),
+                new CommandRemove(),
                 new CommandAddCategory(),
                 new CommandAddItem(),
                 new CommandRequest(),
@@ -135,6 +136,7 @@ public class Markets extends TweetyPlugin {
                 new CommandList(),
                 new CommandHelp(),
                 new CommandSettings(),
+                new CommandConfiscate(),
                 new CommandReload()
         );
 

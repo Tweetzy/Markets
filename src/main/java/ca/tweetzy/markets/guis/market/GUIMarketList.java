@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis.market;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
@@ -30,7 +31,7 @@ public class GUIMarketList extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
-        setDefaultItem(Settings.GUI_MARKET_LIST_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MARKET_LIST_FILL_ITEM.getMaterial()));
         setRows(6);
 
         draw();
@@ -42,7 +43,7 @@ public class GUIMarketList extends Gui {
 
         // make border
         for (int i : Numbers.GUI_BORDER_6_ROWS) {
-            setItem(i, Settings.GUI_MARKET_LIST_BORDER_ITEM.getMaterial().parseItem());
+            setItem(i, GuiUtils.getBorderItem(Settings.GUI_MARKET_LIST_BORDER_ITEM.getMaterial()));
             if (Settings.GUI_MARKET_LIST_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 

@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
@@ -30,7 +31,7 @@ public class GUIMain extends Gui {
         setTitle(TextUtils.formatText(Settings.GUI_MAIN_TITLE.getString()));
         setAllowDrops(false);
         setAcceptsItems(false);
-        setDefaultItem(Settings.GUI_MAIN_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MAIN_FILL_ITEM.getMaterial()));
         setUseLockedCells(Settings.GUI_MAIN_FILL_SLOTS.getBoolean());
         setRows(6);
 
@@ -40,11 +41,9 @@ public class GUIMain extends Gui {
     private void draw() {
         if (Settings.GUI_MAIN_USE_BORDER.getBoolean()) {
             for (int i : Numbers.GUI_BORDER_6_ROWS) {
-                setItem(i, Settings.GUI_MAIN_BORDER_ITEM.getMaterial().parseItem());
-            }
+                setItem(i, GuiUtils.getBorderItem(Settings.GUI_MAIN_BORDER_ITEM.getMaterial()));
+                if (Settings.GUI_MAIN_GLOW_BORDER.getBoolean()) highlightItem(i);
 
-            if (Settings.GUI_MAIN_GLOW_BORDER.getBoolean()) {
-                for (int i : Numbers.GUI_BORDER_6_ROWS) highlightItem(i);
             }
         }
 
