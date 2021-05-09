@@ -54,7 +54,7 @@ command_syntax:
     settings: "settings"
     view: "view <player>"
     remove: "remove"
-    confiscate: "confiscate <player> [deleteItems]"
+    confiscate: "confiscate <player>"
 
 command_description:
     add_category: "Create a new category inside your market."
@@ -69,7 +69,7 @@ command_description:
     settings: "Open the in game config editor"
     view: "Open a specific player's market"
     remove: "Delete your market"
-    confiscate: "Confiscate an entire market's items or delete them."
+    confiscate: "Confiscate an entire market's items"
 
 prompt:
     enter_market_name: "&aEnter the new market name:"

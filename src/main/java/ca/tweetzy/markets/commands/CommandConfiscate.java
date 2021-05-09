@@ -4,6 +4,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.market.contents.MarketItem;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,14 +37,11 @@ public class CommandConfiscate extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        boolean deleteItems = args.length == 2 && Arrays.asList("yes", "true", "Yes", "True").contains(args[1]);
+        market.getCategories().forEach(marketCategory -> {
+            PlayerUtils.giveItem(player, marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
+            marketCategory.getItems().clear();
+        });
 
-        if (!deleteItems) {
-            List<ItemStack> items = new ArrayList<>();
-            Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(player, items)).execute();
-        }
-
-        market.getCategories().clear();
         market.setUpdatedAt(System.currentTimeMillis());
         Markets.getInstance().getLocale().getMessage("confiscated_market").sendPrefixedMessage(player);
 
@@ -54,8 +52,6 @@ public class CommandConfiscate extends AbstractCommand {
     protected List<String> onTab(CommandSender sender, String... args) {
         if (args.length == 1)
             return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
-        if (args.length == 2)
-            return Arrays.asList("true", "yes", "false", "no");
         return null;
     }
 
