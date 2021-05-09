@@ -34,12 +34,12 @@ public class CommandList extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "list";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.list").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "View all available player markets.";
+        return Markets.getInstance().getLocale().getMessage("command_description.list").getMessage();
     }
 
     @Override

@@ -51,12 +51,12 @@ public class CommandCreate extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "create [name]";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.create").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Used to create a market if you don't have one.";
+        return Markets.getInstance().getLocale().getMessage("command_description.create").getMessage();
     }
 
     @Override

@@ -23,7 +23,6 @@ public class Settings {
     public static final ConfigSetting GIVE_ITEMS_ON_CATEGORY_DELETE = new ConfigSetting(config, "setting.give back items on category delete", true, "Should Markets give the player all their items from the category", "back when they click the delete button?");
     public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");
     public static final ConfigSetting LOG_TRANSACTIONS = new ConfigSetting(config, "setting.log transactions", true, "Should transactions be logged?");
-    public static final ConfigSetting QUICK_ADD_CANCEL_WORD = new ConfigSetting(config, "setting.quick add cancel word", "cancel", "What should the cancel word be when using quick add mode");
     public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "setting.max amount per request", 256, "How many items can a player request per request creation?");
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");
@@ -291,7 +290,7 @@ public class Settings {
     public static final ConfigSetting GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE = new ConfigSetting(config, "guis.item purchase.items.purchase.lore", Arrays.asList(
             "&7Quantity&f: &e%purchase_quantity%",
             "&7Stack Price&f: &a$%stack_price%",
-            "&7Price is for stack&f: &a$%market_item_price_for_stack%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
             "&7Final Price&f: &a$%purchase_price%",
             "",
             "&7Click to make purchase."

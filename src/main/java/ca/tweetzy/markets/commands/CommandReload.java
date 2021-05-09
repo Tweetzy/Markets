@@ -34,12 +34,12 @@ public class CommandReload extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "reload";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.reload").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Reload lang and configuration files";
+        return Markets.getInstance().getLocale().getMessage("command_description.reload").getMessage();
     }
 
     @Override

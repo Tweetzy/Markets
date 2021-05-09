@@ -34,12 +34,12 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "settings";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.settings").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Open the in game config editor";
+        return Markets.getInstance().getLocale().getMessage("command_description.settings").getMessage();
     }
 
     @Override

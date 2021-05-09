@@ -88,11 +88,11 @@ public class CommandSet extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "set <name|desc|open> <value>";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.set").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Update a specific market setting";
+        return Markets.getInstance().getLocale().getMessage("command_description.set").getMessage();
     }
 }

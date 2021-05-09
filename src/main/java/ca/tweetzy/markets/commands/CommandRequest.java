@@ -84,11 +84,11 @@ public class CommandRequest extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "request <amount> <price>";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.request").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Open a new item request";
+        return Markets.getInstance().getLocale().getMessage("command_description.request").getMessage();
     }
 }

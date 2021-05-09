@@ -42,12 +42,12 @@ public class CommandHelp extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "help";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.help").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Shows the help page";
+        return Markets.getInstance().getLocale().getMessage("command_description.help").getMessage();
     }
 
     @Override

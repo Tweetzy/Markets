@@ -49,12 +49,12 @@ public class CommandView extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "view <player>";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.view").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Open a specific player's market";
+        return Markets.getInstance().getLocale().getMessage("command_description.view").getMessage();
     }
 
     @Override

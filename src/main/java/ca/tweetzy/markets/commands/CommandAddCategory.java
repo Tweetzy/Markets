@@ -68,12 +68,12 @@ public class CommandAddCategory extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "add category <name> [description]";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.add_category").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Create a new category inside your market.";
+        return Markets.getInstance().getLocale().getMessage("command_description.add_category").getMessage();
     }
 
     @Override

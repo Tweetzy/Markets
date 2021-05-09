@@ -37,6 +37,34 @@ updated_category_name: "&aSuccessfully updated category display name."
 updated_category_description: "&aSuccessfully updated category description."
 updated_category_icon: "&aSuccessfully updated category icon."
 
+#Chat colors will be stripped, this is temporary until
+#the command manager is redone
+command_syntax:
+    add_category: "add category <name> [description]"
+    add_item: "add item <category> <price> [priceIsForStack]"
+    create: "create [name]"
+    help: "help"
+    list: "list"
+    markets: "/markets"
+    reload: "reload"
+    set: "set <name|desc|open> <value>"
+    request: "request <amount> <price>"
+    settings: "settings"
+    view: "view <player>"
+
+command_description:
+    add_category: "Create a new category inside your market."
+    add_item: "Add a new item to your market"
+    create: "Create a market if you don't have one."
+    help: "Shows the help page"
+    list: "View all available player markets."
+    markets: "Open the market menu"
+    reload: "Reload lang and configuration files"
+    request: "Open a new item request"
+    set: "Update a specific market setting"
+    settings: "Open the in game config editor"
+    view: "Open a specific player's market"
+
 prompt:
     enter_market_name: "&aEnter the new market name:"
     enter_category_name: "&aEnter name for new category:"

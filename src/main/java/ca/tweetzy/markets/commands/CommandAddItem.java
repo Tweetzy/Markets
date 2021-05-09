@@ -104,11 +104,11 @@ public class CommandAddItem extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "add item <category> <price> [priceIsForStack]";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.add_item").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Add a new item to your market";
+        return Markets.getInstance().getLocale().getMessage("command_description.add_item").getMessage();
     }
 }

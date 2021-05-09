@@ -37,12 +37,12 @@ public class CommandMarkets extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/markets";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.markets").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Open the market menu";
+        return Markets.getInstance().getLocale().getMessage("command_description.markets").getMessage();
     }
 
     @Override
