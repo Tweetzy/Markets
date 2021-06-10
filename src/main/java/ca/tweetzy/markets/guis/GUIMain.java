@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.events.MarketCreateEvent;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.guis.market.GUIMarketList;
 import ca.tweetzy.markets.guis.requests.GUIOpenRequests;
@@ -12,6 +13,7 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.Numbers;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -53,9 +55,25 @@ public class GUIMain extends Gui {
 
         setButton(2, 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), e -> {
             Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-            if (market != null) {
-                e.manager.showGUI(this.player, new GUIMarketEdit(market));
+
+            if (market == null) {
+                if (!Settings.AUTO_CREATE_MARKET.getBoolean()) {
+                    Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(this.player);
+                    return;
+                }
+
+                market = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
+
+                MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
+                Bukkit.getPluginManager().callEvent(marketCreateEvent);
+                if (marketCreateEvent.isCancelled()) return;
+
+                // Create a new market for the player
+                Markets.getInstance().getMarketManager().addMarket(market);
+                Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
             }
+
+            e.manager.showGUI(this.player, new GUIMarketEdit(market));
         });
 
         setButton(2, 6, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), e -> {

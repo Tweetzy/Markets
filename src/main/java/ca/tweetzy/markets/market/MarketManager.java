@@ -2,10 +2,12 @@ package ca.tweetzy.markets.market;
 
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class MarketManager {
 
     private final List<Market> markets = new ArrayList<>();
+    private final List<BlockedItem> blockedItems = new ArrayList<>();
 
     public void addMarket(Market market) {
         Objects.requireNonNull(market, "Cannot add a null Market to market list");
@@ -52,12 +55,38 @@ public class MarketManager {
         return this.markets.stream().filter(market -> market.getOwnerName().equalsIgnoreCase(player)).findFirst().orElse(null);
     }
 
+    public void addBlockedItem(BlockedItem blockedItem) {
+        this.blockedItems.add(blockedItem);
+    }
+
     public Market getMarketById(UUID id) {
         return this.markets.stream().filter(market -> market.getId().equals(id)).findFirst().orElse(null);
     }
 
     public List<Market> getMarkets() {
-        return Collections.unmodifiableList(markets);
+        return Collections.unmodifiableList(this.markets);
+    }
+
+    public List<BlockedItem> getBlockedItems() {
+        return Collections.unmodifiableList(this.blockedItems);
+    }
+
+    public void saveBlockedItems() {
+        Markets.newChain().sync(() -> {
+            Markets.getInstance().getData().set("blocked items", null);
+            this.blockedItems.forEach(blockedItem -> {
+                Markets.getInstance().getData().set("blocked items." + blockedItem.getId().toString(), blockedItem.getItem());
+            });
+            Markets.getInstance().getData().save();
+        }).execute();
+    }
+
+    public void loadBlockedItems() {
+        Markets.newChain().async(() -> {
+            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("blocked items");
+            if (section == null || section.getKeys(false).size() == 0) return;
+            Markets.getInstance().getData().getConfigurationSection("blocked items").getKeys(false).forEach(item -> addBlockedItem(new BlockedItem(UUID.fromString(item), Markets.getInstance().getData().getItemStack("blocked items." + item))));
+        }).execute();
     }
 
     public void saveMarkets(Market... markets) {

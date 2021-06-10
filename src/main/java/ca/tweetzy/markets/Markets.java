@@ -113,6 +113,7 @@ public class Markets extends TweetyPlugin {
         this.marketManager.loadMarkets();
         this.transactionManger.loadTransactions();
         this.requestManager.loadRequests();
+        this.marketManager.loadBlockedItems();
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -130,7 +131,8 @@ public class Markets extends TweetyPlugin {
                 new CommandHelp(),
                 new CommandSettings(),
                 new CommandConfiscate(),
-                new CommandReload()
+                new CommandReload(),
+                new CommandsBlockItem()
         );
 
         this.metrics = new Metrics(this, 7689);
@@ -139,6 +141,7 @@ public class Markets extends TweetyPlugin {
     @Override
     public void onPluginDisable() {
         this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
+        this.marketManager.saveBlockedItems();
         this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
         this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
         instance = null;

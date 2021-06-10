@@ -4,6 +4,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
@@ -37,6 +38,11 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(heldItem))) {
+            Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         if (!NumberUtils.isInt(args[0]) || !NumberUtils.isDouble(args[1])) {
             Markets.getInstance().getLocale().getMessage("not_a_number").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
@@ -49,7 +55,7 @@ public class CommandRequest extends AbstractCommand {
 
         int requestedAmount = Integer.parseInt(args[0]);
         if (requestedAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
-            Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("max_request_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
+            Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("request_max_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 

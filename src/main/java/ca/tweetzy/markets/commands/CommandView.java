@@ -59,7 +59,7 @@ public class CommandView extends AbstractCommand {
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1)
+        if (args.length == 1 && Markets.getInstance().getMarketManager().getMarkets().size() != 0)
             return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
         return null;
     }

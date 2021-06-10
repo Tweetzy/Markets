@@ -24,6 +24,8 @@ public class Settings {
     public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");
     public static final ConfigSetting LOG_TRANSACTIONS = new ConfigSetting(config, "setting.log transactions", true, "Should transactions be logged?");
     public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "setting.max amount per request", 256, "How many items can a player request per request creation?");
+    public static final ConfigSetting AUTO_CREATE_MARKET = new ConfigSetting(config, "setting.auto create market", true, "If a player tries to access a the market menu without owning a market", "should markets automatically create a market for them?");
+
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");
     public static final ConfigSetting INCREMENT_NUMBER_TWO = new ConfigSetting(config, "setting.increment two", 5, "How much should the item qty be increased by (btn 2)");
@@ -364,6 +366,20 @@ public class Settings {
     public static final ConfigSetting GUI_REQUEST_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.request collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
     public static final ConfigSetting GUI_REQUEST_COLLECTION_BORDER_ITEM = new ConfigSetting(config, "guis.request collection.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
 
+    /*
+    ==================================
+           BLOCKED ITEMS GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_TITLE = new ConfigSetting(config, "guis.blocked items.title", "&eBlocked Items");
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_GLOW_BORDER = new ConfigSetting(config, "guis.blocked items.glow border", true);
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_FILL_ITEM = new ConfigSetting(config, "guis.blocked items.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_BORDER_ITEM = new ConfigSetting(config, "guis.blocked items.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_ITEM_NAME = new ConfigSetting(config, "guis.blocked items.item name", "%item_name%");
+    public static final ConfigSetting GUI_BLOCKED_ITEMS_ITEM_LORE = new ConfigSetting(config, "guis.blocked items.item lore", Arrays.asList(
+            "",
+            "&7Click to remove item from blacklist"
+    ));
 
     public static void setup() {
         config.load();

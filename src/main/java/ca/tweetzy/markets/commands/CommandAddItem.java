@@ -8,6 +8,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
 import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.utils.Common;
@@ -54,6 +55,11 @@ public class CommandAddItem extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(heldItem))) {
+            Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         MarketCategory marketCategory = market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[0])).findFirst().orElse(null);
 
         if (marketCategory == null) {
@@ -90,8 +96,12 @@ public class CommandAddItem extends AbstractCommand {
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
         Player player = (Player) sender;
-        if (args.length == 1)
-            return Markets.getInstance().getMarketManager().getMarketByPlayer(player).getCategories().stream().map(MarketCategory::getName).collect(Collectors.toList());
+        if (args.length == 1) {
+            Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+            if (market != null && market.getCategories().size() > 0) {
+                return market.getCategories().stream().map(MarketCategory::getName).collect(Collectors.toList());
+            }
+        }
         if (args.length == 2) return Arrays.asList("1", "2", "3", "4", "5");
         if (args.length == 3) return Arrays.asList("true", "false");
         return null;

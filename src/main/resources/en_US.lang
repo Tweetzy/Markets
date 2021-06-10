@@ -10,6 +10,8 @@ player_does_not_have_funds: "&4%player% &cdoes not have enough money to pay!"
 not_enough_items: "&cYou do not have enough items to fulfill the request."
 money_remove: "&c&l- $%price%"
 money_add: "&a&l+ $%price%"
+added_blocked_item: "&aAdded &2%item_name%&a to blacklist"
+item_is_blocked: "&cYou cannot request/sell this item"
 
 cannot_buy_from_own_market: "&cYou cannot buy from your own market!"
 market_category_not_found: "&cCould not find a category in your market named&f: &4%market_category_name%"
@@ -55,6 +57,7 @@ command_syntax:
     view: "view <player>"
     remove: "remove"
     confiscate: "confiscate <player>"
+    block_item: "block item [list]"
 
 command_description:
     add_category: "Create a new category inside your market."
@@ -70,6 +73,7 @@ command_description:
     view: "Open a specific player's market"
     remove: "Delete your market"
     confiscate: "Confiscate an entire market's items"
+    block_item: "Blacklist an item or view all blocked items."
 
 prompt:
     enter_market_name: "&aEnter the new market name:"
