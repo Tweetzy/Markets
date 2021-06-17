@@ -9,6 +9,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
+import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
@@ -98,7 +99,8 @@ public class Markets extends TweetyPlugin {
         Settings.setup();
 
         // Setup the locale
-        setLocale(Settings.LANG.getString(), false);
+        setLocale(Settings.LANG.getString());
+
 
         // Load the data file
         this.data.load();
@@ -135,6 +137,9 @@ public class Markets extends TweetyPlugin {
                 new CommandsBlockItem()
         );
 
+        // Perform the update check
+        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
+
         this.metrics = new Metrics(this, 7689);
     }
 
@@ -150,7 +155,8 @@ public class Markets extends TweetyPlugin {
     @Override
     public void onConfigReload() {
         Settings.setup();
-        setLocale(Settings.LANG.getString(), true);
+        setLocale(Settings.LANG.getString());
+
     }
 
     @Override
