@@ -25,6 +25,8 @@ public class Settings {
     public static final ConfigSetting LOG_TRANSACTIONS = new ConfigSetting(config, "setting.log transactions", true, "Should transactions be logged?");
     public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "setting.max amount per request", 256, "How many items can a player request per request creation?");
     public static final ConfigSetting AUTO_CREATE_MARKET = new ConfigSetting(config, "setting.auto create market", true, "If a player tries to access a the market menu without owning a market", "should markets automatically create a market for them?");
+    public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "setting.auto save.enabled", true, "Should markets automatically save market data?");
+    public static final ConfigSetting AUTO_SAVE_DELAY = new ConfigSetting(config, "setting.auto save.delay", 900, "How often (in seconds) should markets save data?");
 
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");

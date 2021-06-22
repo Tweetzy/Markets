@@ -16,6 +16,7 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestManager;
+import ca.tweetzy.markets.settings.LocaleSettings;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.transaction.TransactionManger;
@@ -100,6 +101,7 @@ public class Markets extends TweetyPlugin {
 
         // Setup the locale
         setLocale(Settings.LANG.getString());
+        LocaleSettings.setup();
 
 
         // Load the data file
@@ -139,24 +141,33 @@ public class Markets extends TweetyPlugin {
 
         // Perform the update check
         getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
+        if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
+            getServer().getScheduler().runTaskTimerAsynchronously(this, this::saveData, 20L, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
+        }
+
 
         this.metrics = new Metrics(this, 7689);
     }
 
     @Override
     public void onPluginDisable() {
+        saveData();
+        instance = null;
+    }
+
+    private void saveData() {
         this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
         this.marketManager.saveBlockedItems();
         this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
         this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
-        instance = null;
+        getLogger().info("Market data has been automatically saved");
     }
 
     @Override
     public void onConfigReload() {
         Settings.setup();
         setLocale(Settings.LANG.getString());
-
+        LocaleSettings.setup();
     }
 
     @Override
