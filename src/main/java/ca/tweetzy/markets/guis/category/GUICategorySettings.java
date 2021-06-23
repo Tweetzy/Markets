@@ -43,6 +43,7 @@ public class GUICategorySettings extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(Settings.GUI_CATEGORY_EDIT_FILL_ITEM.getMaterial().parseItem());
         setRows(6);
 
@@ -66,7 +67,7 @@ public class GUICategorySettings extends Gui {
         setButton(0, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%category_display_name%", marketCategory.getDisplayName());
             put("%category_name%", marketCategory.getName());
-        }}), e -> {
+        }}), ClickType.LEFT, e -> {
             ChatPrompt.showPrompt(Markets.getInstance(), e.player, Markets.getInstance().getLocale().getMessage("prompt.enter_category_display_name").getMessage(), chat -> {
                 if (chat.getMessage().length() >= 1) {
                     this.marketCategory.setDisplayName(chat.getMessage());
@@ -79,7 +80,7 @@ public class GUICategorySettings extends Gui {
 
         setButton(1, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%category_description%", marketCategory.getDescription());
-        }}), e -> {
+        }}), ClickType.LEFT, e -> {
             ChatPrompt.showPrompt(Markets.getInstance(), e.player, Markets.getInstance().getLocale().getMessage("prompt.enter_category_description").getMessage(), chat -> {
                 if (chat.getMessage().length() >= 1) {
                     this.marketCategory.setDescription(chat.getMessage());
@@ -90,16 +91,16 @@ public class GUICategorySettings extends Gui {
             });
         });
 
-        setButton(2, 0, new TItemBuilder(this.marketCategory.getIcon()).setName(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_NAME.getString()).setLore(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIIconSelect(this.market, this.marketCategory)));
+        setButton(2, 0, new TItemBuilder(this.marketCategory.getIcon()).setName(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_NAME.getString()).setLore(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIIconSelect(this.market, this.marketCategory)));
 
-        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_LORE.getStringList(), 1, null), e -> {
+        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             PlayerUtils.giveItem(e.player, this.marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
             this.marketCategory.getItems().clear();
             this.market.setUpdatedAt(System.currentTimeMillis());
             draw();
         });
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.SHIFT_LEFT, e -> {
+        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
             MarketCategoryRemoveEvent marketCategoryRemoveEvent = new MarketCategoryRemoveEvent(this.market, this.marketCategory);
             Bukkit.getPluginManager().callEvent(marketCategoryRemoveEvent);
             if (marketCategoryRemoveEvent.isCancelled()) return;
@@ -114,7 +115,7 @@ public class GUICategorySettings extends Gui {
             Markets.getInstance().getLocale().getMessage("removed_category").processPlaceholder("market_category_name", this.marketCategory.getName()).sendPrefixedMessage(e.player);
         });
 
-        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
+        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
 
         List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
         int slot = 11;

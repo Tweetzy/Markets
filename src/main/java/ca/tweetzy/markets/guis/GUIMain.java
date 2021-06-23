@@ -15,6 +15,7 @@ import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ public class GUIMain extends Gui {
         setTitle(TextUtils.formatText(Settings.GUI_MAIN_TITLE.getString()));
         setAllowDrops(false);
         setAcceptsItems(false);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MAIN_FILL_ITEM.getMaterial()));
         setUseLockedCells(Settings.GUI_MAIN_FILL_SLOTS.getBoolean());
         setRows(6);
@@ -49,11 +51,11 @@ public class GUIMain extends Gui {
             }
         }
 
-        setButton(2, 2, new TItemBuilder(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_USE_CUSTOM_HEAD.getBoolean() ? Common.getCustomTextureHead(String.format("%s%s", "http://textures.minecraft.net/texture/", Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_CUSTOM_HEAD_LINK.getString()), false) : Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM.getMaterial().parseItem()).setName(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_LORE.getStringList()).toItemStack(), e -> {
+        setButton(2, 2, new TItemBuilder(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_USE_CUSTOM_HEAD.getBoolean() ? Common.getCustomTextureHead(String.format("%s%s", "http://textures.minecraft.net/texture/", Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_CUSTOM_HEAD_LINK.getString()), false) : Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM.getMaterial().parseItem()).setName(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
             e.manager.showGUI(this.player, new GUIMarketList());
         });
 
-        setButton(2, 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), e -> {
+        setButton(2, 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
             Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
 
             if (market == null) {
@@ -76,15 +78,15 @@ public class GUIMain extends Gui {
             e.manager.showGUI(this.player, new GUIMarketEdit(market));
         });
 
-        setButton(2, 6, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), e -> {
+        setButton(2, 6, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
             e.manager.showGUI(this.player, new GUIOpenRequests(this.player, false));
         });
 
-        setButton(3, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE.getStringList()).toItemStack(), e -> {
+        setButton(3, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
             e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
         });
 
-        setButton(3, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), e -> {
+        setButton(3, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
             e.manager.showGUI(this.player, new GUITransactionView(this.player));
         });
     }

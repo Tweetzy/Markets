@@ -42,6 +42,7 @@ public class GUIOpenRequests extends Gui {
         setTitle(TextUtils.formatText(all ? Settings.GUI_OPEN_REQUEST_TITLE_ALL.getString() : Settings.GUI_OPEN_REQUEST_TITLE.getString()));
         setAllowDrops(false);
         setAcceptsItems(false);
+        setAllowShiftClick(false);
         setUseLockedCells(true);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_OPEN_REQUEST_FILL_ITEM.getMaterial()));
         setRows(6);
@@ -59,17 +60,17 @@ public class GUIOpenRequests extends Gui {
         }
 
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
+        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
         if (!this.all) {
-            setButton(5, 0, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), e -> {
+            setButton(5, 0, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
                 Markets.getInstance().getRequestManager().deletePlayerRequests(this.player);
                 draw();
             });
 
-            setButton(5, 8, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), e -> {
+            setButton(5, 8, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
                 e.manager.showGUI(this.player, new GUIRequestCollection(this.player));
             });
         }
@@ -91,7 +92,7 @@ public class GUIOpenRequests extends Gui {
                     put("%request_amount%", request.getAmount());
                     put("%request_price%", String.format("%,.2f", request.getPrice()));
                     put("%request_requesting_player%", Bukkit.getOfflinePlayer(request.getRequester()).getName());
-                }}), e -> {
+                }}), ClickType.LEFT, e -> {
                     if (!this.all && e.clickType == ClickType.MIDDLE) {
                         Markets.getInstance().getRequestManager().deleteRequest(request);
                         draw();

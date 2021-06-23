@@ -9,6 +9,7 @@ import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -31,6 +32,7 @@ public class GUIBlockedItems extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_BLOCKED_ITEMS_FILL_ITEM.getMaterial()));
         setRows(6);
         draw();
@@ -46,7 +48,7 @@ public class GUIBlockedItems extends Gui {
         }
 
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.gui.exit());
+        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.exit());
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
@@ -57,7 +59,7 @@ public class GUIBlockedItems extends Gui {
             List<BlockedItem> data = this.blockedItems.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
             for (BlockedItem blockedItem : data) {
                 ItemStack item = blockedItem.getItem().clone();
-                setButton(slot, item, e -> {
+                setButton(slot, item, ClickType.LEFT, e -> {
 
                     draw();
                 });

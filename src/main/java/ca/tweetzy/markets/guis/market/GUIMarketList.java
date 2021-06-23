@@ -11,6 +11,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class GUIMarketList extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MARKET_LIST_FILL_ITEM.getMaterial()));
         setRows(6);
 
@@ -48,7 +50,7 @@ public class GUIMarketList extends Gui {
         }
 
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
+        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
@@ -60,7 +62,7 @@ public class GUIMarketList extends Gui {
                     put("%market_name%", market.getName());
                     put("%market_description%", market.getDescription());
                     put("%market_owner%", market.getOwnerName());
-                }}), e -> e.manager.showGUI(e.player, new GUIMarketView(market)));
+                }}), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(market)));
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
             }

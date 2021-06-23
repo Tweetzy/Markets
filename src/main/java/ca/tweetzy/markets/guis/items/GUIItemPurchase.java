@@ -43,6 +43,7 @@ public class GUIItemPurchase extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_ITEM_PURCHASE_FILL_ITEM.getMaterial()));
         setRows(6);
 
@@ -58,7 +59,7 @@ public class GUIItemPurchase extends Gui {
             if (Settings.GUI_ITEM_PURCHASE_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
+        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
 
         setItem(2, 4, purchaseItemQtySpecific(this.purchaseQty));
         addPurchaseInfoItem();

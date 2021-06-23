@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.utils.Common;
@@ -12,6 +13,7 @@ import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ public class GUITransactionView extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_TRANSACTIONS_FILL_ITEM.getMaterial()));
         setRows(6);
 
@@ -52,19 +55,23 @@ public class GUITransactionView extends Gui {
         }
 
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
+        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
-        // this is an experiment, will receive feedback from users on this feature
-        Markets.newChain().async(() -> this.transactionList = Markets.getInstance().getTransactionManger().getTransactions().stream().filter(transaction -> transaction.getPurchaser().equals(this.player.getUniqueId()) || transaction.getMarketId().equals(Markets.getInstance().getMarketManager().getMarketByPlayer(this.player).getId())
-        ).collect(Collectors.toList())).sync(() -> {
+        Markets.newChain().async(() -> {
+            Market playerMarket = Markets.getInstance().getMarketManager().getMarketByPlayer(this.player);
+            if (playerMarket == null) {
+                this.transactionList = Markets.getInstance().getTransactionManger().getTransactions().stream().filter(transaction -> transaction.getPurchaser().equals(this.player.getUniqueId())).collect(Collectors.toList());
+            } else {
+                this.transactionList = Markets.getInstance().getTransactionManger().getTransactions().stream().filter(transaction -> transaction.getPurchaser().equals(this.player.getUniqueId()) || transaction.getMarketId().equals(playerMarket.getId())).collect(Collectors.toList());
+            }
+        }).sync(() -> {
             pages = (int) Math.max(1, Math.ceil(this.transactionList.size() / (double) 28L));
-
             int slot = 10;
             List<Transaction> data = this.transactionList.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
             for (Transaction transaction : data) {
-                setItem(slot, ConfigItemUtil.build(Settings.GUI_TRANSACTIONS_TRANSACTION_ITEM.getString(), Settings.GUI_TRANSACTIONS_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_TRANSACTION_LORE.getStringList(), 1, new HashMap<String, Object>(){{
+                setItem(slot, ConfigItemUtil.build(Settings.GUI_TRANSACTIONS_TRANSACTION_ITEM.getString(), Settings.GUI_TRANSACTIONS_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_TRANSACTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
                     put("%transaction_id%", transaction.getId().toString());
                     put("%transaction_buyer%", Bukkit.getOfflinePlayer(transaction.getPurchaser()).getName());
                     put("%transaction_market%", Markets.getInstance().getMarketManager().getMarketById(transaction.getMarketId()) == null ? "Not Available" : Markets.getInstance().getMarketManager().getMarketById(transaction.getMarketId()).getName());
@@ -74,7 +81,6 @@ public class GUITransactionView extends Gui {
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
             }
-
         }).execute();
     }
 }

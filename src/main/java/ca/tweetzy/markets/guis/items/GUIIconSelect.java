@@ -27,6 +27,7 @@ public class GUIIconSelect extends SimplePagedGui {
     public GUIIconSelect(Market market, MarketCategory marketCategory) {
         setTitle(TextUtils.formatText("&eSelect an Icon"));
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setHeaderBackItem(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());
         setFooterBackItem(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());
         setDefaultItem(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());

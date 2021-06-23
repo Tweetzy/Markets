@@ -132,7 +132,7 @@ public class Settings {
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM = new ConfigSetting(config, "guis.market edit.items.delete market.item", XMaterial.FIRE_CHARGE.name());
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME = new ConfigSetting(config, "guis.market edit.items.delete market.name", "&4Delete Market");
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE = new ConfigSetting(config, "guis.market edit.items.delete market.lore", Arrays.asList(
-            "&cClick to delete your market,",
+            "&cRight-Click to delete your market,",
             "&cthis action &c&lCANNOT &cbe undone!"
     ));
 
@@ -176,7 +176,7 @@ public class Settings {
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM = new ConfigSetting(config, "guis.category edit.items.delete.item", XMaterial.FIRE_CHARGE.name());
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME = new ConfigSetting(config, "guis.category edit.items.delete.name", "&4Delete Category");
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE = new ConfigSetting(config, "guis.category edit.items.delete.lore", Arrays.asList(
-            "&cClick to delete this category,",
+            "&cRight-Click to delete this category,",
             "&cthis action &c&lCANNOT &cbe undone!"
     ));
 

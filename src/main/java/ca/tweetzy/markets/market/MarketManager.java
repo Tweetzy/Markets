@@ -48,12 +48,7 @@ public class MarketManager {
     }
 
     public Market getMarketByPlayer(Player player) {
-        Market locatedMarket = this.markets.stream().filter(market -> market.getOwner().equals(player.getUniqueId())).findFirst().orElse(null);
-        if (locatedMarket == null) {
-            locatedMarket = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
-            addMarket(locatedMarket);
-        }
-        return locatedMarket;
+       return this.markets.stream().filter(market -> market.getOwner().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 
     public Market getMarketByPlayerName(String player) {

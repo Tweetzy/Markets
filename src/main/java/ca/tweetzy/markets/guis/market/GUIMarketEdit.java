@@ -39,6 +39,7 @@ public class GUIMarketEdit extends Gui {
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);
+        setAllowShiftClick(false);
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MARKET_EDIT_FILL_ITEM.getMaterial()));
         setRows(6);
 
@@ -61,7 +62,7 @@ public class GUIMarketEdit extends Gui {
 
         setButton(0, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_NAME_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%market_name%", market.getName());
-        }}), e -> {
+        }}), ClickType.LEFT, e -> {
             e.gui.exit();
             ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_name").getMessage()), chat -> {
                 if (chat.getMessage().trim().length() >= 1) {
@@ -71,13 +72,13 @@ public class GUIMarketEdit extends Gui {
             }).setOnCancel(() -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market))).setOnClose(() -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
         });
 
-        setButton(1, 0, ConfigItemUtil.build(this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_ITEM.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_ITEM.getString(), this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_NAME.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_NAME.getString(), market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_LORE.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_LORE.getStringList(), 1, null), e -> {
+        setButton(1, 0, ConfigItemUtil.build(this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_ITEM.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_ITEM.getString(), this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_NAME.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_NAME.getString(), market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_LORE.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             this.market.setOpen(!this.market.isOpen());
             this.market.setUpdatedAt(System.currentTimeMillis());
             draw();
         });
 
-        setButton(2, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE.getStringList(), 1, null), e -> {
+        setButton(2, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             e.gui.exit();
             ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_name").getMessage()), chat -> {
                 String possibleName = ChatColor.stripColor(chat.getMessage().trim());
@@ -100,9 +101,9 @@ public class GUIMarketEdit extends Gui {
             }).setOnCancel(() -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market))).setOnClose(() -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
         });
 
-        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
+        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.SHIFT_LEFT, e -> {
+        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
             MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(e.player, this.market);
             Bukkit.getPluginManager().callEvent(marketDeleteEvent);
             if (marketDeleteEvent.isCancelled()) return;
@@ -113,10 +114,10 @@ public class GUIMarketEdit extends Gui {
             }
             Markets.getInstance().getMarketManager().deleteMarket(this.market);
             Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(e.player);
-            e.gui.exit();
+            e.manager.showGUI(e.player, new GUIMain(e.player));
         });
 
-        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
+        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
 
         List<MarketCategory> data = this.market.getCategories().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
         int slot = 11;
