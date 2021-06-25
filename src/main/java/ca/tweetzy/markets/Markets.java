@@ -11,6 +11,7 @@ import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
+import ca.tweetzy.markets.economy.EconomyManager;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
@@ -24,9 +25,7 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class Markets extends TweetyPlugin {
     private RequestManager requestManager;
 
     @Getter
-    private Economy economy;
+    private EconomyManager economyManager;
 
     Metrics metrics;
 
@@ -81,12 +80,6 @@ public class Markets extends TweetyPlugin {
             return;
         }
 
-        // Vault check
-        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
-            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-            if (rsp != null) this.economy = rsp.getProvider();
-        }
-
         // Check server type
         if (ServerProject.isServer(ServerProject.CRAFTBUKKIT, ServerProject.GLOWSTONE, ServerProject.TACO, ServerProject.UNKNOWN)) {
             // I can't remember if spigot allows me to disable a plugin if its running a specific jar so just tell them AGAIN
@@ -98,6 +91,9 @@ public class Markets extends TweetyPlugin {
 
         // Setup the settings file
         Settings.setup();
+
+        // Setup the new economy manager
+        this.economyManager = new EconomyManager(this);
 
         // Setup the locale
         setLocale(Settings.LANG.getString());

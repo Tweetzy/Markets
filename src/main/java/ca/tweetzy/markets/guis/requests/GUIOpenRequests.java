@@ -111,13 +111,13 @@ public class GUIOpenRequests extends Gui {
 
                     OfflinePlayer requester = Bukkit.getOfflinePlayer(request.getRequester());
 
-                    if (!Markets.getInstance().getEconomy().has(requester, request.getPrice())) {
+                    if (!Markets.getInstance().getEconomyManager().has(requester, request.getPrice())) {
                         Markets.getInstance().getLocale().getMessage("player_does_not_have_funds").processPlaceholder("player", requester.getName()).sendPrefixedMessage(this.player);
                         return;
                     }
 
-                    Markets.getInstance().getEconomy().withdrawPlayer(requester, request.getPrice());
-                    Markets.getInstance().getEconomy().depositPlayer(this.player, request.getPrice());
+                    Markets.getInstance().getEconomyManager().withdrawPlayer(requester, request.getPrice());
+                    Markets.getInstance().getEconomyManager().depositPlayer(this.player, request.getPrice());
                     MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(this.player, request.getItem(), request.getAmount());
                     request.setFulfilled(true);
 

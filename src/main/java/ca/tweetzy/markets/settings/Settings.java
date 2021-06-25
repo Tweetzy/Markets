@@ -19,6 +19,8 @@ public class Settings {
     static final Config config = Markets.getInstance().getCoreConfig();
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
+    public static final ConfigSetting ECONOMY_MODE = new ConfigSetting(config, "economy provider", "Vault", "Supported Economies:", "Vault", "PlayerPoints");
+
 
     public static final ConfigSetting GIVE_ITEMS_ON_CATEGORY_DELETE = new ConfigSetting(config, "setting.give back items on category delete", true, "Should Markets give the player all their items from the category", "back when they click the delete button?");
     public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");

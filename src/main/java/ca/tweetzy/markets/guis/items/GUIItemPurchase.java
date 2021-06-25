@@ -147,7 +147,7 @@ public class GUIItemPurchase extends Gui {
 
         double price = foundItem.isPriceForStack() ? foundItem.getPrice() : this.purchaseQty * foundItem.getPrice();
 
-        if (!Markets.getInstance().getEconomy().has(buyer, price)) {
+        if (!Markets.getInstance().getEconomyManager().has(buyer, price)) {
             Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(buyer);
             return;
         }
@@ -183,8 +183,8 @@ public class GUIItemPurchase extends Gui {
 
     private void transferMoney(UUID seller, Player buyer, double price) {
         OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
-        Markets.getInstance().getEconomy().depositPlayer(theSeller, price);
-        Markets.getInstance().getEconomy().withdrawPlayer(buyer, price);
+        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, price);
+        Markets.getInstance().getEconomyManager().withdrawPlayer(buyer, price);
 
         Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", price)).sendPrefixedMessage(buyer);
         if (theSeller.isOnline()) {
