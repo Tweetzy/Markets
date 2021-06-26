@@ -1,13 +1,17 @@
 package ca.tweetzy.markets.commands;
 
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketDeleteEvent;
 import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +38,7 @@ public class CommandRemove extends AbstractCommand {
             }
 
             if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-
-            Markets.getInstance().getMarketManager().deleteMarket(market);
-            Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(player);
+            deleteMarket(player, market, false);
         }
 
         if (args.length == 1 && player.hasPermission("markets.admin")) {
@@ -47,9 +49,7 @@ public class CommandRemove extends AbstractCommand {
             }
 
             if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-
-            Markets.getInstance().getMarketManager().deleteMarket(market);
-            Markets.getInstance().getLocale().getMessage("removed_player_market").processPlaceholder("player", market.getOwnerName()).sendPrefixedMessage(player);
+            deleteMarket(player, market, true);
         }
 
         return ReturnType.SUCCESS;
@@ -81,5 +81,18 @@ public class CommandRemove extends AbstractCommand {
         MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(player, market);
         Bukkit.getPluginManager().callEvent(marketDeleteEvent);
         return marketDeleteEvent.isCancelled();
+    }
+
+    private void deleteMarket(Player player, Market market, boolean admin) {
+        if (Settings.GIVE_ITEMS_ON_MARKET_DELETE.getBoolean() && !market.getCategories().isEmpty()) {
+            List<ItemStack> items = new ArrayList<>();
+            Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(player, items)).execute();
+        }
+        Markets.getInstance().getMarketManager().deleteMarket(market);
+        if (admin) {
+            Markets.getInstance().getLocale().getMessage("removed_player_market").processPlaceholder("player", market.getOwnerName()).sendPrefixedMessage(player);
+        } else {
+            Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(player);
+        }
     }
 }
