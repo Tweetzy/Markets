@@ -91,7 +91,7 @@ public class LocaleSettings {
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");
         languageNodes.put("prompt.enter_category_display_name", "&aEnter a new display name for the category:");
         languageNodes.put("prompt.enter_category_description", "&aEnter the new description for the category:");
-        languageNodes.put("prompt.enter_market_item_price.", "&aEnter the new price:");
+        languageNodes.put("prompt.enter_market_item_price", "&aEnter the new price:");
      }
 
     public static void setup() {

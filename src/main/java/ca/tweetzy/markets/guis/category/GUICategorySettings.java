@@ -68,7 +68,7 @@ public class GUICategorySettings extends Gui {
             put("%category_display_name%", marketCategory.getDisplayName());
             put("%category_name%", marketCategory.getName());
         }}), ClickType.LEFT, e -> {
-            ChatPrompt.showPrompt(Markets.getInstance(), e.player, Markets.getInstance().getLocale().getMessage("prompt.enter_category_display_name").getMessage(), chat -> {
+            ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_display_name").getMessage()), chat -> {
                 if (chat.getMessage().length() >= 1) {
                     this.marketCategory.setDisplayName(chat.getMessage());
                     this.market.setUpdatedAt(System.currentTimeMillis());
@@ -81,7 +81,7 @@ public class GUICategorySettings extends Gui {
         setButton(1, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%category_description%", marketCategory.getDescription());
         }}), ClickType.LEFT, e -> {
-            ChatPrompt.showPrompt(Markets.getInstance(), e.player, Markets.getInstance().getLocale().getMessage("prompt.enter_category_description").getMessage(), chat -> {
+            ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_description").getMessage()), chat -> {
                 if (chat.getMessage().length() >= 1) {
                     this.marketCategory.setDescription(chat.getMessage());
                     this.market.setUpdatedAt(System.currentTimeMillis());
