@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
  */
 public class GUIMarketList extends Gui {
 
+    List<Market> markets;
+
     public GUIMarketList() {
         setTitle(TextUtils.formatText(Settings.GUI_MARKET_LIST_TITLE.getString()));
         setAllowDrops(false);
@@ -41,22 +43,23 @@ public class GUIMarketList extends Gui {
 
     private void draw() {
         reset();
-        pages = (int) Math.max(1, Math.ceil(Markets.getInstance().getMarketManager().getMarkets().size() / (double) 28L));
-
         // make border
         for (int i : Numbers.GUI_BORDER_6_ROWS) {
             setItem(i, GuiUtils.getBorderItem(Settings.GUI_MARKET_LIST_BORDER_ITEM.getMaterial()));
             if (Settings.GUI_MARKET_LIST_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 
-        setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
-        setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-        setOnPage(e -> draw());
+        Markets.newChain().asyncFirst(() -> {
+            this.markets = Markets.getInstance().getMarketManager().getMarkets();
+            return this.markets.stream().filter(Market::isOpen).skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+        }).asyncLast((data) -> {
+            pages = (int) Math.max(1, Math.ceil(this.markets.size() / (double) 28L));
+            setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+            setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
+            setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+            setOnPage(e -> draw());
 
-        Markets.newChain().async(() -> {
             int slot = 10;
-            List<Market> data = Markets.getInstance().getMarketManager().getMarkets().stream().filter(Market::isOpen).skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
             for (Market market : data) {
                 setButton(slot, ConfigItemUtil.build(Common.getPlayerHead(market.getOwnerName()), Settings.GUI_MARKET_LIST_MARKET_NAME.getString(), Settings.GUI_MARKET_LIST_MARKET_LORE.getStringList(), 1, new HashMap<String, Object>() {{
                     put("%market_name%", market.getName());
@@ -66,7 +69,6 @@ public class GUIMarketList extends Gui {
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
             }
-
         }).execute();
     }
 }

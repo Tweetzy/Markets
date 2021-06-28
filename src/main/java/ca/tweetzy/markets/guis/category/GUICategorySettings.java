@@ -117,21 +117,23 @@ public class GUICategorySettings extends Gui {
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
 
-        List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
-        int slot = 11;
-        for (MarketItem marketItem : data) {
-            ItemStack item = marketItem.getItemStack().clone();
+        Markets.newChain().async(() -> {
+            List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
+            int slot = 11;
+            for (MarketItem marketItem : data) {
+                ItemStack item = marketItem.getItemStack().clone();
 
-            List<String> lore = Common.getItemLore(item);
-            lore.addAll(Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_LORE.getStringList());
+                List<String> lore = Common.getItemLore(item);
+                lore.addAll(Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_LORE.getStringList());
 
-            setButton(slot, ConfigItemUtil.build(item, Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
-                put("%item_name%", Common.getItemName(item));
-                put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                put("%market_item_price_for_stack%", marketItem.isPriceForStack());
-            }}), e -> Common.handleMarketItemEdit(e, this.market, marketItem, this.marketCategory));
+                setButton(slot, ConfigItemUtil.build(item, Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
+                    put("%item_name%", Common.getItemName(item));
+                    put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
+                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                }}), e -> Common.handleMarketItemEdit(e, this.market, marketItem, this.marketCategory));
 
-            slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 4 : slot + 1;
-        }
+                slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 4 : slot + 1;
+            }
+        }).execute();
     }
 }

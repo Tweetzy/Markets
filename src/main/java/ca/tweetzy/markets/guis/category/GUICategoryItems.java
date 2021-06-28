@@ -50,7 +50,6 @@ public class GUICategoryItems extends Gui {
 
     private void draw() {
         reset();
-        pages = (int) Math.max(1, Math.ceil(this.marketCategory.getItems().size() / (double) 28));
 
         // make border
         for (int i : Numbers.GUI_BORDER_6_ROWS) {
@@ -58,33 +57,34 @@ public class GUICategoryItems extends Gui {
             if (Settings.GUI_MARKET_CATEGORY_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 
-        setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
-        setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-        setOnPage(e -> draw());
+        Markets.newChain().asyncFirst(() -> this.marketCategory.getItems().stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList())).asyncLast((data) -> {
+            pages = (int) Math.max(1, Math.ceil(this.marketCategory.getItems().size() / (double) 28));
+            setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+            setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
+            setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+            setOnPage(e -> draw());
 
-        int slot = 10;
-        List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
-        for (MarketItem marketItem : data) {
-            ItemStack item = marketItem.getItemStack().clone();
-            List<String> lore = Common.getItemLore(item);
-            lore.addAll(Settings.GUI_MARKET_CATEGORY_ITEM_LORE.getStringList());
+            int slot = 10;
+            for (MarketItem marketItem : data) {
+                ItemStack item = marketItem.getItemStack().clone();
+                List<String> lore = Common.getItemLore(item);
+                lore.addAll(Settings.GUI_MARKET_CATEGORY_ITEM_LORE.getStringList());
 
-            setButton(slot, ConfigItemUtil.build(item, Settings.GUI_MARKET_CATEGORY_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
-                put("%item_name%", Common.getItemName(item));
-                put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                put("%market_item_price_for_stack%", marketItem.isPriceForStack());
-            }}), e -> {
-                if (this.market.getOwner().equals(e.player.getUniqueId())) {
-                    Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
-                    return;
-                }
+                setButton(slot, ConfigItemUtil.build(item, Settings.GUI_MARKET_CATEGORY_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
+                    put("%item_name%", Common.getItemName(item));
+                    put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
+                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                }}), e -> {
+                    if (this.market.getOwner().equals(e.player.getUniqueId())) {
+                        Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
+                        return;
+                    }
 
-                e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
-            });
+                    e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
+                });
 
-            slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
-        }
+                slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
+            }
+        }).execute();
     }
-
 }

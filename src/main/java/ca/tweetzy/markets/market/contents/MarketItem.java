@@ -1,10 +1,10 @@
 package ca.tweetzy.markets.market.contents;
 
+import ca.tweetzy.core.compatibility.XMaterial;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class MarketItem implements Serializable {
+public class MarketItem {
 
     private UUID id;
     private UUID categoryId;
@@ -37,4 +37,5 @@ public class MarketItem implements Serializable {
     public MarketItem(MarketCategory category, ItemStack itemStack, double price, boolean priceForStack) {
         this(UUID.randomUUID(), itemStack, price, priceForStack, category.getId());
     }
+
 }

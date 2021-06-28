@@ -62,34 +62,37 @@ public class GUIAllItems extends Gui {
         setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             e.manager.showGUI(e.player, this.isEditing ? new GUIMarketEdit(this.market) : new GUIMarketView(this.market));
         });
+
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
-        List<MarketItem> data = this.marketItemList.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
-        int slot = 10;
-        for (MarketItem marketItem : data) {
-            ItemStack item = marketItem.getItemStack().clone();
-            List<String> lore = Common.getItemLore(item);
-            lore.addAll(this.isEditing ? Settings.GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE.getStringList() : Settings.GUI_ALL_ITEMS_ITEMS_ITEM_LORE.getStringList());
+        Markets.newChain().async(() -> {
+            List<MarketItem> data = this.marketItemList.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+            int slot = 10;
+            for (MarketItem marketItem : data) {
+                ItemStack item = marketItem.getItemStack().clone();
+                List<String> lore = Common.getItemLore(item);
+                lore.addAll(this.isEditing ? Settings.GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE.getStringList() : Settings.GUI_ALL_ITEMS_ITEMS_ITEM_LORE.getStringList());
 
-            setButton(slot, ConfigItemUtil.build(item, Settings.GUI_ALL_ITEMS_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
-                put("%item_name%", Common.getItemName(item));
-                put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                put("%market_item_price_for_stack%", marketItem.isPriceForStack());
-            }}), e -> {
-                if (this.isEditing) {
-                    Common.handleMarketItemEdit(e, this.market, marketItem, null);
-                } else {
-                    if (this.market.getOwner().equals(e.player.getUniqueId())) {
-                        Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
-                        return;
+                setButton(slot, ConfigItemUtil.build(item, Settings.GUI_ALL_ITEMS_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
+                    put("%item_name%", Common.getItemName(item));
+                    put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
+                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                }}), e -> {
+                    if (this.isEditing) {
+                        Common.handleMarketItemEdit(e, this.market, marketItem, null);
+                    } else {
+                        if (this.market.getOwner().equals(e.player.getUniqueId())) {
+                            Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
+                            return;
+                        }
+
+                        e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
                     }
+                });
 
-                    e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
-                }
-            });
-
-            slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
-        }
+                slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
+            }
+        }).execute();
     }
 }

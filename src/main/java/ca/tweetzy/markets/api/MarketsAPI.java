@@ -5,6 +5,9 @@ import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: May 05 2021
@@ -76,5 +79,21 @@ public class MarketsAPI {
                 break;
             }
         }
+    }
+
+    /**
+     * Used to get command flags (ex. -h, -f, -t, etc)
+     *
+     * @param args is the arguments passed when running a command
+     * @return any command flags if any
+     */
+    public List<String> getCommandFlags(String... args) {
+        List<String> flags = new ArrayList<>();
+        for (String arg : args) {
+            if (arg.startsWith("-") && arg.length() >= 2) {
+                flags.add(arg.substring(0, 2));
+            }
+        }
+        return flags;
     }
 }

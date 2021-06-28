@@ -4,6 +4,7 @@ import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.guis.category.GUICategoryItems;
 import ca.tweetzy.markets.guis.items.GUIAllItems;
@@ -15,7 +16,6 @@ import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -61,16 +61,17 @@ public class GUIMarketView extends Gui {
             e.manager.showGUI(e.player, new GUIAllItems(this.market, false));
         });
 
-        int slot = 21;
-        List<MarketCategory> data = this.market.getCategories().stream().skip((page - 1) * 9L).limit(9L).collect(Collectors.toList());
-        for (MarketCategory category : data) {
-            setButton(slot, ConfigItemUtil.build(category.getIcon(), Settings.GUI_MARKET_VIEW_ITEMS_ALL_CATEGORY_NAME.getString(), Settings.GUI_MARKET_VIEW_ITEMS_ALL_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
-                put("%category_description%", category.getDescription());
-                put("%category_display_name%", category.getDisplayName());
-                put("%category_name%", category.getName());
-            }}), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUICategoryItems(this.market, category)));
+        Markets.newChain().asyncFirst(() -> this.market.getCategories().stream().skip((page - 1) * 9L).limit(9L).collect(Collectors.toList())).asyncLast((data) -> {
+            int slot = 21;
+            for (MarketCategory category : data) {
+                setButton(slot, ConfigItemUtil.build(category.getIcon(), Settings.GUI_MARKET_VIEW_ITEMS_ALL_CATEGORY_NAME.getString(), Settings.GUI_MARKET_VIEW_ITEMS_ALL_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+                    put("%category_description%", category.getDescription());
+                    put("%category_display_name%", category.getDisplayName());
+                    put("%category_name%", category.getName());
+                }}), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUICategoryItems(this.market, category)));
 
-            slot = slot == 24 ? slot + 4 : slot + 1;
-        }
+                slot = slot == 24 ? slot + 5 : slot + 1;
+            }
+        }).execute();
     }
 }

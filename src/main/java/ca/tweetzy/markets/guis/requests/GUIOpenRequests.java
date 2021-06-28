@@ -59,11 +59,6 @@ public class GUIOpenRequests extends Gui {
             if (Settings.GUI_OPEN_REQUEST_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 
-        setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
-        setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-        setOnPage(e -> draw());
-
         if (!this.all) {
             setButton(5, 0, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
                 Markets.getInstance().getRequestManager().deletePlayerRequests(this.player);
@@ -75,12 +70,17 @@ public class GUIOpenRequests extends Gui {
             });
         }
 
-        Markets.newChain().async(() -> this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getRequestsByPlayer(this.player, false)).sync(() -> {
+        Markets.newChain().asyncFirst(() -> {
+            this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getRequestsByPlayer(this.player, false);
+            return this.playerRequests.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+        }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.playerRequests.size() / (double) 28L));
+            setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+            setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
+            setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+            setOnPage(e -> draw());
 
             int slot = 10;
-            List<Request> data = this.playerRequests.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
-
             for (Request request : data) {
                 ItemStack item = request.getItem().clone();
 

@@ -133,7 +133,6 @@ public class GUIItemPurchase extends Gui {
         });
     }
 
-    // TODO stop being a trash dev and make this better
     private void handlePurchase(Player buyer, Market market, MarketCategory category, MarketItem marketItem) {
         Market foundMarket = Markets.getInstance().getMarketManager().getMarketById(market.getId());
         if (foundMarket == null) return;
