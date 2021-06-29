@@ -4,6 +4,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketCreateEvent;
 import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,6 +37,10 @@ public class CommandCreate extends AbstractCommand {
         MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
         Bukkit.getPluginManager().callEvent(marketCreateEvent);
         if (marketCreateEvent.isCancelled()) return ReturnType.FAILURE;
+
+        if (!Common.chargeCreationFee(player)) {
+            return ReturnType.FAILURE;
+        }
 
         // Create a new market for the player
         Markets.getInstance().getMarketManager().addMarket(market);

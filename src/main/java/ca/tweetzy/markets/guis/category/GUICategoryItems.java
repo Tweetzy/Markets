@@ -73,7 +73,7 @@ public class GUICategoryItems extends Gui {
                 setButton(slot, ConfigItemUtil.build(item, Settings.GUI_MARKET_CATEGORY_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
                     put("%item_name%", Common.getItemName(item));
                     put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                    put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
                 }}), e -> {
                     if (this.market.getOwner().equals(e.player.getUniqueId())) {
                         Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);

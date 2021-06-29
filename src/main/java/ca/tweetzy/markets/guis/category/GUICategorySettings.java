@@ -129,7 +129,7 @@ public class GUICategorySettings extends Gui {
                 setButton(slot, ConfigItemUtil.build(item, Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
                     put("%item_name%", Common.getItemName(item));
                     put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                    put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
                 }}), e -> Common.handleMarketItemEdit(e, this.market, marketItem, this.marketCategory));
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 4 : slot + 1;

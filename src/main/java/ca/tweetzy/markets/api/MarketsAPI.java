@@ -2,11 +2,14 @@ package ca.tweetzy.markets.api;
 
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -16,9 +19,11 @@ import java.util.List;
  */
 public class MarketsAPI {
 
-    private MarketsAPI() {}
+    private MarketsAPI() {
+    }
 
     private static MarketsAPI instance;
+    private final Pattern maxAllowedMarketPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
 
     public static MarketsAPI getInstance() {
         if (instance == null) {
@@ -31,7 +36,7 @@ public class MarketsAPI {
      * Get the total amount of an item in the player's inventory
      *
      * @param player is the player being checked
-     * @param stack is the item you want to find
+     * @param stack  is the item you want to find
      * @return the total count of the item(s)
      */
     public int getItemCountInPlayerInventory(Player player, ItemStack stack) {
@@ -54,7 +59,7 @@ public class MarketsAPI {
      * Removes a set amount of a specific item from the player inventory
      *
      * @param player is the player you want to remove the item from
-     * @param stack is the item that you want to remove
+     * @param stack  is the item that you want to remove
      * @param amount is the amount of items you want to remove.
      */
     public void removeSpecificItemQuantityFromPlayer(Player player, ItemStack stack, int amount) {
@@ -95,5 +100,32 @@ public class MarketsAPI {
             }
         }
         return flags;
+    }
+
+    /**
+     * Get the max allowed items based on the permission
+     *
+     * @param player is the player being checked
+     * @return the max allowed items from the permission node.
+     */
+    public int maxAllowedMarketItems(Player player) {
+        int maxAllowedItems = Settings.DEFAULT_MAX_ALLOWED_MARKET_ITEMS.getInt();
+        int max = player.getEffectivePermissions().stream().map(i -> {
+            Matcher matcher = maxAllowedMarketPattern.matcher(i.getPermission());
+            if (matcher.matches()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+            return 0;
+        }).max(Integer::compareTo).orElse(0);
+
+        if (player.hasPermission("markets.maxalloweditems.*")) {
+            maxAllowedItems = Integer.MAX_VALUE;
+        }
+
+        if (max > maxAllowedItems) {
+            maxAllowedItems = max;
+        }
+
+        return maxAllowedItems;
     }
 }

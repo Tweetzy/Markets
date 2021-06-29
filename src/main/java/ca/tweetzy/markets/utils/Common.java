@@ -14,8 +14,10 @@ import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
+import ca.tweetzy.markets.settings.Settings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,9 +34,22 @@ import java.util.*;
  * Time Created: 3:04 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
+
+@UtilityClass
 public class Common {
 
-    public static void handleMarketItemEdit(GuiClickEvent e, Market market, MarketItem marketItem, MarketCategory marketCategory) {
+    public boolean chargeCreationFee(Player player) {
+        if (!Settings.USE_CREATION_FEE.getBoolean()) return true;
+        if (!Markets.getInstance().getEconomyManager().has(player, Settings.CREATION_FEE_AMOUNT.getDouble())) {
+            Markets.getInstance().getLocale().getMessage("not_enough_money_create").sendPrefixedMessage(player);
+            return false;
+        }
+        Markets.getInstance().getEconomyManager().withdrawPlayer(player, Settings.CREATION_FEE_AMOUNT.getDouble());
+        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.CREATION_FEE_AMOUNT.getDouble())).sendPrefixedMessage(player);
+        return true;
+    }
+
+    public void handleMarketItemEdit(GuiClickEvent e, Market market, MarketItem marketItem, MarketCategory marketCategory) {
         switch (e.clickType) {
             case LEFT:
                 e.gui.exit();
@@ -77,7 +92,7 @@ public class Common {
      * @param base64  is the entered texture a base64 string?
      * @return the created head
      */
-    public static ItemStack getCustomTextureHead(String texture, boolean base64) {
+    public ItemStack getCustomTextureHead(String texture, boolean base64) {
         ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) Objects.requireNonNull(head).getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), "");
@@ -105,7 +120,7 @@ public class Common {
      * @param player is the name of the player
      * @return the player's head/skull
      */
-    public static ItemStack getPlayerHead(Player player) {
+    public ItemStack getPlayerHead(Player player) {
         ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         meta.setOwner(player.getName());
@@ -119,7 +134,7 @@ public class Common {
      * @param player is the name of the player
      * @return the player's head/skull
      */
-    public static ItemStack getPlayerHead(String player) {
+    public ItemStack getPlayerHead(String player) {
         ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         meta.setOwner(player);
@@ -127,12 +142,12 @@ public class Common {
         return stack;
     }
 
-    public static String getItemName(ItemStack stack) {
+    public String getItemName(ItemStack stack) {
         Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
         return stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
     }
 
-    public static List<String> getItemLore(ItemStack stack) {
+    public List<String> getItemLore(ItemStack stack) {
         List<String> lore = new ArrayList<>();
         Objects.requireNonNull(stack, "Item stack cannot be null when getting lore");
         if (stack.hasItemMeta()) {
@@ -143,7 +158,7 @@ public class Common {
         return lore;
     }
 
-    public static ItemStack getItemInHand(Player player) {
+    public ItemStack getItemInHand(Player player) {
         return ServerVersion.isServerVersionBelow(ServerVersion.V1_9) ? player.getInventory().getItemInHand() : player.getInventory().getItemInMainHand();
     }
 
@@ -153,7 +168,7 @@ public class Common {
      * @param milliseconds is the total milliseconds
      * @return a readable date format
      */
-    public static String convertMillisToDate(long milliseconds) {
+    public String convertMillisToDate(long milliseconds) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
         Date date = new Date(milliseconds);
         return simpleDateFormat.format(date);

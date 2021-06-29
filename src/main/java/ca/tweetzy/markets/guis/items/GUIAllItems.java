@@ -77,7 +77,7 @@ public class GUIAllItems extends Gui {
                 setButton(slot, ConfigItemUtil.build(item, Settings.GUI_ALL_ITEMS_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
                     put("%item_name%", Common.getItemName(item));
                     put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
-                    put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+                    put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
                 }}), e -> {
                     if (this.isEditing) {
                         Common.handleMarketItemEdit(e, this.market, marketItem, null);

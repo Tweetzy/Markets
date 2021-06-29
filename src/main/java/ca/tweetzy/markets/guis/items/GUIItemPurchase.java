@@ -124,7 +124,7 @@ public class GUIItemPurchase extends Gui {
         setButton(3, 4, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%purchase_quantity%", purchaseQty);
             put("%stack_price%", String.format("%,.2f", marketItem.getPrice()));
-            put("%market_item_price_for_stack%", marketItem.isPriceForStack());
+            put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
             put("%purchase_price%", String.format("%,.2f", marketItem.isPriceForStack() ? marketItem.getPrice() : purchaseQty * marketItem.getPrice()));
         }}), e -> {
             if (e.clickType == ClickType.LEFT) {
@@ -145,13 +145,14 @@ public class GUIItemPurchase extends Gui {
         int originalSize = item.getAmount();
 
         double price = foundItem.isPriceForStack() ? foundItem.getPrice() : this.purchaseQty * foundItem.getPrice();
+        double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
 
-        if (!Markets.getInstance().getEconomyManager().has(buyer, price)) {
+        if (!Markets.getInstance().getEconomyManager().has(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)) {
             Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(buyer);
             return;
         }
 
-        MarketItemPurchaseEvent marketItemPurchaseEvent = new MarketItemPurchaseEvent(foundMarket, foundItem, price, this.purchaseQty);
+        MarketItemPurchaseEvent marketItemPurchaseEvent = new MarketItemPurchaseEvent(foundMarket, foundItem, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price, this.purchaseQty);
         Bukkit.getPluginManager().callEvent(marketItemPurchaseEvent);
         if (marketItemPurchaseEvent.isCancelled()) return;
 
@@ -175,19 +176,21 @@ public class GUIItemPurchase extends Gui {
                     buyer.getUniqueId(),
                     item,
                     this.purchaseQty,
-                    price
+                    Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price
             ));
         }
     }
 
     private void transferMoney(UUID seller, Player buyer, double price) {
-        OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
-        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, price);
-        Markets.getInstance().getEconomyManager().withdrawPlayer(buyer, price);
+        double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
 
-        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", price)).sendPrefixedMessage(buyer);
+        OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
+        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ?  price : price - totalTax);
+        Markets.getInstance().getEconomyManager().withdrawPlayer(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price);
+
+        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)).sendPrefixedMessage(buyer);
         if (theSeller.isOnline()) {
-            Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", price)).sendPrefixedMessage(theSeller.getPlayer());
+            Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ?  price : price - totalTax)).sendPrefixedMessage(theSeller.getPlayer());
         }
     }
 }

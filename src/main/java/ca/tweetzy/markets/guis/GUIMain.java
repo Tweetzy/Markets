@@ -64,6 +64,10 @@ public class GUIMain extends Gui {
                     return;
                 }
 
+                if (!Common.chargeCreationFee(player)) {
+                    return;
+                }
+
                 market = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
 
                 MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);

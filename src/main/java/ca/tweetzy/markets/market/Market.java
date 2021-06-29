@@ -31,6 +31,7 @@ public class Market {
     private long createdAt;
     private long updatedAt;
 
+    private List<MarketRating> ratings;
     private List<MarketCategory> categories;
 
     public Market(UUID id, UUID owner, String ownerName, String name, MarketType marketType) {
@@ -43,6 +44,7 @@ public class Market {
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
         this.categories = new ArrayList<>();
+        this.ratings = new ArrayList<>();
         this.open = true;
     }
 

@@ -29,6 +29,15 @@ public class Settings {
     public static final ConfigSetting AUTO_CREATE_MARKET = new ConfigSetting(config, "setting.auto create market", true, "If a player tries to access a the market menu without owning a market", "should markets automatically create a market for them?");
     public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "setting.auto save.enabled", true, "Should markets automatically save market data?");
     public static final ConfigSetting AUTO_SAVE_DELAY = new ConfigSetting(config, "setting.auto save.delay", 900, "How often (in seconds) should markets save data?");
+    public static final ConfigSetting LIMIT_MARKET_ITEMS_BY_PERMISSION = new ConfigSetting(config, "setting.limit total market items by permission", true, "If enabled, markets will limit the total amount of items a player can have in their market based on their permission");
+    public static final ConfigSetting DEFAULT_MAX_ALLOWED_MARKET_ITEMS = new ConfigSetting(config, "setting.default max allowed market items", 64, "If limit total market items by permission is enabled, this is will be the default max allowed amount of items (individual stacks)");
+
+    public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
+    public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
+
+    public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", true, "If enabled, when a sale is made, percentage of the sale will be removed / added");
+    public static final ConfigSetting TAX_BUYER_INSTEAD_OF_SELLER = new ConfigSetting(config, "setting.tax.tax buyer instead of seller", true, "If enabled, markets will charge the buyer tax instead of the seller");
+    public static final ConfigSetting TAX_AMOUNT = new ConfigSetting(config, "setting.tax.amount", 13, "This is a percentage, ex. 13 -> 13% tax");
 
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");

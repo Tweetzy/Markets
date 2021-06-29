@@ -6,11 +6,13 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -49,6 +51,16 @@ public class CommandAddItem extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        // check the max allowed items
+        if (Settings.LIMIT_MARKET_ITEMS_BY_PERMISSION.getBoolean()) {
+            int maxAllowedItems = MarketsAPI.getInstance().maxAllowedMarketItems(player);
+            int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
+            if (totalItemsInMarket >= maxAllowedItems) {
+                Markets.getInstance().getLocale().getMessage("at_max_items_limit").sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+        }
+
         ItemStack heldItem = Common.getItemInHand(player).clone();
         if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
             Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
@@ -80,6 +92,13 @@ public class CommandAddItem extends AbstractCommand {
         boolean isPriceForStack = args.length == 3 && Arrays.asList("yes", "true", "Yes", "True").contains(args[2]);
         // if the item qty is 1, then the price will have to be for the entire stack
         if (heldItem.getAmount() == 1) isPriceForStack = true;
+        List<String> commandFlags = MarketsAPI.getInstance().getCommandFlags(args);
+
+        if (commandFlags.contains("-c")) {
+            Bukkit.broadcastMessage("using item currency");
+            Bukkit.broadcastMessage("price is for stack: " + isPriceForStack);
+            return ReturnType.FAILURE;
+        }
 
         MarketItem marketItem = new MarketItem(marketCategory, heldItem, Double.parseDouble(args[1]), isPriceForStack);
         MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);

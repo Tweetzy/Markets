@@ -23,6 +23,7 @@ public class LocaleSettings {
         languageNodes.put("not_a_number", "&cPlease enter a valid number");
         languageNodes.put("price_is_zero_or_less", "&cPlease enter a price greater than 0");
         languageNodes.put("not_enough_money", "&cYou do not have enough money!");
+        languageNodes.put("not_enough_money_create", "&cYou do not have enough money to create a market!");
         languageNodes.put("player_does_not_have_funds", "&4%player% &cdoes not have enough money to pay!");
         languageNodes.put("not_enough_items", "&cYou do not have enough items to fulfill the request.");
         languageNodes.put("money_remove", "&c&l- $%price%");
@@ -44,6 +45,7 @@ public class LocaleSettings {
         languageNodes.put("created_market", "&aYou're now the owner of your very own market!");
         languageNodes.put("created_category", "&aYou created a new category for your market called&f: &2%market_category_name%");
         languageNodes.put("added_item_to_category", "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%");
+        languageNodes.put("at_max_items_limit", "&cYou are not allowed to add any more items to your market");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -56,6 +58,9 @@ public class LocaleSettings {
         languageNodes.put("updated_category_description", "&aSuccessfully updated category description.");
         languageNodes.put("updated_category_icon", "&aSuccessfully updated category icon.");
 
+        languageNodes.put("misc.price is for stack.true", "True");
+        languageNodes.put("misc.price is for stack.false", "False");
+        languageNodes.put("misc.default category description", "Default Category Description");
 
         languageNodes.put("command_syntax.add_category", "add category <name> [description]");
         languageNodes.put("command_syntax.add_item", "add item <category> <price> [priceIsForStack]");

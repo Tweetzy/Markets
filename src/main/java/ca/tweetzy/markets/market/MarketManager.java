@@ -7,7 +7,6 @@ import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class MarketManager {
     }
 
     public Market getMarketByPlayer(Player player) {
-       return this.markets.stream().filter(market -> market.getOwner().equals(player.getUniqueId())).findFirst().orElse(null);
+        return this.markets.stream().filter(market -> market.getOwner().equals(player.getUniqueId())).findFirst().orElse(null);
     }
 
     public Market getMarketByPlayerName(String player) {
@@ -113,12 +112,22 @@ public class MarketManager {
         Markets.getInstance().getData().set(node + ".categories", null);
         Markets.getInstance().getData().set(node + ".items", null);
 
+        if (!market.getRatings().isEmpty()) {
+            market.getRatings().forEach(rating -> {
+                Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".rater", rating.getRater().toString());
+                Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".stars", rating.getStars());
+                Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".message", rating.getMessage());
+            });
+        }
+
         if (!market.getCategories().isEmpty()) {
             market.getCategories().forEach(category -> {
                 Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".name", category.getName());
                 Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".display name", category.getDisplayName());
                 Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".description", category.getDescription());
                 Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".icon", category.getIcon().name());
+                Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".sale.active", category.isSaleActive());
+                Markets.getInstance().getData().set(node + ".categories." + category.getId().toString() + ".sale.amount", category.getSaleDiscount());
 
                 category.getItems().forEach(item -> {
                     if (item != null) {
@@ -126,6 +135,8 @@ public class MarketManager {
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".item", item.getItemStack());
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".price", item.getPrice());
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".price for stack", item.isPriceForStack());
+                        Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".currency item", item.getCurrencyItem());
+                        Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".use item currency", item.isUseItemCurrency());
                     }
                 });
 
@@ -147,6 +158,22 @@ public class MarketManager {
 
                 ConfigurationSection categories = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories");
                 ConfigurationSection items = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items");
+                ConfigurationSection ratings = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings");
+
+                if (ratings != null && ratings.getKeys(false).size() != 0) {
+                    List<MarketRating> marketRatings = new ArrayList<>();
+                    Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings").getKeys(false).forEach(rating -> {
+                        marketRatings.add(new MarketRating(
+                                UUID.fromString(rating),
+                                UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".rater")),
+                                Markets.getInstance().getData().getInt("markets." + marketId + ".ratings." + rating + ".stars"),
+                                Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".message")
+                        ));
+                    });
+
+                    market.setRatings(marketRatings);
+                }
+
                 if (categories != null && categories.getKeys(false).size() != 0) {
                     List<MarketItem> marketItems = new ArrayList<>();
                     if (items != null && items.getKeys(false).size() != 0) {
@@ -154,7 +181,9 @@ public class MarketManager {
                             marketItems.add(new MarketItem(
                                     UUID.fromString(marketItem),
                                     Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".item"),
+                                    Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".currency item"),
                                     Markets.getInstance().getData().getDouble("markets." + marketId + ".items." + marketItem + ".price"),
+                                    Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".use item currency"),
                                     Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".price for stack"),
                                     UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".items." + marketItem + ".category"))
                             ));
@@ -169,11 +198,14 @@ public class MarketManager {
                                 Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".display name"),
                                 Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".description"),
                                 XMaterial.matchXMaterial(Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".icon")).get().parseItem(),
-                                marketItems.stream().filter(item -> item.getCategoryId().equals(UUID.fromString(categoryNode))).collect(Collectors.toList())
+                                marketItems.stream().filter(item -> item.getCategoryId().equals(UUID.fromString(categoryNode))).collect(Collectors.toList()),
+                                Markets.getInstance().getData().getBoolean("markets." + marketId + ".categories." + categoryNode + ".sale.active"),
+                                Markets.getInstance().getData().getDouble("markets." + marketId + ".categories." + categoryNode + ".sale.amount")
                         ));
                     });
                     market.setCategories(marketCategories);
                 }
+
                 addMarket(market);
             });
         }).execute();
