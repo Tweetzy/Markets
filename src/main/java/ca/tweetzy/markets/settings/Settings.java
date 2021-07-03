@@ -450,6 +450,15 @@ public class Settings {
     public static final ConfigSetting GUI_CUSTOM_CURRENCY_VIEW_TITLE = new ConfigSetting(config, "guis.custom currency view.title", "&eRequired Currency");
     public static final ConfigSetting GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM = new ConfigSetting(config, "guis.custom currency view.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
+    /*
+   ==================================
+        PAYMENT COLLECTION GUI
+   ==================================
+    */
+    public static final ConfigSetting GUI_PAYMENT_COLLECTION_TITLE = new ConfigSetting(config, "guis.payment collection.title", "&ePayment Collection");
+    public static final ConfigSetting GUI_PAYMENT_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.payment collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+
     public static void setup() {
         config.load();
         config.setAutoremove(true).setAutosave(true);

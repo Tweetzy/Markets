@@ -54,7 +54,8 @@ public class LocaleSettings {
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
-        languageNodes.put("cannot_fulfill_own ", "&cYou cannot fulfill your own request");
+        languageNodes.put("cannot_fulfill_own", "&cYou cannot fulfill your own request");
+        languageNodes.put("no_payments_to_collect", "&cYou do not have any payments to collect!");
         languageNodes.put("updated_market_name", "&aSuccessfully updated market name");
         languageNodes.put("updated_market_description", "&aSuccessfully updated market description");
         languageNodes.put("updated_market_to_close", "&aSuccessfully closed your market");
@@ -82,6 +83,7 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.remove", "remove");
         languageNodes.put("command_syntax.confiscate", "confiscate <player>");
         languageNodes.put("command_syntax.block_item", "block item [list]");
+        languageNodes.put("command_syntax.payments", "payments [collect]");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -97,6 +99,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.remove", "Delete your market");
         languageNodes.put("command_description.confiscate", "Confiscate an entire market's items");
         languageNodes.put("command_description.block_item", "Blacklist an item or view all blocked items.");
+        languageNodes.put("command_description.payments", "Collect any payments of custom currency");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");

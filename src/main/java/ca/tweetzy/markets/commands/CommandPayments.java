@@ -3,12 +3,13 @@ package ca.tweetzy.markets.commands;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.guis.GUIPaymentCollection;
 import ca.tweetzy.markets.transaction.Payment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -25,18 +26,32 @@ public class CommandPayments extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
-        Markets.newChain().asyncFirst(() -> Markets.getInstance().getTransactionManger().getPayments(player.getUniqueId())).syncLast((data) -> {
-            for (Payment payment : data) {
-                PlayerUtils.giveItem(player, payment.getItem());
-                Markets.getInstance().getTransactionManger().removePayment(payment);
-            }
-        }).execute();
+
+        if (args.length == 0) {
+            Markets.getInstance().getGuiManager().showGUI(player, new GUIPaymentCollection(player));
+            return ReturnType.SUCCESS;
+        }
+
+        if (args.length == 1 && args[0].equalsIgnoreCase("collect")) {
+            Markets.newChain().asyncFirst(() -> Markets.getInstance().getTransactionManger().getPayments(player.getUniqueId())).syncLast((data) -> {
+                if (data.isEmpty()) {
+                    Markets.getInstance().getLocale().getMessage("no_payments_to_collect").sendPrefixedMessage(player);
+                    return;
+                }
+
+                for (Payment payment : data) {
+                    PlayerUtils.giveItem(player, payment.getItem());
+                    Markets.getInstance().getTransactionManger().removePayment(payment);
+                }
+            }).execute();
+        }
 
         return ReturnType.SUCCESS;
     }
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
+        if (args.length == 1) return Collections.singletonList("collect");
         return null;
     }
 
@@ -47,11 +62,11 @@ public class CommandPayments extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "payments";
+        return Markets.getInstance().getLocale().getMessage("command_syntax.payments").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Collect any custom currency payments";
+        return Markets.getInstance().getLocale().getMessage("command_description.payments").getMessage();
     }
 }
