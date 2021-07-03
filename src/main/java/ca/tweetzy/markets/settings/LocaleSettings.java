@@ -20,6 +20,7 @@ public class LocaleSettings {
         languageNodes.put("general.reloaded", "&aMarkets has been reloaded (%value%ms)");
 
         languageNodes.put("nothing_in_hand", "&cYou aren't holding anything in your hand!");
+        languageNodes.put("air.currency", "&cYou cannot use air as the currency!");
         languageNodes.put("not_a_number", "&cPlease enter a valid number");
         languageNodes.put("price_is_zero_or_less", "&cPlease enter a price greater than 0");
         languageNodes.put("not_enough_money", "&cYou do not have enough money!");
@@ -46,6 +47,7 @@ public class LocaleSettings {
         languageNodes.put("created_category", "&aYou created a new category for your market called&f: &2%market_category_name%");
         languageNodes.put("added_item_to_category", "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%");
         languageNodes.put("at_max_items_limit", "&cYou are not allowed to add any more items to your market");
+        languageNodes.put("click_currency_item", "&aPlease left/right click the item you wish to use as currency for this market item.");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -57,6 +59,7 @@ public class LocaleSettings {
         languageNodes.put("updated_category_name", "&aSuccessfully updated category display name.");
         languageNodes.put("updated_category_description", "&aSuccessfully updated category description.");
         languageNodes.put("updated_category_icon", "&aSuccessfully updated category icon.");
+        languageNodes.put("updated_market_item_currency", "&aSuccessfully currency for market item.");
 
         languageNodes.put("misc.price is for stack.true", "True");
         languageNodes.put("misc.price is for stack.false", "False");

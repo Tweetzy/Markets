@@ -19,7 +19,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,6 @@ public class CommandAddItem extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 2) return ReturnType.SYNTAX_ERROR;
         Player player = (Player) sender;
 
         Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
@@ -61,6 +62,12 @@ public class CommandAddItem extends AbstractCommand {
             }
         }
 
+        if (args.length == 0) {
+            // open the add menu
+            Bukkit.broadcastMessage("[Debug] - Open the add menu");
+            return ReturnType.SUCCESS;
+        }
+
         ItemStack heldItem = Common.getItemInHand(player).clone();
         if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
             Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
@@ -72,38 +79,52 @@ public class CommandAddItem extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        MarketCategory marketCategory = market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[0])).findFirst().orElse(null);
+        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        Iterator<String> argumentIterator = arguments.listIterator();
+
+        boolean useCustomCurrency = !MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
+        boolean isPriceForStack = false;
+        String category = "";
+        double price = 0;
+
+        while(argumentIterator.hasNext()) {
+            String next = argumentIterator.next();
+            if (NumberUtils.isDouble(next)) {
+                price = Double.parseDouble(next);
+                argumentIterator.remove();
+            } else if (!NumberUtils.isDouble(next) && !Arrays.asList("yes", "true", "Yes", "True", "no", "No", "false", "False").contains(next) && MarketsAPI.getInstance().isAlphaNumeric(next)) {
+                category = next;
+                argumentIterator.remove();
+            } else if (Arrays.asList("yes", "true", "Yes", "True").contains(next)) {
+                isPriceForStack = true;
+            }
+        }
+
+        final String finalCategory = category;
+        MarketCategory marketCategory = market.getCategories().stream().filter(cat -> cat.getName().equalsIgnoreCase(finalCategory)).findFirst().orElse(null);
 
         if (marketCategory == null) {
-            Markets.getInstance().getLocale().getMessage("market_category_not_found").processPlaceholder("market_category_name", args[0]).sendPrefixedMessage(player);
+            Markets.getInstance().getLocale().getMessage("market_category_not_found").processPlaceholder("market_category_name", finalCategory).sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
-        if (!NumberUtils.isDouble(args[1])) {
-            Markets.getInstance().getLocale().getMessage("not_a_number").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
-
-        if (Double.parseDouble(args[1]) <= 0) {
+        if (price <= 0) {
             Markets.getInstance().getLocale().getMessage("price_is_zero_or_less").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
-        boolean isPriceForStack = args.length == 3 && Arrays.asList("yes", "true", "Yes", "True").contains(args[2]);
-        // if the item qty is 1, then the price will have to be for the entire stack
         if (heldItem.getAmount() == 1) isPriceForStack = true;
-        List<String> commandFlags = MarketsAPI.getInstance().getCommandFlags(args);
 
-        if (commandFlags.contains("-c")) {
-            Bukkit.broadcastMessage("using item currency");
-            Bukkit.broadcastMessage("price is for stack: " + isPriceForStack);
-            return ReturnType.FAILURE;
-        }
-
-        MarketItem marketItem = new MarketItem(marketCategory, heldItem, Double.parseDouble(args[1]), isPriceForStack);
+        MarketItem marketItem = new MarketItem(marketCategory, heldItem, price, isPriceForStack);
         MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);
         Bukkit.getPluginManager().callEvent(marketItemAddEvent);
         if (marketItemAddEvent.isCancelled()) return ReturnType.FAILURE;
+
+        if (useCustomCurrency) {
+            Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(player.getUniqueId(), market, marketCategory, marketItem);
+            Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(player);
+            return ReturnType.SUCCESS;
+        }
 
         market.setUpdatedAt(System.currentTimeMillis());
         Markets.getInstance().getMarketManager().addItemToCategory(marketCategory, marketItem);

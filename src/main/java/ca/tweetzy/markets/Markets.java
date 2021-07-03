@@ -15,6 +15,7 @@ import ca.tweetzy.markets.economy.EconomyManager;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
+import ca.tweetzy.markets.market.MarketPlayerManager;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestManager;
 import ca.tweetzy.markets.settings.LocaleSettings;
@@ -56,6 +57,9 @@ public class Markets extends TweetyPlugin {
 
     @Getter
     private TransactionManger transactionManger;
+
+    @Getter
+    private MarketPlayerManager marketPlayerManager;
 
     @Getter
     private RequestManager requestManager;
@@ -107,8 +111,10 @@ public class Markets extends TweetyPlugin {
         this.guiManager = new GuiManager(this);
         this.commandManager = new CommandManager(this);
         this.marketManager = new MarketManager();
+        this.marketPlayerManager = new MarketPlayerManager();
         this.transactionManger = new TransactionManger();
         this.requestManager = new RequestManager();
+
         this.guiManager.init();
         this.marketManager.loadMarkets();
         this.transactionManger.loadTransactions();

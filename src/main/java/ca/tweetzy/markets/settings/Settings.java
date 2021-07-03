@@ -201,6 +201,16 @@ public class Settings {
             "&7Right-Click to toggle price per stack"
     ));
 
+    public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ITEM_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.category edit.items.market item.lore custom currency", Arrays.asList(
+            "&7Price&f: &fx%market_item_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Left-Click to edit price",
+            "&7Middle-Click to remove item from market",
+            "&7Right-Click to toggle price per stack",
+            "&7Shift-Right Click to edit currency item."
+    ));
+
     /*
    ==================================
         ALL ITEMS VIEW GUI
@@ -221,11 +231,30 @@ public class Settings {
             "&7Right-Click to toggle price per stack"
     ));
 
+    public static final ConfigSetting GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.all items.items.market item.edit lore custom currency", Arrays.asList(
+            "&7Price&f: &a$%market_item_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Left-Click to edit price",
+            "&7Middle-Click to remove item from market",
+            "&7Right-Click to toggle price per stack",
+            "&7Shift-Right Click to edit currency item."
+    ));
+
     public static final ConfigSetting GUI_ALL_ITEMS_ITEMS_ITEM_LORE = new ConfigSetting(config, "guis.all items.items.market item.lore", Arrays.asList(
             "&7Price&f: &a$%market_item_price%",
             "&7Price is for stack&f: &e%market_item_price_for_stack%",
             "",
             "&7Click to purchase this item."
+    ));
+
+    public static final ConfigSetting GUI_ALL_ITEMS_ITEMS_ITEM_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.all items.items.market item.lore custom currency", Arrays.asList(
+            "&7Price&f: &fx%market_item_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Click to purchase this item.",
+            "&e(!) This is item has a custom currency",
+            "&eRight-Click to view the required currency."
     ));
 
     /*
@@ -274,6 +303,15 @@ public class Settings {
             "&7Price is for stack&f: &e%market_item_price_for_stack%",
             "",
             "&7Click to purchase this item."
+    ));
+
+    public static final ConfigSetting GUI_MARKET_CATEGORY_ITEM_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.market category.item lore custom currency", Arrays.asList(
+            "&7Price&f: &fx%market_item_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Click to purchase this item.",
+            "&e(!) This is item has a custom currency",
+            "&eRight-Click to view the required currency."
     ));
 
     /*
@@ -393,6 +431,14 @@ public class Settings {
             "",
             "&7Click to remove item from blacklist"
     ));
+
+    /*
+   ==================================
+        CUSTOM CURRENCY VIEW GUI
+   ==================================
+    */
+    public static final ConfigSetting GUI_CUSTOM_CURRENCY_VIEW_TITLE = new ConfigSetting(config, "guis.custom currency view.title", "&eRequired Currency");
+    public static final ConfigSetting GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM = new ConfigSetting(config, "guis.custom currency view.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
     public static void setup() {
         config.load();

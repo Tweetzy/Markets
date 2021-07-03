@@ -24,6 +24,7 @@ public class MarketsAPI {
 
     private static MarketsAPI instance;
     private final Pattern maxAllowedMarketPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
+    private final Pattern alphaNumericPattern = Pattern.compile("^[a-zA-Z0-9]*$");
 
     public static MarketsAPI getInstance() {
         if (instance == null) {
@@ -127,5 +128,16 @@ public class MarketsAPI {
         }
 
         return maxAllowedItems;
+    }
+
+    /**
+     * Check if a string is alphanumeric
+     *
+     * @param string is the phrase being checked
+     * @return true if the provided string is alphanumeric
+     */
+    public boolean isAlphaNumeric(String string) {
+        Matcher matcher = alphaNumericPattern.matcher(string);
+        return matcher.matches();
     }
 }

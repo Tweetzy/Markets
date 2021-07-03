@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.guis.GUICustomCurrencyView;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;
@@ -72,22 +73,33 @@ public class GUIAllItems extends Gui {
             for (MarketItem marketItem : data) {
                 ItemStack item = marketItem.getItemStack().clone();
                 List<String> lore = Common.getItemLore(item);
-                lore.addAll(this.isEditing ? Settings.GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE.getStringList() : Settings.GUI_ALL_ITEMS_ITEMS_ITEM_LORE.getStringList());
+                lore.addAll(this.isEditing ? marketItem.isUseItemCurrency() ? Settings.GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ALL_ITEMS_ITEMS_ITEM_EDIT_LORE.getStringList() : marketItem.isUseItemCurrency() ? Settings.GUI_ALL_ITEMS_ITEMS_ITEM_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ALL_ITEMS_ITEMS_ITEM_LORE.getStringList());
 
                 setButton(slot, ConfigItemUtil.build(item, Settings.GUI_ALL_ITEMS_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
                     put("%item_name%", Common.getItemName(item));
-                    put("%market_item_price%", String.format("%,.2f", marketItem.getPrice()));
+                    put("%market_item_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
                     put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
+                    put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
                 }}), e -> {
                     if (this.isEditing) {
                         Common.handleMarketItemEdit(e, this.market, marketItem, null);
                     } else {
-                        if (this.market.getOwner().equals(e.player.getUniqueId())) {
-                            Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
-                            return;
-                        }
+                        switch (e.clickType) {
+                            case LEFT:
+                                if (this.market.getOwner().equals(e.player.getUniqueId())) {
+                                    Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
+                                    return;
+                                }
 
-                        e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
+                                e.manager.showGUI(e.player, new GUIItemPurchase(this.market, marketItem));
+                                break;
+                            case RIGHT:
+                                if (!marketItem.isUseItemCurrency()) {
+                                    return;
+                                }
+                                e.manager.showGUI(e.player, new GUICustomCurrencyView(this.market, null, marketItem, true));
+                                break;
+                        }
                     }
                 });
 

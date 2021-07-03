@@ -82,6 +82,12 @@ public class Common {
                 market.setUpdatedAt(System.currentTimeMillis());
                 e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory));
                 break;
+            case SHIFT_RIGHT:
+                if (!marketItem.isUseItemCurrency()) return;
+                e.event.setCancelled(true);
+                Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(e.player.getUniqueId(), market, marketCategory, marketItem);
+                Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(e.player);
+                break;
         }
     }
 

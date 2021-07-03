@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
  */
 public class MarketManager {
 
-    private final List<Market> markets = new ArrayList<>();
-    private final List<BlockedItem> blockedItems = new ArrayList<>();
+    private final List<Market> markets = Collections.synchronizedList(new ArrayList<>());
+    private final List<BlockedItem> blockedItems = Collections.synchronizedList(new ArrayList<>());
 
     public void addMarket(Market market) {
         Objects.requireNonNull(market, "Cannot add a null Market to market list");
