@@ -31,6 +31,7 @@ public class Settings {
     public static final ConfigSetting AUTO_SAVE_DELAY = new ConfigSetting(config, "setting.auto save.delay", 900, "How often (in seconds) should markets save data?");
     public static final ConfigSetting LIMIT_MARKET_ITEMS_BY_PERMISSION = new ConfigSetting(config, "setting.limit total market items by permission", true, "If enabled, markets will limit the total amount of items a player can have in their market based on their permission");
     public static final ConfigSetting DEFAULT_MAX_ALLOWED_MARKET_ITEMS = new ConfigSetting(config, "setting.default max allowed market items", 64, "If limit total market items by permission is enabled, this is will be the default max allowed amount of items (individual stacks)");
+    public static final ConfigSetting ALLOW_OWNER_TO_BUY_OWN_ITEMS = new ConfigSetting(config, "setting.allow owner to buy own items", false, "For whatever reason, if you want the market owner to buy their own items, enable this.");
 
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
@@ -345,6 +346,15 @@ public class Settings {
             "&7Stack Price&f: &a$%stack_price%",
             "&7Price is for stack&f: &e%market_item_price_for_stack%",
             "&7Final Price&f: &a$%purchase_price%",
+            "",
+            "&7Click to make purchase."
+    ));
+
+    public static final ConfigSetting GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.item purchase.items.purchase.lore custom currency", Arrays.asList(
+            "&7Quantity&f: &e%purchase_quantity%",
+            "&7Stack Price&f: x%stack_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "&7Final Price&f: x%purchase_price% %market_item_currency%",
             "",
             "&7Click to make purchase."
     ));

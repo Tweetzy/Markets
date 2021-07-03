@@ -79,7 +79,7 @@ public class GUICategoryItems extends Gui {
                 }}), e -> {
                     switch(e.clickType) {
                         case LEFT:
-                            if (this.market.getOwner().equals(e.player.getUniqueId())) {
+                            if (this.market.getOwner().equals(e.player.getUniqueId()) && !Settings.ALLOW_OWNER_TO_BUY_OWN_ITEMS.getBoolean()) {
                                 Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);
                                 return;
                             }

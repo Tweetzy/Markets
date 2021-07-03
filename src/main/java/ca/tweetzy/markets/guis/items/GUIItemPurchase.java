@@ -5,13 +5,17 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemPurchaseEvent;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
+import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.transaction.Transaction;
+import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
@@ -121,11 +125,12 @@ public class GUIItemPurchase extends Gui {
     }
 
     private void addPurchaseInfoItem() {
-        setButton(3, 4, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(3, 4, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), marketItem.isUseItemCurrency() ? Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%purchase_quantity%", purchaseQty);
-            put("%stack_price%", String.format("%,.2f", marketItem.getPrice()));
+            put("%stack_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
             put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
-            put("%purchase_price%", String.format("%,.2f", marketItem.isPriceForStack() ? marketItem.getPrice() : purchaseQty * marketItem.getPrice()));
+            put("%purchase_price%", marketItem.isUseItemCurrency() ? marketItem.isPriceForStack() ? Math.round(marketItem.getPrice()) : Math.round(purchaseQty * marketItem.getPrice()) : String.format("%,.2f", marketItem.isPriceForStack() ? marketItem.getPrice() : purchaseQty * marketItem.getPrice()));
+            put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
         }}), e -> {
             if (e.clickType == ClickType.LEFT) {
                 handlePurchase(e.player, this.market, this.market.getCategories().stream().filter(c -> this.marketItem.getCategoryId().equals(c.getId())).findFirst().get(), this.marketItem);
@@ -147,16 +152,27 @@ public class GUIItemPurchase extends Gui {
         double price = foundItem.isPriceForStack() ? foundItem.getPrice() : this.purchaseQty * foundItem.getPrice();
         double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
 
-        if (!Markets.getInstance().getEconomyManager().has(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)) {
-            Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(buyer);
-            return;
+        if (marketItem.isUseItemCurrency()) {
+            if (MarketsAPI.getInstance().getItemCountInPlayerInventory(buyer, marketItem.getCurrencyItem()) < (Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price + totalTax) : Math.round(price))) {
+                Markets.getInstance().getLocale().getMessage("not_enough_money_custom_currency").processPlaceholder("currency_item", Common.getItemName(marketItem.getCurrencyItem())).sendPrefixedMessage(buyer);
+                return;
+            }
+        } else {
+            if (!Markets.getInstance().getEconomyManager().has(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)) {
+                Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(buyer);
+                return;
+            }
         }
 
-        MarketItemPurchaseEvent marketItemPurchaseEvent = new MarketItemPurchaseEvent(foundMarket, foundItem, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price, this.purchaseQty);
+        MarketItemPurchaseEvent marketItemPurchaseEvent = new MarketItemPurchaseEvent(foundMarket, foundItem, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? foundItem.isUseItemCurrency() ? Math.round(price + totalTax) : price + totalTax : foundItem.isUseItemCurrency() ? Math.round(price) : price, this.purchaseQty);
         Bukkit.getPluginManager().callEvent(marketItemPurchaseEvent);
         if (marketItemPurchaseEvent.isCancelled()) return;
 
-        transferMoney(market.getOwner(), buyer, price);
+        if (foundItem.isUseItemCurrency()) {
+            transferCustomCurrency(market.getOwner(), buyer, foundItem, price);
+        } else {
+            transferMoney(market.getOwner(), buyer, price);
+        }
 
         if (foundItem.isPriceForStack() || originalSize - this.purchaseQty <= 0) {
             PlayerUtils.giveItem(buyer, item);
@@ -176,8 +192,40 @@ public class GUIItemPurchase extends Gui {
                     buyer.getUniqueId(),
                     item,
                     this.purchaseQty,
-                    Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price
+                    Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? foundItem.isUseItemCurrency() ? Math.round(price + totalTax) : price + totalTax : foundItem.isUseItemCurrency() ? Math.round(price) : Math.round(price)
             ));
+        }
+    }
+
+    private void transferCustomCurrency(UUID seller, Player buyer, MarketItem item, double price) {
+        double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
+        OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
+
+        ItemStack currency = item.getCurrencyItem().clone();
+
+        int maxStackSize = currency.getMaxStackSize();
+        int fullStacks = (int) (Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price - totalTax) : Math.round(price)) / maxStackSize;
+        int remainder = (int) (Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price - totalTax) : Math.round(price)) % maxStackSize;
+
+        ItemStack maxSizeCurrency = currency.clone();
+        ItemStack remainderCurrency = currency.clone();
+        maxSizeCurrency.setAmount(maxStackSize);
+        remainderCurrency.setAmount(remainder);
+
+        for (int i = 0; i < fullStacks; i++) {
+            Markets.getInstance().getTransactionManger().addPayment(new Payment(seller, maxSizeCurrency));
+        }
+
+        if (remainder != 0) {
+            currency.setAmount(remainder);
+            Markets.getInstance().getTransactionManger().addPayment(new Payment(seller, remainderCurrency));
+        }
+
+        MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(buyer, item.getCurrencyItem(), (int) (Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price + totalTax) : Math.round(price)));
+
+        Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price + totalTax) : Math.round(price)).processPlaceholder("currency_item", Common.getItemName(item.getCurrencyItem())).sendPrefixedMessage(buyer);
+        if (theSeller.isOnline()) {
+            Markets.getInstance().getLocale().getMessage("money_add_custom_currency").processPlaceholder("price", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? Math.round(price) : Math.round(price - totalTax)).processPlaceholder("currency_item", Common.getItemName(item.getCurrencyItem())).sendPrefixedMessage(theSeller.getPlayer());
         }
     }
 
@@ -185,12 +233,12 @@ public class GUIItemPurchase extends Gui {
         double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
 
         OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
-        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ?  price : price - totalTax);
+        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax);
         Markets.getInstance().getEconomyManager().withdrawPlayer(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price);
 
         Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)).sendPrefixedMessage(buyer);
         if (theSeller.isOnline()) {
-            Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ?  price : price - totalTax)).sendPrefixedMessage(theSeller.getPlayer());
+            Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax)).sendPrefixedMessage(theSeller.getPlayer());
         }
     }
 }

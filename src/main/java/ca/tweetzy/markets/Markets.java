@@ -20,6 +20,7 @@ import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestManager;
 import ca.tweetzy.markets.settings.LocaleSettings;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.transaction.TransactionManger;
 import co.aikar.taskchain.BukkitTaskChainFactory;
@@ -118,6 +119,7 @@ public class Markets extends TweetyPlugin {
         this.guiManager.init();
         this.marketManager.loadMarkets();
         this.transactionManger.loadTransactions();
+        this.transactionManger.loadPayments();
         this.requestManager.loadRequests();
         this.marketManager.loadBlockedItems();
 
@@ -131,6 +133,7 @@ public class Markets extends TweetyPlugin {
                 new CommandAddCategory(),
                 new CommandAddItem(),
                 new CommandRequest(),
+                new CommandPayments(),
                 new CommandSet(),
                 new CommandView(),
                 new CommandList(),
@@ -161,6 +164,7 @@ public class Markets extends TweetyPlugin {
         this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
         this.marketManager.saveBlockedItems();
         this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
+        this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
         this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
         getLogger().info("Market data has been automatically saved");
     }

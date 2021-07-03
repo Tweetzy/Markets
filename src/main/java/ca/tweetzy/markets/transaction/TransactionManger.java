@@ -4,6 +4,7 @@ import ca.tweetzy.markets.Markets;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -13,7 +14,25 @@ import java.util.*;
  */
 public class TransactionManger {
 
-    private final List<Transaction> transactions = new ArrayList<>();
+    private final List<Transaction> transactions = Collections.synchronizedList(new ArrayList<>());
+    private final List<Payment> payments = Collections.synchronizedList(new ArrayList<>());
+
+    public void addPayment(Payment payment) {
+        Objects.requireNonNull(payment, "Cannot add a null Payment to the payment list");
+        this.payments.add(payment);
+    }
+
+    public List<Payment> getPayments() {
+        return Collections.unmodifiableList(this.payments);
+    }
+
+    public List<Payment> getPayments(UUID to) {
+        return this.payments.stream().filter(payment -> payment.getTo().equals(to)).collect(Collectors.toList());
+    }
+
+    public void removePayment(Payment payment) {
+        this.payments.remove(payment);
+    }
 
     public void addTransaction(Transaction transaction) {
         Objects.requireNonNull(transaction, "Cannot add a null Transaction to transaction list");
@@ -28,10 +47,41 @@ public class TransactionManger {
         return Collections.unmodifiableList(this.transactions);
     }
 
+    public void savePayment(Payment payment) {
+        Objects.requireNonNull(payment, "Cannot save a null payment");
+        String node = "payment collection." + UUID.randomUUID().toString();
+        Markets.getInstance().getData().set(node + ".to", payment.getTo().toString());
+        Markets.getInstance().getData().set(node + ".item", payment.getItem());
+    }
+
+    public void savePayments(Payment... payments) {
+        Markets.newChain().sync(() -> {
+            Markets.getInstance().getData().set("payment collection", null);
+            for (Payment payment : payments) {
+                savePayment(payment);
+            }
+            Markets.getInstance().getData().save();
+        }).execute();
+    }
+
+    public void loadPayments() {
+        Markets.newChain().async(() -> {
+            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("payment collection");
+            if (section == null || section.getKeys(false).size() == 0) return;
+            Markets.getInstance().getData().getConfigurationSection("payment collection").getKeys(false).forEach(payment -> {
+                addPayment(new Payment(
+                        UUID.fromString(Markets.getInstance().getData().getString("payment collection." + payment + ".to")),
+                        Markets.getInstance().getData().getItemStack("payment collection." + payment + ".item")
+                ));
+            });
+        }).execute();
+    }
+
     public void saveTransactions(Transaction... transactions) {
         Markets.newChain().sync(() -> {
             for (Transaction transaction : transactions) {
-                if (Markets.getInstance().getData().contains("transactions." + transaction.getId().toString())) continue;
+                if (Markets.getInstance().getData().contains("transactions." + transaction.getId().toString()))
+                    continue;
                 saveTransaction(transaction);
             }
             Markets.getInstance().getData().save();

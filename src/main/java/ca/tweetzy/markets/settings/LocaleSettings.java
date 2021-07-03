@@ -24,11 +24,14 @@ public class LocaleSettings {
         languageNodes.put("not_a_number", "&cPlease enter a valid number");
         languageNodes.put("price_is_zero_or_less", "&cPlease enter a price greater than 0");
         languageNodes.put("not_enough_money", "&cYou do not have enough money!");
+        languageNodes.put("not_enough_money_custom_currency", "&cYou do not have enough %currency_item% &cto buy that.");
         languageNodes.put("not_enough_money_create", "&cYou do not have enough money to create a market!");
         languageNodes.put("player_does_not_have_funds", "&4%player% &cdoes not have enough money to pay!");
         languageNodes.put("not_enough_items", "&cYou do not have enough items to fulfill the request.");
         languageNodes.put("money_remove", "&c&l- $%price%");
         languageNodes.put("money_add", "&a&l+ $%price%");
+        languageNodes.put("money_remove_custom_currency", "&c&l- x%price% %currency_item%");
+        languageNodes.put("money_add_custom_currency", "&a&l+ x%price% %currency_item%");
         languageNodes.put("added_blocked_item", "&aAdded &2%item_name%&a to blacklist");
         languageNodes.put("item_is_blocked", "&cYou cannot request/sell this item");
         languageNodes.put("cannot_buy_from_own_market", "&cYou cannot buy from your own market!");
