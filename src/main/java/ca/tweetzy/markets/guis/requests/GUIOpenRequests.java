@@ -8,20 +8,17 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.request.Request;
+import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +58,7 @@ public class GUIOpenRequests extends Gui {
 
         if (!this.all) {
             setButton(5, 0, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-                Markets.getInstance().getRequestManager().deletePlayerRequests(this.player);
+//                Markets.getInstance().getRequestManager().deletePlayerRequests(this.player);
                 draw();
             });
 
@@ -71,7 +68,7 @@ public class GUIOpenRequests extends Gui {
         }
 
         Markets.newChain().asyncFirst(() -> {
-            this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getRequestsByPlayer(this.player, false);
+            this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getPlayerRequests(this.player);
             return this.playerRequests.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.playerRequests.size() / (double) 28L));
@@ -82,51 +79,30 @@ public class GUIOpenRequests extends Gui {
 
             int slot = 10;
             for (Request request : data) {
-                ItemStack item = request.getItem().clone();
+                ItemStack item = Common.getPlayerHead(Bukkit.getOfflinePlayer(request.getRequester()).getName());
 
-                List<String> lore = Common.getItemLore(item);
-                lore.addAll(this.all ? Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL.getStringList() : Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE.getStringList());
+                List<String> lore = new ArrayList<>(this.all ? Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL.getStringList() : Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE.getStringList());
 
-                setButton(slot, ConfigItemUtil.build(item, Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME.getString(), lore, request.getAmount(), new HashMap<String, Object>() {{
-                    put("%request_item_name%", Common.getItemName(item));
-                    put("%request_amount%", request.getAmount());
-                    put("%request_price%", String.format("%,.2f", request.getPrice()));
+                setButton(slot, ConfigItemUtil.build(item, Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME.getString(), lore, 1, new HashMap<String, Object>() {{
+                    put("%request_item%", Common.getItemName(request.getRequestedItems().get(0).getItem()));
+                    put("%request_item_name%", Common.getItemName(request.getRequestedItems().get(0).getItem()));
+                    put("%request_amount%", request.getRequestedItems().stream().mapToInt(RequestItem::getAmount).sum());
                     put("%request_requesting_player%", Bukkit.getOfflinePlayer(request.getRequester()).getName());
-                }}), ClickType.LEFT, e -> {
+                }}), e -> {
                     if (!this.all && e.clickType == ClickType.MIDDLE) {
                         Markets.getInstance().getRequestManager().deleteRequest(request);
                         draw();
                         return;
                     }
 
-                    if (request.getRequester().equals(this.player.getUniqueId())) {
-                        Markets.getInstance().getLocale().getMessage("cannot_fulfill_own").sendPrefixedMessage(this.player);
-                        return;
+                    if (e.clickType == ClickType.LEFT) {
+                        if (request.getRequester().equals(this.player.getUniqueId()) && !Settings.ALLOW_OWNER_FULFILL_REQUEST.getBoolean()) {
+                            Markets.getInstance().getLocale().getMessage("cannot_fulfill_own").sendPrefixedMessage(this.player);
+                            return;
+                        }
+
+                        e.manager.showGUI(e.player, new GUIRequestFulfillment(request));
                     }
-
-                    if (MarketsAPI.getInstance().getItemCountInPlayerInventory(this.player, request.getItem()) < request.getAmount()) {
-                        Markets.getInstance().getLocale().getMessage("not_enough_items").sendPrefixedMessage(this.player);
-                        return;
-                    }
-
-                    OfflinePlayer requester = Bukkit.getOfflinePlayer(request.getRequester());
-
-                    if (!Markets.getInstance().getEconomyManager().has(requester, request.getPrice())) {
-                        Markets.getInstance().getLocale().getMessage("player_does_not_have_funds").processPlaceholder("player", requester.getName()).sendPrefixedMessage(this.player);
-                        return;
-                    }
-
-                    Markets.getInstance().getEconomyManager().withdrawPlayer(requester, request.getPrice());
-                    Markets.getInstance().getEconomyManager().depositPlayer(this.player, request.getPrice());
-                    MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(this.player, request.getItem(), request.getAmount());
-                    request.setFulfilled(true);
-
-                    Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", request.getPrice())).sendPrefixedMessage(this.player);
-                    if (requester.isOnline()) {
-                        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", request.getPrice())).sendPrefixedMessage(requester.getPlayer());
-                    }
-
-                    e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
                 });
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;

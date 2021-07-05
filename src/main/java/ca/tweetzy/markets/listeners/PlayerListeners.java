@@ -8,6 +8,8 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketPlayer;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
+import ca.tweetzy.markets.request.Request;
+import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.structures.Triple;
 import ca.tweetzy.markets.utils.Common;
 import org.bukkit.entity.Player;
@@ -17,6 +19,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The current file has been created by Kiran Hart
@@ -73,5 +78,42 @@ public class PlayerListeners implements Listener {
         }
 
         Markets.getInstance().getMarketPlayerManager().removePlayerFromCustomCurrencyItem(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void addingRequestWithCustomCurrency(PlayerInteractEvent e) {
+        Player player = e.getPlayer();
+
+        if (!Markets.getInstance().getMarketPlayerManager().getAddingRequestCustomCurrencyItem().containsKey(player.getUniqueId()))
+            return;
+        if (e.getItem() == null || e.getItem().getType() == XMaterial.AIR.parseMaterial()) {
+            Markets.getInstance().getLocale().getMessage("air.currency").sendPrefixedMessage(player);
+            return;
+        }
+
+        ItemStack itemToBeUsedAsCurrency = e.getItem().clone();
+        itemToBeUsedAsCurrency.setAmount(1);
+
+        Triple<ItemStack, Integer, Double> toAdd = Markets.getInstance().getMarketPlayerManager().getPlayerAddingRequestCustomCurrencyItem(player.getUniqueId());
+
+        double priceForAll = toAdd.getThird();
+        double pricePerItem = priceForAll / toAdd.getSecond();
+        int maxStackSize = toAdd.getFirst().getMaxStackSize();
+        int fullStacks = toAdd.getSecond() / maxStackSize;
+        int remainder = toAdd.getSecond() % maxStackSize;
+
+        List<RequestItem> requestItems = new ArrayList<>();
+
+        for (int i = 0; i < fullStacks; i++) {
+            requestItems.add(new RequestItem(toAdd.getFirst(), itemToBeUsedAsCurrency, maxStackSize, pricePerItem * maxStackSize, false, true));
+        }
+
+        if (remainder != 0) {
+            requestItems.add(new RequestItem(toAdd.getFirst(), itemToBeUsedAsCurrency, remainder, pricePerItem * remainder, false, true));
+        }
+
+        Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), requestItems));
+        Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", toAdd.getSecond()).processPlaceholder("request_item_name", Common.getItemName(toAdd.getFirst())).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
+        Markets.getInstance().getMarketPlayerManager().removePlayerFromRequestCustomCurrencyItem(player.getUniqueId());
     }
 }

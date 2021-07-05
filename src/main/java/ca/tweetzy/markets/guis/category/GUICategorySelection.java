@@ -2,6 +2,7 @@ package ca.tweetzy.markets.guis.category;
 
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.market.Market;
@@ -39,7 +40,7 @@ public class GUICategorySelection extends Gui {
         this.item = item;
         this.currency = currency;
         setTitle(TextUtils.formatText(Settings.GUI_CATEGORY_SELECT_TITLE.getString()));
-        setDefaultItem(Settings.GUI_CATEGORY_SELECT_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_CATEGORY_SELECT_FILL_ITEM.getMaterial()));
         setAllowDrops(false);
         setAcceptsItems(false);
         setUseLockedCells(true);

@@ -4,14 +4,17 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.request.Request;
+import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class CommandRequest extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length != 2) return ReturnType.SYNTAX_ERROR;
+        if (args.length < 2) return ReturnType.SYNTAX_ERROR;
         Player player = (Player) sender;
 
         ItemStack heldItem = Common.getItemInHand(player).clone();
@@ -59,20 +62,31 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        boolean useCustomCurrency  = args.length == 3 && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
+
         double priceForAll = Double.parseDouble(args[1]);
         double pricePerItem = priceForAll / requestedAmount;
         int maxStackSize = heldItem.getMaxStackSize();
         int fullStacks = requestedAmount / maxStackSize;
         int remainder = requestedAmount % maxStackSize;
 
+        if (useCustomCurrency) {
+            Markets.getInstance().getMarketPlayerManager().addPlayerToRequestCustomCurrencyItem(player.getUniqueId(), heldItem, requestedAmount, priceForAll);
+            Markets.getInstance().getLocale().getMessage("click_currency_item_request").sendPrefixedMessage(player);
+            return ReturnType.SUCCESS;
+        }
+
+        List<RequestItem> requestItems = new ArrayList<>();
+
         for (int i = 0; i < fullStacks; i++) {
-            Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), heldItem, maxStackSize, pricePerItem * maxStackSize));
+            requestItems.add(new RequestItem(heldItem, XMaterial.AIR.parseItem(), maxStackSize, pricePerItem * maxStackSize, false, false));
         }
 
         if (remainder != 0) {
-            Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), heldItem, remainder, pricePerItem * remainder));
+            requestItems.add(new RequestItem(heldItem, XMaterial.AIR.parseItem(), remainder, pricePerItem * remainder, false, false));
         }
 
+        Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), requestItems));
         Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
         return ReturnType.SUCCESS;
     }

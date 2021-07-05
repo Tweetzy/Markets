@@ -23,7 +23,8 @@ public class MarketsAPI {
     }
 
     private static MarketsAPI instance;
-    private final Pattern maxAllowedMarketPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
+    private final Pattern maxAllowedMarketItemPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
+    private final Pattern maxAllowedRequestsPattern = Pattern.compile("markets\\.maxallowedrequests\\.(\\d+)");
     private final Pattern alphaNumericPattern = Pattern.compile("^[a-zA-Z0-9]*$");
 
     public static MarketsAPI getInstance() {
@@ -112,7 +113,7 @@ public class MarketsAPI {
     public int maxAllowedMarketItems(Player player) {
         int maxAllowedItems = Settings.DEFAULT_MAX_ALLOWED_MARKET_ITEMS.getInt();
         int max = player.getEffectivePermissions().stream().map(i -> {
-            Matcher matcher = maxAllowedMarketPattern.matcher(i.getPermission());
+            Matcher matcher = maxAllowedMarketItemPattern.matcher(i.getPermission());
             if (matcher.matches()) {
                 return Integer.parseInt(matcher.group(1));
             }
@@ -128,6 +129,33 @@ public class MarketsAPI {
         }
 
         return maxAllowedItems;
+    }
+
+    /**
+     * Get the max allowed requests a player can have based on permission
+     *
+     * @param player is the player being checked
+     * @return the max allowed requests from the permission node.
+     */
+    public int maxAllowedRequestsItems(Player player) {
+        int maxAllowedRequests = Settings.DEFAULT_MAX_ALLOWED_REQUESTS_ITEMS.getInt();
+        int max = player.getEffectivePermissions().stream().map(i -> {
+            Matcher matcher = maxAllowedRequestsPattern.matcher(i.getPermission());
+            if (matcher.matches()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+            return 0;
+        }).max(Integer::compareTo).orElse(0);
+
+        if (player.hasPermission("markets.maxallowedrequests.*")) {
+            maxAllowedRequests = Integer.MAX_VALUE;
+        }
+
+        if (max > maxAllowedRequests) {
+            maxAllowedRequests = max;
+        }
+
+        return maxAllowedRequests;
     }
 
     /**

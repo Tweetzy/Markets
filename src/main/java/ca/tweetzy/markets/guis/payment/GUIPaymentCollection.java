@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis.payment;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
@@ -30,7 +31,7 @@ public class GUIPaymentCollection extends Gui {
         this.player = player;
         this.payments = Markets.getInstance().getTransactionManger().getPayments(this.player.getUniqueId());
         setTitle(TextUtils.formatText(Settings.GUI_PAYMENT_COLLECTION_TITLE.getString()));
-        setDefaultItem(Settings.GUI_PAYMENT_COLLECTION_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_PAYMENT_COLLECTION_FILL_ITEM.getMaterial()));
         setAcceptsItems(false);
         setAllowDrops(false);
         setUseLockedCells(true);

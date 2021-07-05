@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.guis.payment;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.guis.category.GUICategoryItems;
 import ca.tweetzy.markets.guis.items.GUIAllItems;
@@ -30,7 +31,7 @@ public class GUICustomCurrencyView extends Gui {
         this.marketItem = marketItem;
         this.isFromAllItems = isFromAllItems;
         setTitle(TextUtils.formatText(Settings.GUI_CUSTOM_CURRENCY_VIEW_TITLE.getString()));
-        setDefaultItem(Settings.GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM.getMaterial()));
         setAcceptsItems(false);
         setAllowDrops(false);
         setUseLockedCells(true);

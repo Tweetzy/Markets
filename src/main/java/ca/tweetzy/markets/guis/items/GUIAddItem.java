@@ -53,7 +53,7 @@ public class GUIAddItem extends Gui {
         this.item = item;
         this.currency = currency;
         setTitle(TextUtils.formatText(Settings.GUI_ADD_ITEM_TITLE.getString()));
-        setDefaultItem(Settings.GUI_ADD_ITEM_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_ADD_ITEM_FILL_ITEM.getMaterial()));
         setAllowDrops(false);
         setAcceptsItems(true);
         setUseLockedCells(true);

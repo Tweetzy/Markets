@@ -30,8 +30,11 @@ public class Settings {
     public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "setting.auto save.enabled", true, "Should markets automatically save market data?");
     public static final ConfigSetting AUTO_SAVE_DELAY = new ConfigSetting(config, "setting.auto save.delay", 900, "How often (in seconds) should markets save data?");
     public static final ConfigSetting LIMIT_MARKET_ITEMS_BY_PERMISSION = new ConfigSetting(config, "setting.limit total market items by permission", true, "If enabled, markets will limit the total amount of items a player can have in their market based on their permission");
+    public static final ConfigSetting LIMIT_REQUESTS_BY_PERMISSION = new ConfigSetting(config, "setting.limit total requests by permission", true, "If enabled, markets will limit the total amount of requests a player can have active based on their permission");
     public static final ConfigSetting DEFAULT_MAX_ALLOWED_MARKET_ITEMS = new ConfigSetting(config, "setting.default max allowed market items", 64, "If limit total market items by permission is enabled, this is will be the default max allowed amount of items (individual stacks)");
+    public static final ConfigSetting DEFAULT_MAX_ALLOWED_REQUESTS_ITEMS = new ConfigSetting(config, "setting.default max allowed requests", 12, "If limit total requests by permission is enabled, this is will be default allowed request amount");
     public static final ConfigSetting ALLOW_OWNER_TO_BUY_OWN_ITEMS = new ConfigSetting(config, "setting.allow owner to buy own items", false, "For whatever reason, if you want the market owner to buy their own items, enable this.");
+    public static final ConfigSetting ALLOW_OWNER_FULFILL_REQUEST = new ConfigSetting(config, "setting.allow owner to fulfill requests", false, "For whatever reason, if you want the requester to fulfill their own request, enable this.");
 
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
@@ -401,8 +404,8 @@ public class Settings {
     public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME = new ConfigSetting(config, "guis.open request.items.request.name", "%request_item_name%");
     public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE = new ConfigSetting(config, "guis.open request.items.request.lore", Arrays.asList(
             "",
-            "&7Quantity&f: &e%request_amount%",
-            "&7Price&f: &a$%request_price%",
+            "&7Item Requested&f: %request_item%",
+            "&7Amount Requested&f: %request_amount%",
             "",
             "&7Middle-Click to cancel request"
     ));
@@ -410,10 +413,39 @@ public class Settings {
     public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL = new ConfigSetting(config, "guis.open request.items.request.lore all", Arrays.asList(
             "",
             "&7Requester&f: &e%request_requesting_player%",
+            "&7Item Requested&f: %request_item%",
+            "&7Amount Requested&f: %request_amount%",
+            "",
+            "&7Click to view individual fulfillments"
+    ));
+
+    /*
+    ==================================
+         REQUEST FULFILLMENT GUI
+    ==================================
+     */
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_TITLE = new ConfigSetting(config, "guis.request fulfillment.title", "&eRequest &f> &7Fulfillment Items");
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_GLOW_BORDER = new ConfigSetting(config, "guis.request fulfillment.glow border", true);
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_FILL_ITEM = new ConfigSetting(config, "guis.request fulfillment.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_BORDER_ITEM = new ConfigSetting(config, "guis.request fulfillment.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_REQUEST_ITEM_LORE = new ConfigSetting(config, "guis.request fulfillment.requested item lore", Arrays.asList(
+            "",
+            "&7Requester&f: &e%request_requesting_player%",
             "&7Quantity&f: &e%request_amount%",
             "&7Price&f: &a$%request_price%",
             "",
             "&7Click to fulfill this request"
+    ));
+
+    public static final ConfigSetting GUI_REQUEST_FULFILLMENT_REQUEST_ITEM_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.request fulfillment.requested item lore custom currency", Arrays.asList(
+            "",
+            "&7Requester&f: &e%request_requesting_player%",
+            "&7Quantity&f: &e%request_amount%",
+            "&7Currency&f: %market_item_currency%",
+            "",
+            "&eRight-Click to view the required currency.",
+            "&7Click to fulfill this request."
     ));
 
     /*
