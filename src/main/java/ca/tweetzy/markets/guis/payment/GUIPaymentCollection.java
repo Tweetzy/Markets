@@ -1,17 +1,13 @@
-package ca.tweetzy.markets.guis;
+package ca.tweetzy.markets.guis.payment;
 
 import ca.tweetzy.core.gui.Gui;
-import ca.tweetzy.core.gui.SimplePagedGui;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.market.GUIMarketEdit;
-import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 

@@ -458,6 +458,76 @@ public class Settings {
     public static final ConfigSetting GUI_PAYMENT_COLLECTION_TITLE = new ConfigSetting(config, "guis.payment collection.title", "&ePayment Collection");
     public static final ConfigSetting GUI_PAYMENT_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.payment collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
+    /*
+    ==================================
+        PAYMENT COLLECTION GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_CATEGORY_SELECT_TITLE = new ConfigSetting(config, "guis.category select.title", "&eSelect Category");
+    public static final ConfigSetting GUI_CATEGORY_SELECT_FILL_ITEM = new ConfigSetting(config, "guis.category select.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_CATEGORY_SELECT_CATEGORY_NAME = new ConfigSetting(config, "guis.category select.category name", "%category_name%");
+    public static final ConfigSetting GUI_CATEGORY_SELECT_CATEGORY_LORE = new ConfigSetting(config, "guis.category select.category lore", Arrays.asList(
+            "%category_description%",
+            "&7Click to select this category"
+    ));
+
+    /*
+    ==================================
+              ADD ITEM GUI
+     ==================================
+     */
+    public static final ConfigSetting GUI_ADD_ITEM_TITLE = new ConfigSetting(config, "guis.add item.title", "&eAdding Market Item");
+    public static final ConfigSetting GUI_ADD_ITEM_GLOW_BORDER = new ConfigSetting(config, "guis.add item.glow border", true);
+    public static final ConfigSetting GUI_ADD_ITEM_FILL_ITEM = new ConfigSetting(config, "guis.add item.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_BORDER_ITEM = new ConfigSetting(config, "guis.add item.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_ITEM = new ConfigSetting(config, "guis.add item.items.price.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_NAME = new ConfigSetting(config, "guis.add item.items.price.name", "&e&LItem Price");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_LORE = new ConfigSetting(config, "guis.add item.items.price.lore", Arrays.asList(
+            "&7Current Price&f: &a$%market_item_price%",
+            "&7Click to change the price"
+    ));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.add item.items.price.lore custom currency", Arrays.asList(
+            "&7Current Price&f: x%market_item_price% %market_item_currency%",
+            "&7Click to change the price"
+    ));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_ITEM = new ConfigSetting(config, "guis.add item.items.price for stack.enabled.item", XMaterial.LIME_DYE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_NAME = new ConfigSetting(config, "guis.add item.items.price for stack.enabled.name", "&a&LPrice if for stack");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_LORE = new ConfigSetting(config, "guis.add item.items.price for stack.enabled.lore", Collections.singletonList("&7Click to set price for stack to &Cfalse"));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_ITEM = new ConfigSetting(config, "guis.add item.items.price for stack.disabled.item", XMaterial.RED_DYE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_NAME = new ConfigSetting(config, "guis.add item.items.price for stack.disabled.name", "&c&LPrice isn't for stack");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_LORE = new ConfigSetting(config, "guis.add item.items.price for stack.disabled.lore", Collections.singletonList("&7Click to set price for stack to &Atrue"));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_ITEM = new ConfigSetting(config, "guis.add item.items.selected category.item", XMaterial.NETHER_STAR.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_NAME = new ConfigSetting(config, "guis.add item.items.selected category.name", "&e&LSelected Category");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_LORE = new ConfigSetting(config, "guis.add item.items.selected category.lore", Arrays.asList(
+            "&7Current category&f: &e%selected_market_category%",
+            "&7Click to change the category"
+    ));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_ITEM = new ConfigSetting(config, "guis.add item.items.use custom currency.enabled.item", XMaterial.LIME_DYE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_NAME = new ConfigSetting(config, "guis.add item.items.use custom currency.enabled.name", "&a&LCustom Currency Enabled");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_LORE = new ConfigSetting(config, "guis.add item.items.use custom currency.enabled.lore", Collections.singletonList("&7Click to &cdisable &7custom currency"));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_ITEM = new ConfigSetting(config, "guis.add item.items.use custom currency.disabled.item", XMaterial.RED_DYE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_NAME = new ConfigSetting(config, "guis.add item.items.use custom currency.disabled.name", "&c&LCustom Currency Disabled");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_LORE = new ConfigSetting(config, "guis.add item.items.use custom currency.disabled.lore", Collections.singletonList("&7Click to &aenable &7custom currency"));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CANCEL_ADD_ITEM = new ConfigSetting(config, "guis.add item.items.cancel add.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CANCEL_ADD_NAME = new ConfigSetting(config, "guis.add item.items.cancel add.name", "&c&LCancel");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CANCEL_ADD_LORE = new ConfigSetting(config, "guis.add item.items.cancel add.lore", Collections.singletonList("&7Click to cancel adding a market item."));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_ITEM = new ConfigSetting(config, "guis.add item.items.confirm add.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_NAME = new ConfigSetting(config, "guis.add item.items.confirm add.name", "&a&lConfirm");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_LORE = new ConfigSetting(config, "guis.add item.items.confirm add.lore", Collections.singletonList("&7Click to add the item to the market."));
+
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_ITEM = new ConfigSetting(config, "guis.add item.items.currency holder.item", XMaterial.BARRIER.name());
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_NAME = new ConfigSetting(config, "guis.add item.items.currency holder.name", "&c&lDisabled");
+    public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_LORE = new ConfigSetting(config, "guis.add item.items.currency holder.lore", Collections.singletonList("&7You must &aenable &7custom currency to place an item here."));
+
 
     public static void setup() {
         config.load();

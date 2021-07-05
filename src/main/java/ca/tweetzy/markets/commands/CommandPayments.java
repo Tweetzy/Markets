@@ -3,7 +3,7 @@ package ca.tweetzy.markets.commands;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.GUIPaymentCollection;
+import ca.tweetzy.markets.guis.payment.GUIPaymentCollection;
 import ca.tweetzy.markets.transaction.Payment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

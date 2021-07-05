@@ -51,6 +51,8 @@ public class LocaleSettings {
         languageNodes.put("added_item_to_category", "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%");
         languageNodes.put("at_max_items_limit", "&cYou are not allowed to add any more items to your market");
         languageNodes.put("click_currency_item", "&aPlease left/right click the item you wish to use as currency for this market item.");
+        languageNodes.put("place_sell_item", "&cPlease place the item you want to sell in the gui.");
+        languageNodes.put("place_currency_item", "&cPlease place item you wish to use as currency in the gui.");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -68,6 +70,7 @@ public class LocaleSettings {
         languageNodes.put("misc.price is for stack.true", "True");
         languageNodes.put("misc.price is for stack.false", "False");
         languageNodes.put("misc.default category description", "Default Category Description");
+        languageNodes.put("misc.category not selected", "&cNone Selected");
 
         languageNodes.put("command_syntax.add_category", "add category <name> [description]");
         languageNodes.put("command_syntax.add_item", "add item <category> <price> [priceIsForStack]");

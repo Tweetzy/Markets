@@ -8,6 +8,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketCreateEvent;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.guis.market.GUIMarketList;
+import ca.tweetzy.markets.guis.payment.GUITransactionView;
 import ca.tweetzy.markets.guis.requests.GUIOpenRequests;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;

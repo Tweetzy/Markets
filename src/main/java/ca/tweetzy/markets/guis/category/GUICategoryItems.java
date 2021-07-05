@@ -5,7 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.GUICustomCurrencyView;
+import ca.tweetzy.markets.guis.payment.GUICustomCurrencyView;
 import ca.tweetzy.markets.guis.items.GUIItemPurchase;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;

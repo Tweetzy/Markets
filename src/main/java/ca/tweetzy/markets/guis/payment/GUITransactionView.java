@@ -1,10 +1,11 @@
-package ca.tweetzy.markets.guis;
+package ca.tweetzy.markets.guis.payment;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.transaction.Transaction;

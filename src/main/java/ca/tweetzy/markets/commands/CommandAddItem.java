@@ -8,6 +8,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
+import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
@@ -64,7 +65,7 @@ public class CommandAddItem extends AbstractCommand {
 
         if (args.length == 0) {
             // open the add menu
-            Bukkit.broadcastMessage("[Debug] - Open the add menu");
+            Markets.getInstance().getGuiManager().showGUI(player, new GUIAddItem(player, market));
             return ReturnType.SUCCESS;
         }
 

@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.guis;
+package ca.tweetzy.markets.guis.payment;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
