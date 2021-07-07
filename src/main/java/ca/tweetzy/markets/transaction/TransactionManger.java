@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.transaction;
 
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
@@ -50,8 +51,7 @@ public class TransactionManger {
     public void savePayment(Payment payment) {
         Objects.requireNonNull(payment, "Cannot save a null payment");
         String node = "payment collection." + UUID.randomUUID().toString();
-        Markets.getInstance().getData().set(node + ".to", payment.getTo().toString());
-        Markets.getInstance().getData().set(node + ".item", payment.getItem());
+        Markets.getInstance().getData().set(node, MarketsAPI.getInstance().convertToBase64(payment));
     }
 
     public void savePayments(Payment... payments) {
@@ -69,10 +69,7 @@ public class TransactionManger {
             ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("payment collection");
             if (section == null || section.getKeys(false).size() == 0) return;
             Markets.getInstance().getData().getConfigurationSection("payment collection").getKeys(false).forEach(payment -> {
-                addPayment(new Payment(
-                        UUID.fromString(Markets.getInstance().getData().getString("payment collection." + payment + ".to")),
-                        Markets.getInstance().getData().getItemStack("payment collection." + payment + ".item")
-                ));
+                addPayment((Payment) MarketsAPI.getInstance().convertBase64ToObject(Markets.getInstance().getData().getString("payment collection." + payment)));
             });
         }).execute();
     }

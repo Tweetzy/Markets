@@ -5,13 +5,16 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -67,17 +70,95 @@ public class GUIRequestFulfillment extends Gui {
                 List<String> lore = Common.getItemLore(item);
                 lore.addAll(requestItem.isUseCustomCurrency() ? Settings.GUI_REQUEST_FULFILLMENT_REQUEST_ITEM_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_REQUEST_FULFILLMENT_REQUEST_ITEM_LORE.getStringList());
 
-                setButton(slot, ConfigItemUtil.build(item, Common.getItemName(item), lore, requestItem.getAmount(), new HashMap<String, Object>(){{
+                setButton(slot, ConfigItemUtil.build(item, Common.getItemName(item), lore, requestItem.getAmount(), new HashMap<String, Object>() {{
                     put("%request_requesting_player%", Bukkit.getOfflinePlayer(request.getRequester()).getName());
                     put("%request_amount%", requestItem.getAmount());
                     put("%request_price%", requestItem.isUseCustomCurrency() ? Math.round(requestItem.getPrice()) : String.format("%,.2f", requestItem.getPrice()));
                     put("%market_item_currency%", requestItem.isUseCustomCurrency() ? Common.getItemName(requestItem.getCurrency()) : "");
                 }}), e -> {
+                    Markets.newChain().async(() -> {
+                        if (MarketsAPI.getInstance().getItemCountInPlayerInventory(e.player, requestItem.getItem()) < requestItem.getAmount()) {
+                            Markets.getInstance().getLocale().getMessage("not_enough_items").sendPrefixedMessage(e.player);
+                            return;
+                        }
 
+                        OfflinePlayer requester = Bukkit.getOfflinePlayer(this.request.getRequester());
+
+                        if (requestItem.isUseCustomCurrency()) {
+                            if (Markets.getInstance().getCurrencyBank().getTotalCurrency(requester.getUniqueId(), requestItem.getCurrency()) < Math.round(requestItem.getPrice())) {
+                                Markets.getInstance().getLocale().getMessage("player_does_not_have_funds").processPlaceholder("player", requester.getName()).sendPrefixedMessage(e.player);
+                                return;
+                            }
+
+                            MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(e.player, requestItem.getItem(), requestItem.getAmount());
+                            Markets.getInstance().getCurrencyBank().removeCurrency(requester.getUniqueId(), requestItem.getCurrency(), (int) Math.round(requestItem.getPrice()));
+
+                            ItemStack currency = requestItem.getCurrency().clone();
+
+                            int maxStackSize = currency.getMaxStackSize();
+                            int fullStacks = (int) Math.round(requestItem.getPrice()) / maxStackSize;
+                            int remainder = (int) Math.round(requestItem.getPrice()) % maxStackSize;
+
+                            ItemStack maxSizeCurrency = currency.clone();
+                            ItemStack remainderCurrency = currency.clone();
+                            maxSizeCurrency.setAmount(maxStackSize);
+                            remainderCurrency.setAmount(remainder);
+
+                            for (int i = 0; i < fullStacks; i++) {
+                                Markets.getInstance().getTransactionManger().addPayment(new Payment(e.player.getUniqueId(), maxSizeCurrency));
+                            }
+
+                            if (remainder != 0) {
+                                currency.setAmount(remainder);
+                                Markets.getInstance().getTransactionManger().addPayment(new Payment(e.player.getUniqueId(), remainderCurrency));
+                            }
+
+                            Markets.getInstance().getLocale().getMessage("money_add_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(e.player);
+                            if (requester.isOnline()) {
+                                Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
+                            }
+
+                            handleRequest(requester, requestItem);
+                            draw();
+                            return;
+                        }
+
+                        if (!Markets.getInstance().getEconomyManager().has(requester, requestItem.getPrice())) {
+                            Markets.getInstance().getLocale().getMessage("player_does_not_have_funds").processPlaceholder("player", requester.getName()).sendPrefixedMessage(e.player);
+                            return;
+                        }
+
+                        MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(e.player, requestItem.getItem(), requestItem.getAmount());
+                        Markets.getInstance().getEconomyManager().withdrawPlayer(requester, requestItem.getPrice());
+                        Markets.getInstance().getEconomyManager().depositPlayer(e.player, requestItem.getPrice());
+
+                        Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(e.player);
+                        if (requester.isOnline()) {
+                            Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
+                        }
+
+                        handleRequest(requester, requestItem);
+                        draw();
+                    }).execute();
                 });
 
                 slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
             }
         }).execute();
+    }
+
+    private void handleRequest(OfflinePlayer requester, RequestItem requestItem) {
+        ItemStack requestedItem = requestItem.getItem();
+        requestedItem.setAmount(requestItem.getAmount());
+
+        Markets.getInstance().getTransactionManger().addPayment(new Payment(
+                requester.getUniqueId(),
+                requestedItem
+        ));
+
+        this.request.getRequestedItems().remove(requestItem);
+        if (this.request.getRequestedItems().size() == 0) {
+            Markets.getInstance().getRequestManager().deleteRequest(this.request);
+        }
     }
 }

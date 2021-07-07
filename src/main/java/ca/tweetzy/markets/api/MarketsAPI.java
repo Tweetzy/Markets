@@ -5,8 +5,12 @@ import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,5 +171,78 @@ public class MarketsAPI {
     public boolean isAlphaNumeric(String string) {
         Matcher matcher = alphaNumericPattern.matcher(string);
         return matcher.matches();
+    }
+
+    /**
+     * Used to convert a serializable object into a base64 string
+     *
+     * @param object is the class that implements Serializable
+     * @return the base64 encoded string
+     */
+    public String convertToBase64(Serializable object) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream;
+        try {
+            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(object);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+    }
+
+    /**
+     * Used to convert a base64 string into an object
+     *
+     * @param string is the base64 string
+     * @return an object
+     */
+    public Object convertBase64ToObject(String string) {
+        byte[] data = Base64.getDecoder().decode(string);
+        ObjectInputStream objectInputStream;
+        Object object = null;
+        try {
+            objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data));
+            object = objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+    /**
+     * Deserialize a byte array into an ItemStack.
+     *
+     * @param data Data to deserialize.
+     * @return Deserialized ItemStack.
+     */
+    public ItemStack deserializeItem(byte[] data) {
+        ItemStack item = null;
+        try (BukkitObjectInputStream stream = new BukkitObjectInputStream(new ByteArrayInputStream(data))) {
+            item = (ItemStack) stream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return item;
+    }
+
+    /**
+     * Serialize an ItemStack into a byte array.
+     *
+     * @param item Item to serialize.
+     * @return Serialized data.
+     */
+    public byte[] serializeItem(ItemStack item) {
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream(); BukkitObjectOutputStream bukkitStream = new BukkitObjectOutputStream(stream)) {
+            bukkitStream.writeObject(item);
+            return stream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

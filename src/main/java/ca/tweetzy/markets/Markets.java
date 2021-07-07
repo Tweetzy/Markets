@@ -11,6 +11,7 @@ import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
+import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.economy.EconomyManager;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
@@ -68,7 +69,18 @@ public class Markets extends TweetyPlugin {
     @Getter
     private EconomyManager economyManager;
 
-    Metrics metrics;
+    @Getter
+    private CurrencyBank currencyBank;
+
+    protected Metrics metrics;
+
+    String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+    String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+    String TIMESTAMP = "%%__TIMESTAMP__%%";
+    String USER = "%%__USER__%%";
+    String USERNAME = "%%__USERNAME__%%";
+    String RESOURCE = "%%__RESOURCE__%%";
+    String NONCE = "%%__NONCE__%%";
 
     @Override
     public void onPluginLoad() {
@@ -115,6 +127,7 @@ public class Markets extends TweetyPlugin {
         this.marketPlayerManager = new MarketPlayerManager();
         this.transactionManger = new TransactionManger();
         this.requestManager = new RequestManager();
+        this.currencyBank = new CurrencyBank();
 
         this.guiManager.init();
         this.marketManager.loadMarkets();
@@ -122,6 +135,7 @@ public class Markets extends TweetyPlugin {
         this.transactionManger.loadPayments();
         this.requestManager.loadRequests();
         this.marketManager.loadBlockedItems();
+        this.currencyBank.loadBank();
 
         // Listeners
         Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -134,6 +148,7 @@ public class Markets extends TweetyPlugin {
                 new CommandAddItem(),
                 new CommandRequest(),
                 new CommandPayments(),
+                new CommandBank(),
                 new CommandSet(),
                 new CommandView(),
                 new CommandList(),
@@ -166,6 +181,7 @@ public class Markets extends TweetyPlugin {
         this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
         this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
         this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
+        this.currencyBank.saveBank();
         getLogger().info("Market data has been automatically saved");
     }
 
@@ -184,13 +200,4 @@ public class Markets extends TweetyPlugin {
     public static <T> TaskChain<T> newChain() {
         return taskChainFactory.newChain();
     }
-
-    // Premium Placeholders
-    String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-    String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-    String TIMESTAMP = "%%__TIMESTAMP__%%";
-    String USER = "%%__USER__%%";
-    String USERNAME = "%%__USERNAME__%%";
-    String RESOURCE = "%%__RESOURCE__%%";
-    String NONCE = "%%__NONCE__%%";
 }

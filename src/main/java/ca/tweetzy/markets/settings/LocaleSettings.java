@@ -50,10 +50,13 @@ public class LocaleSettings {
         languageNodes.put("created_category", "&aYou created a new category for your market called&f: &2%market_category_name%");
         languageNodes.put("added_item_to_category", "&aAdded &2%item_name% &ato market category&f: &2%market_category_name%");
         languageNodes.put("at_max_items_limit", "&cYou are not allowed to add any more items to your market");
+        languageNodes.put("at_max_request_limit", "&cYou are not allowed to make any more requests");
         languageNodes.put("click_currency_item", "&aPlease left/right click the item you wish to use as currency for this market item.");
         languageNodes.put("click_currency_item_request", "&aPlease left/right click the item you wish to use as currency for this request");
         languageNodes.put("place_sell_item", "&cPlease place the item you want to sell in the gui.");
         languageNodes.put("place_currency_item", "&cPlease place item you wish to use as currency in the gui.");
+        languageNodes.put("added_currency_to_bank", "&aYou added &2%amount% %currency_item% &ato your bank");
+        languageNodes.put("claim_currency", "&cPlease claim your outstanding payments first.");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -88,6 +91,7 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.confiscate", "confiscate <player>");
         languageNodes.put("command_syntax.block_item", "block item [list]");
         languageNodes.put("command_syntax.payments", "payments [collect]");
+        languageNodes.put("command_syntax.currency", "bank [add] [-a]");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -104,6 +108,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.confiscate", "Confiscate an entire market's items");
         languageNodes.put("command_description.block_item", "Blacklist an item or view all blocked items.");
         languageNodes.put("command_description.payments", "Collect any payments of custom currency");
+        languageNodes.put("command_description.bank", "View your currency bank/add currency");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");

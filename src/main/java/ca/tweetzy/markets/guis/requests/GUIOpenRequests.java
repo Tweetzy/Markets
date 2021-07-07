@@ -7,6 +7,7 @@ import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIMain;
+import ca.tweetzy.markets.guis.payment.GUIPaymentCollection;
 import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.settings.Settings;
@@ -63,7 +64,7 @@ public class GUIOpenRequests extends Gui {
             });
 
             setButton(5, 8, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-                e.manager.showGUI(this.player, new GUIRequestCollection(this.player));
+                e.manager.showGUI(this.player, new GUIPaymentCollection(this.player));
             });
         }
 

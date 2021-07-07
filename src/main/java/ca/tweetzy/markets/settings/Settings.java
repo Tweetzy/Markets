@@ -442,22 +442,12 @@ public class Settings {
             "",
             "&7Requester&f: &e%request_requesting_player%",
             "&7Quantity&f: &e%request_amount%",
+            "&7Price&f: &a%request_price%",
             "&7Currency&f: %market_item_currency%",
             "",
             "&eRight-Click to view the required currency.",
             "&7Click to fulfill this request."
     ));
-
-    /*
-    ==================================
-         REQUEST COLLECTION GUI
-    ==================================
-     */
-
-    public static final ConfigSetting GUI_REQUEST_COLLECTION_TITLE = new ConfigSetting(config, "guis.request collection.title", "&eFulfilled Requests");
-    public static final ConfigSetting GUI_REQUEST_COLLECTION_GLOW_BORDER = new ConfigSetting(config, "guis.request collection.glow border", true);
-    public static final ConfigSetting GUI_REQUEST_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.request collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
-    public static final ConfigSetting GUI_REQUEST_COLLECTION_BORDER_ITEM = new ConfigSetting(config, "guis.request collection.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
 
     /*
     ==================================

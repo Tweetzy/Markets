@@ -41,6 +41,16 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        // check the max allowed items
+        if (Settings.LIMIT_REQUESTS_BY_PERMISSION.getBoolean()) {
+            int maxAllowedRequests = MarketsAPI.getInstance().maxAllowedRequestsItems(player);
+            int totalItemsInMarket = Markets.getInstance().getRequestManager().getPlayerRequests(player).size();
+            if (totalItemsInMarket >= maxAllowedRequests) {
+                Markets.getInstance().getLocale().getMessage("at_max_request_limit").sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+        }
+
         if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(heldItem))) {
             Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
             return ReturnType.FAILURE;

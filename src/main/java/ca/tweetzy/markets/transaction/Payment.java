@@ -1,8 +1,10 @@
 package ca.tweetzy.markets.transaction;
 
+import ca.tweetzy.markets.api.MarketsAPI;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -13,13 +15,17 @@ import java.util.UUID;
  */
 
 @Getter
-public class Payment {
+public class Payment implements Serializable {
 
     private final UUID to;
-    private final ItemStack item;
+    private final byte[] item;
 
     public Payment(UUID to, ItemStack item) {
         this.to = to;
-        this.item = item;
+        this.item = MarketsAPI.getInstance().serializeItem(item);
+    }
+
+    public ItemStack getItem() {
+        return MarketsAPI.getInstance().deserializeItem(this.item);
     }
 }
