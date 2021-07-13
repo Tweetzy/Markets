@@ -16,6 +16,7 @@ import java.util.UUID;
 @Setter
 public class MarketRating {
 
+    private UUID marketId;
     private UUID id;
     private UUID rater;
     private int stars;

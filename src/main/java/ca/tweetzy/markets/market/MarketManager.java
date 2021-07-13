@@ -163,12 +163,15 @@ public class MarketManager {
                 if (ratings != null && ratings.getKeys(false).size() != 0) {
                     List<MarketRating> marketRatings = new ArrayList<>();
                     Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings").getKeys(false).forEach(rating -> {
-                        marketRatings.add(new MarketRating(
+                        MarketRating marketRating = new MarketRating(
                                 UUID.fromString(rating),
                                 UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".rater")),
                                 Markets.getInstance().getData().getInt("markets." + marketId + ".ratings." + rating + ".stars"),
                                 Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".message")
-                        ));
+                        );
+
+                        marketRating.setMarketId(market.getId());
+                        marketRatings.add(marketRating);
                     });
 
                     market.setRatings(marketRatings);
@@ -192,7 +195,7 @@ public class MarketManager {
 
                     List<MarketCategory> marketCategories = new ArrayList<>();
                     Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories").getKeys(false).forEach(categoryNode -> {
-                        marketCategories.add(new MarketCategory(
+                        MarketCategory marketCategory = new MarketCategory(
                                 UUID.fromString(categoryNode),
                                 Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".name"),
                                 Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".display name"),
@@ -201,7 +204,10 @@ public class MarketManager {
                                 marketItems.stream().filter(item -> item.getCategoryId().equals(UUID.fromString(categoryNode))).collect(Collectors.toList()),
                                 Markets.getInstance().getData().getBoolean("markets." + marketId + ".categories." + categoryNode + ".sale.active"),
                                 Markets.getInstance().getData().getDouble("markets." + marketId + ".categories." + categoryNode + ".sale.amount")
-                        ));
+                        );
+
+                        marketCategory.setMarketId(market.getId());
+                        marketCategories.add(marketCategory);
                     });
                     market.setCategories(marketCategories);
                 }

@@ -196,12 +196,16 @@ public class Markets extends TweetyPlugin {
     }
 
     private void saveData() {
-        this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
-        this.marketManager.saveBlockedItems();
-        this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
-        this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
-        this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
-        this.currencyBank.saveBank();
+        if (Settings.DATABASE_USE.getBoolean()) {
+            this.dataManager.saveMarkets(this.marketManager.getMarkets(), false);
+        } else {
+            this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
+            this.marketManager.saveBlockedItems();
+            this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
+            this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
+            this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
+            this.currencyBank.saveBank();
+        }
         getLogger().info("Market data has been automatically saved");
     }
 

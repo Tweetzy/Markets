@@ -23,6 +23,7 @@ import java.util.UUID;
 @Getter
 public class MarketCategory implements Serializable {
 
+    private UUID marketId;
     private UUID id;
     private String name;
     private String displayName;

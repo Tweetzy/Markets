@@ -55,6 +55,16 @@ public class _1_InitialMigration extends DataMigration {
                     "sale_active BOOLEAN NOT NULL, " +
                     "sale_discount DOUBLE NOT NULL )");
 
+            statement.execute("CREATE TABLE " + tablePrefix + "items (" +
+                    "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+                    "item_id VARCHAR(32) NOT NULL, " +
+                    "category_id VARCHAR(32) NOT NULL, " +
+                    "item TEXT NOT NULL, " +
+                    "currency_item TEXT NULL, " +
+                    "use_item_currency BOOLEAN NOT NULL, " +
+                    "price DOUBLE NOT NULL, " +
+                    "price_for_stack BOOLEAN NOT NULL )");
+
             statement.execute("CREATE TABLE " + tablePrefix + "requests (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "request_id VARCHAR(32) NOT NULL, " +
@@ -73,7 +83,7 @@ public class _1_InitialMigration extends DataMigration {
 
             statement.execute("CREATE TABLE " + tablePrefix + "payments (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
-                    "to VARCHAR(32) NOT NULL, " +
+                    "is_for VARCHAR(32) NOT NULL, " +
                     "item TEXT NOT NULL )");
 
             statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
