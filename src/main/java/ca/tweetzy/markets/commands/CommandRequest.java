@@ -86,17 +86,19 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.SUCCESS;
         }
 
+        Request request = new Request(player.getUniqueId(), null);
         List<RequestItem> requestItems = new ArrayList<>();
 
         for (int i = 0; i < fullStacks; i++) {
-            requestItems.add(new RequestItem(heldItem, XMaterial.AIR.parseItem(), maxStackSize, pricePerItem * maxStackSize, false, false));
+            requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), maxStackSize, pricePerItem * maxStackSize, false, false));
         }
 
         if (remainder != 0) {
-            requestItems.add(new RequestItem(heldItem, XMaterial.AIR.parseItem(), remainder, pricePerItem * remainder, false, false));
+            requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), remainder, pricePerItem * remainder, false, false));
         }
 
-        Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), requestItems));
+        request.setRequestedItems(requestItems);
+        Markets.getInstance().getRequestManager().addRequest(request);
         Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
         return ReturnType.SUCCESS;
     }

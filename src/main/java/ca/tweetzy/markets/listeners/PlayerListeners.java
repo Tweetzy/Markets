@@ -102,17 +102,20 @@ public class PlayerListeners implements Listener {
         int fullStacks = toAdd.getSecond() / maxStackSize;
         int remainder = toAdd.getSecond() % maxStackSize;
 
+        Request request = new Request(player.getUniqueId(), null);
         List<RequestItem> requestItems = new ArrayList<>();
 
         for (int i = 0; i < fullStacks; i++) {
-            requestItems.add(new RequestItem(toAdd.getFirst(), itemToBeUsedAsCurrency, maxStackSize, pricePerItem * maxStackSize, false, true));
+            requestItems.add(new RequestItem(request.getId(), toAdd.getFirst(), itemToBeUsedAsCurrency, maxStackSize, pricePerItem * maxStackSize, false, true));
         }
 
         if (remainder != 0) {
-            requestItems.add(new RequestItem(toAdd.getFirst(), itemToBeUsedAsCurrency, remainder, pricePerItem * remainder, false, true));
+            requestItems.add(new RequestItem(request.getId(), toAdd.getFirst(), itemToBeUsedAsCurrency, remainder, pricePerItem * remainder, false, true));
         }
 
-        Markets.getInstance().getRequestManager().addRequest(new Request(player.getUniqueId(), requestItems));
+        request.setRequestedItems(requestItems);
+
+        Markets.getInstance().getRequestManager().addRequest(request);
         Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", toAdd.getSecond()).processPlaceholder("request_item_name", Common.getItemName(toAdd.getFirst())).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
         Markets.getInstance().getMarketPlayerManager().removePlayerFromRequestCustomCurrencyItem(player.getUniqueId());
     }

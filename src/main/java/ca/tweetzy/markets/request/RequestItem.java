@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 05 2021
@@ -15,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 @Setter
 public class RequestItem {
 
+    private UUID requestId;
+
     private ItemStack item;
     private ItemStack currency;
 
@@ -24,7 +28,8 @@ public class RequestItem {
     private boolean fulfilled;
     private boolean useCustomCurrency;
 
-    public RequestItem(ItemStack item, ItemStack currency, int amount, double price, boolean fulfilled, boolean useCustomCurrency) {
+    public RequestItem(UUID requestId, ItemStack item, ItemStack currency, int amount, double price, boolean fulfilled, boolean useCustomCurrency) {
+        this.requestId = requestId;
         this.item = item;
         this.currency = currency;
         this.amount = amount;

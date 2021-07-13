@@ -71,6 +71,9 @@
                             <artifactSet>
                                 <includes>
                                     <include>ca.tweetzy:tweetycore</include>
+                                    <include>com.zaxxer:HikariCP</include>
+                                    <include>org.slf4j:slf4j-api</include>
+                                    <include>org.slf4j:slf4j-nop</include>
                                     <include>co.aikar:taskchain-bukkit</include>
                                     <include>co.aikar:taskchain-core</include>
                                 </includes>
@@ -159,6 +162,11 @@
             <groupId>co.aikar</groupId>
             <artifactId>taskchain-bukkit</artifactId>
             <version>3.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.2.0</version>
         </dependency>
     </dependencies>
 </project>

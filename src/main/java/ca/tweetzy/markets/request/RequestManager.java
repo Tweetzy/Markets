@@ -95,6 +95,7 @@ public class RequestManager {
             List<RequestItem> requestItems = new ArrayList<>();
 
             Markets.getInstance().getData().getConfigurationSection("open requests." + requestId + ".items").getKeys(false).forEach(rItem -> requestItems.add(new RequestItem(
+                    request.getId(),
                     Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".item"),
                     Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".currency"),
                     Markets.getInstance().getData().getInt("open requests." + requestId + ".items." + rItem + ".amount"),

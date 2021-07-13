@@ -7,12 +7,12 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
+import ca.tweetzy.markets.guis.GUIBank;
 import ca.tweetzy.markets.utils.Common;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,7 +31,7 @@ public class CommandBank extends AbstractCommand {
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
         if (args.length == 0) {
-            // Open the bank menu
+            Markets.getInstance().getGuiManager().showGUI(player, new GUIBank(player));
             return ReturnType.SUCCESS;
         }
 
@@ -55,12 +55,7 @@ public class CommandBank extends AbstractCommand {
                 Markets.getInstance().getLocale().getMessage("added_currency_to_bank").processPlaceholder("amount", heldItem.getAmount()).processPlaceholder("currency_item", Common.getItemName(heldItem)).sendPrefixedMessage(player);
                 PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, heldItem.getAmount());
             }
-        } else if (args[0].equalsIgnoreCase("info")) {
-            Markets.getInstance().getCurrencyBank().getPlayerCurrencies(player.getUniqueId()).forEach(currency -> {
-                player.sendMessage(TextUtils.formatText(Common.getItemName(currency.getItem()) + "&7: &a" + currency.getAmount()));
-            });
         }
-
         return ReturnType.SUCCESS;
     }
 

@@ -7,10 +7,15 @@ import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.configuration.Config;
+import ca.tweetzy.core.database.DataMigrationManager;
+import ca.tweetzy.core.database.DatabaseConnector;
+import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
+import ca.tweetzy.markets.database.DataManager;
+import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.economy.EconomyManager;
 import ca.tweetzy.markets.listeners.PlayerListeners;
@@ -72,6 +77,12 @@ public class Markets extends TweetyPlugin {
     @Getter
     private CurrencyBank currencyBank;
 
+    @Getter
+    private DataManager dataManager;
+
+    @Getter
+    protected DatabaseConnector databaseConnector;
+
     protected Metrics metrics;
 
     String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
@@ -116,9 +127,18 @@ public class Markets extends TweetyPlugin {
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
 
-
         // Load the data file
         this.data.load();
+
+        // Setup the database if enabled
+        if (Settings.DATABASE_USE.getBoolean()) {
+            this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
+            this.dataManager = new DataManager(this.databaseConnector, this);
+            DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
+                    new _1_InitialMigration()
+            );
+            dataMigrationManager.runMigrations();
+        }
 
         // Managers
         this.guiManager = new GuiManager(this);

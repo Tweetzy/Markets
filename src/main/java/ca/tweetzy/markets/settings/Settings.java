@@ -21,7 +21,6 @@ public class Settings {
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
     public static final ConfigSetting ECONOMY_MODE = new ConfigSetting(config, "economy provider", "Vault", "Supported Economies:", "Vault", "PlayerPoints");
 
-
     public static final ConfigSetting GIVE_ITEMS_ON_CATEGORY_DELETE = new ConfigSetting(config, "setting.give back items on category delete", true, "Should Markets give the player all their items from the category", "back when they click the delete button?");
     public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");
     public static final ConfigSetting LOG_TRANSACTIONS = new ConfigSetting(config, "setting.log transactions", true, "Should transactions be logged?");
@@ -39,15 +38,25 @@ public class Settings {
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
 
-    public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", true, "If enabled, when a sale is made, percentage of the sale will be removed / added");
+    public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", false, "If enabled, when a sale is made, percentage of the sale will be removed / added");
     public static final ConfigSetting TAX_BUYER_INSTEAD_OF_SELLER = new ConfigSetting(config, "setting.tax.tax buyer instead of seller", true, "If enabled, markets will charge the buyer tax instead of the seller");
     public static final ConfigSetting TAX_AMOUNT = new ConfigSetting(config, "setting.tax.amount", 13, "This is a percentage, ex. 13 -> 13% tax");
-
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");
     public static final ConfigSetting INCREMENT_NUMBER_TWO = new ConfigSetting(config, "setting.increment two", 5, "How much should the item qty be increased by (btn 2)");
     public static final ConfigSetting DECREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.decrement one", 1, "How much should the item qty be decreased by (btn 1)");
     public static final ConfigSetting DECREMENT_NUMBER_TWO = new ConfigSetting(config, "setting.decrement two", 5, "How much should the item qty be decreased by (btn 2)");
+
+    /*  ===============================
+     *         DATABASE OPTIONS
+     *  ===============================*/
+    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", false, "Should the plugin use a database to store shop data?");
+    public static final ConfigSetting DATABASE_HOST = new ConfigSetting(config, "database.host", "kiranhart.com", "What is the connection url/host");
+    public static final ConfigSetting DATABASE_PORT = new ConfigSetting(config, "database.port", 3306, "What is the port to database (default is 3306)");
+    public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "kiranhar_plugin_dev", "What is the name of the database?");
+    public static final ConfigSetting DATABASE_USERNAME = new ConfigSetting(config, "database.username", "kiranhar_plugin_dev", "What is the name of the user connecting?");
+    public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "P@ssword1.", "What is the password to the user connecting?");
+    public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
 
     /*
     =========== GLOBAL BUTTONS FOR GUIS ===========
@@ -549,6 +558,21 @@ public class Settings {
     public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_ITEM = new ConfigSetting(config, "guis.add item.items.currency holder.item", XMaterial.BARRIER.name());
     public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_NAME = new ConfigSetting(config, "guis.add item.items.currency holder.name", "&c&lDisabled");
     public static final ConfigSetting GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_LORE = new ConfigSetting(config, "guis.add item.items.currency holder.lore", Collections.singletonList("&7You must &aenable &7custom currency to place an item here."));
+
+    /*
+    ==================================
+                 BANK GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_BANK_TITLE = new ConfigSetting(config, "guis.bank.title", "&eYour Bank");
+    public static final ConfigSetting GUI_BANK_GLOW_BORDER = new ConfigSetting(config, "guis.bank.glow border", true);
+    public static final ConfigSetting GUI_BANK_FILL_ITEM = new ConfigSetting(config, "guis.bank.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_BANK_BORDER_ITEM = new ConfigSetting(config, "guis.bank.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_BANK_CURRENCY_NAME = new ConfigSetting(config, "guis.bank.item name", "%item_name%");
+    public static final ConfigSetting GUI_BANK_CURRENCY_LORE = new ConfigSetting(config, "guis.bank.item lore", Arrays.asList(
+            "&7Total Stored&f: &e%currency_amount%",
+            "&7Left-Click to withdraw"
+    ));
 
 
     public static void setup() {

@@ -5,7 +5,7 @@ api-version: 1.13
 description: The ultimate player shop plugin
 authors: [Kiran Hart]
 website: https://tweetzy.ca
-depend: [Vault]
+softdepend: [Vault]
 
 commands:
   markets:
