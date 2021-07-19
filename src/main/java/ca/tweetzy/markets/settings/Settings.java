@@ -42,7 +42,7 @@ public class Settings {
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
 
-    public static final ConfigSetting UPKEEP_FEE_USE = new ConfigSetting(config, "setting.upkeep fee.use", true, "Should markets charge players after x amount of time to keep their market open?");
+    public static final ConfigSetting UPKEEP_FEE_USE = new ConfigSetting(config, "setting.upkeep fee.use", false, "Should markets charge players after x amount of time to keep their market open?");
     public static final ConfigSetting UPKEEP_FEE_FEE = new ConfigSetting(config, "setting.upkeep fee.fee", 2500, "How much should the upkeep fee cost?");
     public static final ConfigSetting UPKEEP_FEE_CHARGE_EVERY = new ConfigSetting(config, "setting.upkeep fee.delay", 604800, "How many seconds should pass before upkeep fees are collected?");
 
