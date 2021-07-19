@@ -58,12 +58,12 @@ public class Settings {
     /*  ===============================
      *         DATABASE OPTIONS
      *  ===============================*/
-    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", true, "Should the plugin use a database to store shop data?");
+    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", false, "Should the plugin use a database to store shop data?");
     public static final ConfigSetting DATABASE_HOST = new ConfigSetting(config, "database.host", "kiranhart.com", "What is the connection url/host");
     public static final ConfigSetting DATABASE_PORT = new ConfigSetting(config, "database.port", 3306, "What is the port to database (default is 3306)");
-    public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "kiranhar_plugin_dev", "What is the name of the database?");
-    public static final ConfigSetting DATABASE_USERNAME = new ConfigSetting(config, "database.username", "kiranhar_plugin_dev", "What is the name of the user connecting?");
-    public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "P@ssword1.", "What is the password to the user connecting?");
+    public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "test_user", "What is the name of the database?");
+    public static final ConfigSetting DATABASE_USERNAME = new ConfigSetting(config, "database.username", "test_database", "What is the name of the user connecting?");
+    public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "Password123.", "What is the password to the user connecting?");
     public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
 
     /*
