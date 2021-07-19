@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.guis.market;
 
+import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.input.ChatPrompt;
@@ -10,6 +11,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketDeleteEvent;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
+import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
@@ -83,8 +85,11 @@ public class GUIMarketEdit extends Gui {
             ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_name").getMessage()), chat -> {
                 String possibleName = ChatColor.stripColor(chat.getMessage().trim());
 
+                MarketCategory newMarketCategory = new MarketCategory(possibleName);
+                newMarketCategory.setMarketId(market.getId());
+
                 if (this.market.getCategories().isEmpty()) {
-                    Markets.getInstance().getMarketManager().addCategoryToMarket(this.market, new MarketCategory(possibleName));
+                    Markets.getInstance().getMarketManager().addCategoryToMarket(this.market, newMarketCategory);
                     Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
                     return;
                 }
@@ -94,7 +99,7 @@ public class GUIMarketEdit extends Gui {
                     return;
                 }
 
-                Markets.getInstance().getMarketManager().addCategoryToMarket(this.market, new MarketCategory(possibleName));
+                Markets.getInstance().getMarketManager().addCategoryToMarket(this.market, newMarketCategory);
                 this.market.setUpdatedAt(System.currentTimeMillis());
                 Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
 
@@ -118,6 +123,14 @@ public class GUIMarketEdit extends Gui {
         });
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
+        setButton(5, 1, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+            if (market.getCategories().isEmpty()) {
+                Markets.getInstance().getLocale().getMessage("market_category_required").sendPrefixedMessage(e.player);
+                return;
+            }
+
+            e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market));
+        });
 
         List<MarketCategory> data = this.market.getCategories().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
         int slot = 11;

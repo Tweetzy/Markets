@@ -43,8 +43,14 @@ public class CommandAddItem extends AbstractCommand {
         Player player = (Player) sender;
 
         Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+
         if (market == null) {
             Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
+        if (market.isUnpaid()) {
+            Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 

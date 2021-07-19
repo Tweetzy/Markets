@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The current file has been created by Kiran Hart
@@ -178,5 +179,24 @@ public class Common {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
         Date date = new Date(milliseconds);
         return simpleDateFormat.format(date);
+    }
+
+    /**
+     * Used to convert seconds to days, hours, minutes, and seconds
+     *
+     * @param seconds is the amount of seconds to convert
+     * @return an array containing the total number of days, hours, minutes, and seconds remaining
+     */
+    public long[] getRemainingTimeValues(long seconds) {
+        long[] vals = new long[4];
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24L);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
+        vals[0] = day;
+        vals[1] = hours;
+        vals[2] = minute;
+        vals[3] = second;
+        return vals;
     }
 }

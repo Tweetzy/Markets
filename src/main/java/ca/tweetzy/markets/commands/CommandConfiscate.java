@@ -7,10 +7,7 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

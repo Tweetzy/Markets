@@ -22,10 +22,15 @@ import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
 import ca.tweetzy.markets.market.MarketPlayerManager;
+import ca.tweetzy.markets.market.MarketRating;
+import ca.tweetzy.markets.market.contents.MarketCategory;
+import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.request.Request;
+import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.request.RequestManager;
 import ca.tweetzy.markets.settings.LocaleSettings;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.tasks.MarketCheckTask;
 import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.transaction.TransactionManger;
@@ -35,6 +40,7 @@ import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -168,6 +174,7 @@ public class Markets extends TweetyPlugin {
                 new CommandAddItem(),
                 new CommandRequest(),
                 new CommandPayments(),
+                new CommandPayUpKeep(),
                 new CommandBank(),
                 new CommandSet(),
                 new CommandView(),
@@ -176,29 +183,55 @@ public class Markets extends TweetyPlugin {
                 new CommandSettings(),
                 new CommandConfiscate(),
                 new CommandReload(),
-                new CommandsBlockItem()
+                new CommandsBlockItem(),
+                new CommandForceSave()
         );
+
+        MarketCheckTask.startTask();
 
         // Perform the update check
         getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
         if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
-            getServer().getScheduler().runTaskTimerAsynchronously(this, this::saveData, 20L, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
+            getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
         }
-
 
         this.metrics = new Metrics(this, 7689);
     }
 
     @Override
     public void onPluginDisable() {
-        saveData();
+        saveData(false);
         instance = null;
     }
 
-    private void saveData() {
+    public void saveData(boolean async) {
         if (Settings.DATABASE_USE.getBoolean()) {
-            this.dataManager.saveMarkets(this.marketManager.getMarkets(), false);
+            this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);
+            this.dataManager.saveBlockedItems(this.marketManager.getBlockedItems(), async);
+            this.dataManager.saveTransactions(this.transactionManger.getTransactions(), async);
+            this.dataManager.savePayments(this.transactionManger.getPayments(), async);
+            this.dataManager.saveRequests(this.requestManager.getRequests(), async);
+            this.dataManager.saveBanks(this.currencyBank.getBank(), async);
+            this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
+
+            List<MarketCategory> categories = new ArrayList<>();
+            this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
+            this.dataManager.saveCategories(categories, async);
+
+            List<MarketItem> marketItems = new ArrayList<>();
+            categories.stream().map(MarketCategory::getItems).forEach(marketItems::addAll);
+            this.dataManager.saveItems(marketItems, async);
+
+            List<MarketRating> marketRatings = new ArrayList<>();
+            this.marketManager.getMarkets().stream().map(Market::getRatings).forEach(marketRatings::addAll);
+            this.dataManager.saveRatings(marketRatings, async);
+
+            List<RequestItem> requestItems = new ArrayList<>();
+            this.requestManager.getRequests().stream().map(Request::getRequestedItems).forEach(requestItems::addAll);
+            this.dataManager.saveRequestItems(requestItems, async);
+
         } else {
+            this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
             this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
             this.marketManager.saveBlockedItems();
             this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));

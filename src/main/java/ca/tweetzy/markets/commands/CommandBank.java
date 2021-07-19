@@ -4,7 +4,6 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIBank;
@@ -13,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +61,8 @@ public class CommandBank extends AbstractCommand {
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
+        if (args.length == 1) return Collections.singletonList("add");
+        if (args.length == 2) return Collections.singletonList("-a");
         return null;
     }
 

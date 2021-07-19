@@ -55,8 +55,16 @@ public class LocaleSettings {
         languageNodes.put("click_currency_item_request", "&aPlease left/right click the item you wish to use as currency for this request");
         languageNodes.put("place_sell_item", "&cPlease place the item you want to sell in the gui.");
         languageNodes.put("place_currency_item", "&cPlease place item you wish to use as currency in the gui.");
+        languageNodes.put("select_market_category", "&cPlease select a market category");
         languageNodes.put("added_currency_to_bank", "&aYou added &2%amount% %currency_item% &ato your bank");
         languageNodes.put("claim_currency", "&cPlease claim your outstanding payments first.");
+        languageNodes.put("already_left_rating", "&cYou already left a rating on this market.");
+        languageNodes.put("must_wait_to_change_rating", "&cYou must wait &4%remaining_days%d %remaining_hours%h %remaining_minutes%m %remaining_seconds%s &cbefore you can change your rating");
+        languageNodes.put("rating_message_too_long", "&cYour rating message is too long");
+        languageNodes.put("cannot_rate_own_market", "&cYou cannot rate your own market...");
+        languageNodes.put("upkeep_fee_paid", "&aYou paid the market up keep fee of &2$%upkeep_fee%");
+        languageNodes.put("upkeep_fee_not_paid", "&cYou could not pay your market upkeep fee, your market has been locked until you do so.");
+        languageNodes.put("upkeep_already_paid", "&cYour market upkeep fee is already paid.");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -74,7 +82,10 @@ public class LocaleSettings {
         languageNodes.put("misc.price is for stack.true", "True");
         languageNodes.put("misc.price is for stack.false", "False");
         languageNodes.put("misc.default category description", "Default Category Description");
+        languageNodes.put("misc.default market description", "&7Welcome to my market!");
         languageNodes.put("misc.category not selected", "&cNone Selected");
+        languageNodes.put("misc.no_ratings", "&cNo Ratings");
+        languageNodes.put("misc.no_rating_message", "&cNo Message");
 
         languageNodes.put("command_syntax.add_category", "add category <name> [description]");
         languageNodes.put("command_syntax.add_item", "add item <category> <price> [priceIsForStack]");
@@ -92,6 +103,7 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.block_item", "block item [list]");
         languageNodes.put("command_syntax.payments", "payments [collect]");
         languageNodes.put("command_syntax.currency", "bank [add] [-a]");
+        languageNodes.put("command_syntax.pay_upkeep", "pay upkeep");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -109,6 +121,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.block_item", "Blacklist an item or view all blocked items.");
         languageNodes.put("command_description.payments", "Collect any payments of custom currency");
         languageNodes.put("command_description.bank", "View your currency bank/add currency");
+        languageNodes.put("command_description.pay_upkeep", "Pay your outstanding upkeep fee");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");
@@ -116,6 +129,7 @@ public class LocaleSettings {
         languageNodes.put("prompt.enter_category_description", "&aEnter the new description for the category:");
         languageNodes.put("prompt.enter_market_item_price", "&aEnter the new price:");
         languageNodes.put("prompt.enter_withdraw_amount", "&aEnter the amount you wish to withdraw:");
+        languageNodes.put("prompt.enter_rating_message", "&aPlease enter your rating message:");
      }
 
     public static void setup() {

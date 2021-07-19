@@ -5,7 +5,6 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.guis.payment.GUIPaymentCollection;
 import ca.tweetzy.markets.request.Request;

@@ -2,6 +2,7 @@ package ca.tweetzy.markets.transaction;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.MarketsAPI;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
@@ -65,13 +66,17 @@ public class TransactionManger {
     }
 
     public void loadPayments() {
-        Markets.newChain().async(() -> {
-            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("payment collection");
-            if (section == null || section.getKeys(false).size() == 0) return;
-            Markets.getInstance().getData().getConfigurationSection("payment collection").getKeys(false).forEach(payment -> {
-                addPayment((Payment) MarketsAPI.getInstance().convertBase64ToObject(Markets.getInstance().getData().getString("payment collection." + payment)));
-            });
-        }).execute();
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getPayments(callback -> callback.forEach(this::addPayment));
+        } else {
+            Markets.newChain().async(() -> {
+                ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("payment collection");
+                if (section == null || section.getKeys(false).size() == 0) return;
+                Markets.getInstance().getData().getConfigurationSection("payment collection").getKeys(false).forEach(payment -> {
+                    addPayment((Payment) MarketsAPI.getInstance().convertBase64ToObject(Markets.getInstance().getData().getString("payment collection." + payment)));
+                });
+            }).execute();
+        }
     }
 
     public void saveTransactions(Transaction... transactions) {
@@ -97,22 +102,26 @@ public class TransactionManger {
     }
 
     public void loadTransactions() {
-        Markets.newChain().async(() -> {
-            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("transactions");
-            if (section == null || section.getKeys(false).size() == 0) return;
-            Markets.getInstance().getData().getConfigurationSection("transactions").getKeys(false).forEach(transactionId -> {
-                Transaction transaction = new Transaction(
-                        UUID.fromString(transactionId),
-                        UUID.fromString(Markets.getInstance().getData().getString("transactions." + transactionId + ".market id")),
-                        UUID.fromString(Markets.getInstance().getData().getString("transactions." + transactionId + ".purchaser")),
-                        Markets.getInstance().getData().getItemStack("markets." + transactionId + ".item"),
-                        Markets.getInstance().getData().getInt("transactions." + transactionId + ".purchase quantity"),
-                        Markets.getInstance().getData().getDouble("transactions." + transactionId + ".price")
-                );
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getTransactions(callback -> callback.forEach(this::addTransaction));
+        } else {
+            Markets.newChain().async(() -> {
+                ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("transactions");
+                if (section == null || section.getKeys(false).size() == 0) return;
+                Markets.getInstance().getData().getConfigurationSection("transactions").getKeys(false).forEach(transactionId -> {
+                    Transaction transaction = new Transaction(
+                            UUID.fromString(transactionId),
+                            UUID.fromString(Markets.getInstance().getData().getString("transactions." + transactionId + ".market id")),
+                            UUID.fromString(Markets.getInstance().getData().getString("transactions." + transactionId + ".purchaser")),
+                            Markets.getInstance().getData().getItemStack("markets." + transactionId + ".item"),
+                            Markets.getInstance().getData().getInt("transactions." + transactionId + ".purchase quantity"),
+                            Markets.getInstance().getData().getDouble("transactions." + transactionId + ".price")
+                    );
 
-                transaction.setTime(Markets.getInstance().getData().getLong("transactions." + transactionId + ".time"));
-                addTransaction(transaction);
-            });
-        }).execute();
+                    transaction.setTime(Markets.getInstance().getData().getLong("transactions." + transactionId + ".time"));
+                    addTransaction(transaction);
+                });
+            }).execute();
+        }
     }
 }

@@ -5,6 +5,9 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
+import ca.tweetzy.markets.settings.Settings;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -21,6 +24,10 @@ public class MarketManager {
 
     private final List<Market> markets = Collections.synchronizedList(new ArrayList<>());
     private final List<BlockedItem> blockedItems = Collections.synchronizedList(new ArrayList<>());
+
+    @Setter
+    @Getter
+    private long feeLastChargedOn = -1L;
 
     public void addMarket(Market market) {
         Objects.requireNonNull(market, "Cannot add a null Market to market list");
@@ -81,11 +88,15 @@ public class MarketManager {
     }
 
     public void loadBlockedItems() {
-        Markets.newChain().async(() -> {
-            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("blocked items");
-            if (section == null || section.getKeys(false).size() == 0) return;
-            Markets.getInstance().getData().getConfigurationSection("blocked items").getKeys(false).forEach(item -> addBlockedItem(new BlockedItem(UUID.fromString(item), Markets.getInstance().getData().getItemStack("blocked items." + item))));
-        }).execute();
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getBlockedItems(callback -> callback.forEach(this::addBlockedItem));
+        } else {
+            Markets.newChain().async(() -> {
+                ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("blocked items");
+                if (section == null || section.getKeys(false).size() == 0) return;
+                Markets.getInstance().getData().getConfigurationSection("blocked items").getKeys(false).forEach(item -> addBlockedItem(new BlockedItem(UUID.fromString(item), Markets.getInstance().getData().getItemStack("blocked items." + item))));
+            }).execute();
+        }
     }
 
     public void saveMarkets(Market... markets) {
@@ -106,6 +117,7 @@ public class MarketManager {
         Markets.getInstance().getData().set(node + ".description", market.getDescription());
         Markets.getInstance().getData().set(node + ".type", market.getMarketType().name());
         Markets.getInstance().getData().set(node + ".open", market.isOpen());
+        Markets.getInstance().getData().set(node + ".unpaid", market.isUnpaid());
         Markets.getInstance().getData().set(node + ".created at", Markets.getInstance().getData().isSet(node + ".created at") ? Markets.getInstance().getData().get(node + ".created at") : System.currentTimeMillis());
         Markets.getInstance().getData().set(node + ".updated at", Markets.getInstance().getData().isSet(node + ".updated at") ? Markets.getInstance().getData().get(node + ".updated at") : System.currentTimeMillis());
 
@@ -117,6 +129,7 @@ public class MarketManager {
                 Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".rater", rating.getRater().toString());
                 Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".stars", rating.getStars());
                 Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".message", rating.getMessage());
+                Markets.getInstance().getData().set(node + ".ratings." + rating.getId().toString() + ".time", rating.getTime());
             });
         }
 
@@ -145,75 +158,96 @@ public class MarketManager {
     }
 
     public void loadMarkets() {
-        Markets.newChain().async(() -> {
-            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("markets");
-            if (section == null || section.getKeys(false).size() == 0) return;
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getMarkets(callback -> {
+                callback.forEach(this::addMarket);
+                Markets.getInstance().getDataManager().getCategories(categories -> categories.forEach(category -> {
+                    this.markets.stream().filter(market -> market.getId().equals(category.getMarketId())).findFirst().get().getCategories().add(category);
+                }));
 
-            Markets.getInstance().getData().getConfigurationSection("markets").getKeys(false).forEach(marketId -> {
-                Market market = new Market(UUID.fromString(marketId), UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".owner")), Markets.getInstance().getData().getString("markets." + marketId + ".owner name"), Markets.getInstance().getData().getString("markets." + marketId + ".name"), MarketType.valueOf(Markets.getInstance().getData().getString("markets." + marketId + ".type")));
-                market.setCreatedAt(Markets.getInstance().getData().getLong("markets." + marketId + ".created at"));
-                market.setUpdatedAt(Markets.getInstance().getData().getLong("markets." + marketId + ".updated at"));
-                market.setOpen(Markets.getInstance().getData().getBoolean("markets." + marketId + ".open"));
-                market.setDescription(Markets.getInstance().getData().getString("markets." + marketId + ".description"));
+                Markets.getInstance().getDataManager().getRatings(ratings -> ratings.forEach(rating -> {
+                    this.markets.stream().filter(market -> market.getId().equals(rating.getMarketId())).findFirst().get().getRatings().add(rating);
+                }));
+            });
 
-                ConfigurationSection categories = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories");
-                ConfigurationSection items = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items");
-                ConfigurationSection ratings = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings");
-
-                if (ratings != null && ratings.getKeys(false).size() != 0) {
-                    List<MarketRating> marketRatings = new ArrayList<>();
-                    Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings").getKeys(false).forEach(rating -> {
-                        MarketRating marketRating = new MarketRating(
-                                UUID.fromString(rating),
-                                UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".rater")),
-                                Markets.getInstance().getData().getInt("markets." + marketId + ".ratings." + rating + ".stars"),
-                                Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".message")
-                        );
-
-                        marketRating.setMarketId(market.getId());
-                        marketRatings.add(marketRating);
-                    });
-
-                    market.setRatings(marketRatings);
+            Markets.getInstance().getDataManager().getUpKeepPaidDate(callback -> this.feeLastChargedOn = callback);
+        } else {
+            Markets.newChain().async(() -> {
+                if (Markets.getInstance().getData().isSet("up keep")) {
+                    this.feeLastChargedOn = Markets.getInstance().getData().getLong("up keep");
                 }
 
-                if (categories != null && categories.getKeys(false).size() != 0) {
-                    List<MarketItem> marketItems = new ArrayList<>();
-                    if (items != null && items.getKeys(false).size() != 0) {
-                        Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items").getKeys(false).forEach(marketItem -> {
-                            marketItems.add(new MarketItem(
-                                    UUID.fromString(marketItem),
-                                    Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".item"),
-                                    Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".currency item"),
-                                    Markets.getInstance().getData().getDouble("markets." + marketId + ".items." + marketItem + ".price"),
-                                    Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".use item currency"),
-                                    Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".price for stack"),
-                                    UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".items." + marketItem + ".category"))
-                            ));
+                ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("markets");
+                if (section == null || section.getKeys(false).size() == 0) return;
+
+                Markets.getInstance().getData().getConfigurationSection("markets").getKeys(false).forEach(marketId -> {
+                    Market market = new Market(UUID.fromString(marketId), UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".owner")), Markets.getInstance().getData().getString("markets." + marketId + ".owner name"), Markets.getInstance().getData().getString("markets." + marketId + ".name"), MarketType.valueOf(Markets.getInstance().getData().getString("markets." + marketId + ".type")));
+                    market.setCreatedAt(Markets.getInstance().getData().getLong("markets." + marketId + ".created at"));
+                    market.setUpdatedAt(Markets.getInstance().getData().getLong("markets." + marketId + ".updated at"));
+                    market.setOpen(Markets.getInstance().getData().getBoolean("markets." + marketId + ".open"));
+                    market.setUnpaid(Markets.getInstance().getData().getBoolean("markets." + marketId + ".unpaid"));
+                    market.setDescription(Markets.getInstance().getData().getString("markets." + marketId + ".description"));
+
+                    ConfigurationSection categories = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories");
+                    ConfigurationSection items = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items");
+                    ConfigurationSection ratings = Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings");
+
+                    if (ratings != null && ratings.getKeys(false).size() != 0) {
+                        List<MarketRating> marketRatings = new ArrayList<>();
+                        Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".ratings").getKeys(false).forEach(rating -> {
+                            MarketRating marketRating = new MarketRating(
+                                    UUID.fromString(rating),
+                                    UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".rater")),
+                                    Markets.getInstance().getData().getInt("markets." + marketId + ".ratings." + rating + ".stars"),
+                                    Markets.getInstance().getData().getString("markets." + marketId + ".ratings." + rating + ".message"),
+                                    Markets.getInstance().getData().getLong("markets." + marketId + ".ratings." + rating + ".time")
+                            );
+
+                            marketRating.setMarketId(market.getId());
+                            marketRatings.add(marketRating);
                         });
+
+                        market.setRatings(marketRatings);
                     }
 
-                    List<MarketCategory> marketCategories = new ArrayList<>();
-                    Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories").getKeys(false).forEach(categoryNode -> {
-                        MarketCategory marketCategory = new MarketCategory(
-                                UUID.fromString(categoryNode),
-                                Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".name"),
-                                Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".display name"),
-                                Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".description"),
-                                XMaterial.matchXMaterial(Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".icon")).get().parseItem(),
-                                marketItems.stream().filter(item -> item.getCategoryId().equals(UUID.fromString(categoryNode))).collect(Collectors.toList()),
-                                Markets.getInstance().getData().getBoolean("markets." + marketId + ".categories." + categoryNode + ".sale.active"),
-                                Markets.getInstance().getData().getDouble("markets." + marketId + ".categories." + categoryNode + ".sale.amount")
-                        );
+                    if (categories != null && categories.getKeys(false).size() != 0) {
+                        List<MarketItem> marketItems = new ArrayList<>();
+                        if (items != null && items.getKeys(false).size() != 0) {
+                            Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items").getKeys(false).forEach(marketItem -> {
+                                marketItems.add(new MarketItem(
+                                        UUID.fromString(marketItem),
+                                        Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".item"),
+                                        Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".currency item"),
+                                        Markets.getInstance().getData().getDouble("markets." + marketId + ".items." + marketItem + ".price"),
+                                        Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".use item currency"),
+                                        Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".price for stack"),
+                                        UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".items." + marketItem + ".category"))
+                                ));
+                            });
+                        }
 
-                        marketCategory.setMarketId(market.getId());
-                        marketCategories.add(marketCategory);
-                    });
-                    market.setCategories(marketCategories);
-                }
+                        List<MarketCategory> marketCategories = new ArrayList<>();
+                        Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".categories").getKeys(false).forEach(categoryNode -> {
+                            MarketCategory marketCategory = new MarketCategory(
+                                    UUID.fromString(categoryNode),
+                                    Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".name"),
+                                    Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".display name"),
+                                    Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".description"),
+                                    XMaterial.matchXMaterial(Markets.getInstance().getData().getString("markets." + marketId + ".categories." + categoryNode + ".icon")).get().parseItem(),
+                                    marketItems.stream().filter(item -> item.getCategoryId().equals(UUID.fromString(categoryNode))).collect(Collectors.toList()),
+                                    Markets.getInstance().getData().getBoolean("markets." + marketId + ".categories." + categoryNode + ".sale.active"),
+                                    Markets.getInstance().getData().getDouble("markets." + marketId + ".categories." + categoryNode + ".sale.amount")
+                            );
 
-                addMarket(market);
-            });
-        }).execute();
+                            marketCategory.setMarketId(market.getId());
+                            marketCategories.add(marketCategory);
+                        });
+                        market.setCategories(marketCategories);
+                    }
+
+                    addMarket(market);
+                });
+            }).execute();
+        }
     }
 }

@@ -1,12 +1,14 @@
 package ca.tweetzy.markets.guis.category;
 
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketCategoryRemoveEvent;
+import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.guis.items.GUIIconSelect;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.market.Market;
@@ -44,7 +46,7 @@ public class GUICategorySettings extends Gui {
         setAcceptsItems(false);
         setUseLockedCells(true);
         setAllowShiftClick(false);
-        setDefaultItem(Settings.GUI_CATEGORY_EDIT_FILL_ITEM.getMaterial().parseItem());
+        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_CATEGORY_EDIT_FILL_ITEM.getMaterial()));
         setRows(6);
 
         draw();
@@ -56,7 +58,7 @@ public class GUICategorySettings extends Gui {
 
         // make border
         Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 10, 17, 19, 26, 28, 35, 37, 44, 46, 47, 48, 49, 50, 51, 52, 53).forEach(i -> {
-            setItem(i, Settings.GUI_CATEGORY_EDIT_BORDER_ITEM.getMaterial().parseItem());
+            setItem(i, GuiUtils.getBorderItem(Settings.GUI_CATEGORY_EDIT_BORDER_ITEM.getMaterial()));
             if (Settings.GUI_CATEGORY_EDIT_GLOW_BORDER.getBoolean()) highlightItem(i);
         });
 
@@ -116,6 +118,9 @@ public class GUICategorySettings extends Gui {
         });
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
+        setButton(5, 1, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+            e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory,1D, false, false, null, null));
+        });
 
         Markets.newChain().async(() -> {
             List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());

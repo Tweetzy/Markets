@@ -34,6 +34,11 @@ public class CommandAddCategory extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (market.isUnpaid()) {
+            Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         String categoryName = args[0].toLowerCase();
 
         StringBuilder description = null;
@@ -50,6 +55,7 @@ public class CommandAddCategory extends AbstractCommand {
         }
 
         MarketCategory marketCategory = description == null ? new MarketCategory(categoryName) : new MarketCategory(categoryName, description.toString().trim());
+        marketCategory.setMarketId(market.getId());
 
         MarketCategoryCreateEvent marketCategoryCreateEvent = new MarketCategoryCreateEvent(market, marketCategory);
         Bukkit.getPluginManager().callEvent(marketCategoryCreateEvent);

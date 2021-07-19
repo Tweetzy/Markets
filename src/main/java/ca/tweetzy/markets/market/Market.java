@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.market;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class Market {
     private String description;
     private MarketType marketType;
     private boolean open;
+    private boolean unpaid;
 
     private long createdAt;
     private long updatedAt;
@@ -39,13 +41,14 @@ public class Market {
         this.owner = owner;
         this.ownerName = ownerName;
         this.name = name;
-        this.description = "&7Welcome to my market";
+        this.description = Markets.getInstance().getLocale().getMessage("misc.default market description").getMessage();
         this.marketType = marketType;
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
         this.categories = new ArrayList<>();
         this.ratings = new ArrayList<>();
         this.open = true;
+        this.unpaid = false;
     }
 
     public Market(UUID owner, String ownerName, String name) {

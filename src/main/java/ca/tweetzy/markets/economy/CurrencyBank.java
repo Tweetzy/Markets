@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.economy;
 
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -82,23 +83,27 @@ public class CurrencyBank {
     }
 
     public void loadBank() {
-        Markets.newChain().async(() -> {
-            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("player banks");
-            if (section == null || section.getKeys(false).size() == 0) return;
+       if (Settings.DATABASE_USE.getBoolean()) {
+           Markets.getInstance().getDataManager().getBanks(callback -> callback.forEach(banks -> addCurrency(banks.getFirst(), banks.getSecond(), banks.getThird())));
+       } else {
+           Markets.newChain().async(() -> {
+               ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("player banks");
+               if (section == null || section.getKeys(false).size() == 0) return;
 
-            section.getKeys(false).forEach(key -> {
-                ConfigurationSection currencySection = Markets.getInstance().getData().getConfigurationSection("player banks." + key + ".currencies");
-                if (currencySection == null || currencySection.getKeys(false).size() == 0) return;
+               section.getKeys(false).forEach(key -> {
+                   ConfigurationSection currencySection = Markets.getInstance().getData().getConfigurationSection("player banks." + key + ".currencies");
+                   if (currencySection == null || currencySection.getKeys(false).size() == 0) return;
 
-                currencySection.getKeys(false).forEach(currencyKey -> {
-                    addCurrency(
-                            UUID.fromString(key),
-                            Markets.getInstance().getData().getItemStack("player banks." + key + ".currencies." + currencyKey + ".item"),
-                            Markets.getInstance().getData().getInt("player banks." + key + ".currencies." + currencyKey + ".total"
-                            )
-                    );
-                });
-            });
-        }).execute();
+                   currencySection.getKeys(false).forEach(currencyKey -> {
+                       addCurrency(
+                               UUID.fromString(key),
+                               Markets.getInstance().getData().getItemStack("player banks." + key + ".currencies." + currencyKey + ".item"),
+                               Markets.getInstance().getData().getInt("player banks." + key + ".currencies." + currencyKey + ".total"
+                               )
+                       );
+                   });
+               });
+           }).execute();
+       }
     }
 }

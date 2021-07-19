@@ -51,7 +51,7 @@ public class GUIMarketList extends Gui {
 
         Markets.newChain().asyncFirst(() -> {
             this.markets = Markets.getInstance().getMarketManager().getMarkets();
-            return this.markets.stream().filter(Market::isOpen).skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+            return this.markets.stream().filter(market -> market.isOpen() && !market.isUnpaid()).skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.markets.size() / (double) 28L));
             setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());

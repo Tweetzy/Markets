@@ -33,6 +33,11 @@ public class CommandView extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (market.isUnpaid() && market.getOwner().equals(player.getUniqueId())) {
+            Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         if (!market.isOpen() && market.getOwner().equals(player.getUniqueId())) {
             Markets.getInstance().getLocale().getMessage("market_closed").sendPrefixedMessage(player);
             return ReturnType.FAILURE;

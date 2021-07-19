@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.guis.items;
 
+import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
@@ -54,7 +55,7 @@ public class GUIAddItem extends Gui {
         this.currency = currency;
         setTitle(TextUtils.formatText(Settings.GUI_ADD_ITEM_TITLE.getString()));
         setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_ADD_ITEM_FILL_ITEM.getMaterial()));
-        setAllowDrops(false);
+        setAllowDrops(true);
         setAcceptsItems(true);
         setUseLockedCells(true);
         setAllowShiftClick(false);
@@ -109,6 +110,16 @@ public class GUIAddItem extends Gui {
 
             if (this.item == null || this.item.getType() == XMaterial.AIR.parseMaterial()) {
                 Markets.getInstance().getLocale().getMessage("place_sell_item").sendPrefixedMessage(e.player);
+                return;
+            }
+
+            if (this.market.getCategories().isEmpty()) {
+                Markets.getInstance().getLocale().getMessage("market_category_required").sendPrefixedMessage(player);
+                return;
+            }
+
+            if (this.selectedCategory == null) {
+                Markets.getInstance().getLocale().getMessage("select_market_category").sendPrefixedMessage(player);
                 return;
             }
 

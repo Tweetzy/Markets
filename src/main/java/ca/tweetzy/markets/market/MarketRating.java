@@ -21,15 +21,17 @@ public class MarketRating {
     private UUID rater;
     private int stars;
     private String message;
+    private long time;
 
-    public MarketRating(UUID id, UUID rater, int stars, String message) {
+    public MarketRating(UUID id, UUID rater, int stars, String message, long time) {
         this.id = id;
         this.rater = rater;
         this.stars = stars;
         this.message = message;
+        this.time = time;
     }
 
     public MarketRating(UUID rater, int stars, String message) {
-        this(UUID.randomUUID(), rater, stars, message);
+        this(UUID.randomUUID(), rater, stars, message, System.currentTimeMillis());
     }
 }

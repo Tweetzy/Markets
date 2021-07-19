@@ -1,12 +1,9 @@
 package ca.tweetzy.markets.request;
 
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.transaction.Payment;
-import org.bukkit.Bukkit;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,72 +67,36 @@ public class RequestManager {
     }
 
     public void loadRequests() {
-        ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("open requests");
-        if (!Markets.getInstance().getData().contains("versioning.request system")) {
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getRequests(callback -> callback.forEach(this::addRequest));
+        } else {
+            ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("open requests");
             if (section == null || section.getKeys(false).size() == 0) return;
 
-            // markets is still using the old request system
-            Markets.newChain().sync(() -> {
-                Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&cMarkets found request(s) using the old data format, it will now attempt to send fulfilled requests over to the payment collection GUI, any non-fulfilled requests will be removed."));
-                Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&cThis is going to be ran synchronously, it may take a couple seconds. This will only happen once."));
-                loadOldRequests();
-            }).execute();
-            return;
+            Markets.newChain().async(() -> Markets.getInstance().getData().getConfigurationSection("open requests").getKeys(false).forEach(requestId -> {
+                Request request = new Request(
+                        UUID.fromString(requestId),
+                        UUID.fromString(Markets.getInstance().getData().getString("open requests." + requestId + ".requester")),
+                        Markets.getInstance().getData().getLong("open requests." + requestId + ".date"),
+                        null
+                );
+
+                List<RequestItem> requestItems = new ArrayList<>();
+
+                Markets.getInstance().getData().getConfigurationSection("open requests." + requestId + ".items").getKeys(false).forEach(rItem -> requestItems.add(new RequestItem(
+                        request.getId(),
+                        Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".item"),
+                        Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".currency"),
+                        Markets.getInstance().getData().getInt("open requests." + requestId + ".items." + rItem + ".amount"),
+                        Markets.getInstance().getData().getDouble("open requests." + requestId + ".items." + rItem + ".price"),
+                        Markets.getInstance().getData().getBoolean("open requests." + requestId + ".items." + rItem + ".fulfilled"),
+                        Markets.getInstance().getData().getBoolean("open requests." + requestId + ".items." + rItem + ".use custom currency")
+                )));
+
+                request.setRequestedItems(requestItems);
+                addRequest(request);
+            })).execute();
         }
-
-        if (section == null || section.getKeys(false).size() == 0) return;
-        Markets.newChain().async(() -> Markets.getInstance().getData().getConfigurationSection("open requests").getKeys(false).forEach(requestId -> {
-            Request request = new Request(
-                    UUID.fromString(requestId),
-                    UUID.fromString(Markets.getInstance().getData().getString("open requests." + requestId + ".requester")),
-                    Markets.getInstance().getData().getLong("open requests." + requestId + ".date"),
-                    null
-            );
-
-            List<RequestItem> requestItems = new ArrayList<>();
-
-            Markets.getInstance().getData().getConfigurationSection("open requests." + requestId + ".items").getKeys(false).forEach(rItem -> requestItems.add(new RequestItem(
-                    request.getId(),
-                    Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".item"),
-                    Markets.getInstance().getData().getItemStack("open requests." + requestId + ".items." + rItem + ".currency"),
-                    Markets.getInstance().getData().getInt("open requests." + requestId + ".items." + rItem + ".amount"),
-                    Markets.getInstance().getData().getDouble("open requests." + requestId + ".items." + rItem + ".price"),
-                    Markets.getInstance().getData().getBoolean("open requests." + requestId + ".items." + rItem + ".fulfilled"),
-                    Markets.getInstance().getData().getBoolean("open requests." + requestId + ".items." + rItem + ".use custom currency")
-            )));
-
-            request.setRequestedItems(requestItems);
-            addRequest(request);
-        })).execute();
-    }
-
-    private void loadOldRequests() {
-        List<OldRequest> oldRequests = new ArrayList<>();
-
-        // Load the old request format
-        Markets.getInstance().getData().getConfigurationSection("open requests").getKeys(false).forEach(requestId -> {
-            OldRequest request = new OldRequest(
-                    UUID.fromString(requestId),
-                    UUID.fromString(Markets.getInstance().getData().getString("open requests." + requestId + ".requester")),
-                    Markets.getInstance().getData().getItemStack("open requests." + requestId + ".item"),
-                    Markets.getInstance().getData().getInt("open requests." + requestId + ".amount"),
-                    Markets.getInstance().getData().getDouble("open requests." + requestId + ".price"));
-            request.setFulfilled(Markets.getInstance().getData().getBoolean("open requests." + requestId + ".fulfilled"));
-            if (request.isFulfilled()) {
-                oldRequests.add(request);
-            }
-        });
-
-        oldRequests.forEach(oldRequest -> {
-            ItemStack item = oldRequest.getItem().clone();
-            item.setAmount(oldRequest.getAmount());
-            Markets.getInstance().getTransactionManger().addPayment(new Payment(oldRequest.getRequester(), item));
-        });
-
-        oldRequests.clear();
-        Markets.getInstance().getData().set("open requests", null);
-        Markets.getInstance().getData().set("versioning.request system", 2);
-        Markets.getInstance().getData().save();
     }
 }
 

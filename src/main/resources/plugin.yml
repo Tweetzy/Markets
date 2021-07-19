@@ -5,7 +5,7 @@ api-version: 1.13
 description: The ultimate player shop plugin
 authors: [Kiran Hart]
 website: https://tweetzy.ca
-softdepend: [Vault]
+softdepend: [Vault, PlayerPoints]
 
 commands:
   markets:
@@ -28,6 +28,8 @@ permissions:
     markets.cmd.reload: true
     markets.cmd.remove: true
     markets.cmd.confiscate: true
+    markets.cmd.forcesave: true
+    markets.cmd.payupkeep: true
   markets.cmd:
     description: Allows the user to open the main market menu
     default: op
@@ -66,4 +68,10 @@ permissions:
     default: op
   markets.cmd.confiscate:
     description: Allows the user to confiscate a market's items
+    default: op
+  markets.cmd.forcesave:
+    description: Allows the user to run the force save command
+    default: op
+  markets.cmd.payupkeep:
+    description: Allows the user to pay their outstanding upkeep fees
     default: op

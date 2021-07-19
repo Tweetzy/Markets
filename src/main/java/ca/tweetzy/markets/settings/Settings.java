@@ -34,9 +34,17 @@ public class Settings {
     public static final ConfigSetting DEFAULT_MAX_ALLOWED_REQUESTS_ITEMS = new ConfigSetting(config, "setting.default max allowed requests", 12, "If limit total requests by permission is enabled, this is will be default allowed request amount");
     public static final ConfigSetting ALLOW_OWNER_TO_BUY_OWN_ITEMS = new ConfigSetting(config, "setting.allow owner to buy own items", false, "For whatever reason, if you want the market owner to buy their own items, enable this.");
     public static final ConfigSetting ALLOW_OWNER_FULFILL_REQUEST = new ConfigSetting(config, "setting.allow owner to fulfill requests", false, "For whatever reason, if you want the requester to fulfill their own request, enable this.");
+    public static final ConfigSetting ALLOW_RATING_CHANGE = new ConfigSetting(config, "setting.ratings.allow change", true, "Should players be allowed to change their rating on a market?");
+    public static final ConfigSetting RATING_CHANGE_DELAY = new ConfigSetting(config, "setting.ratings.change delay", 86400, "How many seconds must a player wait before they can change their rating?");
+    public static final ConfigSetting RATING_MAX_MESSAGE_LENGTH = new ConfigSetting(config, "setting.ratings.max message length", 41, "What is the max length a rating message can be?");
+    public static final ConfigSetting MARKET_CHECK_DELAY = new ConfigSetting(config, "setting.run market check delay", 10, "How often (in seconds) should markets check for things like the upkeep charge?");
 
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
+
+    public static final ConfigSetting UPKEEP_FEE_USE = new ConfigSetting(config, "setting.upkeep fee.use", true, "Should markets charge players after x amount of time to keep their market open?");
+    public static final ConfigSetting UPKEEP_FEE_FEE = new ConfigSetting(config, "setting.upkeep fee.fee", 2500, "How much should the upkeep fee cost?");
+    public static final ConfigSetting UPKEEP_FEE_CHARGE_EVERY = new ConfigSetting(config, "setting.upkeep fee.delay", 604800, "How many seconds should pass before upkeep fees are collected?");
 
     public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", false, "If enabled, when a sale is made, percentage of the sale will be removed / added");
     public static final ConfigSetting TAX_BUYER_INSTEAD_OF_SELLER = new ConfigSetting(config, "setting.tax.tax buyer instead of seller", true, "If enabled, markets will charge the buyer tax instead of the seller");
@@ -50,7 +58,7 @@ public class Settings {
     /*  ===============================
      *         DATABASE OPTIONS
      *  ===============================*/
-    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", false, "Should the plugin use a database to store shop data?");
+    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", true, "Should the plugin use a database to store shop data?");
     public static final ConfigSetting DATABASE_HOST = new ConfigSetting(config, "database.host", "kiranhart.com", "What is the connection url/host");
     public static final ConfigSetting DATABASE_PORT = new ConfigSetting(config, "database.port", 3306, "What is the port to database (default is 3306)");
     public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "kiranhar_plugin_dev", "What is the name of the database?");
@@ -160,6 +168,12 @@ public class Settings {
             "&cthis action &c&lCANNOT &cbe undone!"
     ));
 
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_ADD_ITEM_ITEM = new ConfigSetting(config, "guis.market edit.items.add item.item", XMaterial.ENDER_EYE.name());
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_ADD_ITEM_NAME = new ConfigSetting(config, "guis.market edit.items.add item.name", "&eAdd Item");
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_ADD_ITEM_LORE = new ConfigSetting(config, "guis.market edit.items.add item.lore", Collections.singletonList(
+            "&7Click to add an item to your market"
+    ));
+
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_CATEGORY_NAME = new ConfigSetting(config, "guis.market edit.items.category.name", "%category_display_name%");
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_CATEGORY_LORE = new ConfigSetting(config, "guis.market edit.items.category.lore", Collections.singletonList("&7Click to edit this category"));
 
@@ -191,6 +205,12 @@ public class Settings {
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ICON_NAME = new ConfigSetting(config, "guis.category edit.items.edit icon.name", "&eIcon");
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ICON_LORE = new ConfigSetting(config, "guis.category edit.items.edit icon.lore", Collections.singletonList(
             "&7Click to change this category's icon"
+    ));
+
+    public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM = new ConfigSetting(config, "guis.category edit.items.add item.item", XMaterial.ENDER_EYE.name());
+    public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME = new ConfigSetting(config, "guis.category edit.items.add item.name", "&eAdd Item");
+    public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE = new ConfigSetting(config, "guis.category edit.items.add item.lore", Collections.singletonList(
+            "&7Click to add an item to this category"
     ));
 
     public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_EMPTY_ITEM = new ConfigSetting(config, "guis.category edit.items.empty.item", XMaterial.HOPPER.name());
@@ -288,6 +308,17 @@ public class Settings {
             "",
             "&7Click to view items this in category"
     ));
+
+    public static final ConfigSetting GUI_MARKET_VIEW_ITEMS_RATINGS_USE_CUSTOM_SKULL = new ConfigSetting(config, "guis.market view.items.ratings.use custom skull", true, "If enabled, markets will use a custom textured skull (star)");
+    public static final ConfigSetting GUI_MARKET_VIEW_ITEMS_RATINGS_CUSTOM_SKULL_LINK = new ConfigSetting(config, "guis.market view.items.ratings.custom skull link", "1c8e0cfebc7f9c7e16fbaaae025d1b1d19d5ee633666bcf25fa0b40d5bd21bcd");
+    public static final ConfigSetting GUI_MARKET_VIEW_ITEMS_RATINGS_ITEM = new ConfigSetting(config, "guis.market view.items.ratings.item", XMaterial.PAPER.name());
+    public static final ConfigSetting GUI_MARKET_VIEW_ITEMS_RATINGS_NAME = new ConfigSetting(config, "guis.market view.items.ratings.name", "&eMarket Ratings");
+    public static final ConfigSetting GUI_MARKET_VIEW_ITEMS_RATINGS_LORE = new ConfigSetting(config, "guis.market view.items.ratings.lore", Arrays.asList(
+            "&7Average Rating&f: &e%average_rating_stars%",
+            "",
+            "&7Left-Click to view all ratings",
+            "&7Right-Click to leave a rating"
+    ), "%average_rating_number% can be used instead of %average_rating_stars%");
 
     public static final ConfigSetting GUI_MARKET_LIST_TITLE = new ConfigSetting(config, "guis.market list.title", "&eOpen Markets");
     public static final ConfigSetting GUI_MARKET_LIST_GLOW_BORDER = new ConfigSetting(config, "guis.market list.glow border", true);
@@ -573,6 +604,65 @@ public class Settings {
             "&7Total Stored&f: &e%currency_amount%",
             "&7Left-Click to withdraw"
     ));
+
+    /*
+    ==================================
+           RATINGS LIST GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_RATINGS_LIST_TITLE = new ConfigSetting(config, "guis.ratings list.title", "&eMarket &f- &7Ratings");
+    public static final ConfigSetting GUI_RATINGS_LIST_GLOW_BORDER = new ConfigSetting(config, "guis.ratings list.glow border", true);
+    public static final ConfigSetting GUI_RATINGS_LIST_FILL_ITEM = new ConfigSetting(config, "guis.ratings list.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_RATINGS_LIST_BORDER_ITEM = new ConfigSetting(config, "guis.ratings list.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_RATINGS_LIST_RATING_ITEM = new ConfigSetting(config, "guis.ratings list.rating.item", XMaterial.PAPER.name());
+    public static final ConfigSetting GUI_RATINGS_LIST_RATING_NAME = new ConfigSetting(config, "guis.ratings list.rating.name", "&eRating");
+    public static final ConfigSetting GUI_RATINGS_LIST_RATING_LORE = new ConfigSetting(config, "guis.ratings list.rating.lore", Arrays.asList(
+            "&7Rater&f: %rating_rater%",
+            "&7Stars&f: %rating_stars%",
+            "&7Message&f:",
+            "&e%rating_message%"
+    ));
+
+    /*
+    ==================================
+         RATINGS STAR SELECT GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_TITLE = new ConfigSetting(config, "guis.rating star select.title", "&eSelect Star Rating");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_FILL_ITEM = new ConfigSetting(config, "guis.rating star select.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_USE_CUSTOM_SKULL = new ConfigSetting(config, "guis.rating star select.star.use custom skull", true);
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_ON_1 = new ConfigSetting(config, "guis.rating star select.star.textures.selected.one", "http://textures.minecraft.net/texture/88991697469653c9af8352fdf18d0cc9c67763cfe66175c1556aed33246c7");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_ON_2 = new ConfigSetting(config, "guis.rating star select.star.textures.selected.two", "http://textures.minecraft.net/texture/5496c162d7c9e1bc8cf363f1bfa6f4b2ee5dec6226c228f52eb65d96a4635c");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_ON_3 = new ConfigSetting(config, "guis.rating star select.star.textures.selected.three", "http://textures.minecraft.net/texture/c4226f2eb64abc86b38b61d1497764cba03d178afc33b7b8023cf48b49311");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_ON_4 = new ConfigSetting(config, "guis.rating star select.star.textures.selected.four", "http://textures.minecraft.net/texture/f920ecce1c8cde5dbca5938c5384f714e55bee4cca866b7283b95d69eed3d2c");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_ON_5 = new ConfigSetting(config, "guis.rating star select.star.textures.selected.five", "http://textures.minecraft.net/texture/a2c142af59f29eb35ab29c6a45e33635dcfc2a956dbd4d2e5572b0d38891b354");
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_OFF_1 = new ConfigSetting(config, "guis.rating star select.star.textures.not selected.one", "http://textures.minecraft.net/texture/ca516fbae16058f251aef9a68d3078549f48f6d5b683f19cf5a1745217d72cc");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_OFF_2 = new ConfigSetting(config, "guis.rating star select.star.textures.not selected.two", "http://textures.minecraft.net/texture/4698add39cf9e4ea92d42fadefdec3be8a7dafa11fb359de752e9f54aecedc9a");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_OFF_3 = new ConfigSetting(config, "guis.rating star select.star.textures.not selected.three", "http://textures.minecraft.net/texture/fd9e4cd5e1b9f3c8d6ca5a1bf45d86edd1d51e535dbf855fe9d2f5d4cffcd2");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_OFF_4 = new ConfigSetting(config, "guis.rating star select.star.textures.not selected.four", "http://textures.minecraft.net/texture/f2a3d53898141c58d5acbcfc87469a87d48c5c1fc82fb4e72f7015a3648058");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_TEXTURE_OFF_5 = new ConfigSetting(config, "guis.rating star select.star.textures.not selected.five", "http://textures.minecraft.net/texture/d1fe36c4104247c87ebfd358ae6ca7809b61affd6245fa984069275d1cba763");
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_ITEM = new ConfigSetting(config, "guis.rating star select.star.item", XMaterial.NETHER_STAR.name());
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_NAME = new ConfigSetting(config, "guis.rating star select.star.name", "&e%star_number% Stars");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_RATING_LORE = new ConfigSetting(config, "guis.rating star select.star.lore", Collections.singletonList("&7Click to rate %star_number% stars"));
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_MESSAGE_ITEM = new ConfigSetting(config, "guis.rating star select.message.item", XMaterial.PAPER.name());
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_MESSAGE_NAME = new ConfigSetting(config, "guis.rating star select.message.name", "&eMessage");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_MESSAGE_LORE = new ConfigSetting(config, "guis.rating star select.message.lore", Arrays.asList(
+            "&7Message&f: &e%rating_message%",
+            "",
+            "&7Click to change your message"
+    ));
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CONFIRM_ITEM = new ConfigSetting(config, "guis.rating star select.confirm.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CONFIRM_NAME = new ConfigSetting(config, "guis.rating star select.confirm.name", "&AConfirm Rating");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CONFIRM_LORE = new ConfigSetting(config, "guis.rating star select.confirm.lore", Collections.singletonList("&7Click to post rating"));
+
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CANCEL_ITEM = new ConfigSetting(config, "guis.rating star select.cancel.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CANCEL_NAME = new ConfigSetting(config, "guis.rating star select.cancel.name", "&cCancel Rating");
+    public static final ConfigSetting GUI_RATINGS_STAR_SELECT_CANCEL_LORE = new ConfigSetting(config, "guis.rating star select.cancel.lore", Collections.singletonList("&7Click to cancel rating"));
 
 
     public static void setup() {

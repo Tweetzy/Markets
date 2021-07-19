@@ -1,5 +1,7 @@
 package ca.tweetzy.markets.guis;
 
+import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.gui.CustomizableGui;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -78,6 +80,11 @@ public class GUIMain extends Gui {
                 // Create a new market for the player
                 Markets.getInstance().getMarketManager().addMarket(market);
                 Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
+            }
+
+            if (market.isUnpaid()) {
+                Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
+                return;
             }
 
             e.manager.showGUI(this.player, new GUIMarketEdit(market));

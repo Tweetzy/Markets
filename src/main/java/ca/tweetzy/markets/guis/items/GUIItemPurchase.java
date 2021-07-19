@@ -11,7 +11,6 @@ import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
-import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.transaction.Payment;
 import ca.tweetzy.markets.transaction.Transaction;
