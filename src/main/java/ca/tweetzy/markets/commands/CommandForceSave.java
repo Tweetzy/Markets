@@ -31,16 +31,16 @@ public class CommandForceSave extends AbstractCommand {
 
     @Override
     public String getPermissionNode() {
-        return null;
+        return "marekts.cmd.forcesave";
     }
 
     @Override
     public String getSyntax() {
-        return null;
+        return Markets.getInstance().getLocale().getMessage("command_syntax.force_save").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return Markets.getInstance().getLocale().getMessage("command_description.force_save").getMessage();
     }
 }

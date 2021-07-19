@@ -102,8 +102,9 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.confiscate", "confiscate <player>");
         languageNodes.put("command_syntax.block_item", "block item [list]");
         languageNodes.put("command_syntax.payments", "payments [collect]");
-        languageNodes.put("command_syntax.currency", "bank [add] [-a]");
+        languageNodes.put("command_syntax.bank", "bank [add] [-a]");
         languageNodes.put("command_syntax.pay_upkeep", "pay upkeep");
+        languageNodes.put("command_syntax.force_save", "force save");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -122,6 +123,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.payments", "Collect any payments of custom currency");
         languageNodes.put("command_description.bank", "View your currency bank/add currency");
         languageNodes.put("command_description.pay_upkeep", "Pay your outstanding upkeep fee");
+        languageNodes.put("command_description.force_save", "Force save all data");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");
