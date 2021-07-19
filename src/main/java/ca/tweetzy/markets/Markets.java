@@ -91,13 +91,13 @@ public class Markets extends TweetyPlugin {
 
     protected Metrics metrics;
 
-    String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-    String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-    String TIMESTAMP = "%%__TIMESTAMP__%%";
-    String USER = "%%__USER__%%";
-    String USERNAME = "%%__USERNAME__%%";
-    String RESOURCE = "%%__RESOURCE__%%";
-    String NONCE = "%%__NONCE__%%";
+    private final String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+    private final String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+    private final String TIMESTAMP = "%%__TIMESTAMP__%%";
+    private final String USER = "%%__USER__%%";
+    private final String USERNAME = "%%__USERNAME__%%";
+    private final String RESOURCE = "%%__RESOURCE__%%";
+    private final String NONCE = "%%__NONCE__%%";
 
     @Override
     public void onPluginLoad() {

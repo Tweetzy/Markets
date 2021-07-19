@@ -1,7 +1,5 @@
 package ca.tweetzy.markets.guis;
 
-import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.gui.CustomizableGui;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -30,7 +28,7 @@ import java.util.Objects;
  */
 public class GUIMain extends Gui {
 
-    final Player player;
+    private final Player player;
 
     public GUIMain(Player player) {
         this.player = player;

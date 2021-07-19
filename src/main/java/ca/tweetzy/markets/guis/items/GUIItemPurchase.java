@@ -34,9 +34,9 @@ import java.util.UUID;
  */
 public class GUIItemPurchase extends Gui {
 
-    final Market market;
-    final MarketItem marketItem;
-    int purchaseQty;
+    private final Market market;
+    private final MarketItem marketItem;
+    private int purchaseQty;
 
     public GUIItemPurchase(Market market, MarketItem marketItem) {
         this.market = market;

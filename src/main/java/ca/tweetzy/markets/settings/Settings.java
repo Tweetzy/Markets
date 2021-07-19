@@ -16,7 +16,7 @@ import java.util.Collections;
  */
 public class Settings {
 
-    static final Config config = Markets.getInstance().getCoreConfig();
+    private static final Config config = Markets.getInstance().getCoreConfig();
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
     public static final ConfigSetting ECONOMY_MODE = new ConfigSetting(config, "economy provider", "Vault", "Supported Economies:", "Vault", "PlayerPoints");

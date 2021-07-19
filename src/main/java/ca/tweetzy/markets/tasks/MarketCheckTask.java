@@ -7,8 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Iterator;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 18 2021

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class GUIBank extends Gui {
 
-    List<Currency> currencies;
+    private List<Currency> currencies;
 
     public GUIBank(Player player) {
         this.currencies = Markets.getInstance().getCurrencyBank().getPlayerCurrencies(player.getUniqueId());

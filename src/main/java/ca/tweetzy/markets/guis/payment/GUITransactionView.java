@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
  */
 public class GUITransactionView extends Gui {
 
-    final Player player;
-    List<Transaction> transactionList;
+    private final Player player;
+    private List<Transaction> transactionList;
 
     public GUITransactionView(Player player) {
         this.player = player;

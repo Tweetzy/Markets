@@ -5,14 +5,12 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.market.GUIMarketList;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketRating;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
-import javafx.scene.text.TextBoundsType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 

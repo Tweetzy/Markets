@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
  */
 public class GUICategorySettings extends Gui {
 
-    final Market market;
-    final MarketCategory marketCategory;
+    private final Market market;
+    private final MarketCategory marketCategory;
 
     public GUICategorySettings(Market market, MarketCategory marketCategory) {
         this.market = market;

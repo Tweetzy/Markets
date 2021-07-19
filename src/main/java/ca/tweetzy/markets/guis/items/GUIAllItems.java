@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  */
 public class GUIAllItems extends Gui {
 
-    final Market market;
-    final boolean isEditing;
-    final List<MarketItem> marketItemList;
+    private final Market market;
+    private final boolean isEditing;
+    private final List<MarketItem> marketItemList;
 
     public GUIAllItems(Market market, boolean isEditing) {
         this.market = market;

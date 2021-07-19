@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.guis.market;
 
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.input.ChatPrompt;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class GUIMarketEdit extends Gui {
 
-    final Market market;
+    private final Market market;
 
     public GUIMarketEdit(Market market) {
         this.market = market;

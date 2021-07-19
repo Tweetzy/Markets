@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class GUIBlockedItems extends Gui {
 
-    List<BlockedItem> blockedItems;
+    private List<BlockedItem> blockedItems;
 
     public GUIBlockedItems() {
         setTitle(TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_TITLE.getString()));

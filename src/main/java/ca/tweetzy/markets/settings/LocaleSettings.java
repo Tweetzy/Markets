@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class LocaleSettings {
 
-    static final HashMap<String, String> languageNodes = new HashMap<>();
+    private static final HashMap<String, String> languageNodes = new HashMap<>();
 
     static {
         languageNodes.put("general.prefix", "&8[&eMarkets&8]");

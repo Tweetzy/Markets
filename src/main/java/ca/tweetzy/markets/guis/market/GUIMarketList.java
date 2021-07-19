@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class GUIMarketList extends Gui {
 
-    List<Market> markets;
+    private List<Market> markets;
 
     public GUIMarketList() {
         setTitle(TextUtils.formatText(Settings.GUI_MARKET_LIST_TITLE.getString()));

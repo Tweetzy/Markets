@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
  */
 public class GUIOpenRequests extends Gui {
 
-    final Player player;
-    final boolean all;
-    List<Request> playerRequests;
+    private final Player player;
+    private final boolean all;
+    private List<Request> playerRequests;
 
     public GUIOpenRequests(Player player, boolean all) {
         this.player = player;
