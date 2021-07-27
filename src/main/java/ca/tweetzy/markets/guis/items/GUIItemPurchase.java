@@ -2,6 +2,7 @@ package ca.tweetzy.markets.guis.items;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
@@ -157,7 +158,7 @@ public class GUIItemPurchase extends Gui {
                 return;
             }
         } else {
-            if (!Markets.getInstance().getEconomyManager().has(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)) {
+            if (!EconomyManager.hasBalance(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)) {
                 Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(buyer);
                 return;
             }
@@ -232,8 +233,8 @@ public class GUIItemPurchase extends Gui {
         double totalTax = Settings.TAX_ENABLED.getBoolean() ? price * Settings.TAX_AMOUNT.getDouble() / 100 : 0;
 
         OfflinePlayer theSeller = Bukkit.getOfflinePlayer(seller);
-        Markets.getInstance().getEconomyManager().depositPlayer(theSeller, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax);
-        Markets.getInstance().getEconomyManager().withdrawPlayer(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price);
+        EconomyManager.deposit(theSeller, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax);
+        EconomyManager.withdrawBalance(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price);
 
         Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)).sendPrefixedMessage(buyer);
         if (theSeller.isOnline()) {

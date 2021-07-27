@@ -3,10 +3,12 @@ package ca.tweetzy.markets.settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.markets.Markets;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -19,7 +21,10 @@ public class Settings {
     private static final Config config = Markets.getInstance().getCoreConfig();
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
-    public static final ConfigSetting ECONOMY_MODE = new ConfigSetting(config, "economy provider", "Vault", "Supported Economies:", "Vault", "PlayerPoints");
+    public static final ConfigSetting ECONOMY_PLUGIN = new ConfigSetting(config, "economy provider", EconomyManager.getEconomy() == null ? "Vault" : EconomyManager.getEconomy().getName(),
+            "Which economy should auction house use?",
+            "You have the following supported economy plugins installed: \"" + EconomyManager.getManager().getPossiblePlugins().stream().collect(Collectors.joining("\", \"")) + "\"."
+    );
 
     public static final ConfigSetting GIVE_ITEMS_ON_CATEGORY_DELETE = new ConfigSetting(config, "setting.give back items on category delete", true, "Should Markets give the player all their items from the category", "back when they click the delete button?");
     public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");
@@ -621,6 +626,33 @@ public class Settings {
             "&7Stars&f: %rating_stars%",
             "&7Message&f:",
             "&e%rating_message%"
+    ));
+
+    /*
+    ==================================
+            SEARCH ITEM GUI
+    ==================================
+    */
+    public static final ConfigSetting GUI_SEARCH_TITLE = new ConfigSetting(config, "guis.search.title", "&eMarket &f- &7Search Results");
+    public static final ConfigSetting GUI_SEARCH_GLOW_BORDER = new ConfigSetting(config, "guis.search.glow border", true);
+    public static final ConfigSetting GUI_SEARCH_FILL_ITEM = new ConfigSetting(config, "guis.search.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_SEARCH_BORDER_ITEM = new ConfigSetting(config, "guis.search.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_SEARCH_ITEM_LORE = new ConfigSetting(config, "guis.search.item lore", Arrays.asList(
+            "&7Market&f: &e%market_name%",
+            "&7Price&f: &a$%market_item_price%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Click to purchase this item."
+    ));
+
+    public static final ConfigSetting GUI_SEARCH_ITEM_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.search.item lore custom currency", Arrays.asList(
+            "&7Market&f: &e%market_name%",
+            "&7Price&f: &fx%market_item_price% %market_item_currency%",
+            "&7Price is for stack&f: &e%market_item_price_for_stack%",
+            "",
+            "&7Click to purchase this item.",
+            "&e(!) This is item has a custom currency",
+            "&eRight-Click to view the required currency."
     ));
 
     /*

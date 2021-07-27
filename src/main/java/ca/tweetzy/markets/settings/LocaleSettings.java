@@ -65,6 +65,7 @@ public class LocaleSettings {
         languageNodes.put("upkeep_fee_paid", "&aYou paid the market up keep fee of &2$%upkeep_fee%");
         languageNodes.put("upkeep_fee_not_paid", "&cYou could not pay your market upkeep fee, your market has been locked until you do so.");
         languageNodes.put("upkeep_already_paid", "&cYour market upkeep fee is already paid.");
+        languageNodes.put("search_phrase_empty", "&cPlease enter a search phrase.");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
@@ -105,6 +106,7 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.bank", "bank [add] [-a]");
         languageNodes.put("command_syntax.pay_upkeep", "pay upkeep");
         languageNodes.put("command_syntax.force_save", "force save");
+        languageNodes.put("command_syntax.search", "search <keywords>");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -124,6 +126,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.bank", "View your currency bank/add currency");
         languageNodes.put("command_description.pay_upkeep", "Pay your outstanding upkeep fee");
         languageNodes.put("command_description.force_save", "Force save all data");
+        languageNodes.put("command_description.search", "Search for items in all markets");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");
@@ -132,7 +135,7 @@ public class LocaleSettings {
         languageNodes.put("prompt.enter_market_item_price", "&aEnter the new price:");
         languageNodes.put("prompt.enter_withdraw_amount", "&aEnter the amount you wish to withdraw:");
         languageNodes.put("prompt.enter_rating_message", "&aPlease enter your rating message:");
-     }
+    }
 
     public static void setup() {
         Config config = Markets.getInstance().getLocale().getConfig();

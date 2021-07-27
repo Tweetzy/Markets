@@ -94,7 +94,7 @@ public class CommandAddItem extends AbstractCommand {
         String category = "";
         double price = 0;
 
-        while(argumentIterator.hasNext()) {
+        while (argumentIterator.hasNext()) {
             String next = argumentIterator.next();
             if (NumberUtils.isDouble(next)) {
                 price = Double.parseDouble(next);

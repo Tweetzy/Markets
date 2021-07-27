@@ -3,14 +3,14 @@ main: ca.tweetzy.markets.Markets
 version: maven-version-number
 api-version: 1.13
 description: The ultimate player shop plugin
-authors: [Kiran Hart]
+authors: [ Kiran Hart ]
 website: https://tweetzy.ca
-softdepend: [Vault, PlayerPoints]
+softdepend: [ Vault, PlayerPoints, Reserve ]
 
 commands:
   markets:
     description: Main command for the market plugin
-    aliases: [market, playermarket, playermarkets]
+    aliases: [ market, playermarket, playermarkets ]
     usage: /markets
 
 permissions:
@@ -30,6 +30,7 @@ permissions:
     markets.cmd.confiscate: true
     markets.cmd.forcesave: true
     markets.cmd.payupkeep: true
+    markets.cmd.search: true
   markets.cmd:
     description: Allows the user to open the main market menu
     default: op
@@ -74,4 +75,7 @@ permissions:
     default: op
   markets.cmd.payupkeep:
     description: Allows the user to pay their outstanding upkeep fees
+    default: op
+  markets.cmd.search:
+    description: Allows the user to search all markets for a specific item
     default: op

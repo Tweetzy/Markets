@@ -72,7 +72,7 @@ public class CommandRequest extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        boolean useCustomCurrency  = args.length == 3 && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
+        boolean useCustomCurrency = args.length == 3 && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
 
         double priceForAll = Double.parseDouble(args[1]);
         double pricePerItem = priceForAll / requestedAmount;

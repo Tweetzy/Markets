@@ -1,8 +1,11 @@
 package ca.tweetzy.markets.api;
 
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.markets.settings.Settings;
+import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -12,6 +15,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -244,5 +248,77 @@ public class MarketsAPI {
         }
 
         return null;
+    }
+
+    /**
+     * Get the name of an item stack
+     *
+     * @param stack is the item you want to get name from
+     * @return the item name
+     */
+    public String getItemName(ItemStack stack) {
+        Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
+        return stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+    }
+
+    /**
+     * Used to get the lore from an item stack
+     *
+     * @param stack is the item being checked
+     * @return the item lore if available
+     */
+    public List<String> getItemLore(ItemStack stack) {
+        List<String> lore = new ArrayList<>();
+        Objects.requireNonNull(stack, "Item stack cannot be null when getting lore");
+        if (stack.hasItemMeta()) {
+            if (stack.getItemMeta().hasLore() && stack.getItemMeta().getLore() != null) {
+                lore.addAll(stack.getItemMeta().getLore());
+            }
+        }
+        return lore;
+    }
+
+    /**
+     * Used to get the names of all the enchantments on an item
+     *
+     * @param stack is the itemstack being checked
+     * @return a list of all the enchantment names
+     */
+    public List<String> getItemEnchantments(ItemStack stack) {
+        List<String> enchantments = new ArrayList<>();
+        Objects.requireNonNull(stack, "Item Stack cannot be null when getting enchantments");
+        if (!stack.getEnchantments().isEmpty()) {
+            stack.getEnchantments().forEach((k, i) -> {
+                enchantments.add(k.getName());
+            });
+        }
+        return enchantments;
+    }
+
+    /**
+     * Used to match patterns
+     *
+     * @param pattern  is the keyword being searched for
+     * @param sentence is the sentence you're checking
+     * @return whether the keyword is found
+     */
+    public boolean match(String pattern, String sentence) {
+        Pattern patt = Pattern.compile(ChatColor.stripColor(pattern), Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patt.matcher(sentence);
+        return matcher.find();
+    }
+
+    /**
+     * @param pattern is the keyword that you're currently searching for
+     * @param lines   is the lines being checked for the keyword
+     * @return whether the keyword was found in any of the lines provided
+     */
+    public boolean match(String pattern, List<String> lines) {
+        for (String line : lines) {
+            if (match(pattern, line)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

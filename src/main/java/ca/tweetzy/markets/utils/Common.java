@@ -3,6 +3,7 @@ package ca.tweetzy.markets.utils;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -41,11 +42,11 @@ public class Common {
 
     public boolean chargeCreationFee(Player player) {
         if (!Settings.USE_CREATION_FEE.getBoolean()) return true;
-        if (!Markets.getInstance().getEconomyManager().has(player, Settings.CREATION_FEE_AMOUNT.getDouble())) {
+        if (!EconomyManager.hasBalance(player, Settings.CREATION_FEE_AMOUNT.getDouble())) {
             Markets.getInstance().getLocale().getMessage("not_enough_money_create").sendPrefixedMessage(player);
             return false;
         }
-        Markets.getInstance().getEconomyManager().withdrawPlayer(player, Settings.CREATION_FEE_AMOUNT.getDouble());
+        EconomyManager.withdrawBalance(player, Settings.CREATION_FEE_AMOUNT.getDouble());
         Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.CREATION_FEE_AMOUNT.getDouble())).sendPrefixedMessage(player);
         return true;
     }

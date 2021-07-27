@@ -56,7 +56,7 @@ public class GUIRatingsList extends Gui {
         Markets.newChain().async(() -> {
             int slot = 10;
             for (MarketRating rating : this.market.getRatings()) {
-                setItem(slot++, ConfigItemUtil.build(Settings.GUI_RATINGS_LIST_RATING_ITEM.getString(), Settings.GUI_RATINGS_LIST_RATING_NAME.getString(), Settings.GUI_RATINGS_LIST_RATING_LORE.getStringList(), 1, new HashMap<String, Object>(){{
+                setItem(slot++, ConfigItemUtil.build(Settings.GUI_RATINGS_LIST_RATING_ITEM.getString(), Settings.GUI_RATINGS_LIST_RATING_NAME.getString(), Settings.GUI_RATINGS_LIST_RATING_LORE.getStringList(), 1, new HashMap<String, Object>() {{
                     put("%rating_rater%", Bukkit.getOfflinePlayer(rating.getRater()).getName());
                     put("%rating_stars%", rating.getStars());
                     put("%rating_message%", rating.getMessage());

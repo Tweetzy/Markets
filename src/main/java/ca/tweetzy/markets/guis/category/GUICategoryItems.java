@@ -77,7 +77,7 @@ public class GUICategoryItems extends Gui {
                     put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
                     put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
                 }}), e -> {
-                    switch(e.clickType) {
+                    switch (e.clickType) {
                         case LEFT:
                             if (this.market.getOwner().equals(e.player.getUniqueId()) && !Settings.ALLOW_OWNER_TO_BUY_OWN_ITEMS.getBoolean()) {
                                 Markets.getInstance().getLocale().getMessage("cannot_buy_from_own_market").sendPrefixedMessage(e.player);

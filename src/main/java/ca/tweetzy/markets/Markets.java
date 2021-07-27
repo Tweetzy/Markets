@@ -11,13 +11,13 @@ import ca.tweetzy.core.database.DataMigrationManager;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
-import ca.tweetzy.markets.economy.EconomyManager;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
@@ -78,9 +78,6 @@ public class Markets extends TweetyPlugin {
     private RequestManager requestManager;
 
     @Getter
-    private EconomyManager economyManager;
-
-    @Getter
     private CurrencyBank currencyBank;
 
     @Getter
@@ -91,13 +88,13 @@ public class Markets extends TweetyPlugin {
 
     protected Metrics metrics;
 
-    private final String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-    private final String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-    private final String TIMESTAMP = "%%__TIMESTAMP__%%";
-    private final String USER = "%%__USER__%%";
-    private final String USERNAME = "%%__USERNAME__%%";
-    private final String RESOURCE = "%%__RESOURCE__%%";
-    private final String NONCE = "%%__NONCE__%%";
+    protected String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+    protected String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+    protected String TIMESTAMP = "%%__TIMESTAMP__%%";
+    protected String USER = "%%__USER__%%";
+    protected String USERNAME = "%%__USERNAME__%%";
+    protected String RESOURCE = "%%__RESOURCE__%%";
+    protected String NONCE = "%%__NONCE__%%";
 
     @Override
     public void onPluginLoad() {
@@ -123,15 +120,23 @@ public class Markets extends TweetyPlugin {
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
+        // Load Economy
+        EconomyManager.load();
+
         // Setup the settings file
         Settings.setup();
-
-        // Setup the new economy manager
-        this.economyManager = new EconomyManager(this);
 
         // Setup the locale
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
+
+        // Setup Economy
+        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
+        if (!EconomyManager.getManager().isEnabled()) {
+            getLogger().severe("Could not find a valid economy provider for shops");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Load the data file
         this.data.load();
@@ -177,6 +182,7 @@ public class Markets extends TweetyPlugin {
                 new CommandPayUpKeep(),
                 new CommandBank(),
                 new CommandSet(),
+                new CommandSearch(),
                 new CommandView(),
                 new CommandList(),
                 new CommandHelp(),

@@ -2,6 +2,7 @@ package ca.tweetzy.markets.guis.requests;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
@@ -123,14 +124,14 @@ public class GUIRequestFulfillment extends Gui {
                             return;
                         }
 
-                        if (!Markets.getInstance().getEconomyManager().has(requester, requestItem.getPrice())) {
+                        if (!EconomyManager.hasBalance(requester, requestItem.getPrice())) {
                             Markets.getInstance().getLocale().getMessage("player_does_not_have_funds").processPlaceholder("player", requester.getName()).sendPrefixedMessage(e.player);
                             return;
                         }
 
                         MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(e.player, requestItem.getItem(), requestItem.getAmount());
-                        Markets.getInstance().getEconomyManager().withdrawPlayer(requester, requestItem.getPrice());
-                        Markets.getInstance().getEconomyManager().depositPlayer(e.player, requestItem.getPrice());
+                        EconomyManager.withdrawBalance(requester, requestItem.getPrice());
+                        EconomyManager.deposit(e.player, requestItem.getPrice());
 
                         Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(e.player);
                         if (requester.isOnline()) {

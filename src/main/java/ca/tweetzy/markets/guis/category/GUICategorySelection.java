@@ -56,7 +56,7 @@ public class GUICategorySelection extends Gui {
 
         int slot = 0;
         for (MarketCategory category : this.market.getCategories()) {
-            setButton(slot++, ConfigItemUtil.build(XMaterial.matchXMaterial(category.getIcon()).parseItem(), Settings.GUI_CATEGORY_SELECT_CATEGORY_NAME.getString(), Settings.GUI_CATEGORY_SELECT_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>(){{
+            setButton(slot++, ConfigItemUtil.build(XMaterial.matchXMaterial(category.getIcon()).parseItem(), Settings.GUI_CATEGORY_SELECT_CATEGORY_NAME.getString(), Settings.GUI_CATEGORY_SELECT_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
                 put("%category_name%", category.getDisplayName());
                 put("%category_description%", category.getDescription());
             }}), ClickType.LEFT, e -> {

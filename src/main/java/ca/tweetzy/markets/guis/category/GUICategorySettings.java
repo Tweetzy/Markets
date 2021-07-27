@@ -119,7 +119,7 @@ public class GUICategorySettings extends Gui {
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
         setButton(5, 1, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
-            e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory,1D, false, false, null, null));
+            e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory, 1D, false, false, null, null));
         });
 
         Markets.newChain().async(() -> {

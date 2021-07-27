@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.tasks;
 
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
@@ -37,13 +38,13 @@ public class MarketCheckTask extends BukkitRunnable {
                     if (market.isUnpaid()) continue;
                     OfflinePlayer player = Bukkit.getOfflinePlayer(market.getOwner());
 
-                    if (!Markets.getInstance().getEconomyManager().has(player, Settings.UPKEEP_FEE_FEE.getDouble())) {
+                    if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble())) {
                         market.setUnpaid(true);
                         if (player.isOnline()) {
                             Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player.getPlayer());
                         }
                     } else {
-                        Markets.getInstance().getEconomyManager().withdrawPlayer(player, Settings.UPKEEP_FEE_FEE.getDouble());
+                        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble());
                         Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble())).sendPrefixedMessage(player.getPlayer());
                     }
                 }
