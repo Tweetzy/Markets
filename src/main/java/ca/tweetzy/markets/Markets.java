@@ -17,6 +17,7 @@ import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
+import ca.tweetzy.markets.database.migrations._2_FeaturedMarketMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
@@ -146,7 +147,8 @@ public class Markets extends TweetyPlugin {
             this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
             this.dataManager = new DataManager(this.databaseConnector, this);
             DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
-                    new _1_InitialMigration()
+                    new _1_InitialMigration(),
+                    new _2_FeaturedMarketMigration()
             );
             dataMigrationManager.runMigrations();
         }
@@ -162,6 +164,7 @@ public class Markets extends TweetyPlugin {
 
         this.guiManager.init();
         this.marketManager.loadMarkets();
+        this.marketManager.loadFeaturedMarkets();
         this.transactionManger.loadTransactions();
         this.transactionManger.loadPayments();
         this.requestManager.loadRequests();
@@ -178,6 +181,7 @@ public class Markets extends TweetyPlugin {
                 new CommandAddCategory(),
                 new CommandAddItem(),
                 new CommandRequest(),
+                new CommandShowRequest(),
                 new CommandPayments(),
                 new CommandPayUpKeep(),
                 new CommandBank(),
@@ -219,6 +223,7 @@ public class Markets extends TweetyPlugin {
             this.dataManager.saveRequests(this.requestManager.getRequests(), async);
             this.dataManager.saveBanks(this.currencyBank.getBank(), async);
             this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
+            this.dataManager.saveFeaturedMarkets(this.marketManager.getFeaturedMarkets(), async);
 
             List<MarketCategory> categories = new ArrayList<>();
             this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
@@ -240,6 +245,7 @@ public class Markets extends TweetyPlugin {
             this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
             this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
             this.marketManager.saveBlockedItems();
+            this.marketManager.saveFeaturedMarkets();
             this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
             this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
             this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));

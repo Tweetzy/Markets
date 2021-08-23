@@ -4,6 +4,8 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.markets.settings.Settings;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -320,5 +322,20 @@ public class MarketsAPI {
             }
         }
         return false;
+    }
+
+    /**
+     * Sends a clickable message to a player that runs a command when clicked.
+     * @param message The clickable message!
+     * @param command The command without the slash to make the user perform.
+     * @param player player to send to.
+     */
+    public void sendClickableCommand(Player player, String message, String command) {
+        // Make a new component (Bungee API).
+        TextComponent component = new TextComponent(TextComponent.fromLegacyText(TextUtils.formatText(message)));
+        // Add a click event to the component.
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + command));
+        // Send it!
+        player.spigot().sendMessage(component);
     }
 }

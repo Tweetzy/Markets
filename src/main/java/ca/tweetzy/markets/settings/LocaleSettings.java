@@ -22,12 +22,14 @@ public class LocaleSettings {
         languageNodes.put("nothing_in_hand", "&cYou aren't holding anything in your hand!");
         languageNodes.put("air.currency", "&cYou cannot use air as the currency!");
         languageNodes.put("not_a_number", "&cPlease enter a valid number");
+        languageNodes.put("player_not_found", "&cCould not find that player");
         languageNodes.put("price_is_zero_or_less", "&cPlease enter a price greater than 0");
         languageNodes.put("not_enough_money", "&cYou do not have enough money!");
         languageNodes.put("not_enough_money_custom_currency", "&cYou do not have enough %currency_item% &cto buy that.");
         languageNodes.put("not_enough_money_create", "&cYou do not have enough money to create a market!");
         languageNodes.put("player_does_not_have_funds", "&4%player% &cdoes not have enough money to pay!");
         languageNodes.put("not_enough_items", "&cYou do not have enough items to fulfill the request.");
+        languageNodes.put("player_does_not_have_requests", "&cThat player doesn't have any open requests");
         languageNodes.put("money_remove", "&c&l- $%price%");
         languageNodes.put("money_add", "&a&l+ $%price%");
         languageNodes.put("money_remove_custom_currency", "&c&l- x%price% %currency_item%");
@@ -66,8 +68,10 @@ public class LocaleSettings {
         languageNodes.put("upkeep_fee_not_paid", "&cYou could not pay your market upkeep fee, your market has been locked until you do so.");
         languageNodes.put("upkeep_already_paid", "&cYour market upkeep fee is already paid.");
         languageNodes.put("search_phrase_empty", "&cPlease enter a search phrase.");
+        languageNodes.put("featured_market", "&aYou successfully featured your market");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
+        languageNodes.put("created_request_broadcast", "&2%player% &acreated a request for x&2%request_amount% %request_item_name% &8[&eView&8]");
         languageNodes.put("max_request_amount", "&cYou can only request &4%request_max_amount% &citems per request.");
         languageNodes.put("cannot_fulfill_own", "&cYou cannot fulfill your own request");
         languageNodes.put("no_payments_to_collect", "&cYou do not have any payments to collect!");
@@ -107,6 +111,7 @@ public class LocaleSettings {
         languageNodes.put("command_syntax.pay_upkeep", "pay upkeep");
         languageNodes.put("command_syntax.force_save", "force save");
         languageNodes.put("command_syntax.search", "search <keywords>");
+        languageNodes.put("command_syntax.showrequest", "show request <player> [-l]");
 
         languageNodes.put("command_description.add_category", "Create a new category inside your market.");
         languageNodes.put("command_description.add_item", "Add a new item to your market");
@@ -127,6 +132,7 @@ public class LocaleSettings {
         languageNodes.put("command_description.pay_upkeep", "Pay your outstanding upkeep fee");
         languageNodes.put("command_description.force_save", "Force save all data");
         languageNodes.put("command_description.search", "Search for items in all markets");
+        languageNodes.put("command_description.showrequest", "Show requests made by a single player");
 
         languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
         languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");

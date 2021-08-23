@@ -80,6 +80,7 @@ public class GUIMain extends Gui {
                 Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
             }
 
+            market.setUnpaid(false);
             if (market.isUnpaid()) {
                 Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
                 return;

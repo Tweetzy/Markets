@@ -43,12 +43,16 @@ public class Settings {
     public static final ConfigSetting RATING_CHANGE_DELAY = new ConfigSetting(config, "setting.ratings.change delay", 86400, "How many seconds must a player wait before they can change their rating?");
     public static final ConfigSetting RATING_MAX_MESSAGE_LENGTH = new ConfigSetting(config, "setting.ratings.max message length", 41, "What is the max length a rating message can be?");
     public static final ConfigSetting MARKET_CHECK_DELAY = new ConfigSetting(config, "setting.run market check delay", 10, "How often (in seconds) should markets check for things like the upkeep charge?");
+    public static final ConfigSetting BROADCAST_REQUEST_CREATION = new ConfigSetting(config, "setting.broadcast request creation", true, "Should clickable request messages be sent to everyone upon a new request creation?");
+    public static final ConfigSetting FEATURE_COST = new ConfigSetting(config, "setting.feature.cost", 20000, "How much should it cost to feature a market?");
+    public static final ConfigSetting FEATURE_TIME = new ConfigSetting(config, "setting.feature.time", 60 * 60, "How long should a market feature last (in seconds)");
 
     public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
     public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");
 
     public static final ConfigSetting UPKEEP_FEE_USE = new ConfigSetting(config, "setting.upkeep fee.use", false, "Should markets charge players after x amount of time to keep their market open?");
     public static final ConfigSetting UPKEEP_FEE_FEE = new ConfigSetting(config, "setting.upkeep fee.fee", 2500, "How much should the upkeep fee cost?");
+    public static final ConfigSetting UPKEEP_FEE_FEE_PER_ITEM = new ConfigSetting(config, "setting.upkeep fee.additional item fee", 5, "Adds to the total upkeep fee (ex. if they have 20 items, $ 20 * 5 would be added to the base fee)");
     public static final ConfigSetting UPKEEP_FEE_CHARGE_EVERY = new ConfigSetting(config, "setting.upkeep fee.delay", 604800, "How many seconds should pass before upkeep fees are collected?");
 
     public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", false, "If enabled, when a sale is made, percentage of the sale will be removed / added");
@@ -160,6 +164,17 @@ public class Settings {
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE = new ConfigSetting(config, "guis.market edit.items.add category.lore", Arrays.asList(
             "&7Click to add a new category",
             "&7to your market."
+    ));
+
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM = new ConfigSetting(config, "guis.market edit.items.feature market.item", XMaterial.FIREWORK_ROCKET.name());
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_FEATURE_NAME = new ConfigSetting(config, "guis.market edit.items.feature market.name", "&eFeature Market");
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_FEATURE_LORE = new ConfigSetting(config, "guis.market edit.items.feature market.lore", Arrays.asList(
+            "&7Click to feature your market",
+            "&7for &a$%feature_cost%"
+    ));
+
+    public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY = new ConfigSetting(config, "guis.market edit.items.feature market.lore already featured", Arrays.asList(
+            "&7Your market is already being featured"
     ));
 
     public static final ConfigSetting GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM = new ConfigSetting(config, "guis.market edit.items.all items.item", XMaterial.CHEST.name());
@@ -335,6 +350,15 @@ public class Settings {
             "&7Owner&f: &e%market_owner%",
             "",
             "&7Click to view this market"
+    ));
+
+    public static final ConfigSetting GUI_MARKET_LIST_MARKET_LORE_FEATURED = new ConfigSetting(config, "guis.market list.market lore featured", Arrays.asList(
+            "%market_description%",
+            "&7Owner&f: &e%market_owner%",
+            "",
+            "&7Click to view this market",
+            "",
+            "&e&lFEATURED"
     ));
 
     /*

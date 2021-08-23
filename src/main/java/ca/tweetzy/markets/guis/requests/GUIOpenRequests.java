@@ -31,7 +31,7 @@ public class GUIOpenRequests extends Gui {
 
     private final Player player;
     private final boolean all;
-    private List<Request> playerRequests;
+    private List<Request> playerRequests = null;
 
     public GUIOpenRequests(Player player, boolean all) {
         this.player = player;
@@ -45,6 +45,11 @@ public class GUIOpenRequests extends Gui {
         setRows(6);
 
         draw();
+    }
+
+    public GUIOpenRequests(Player player, List<Request> requests) {
+        this(player, true);
+        this.playerRequests = requests;
     }
 
     private void draw() {
@@ -68,7 +73,10 @@ public class GUIOpenRequests extends Gui {
         }
 
         Markets.newChain().asyncFirst(() -> {
-            this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getPlayerRequests(this.player);
+            if (this.playerRequests == null) {
+                this.playerRequests = this.all ? Markets.getInstance().getRequestManager().getNonFulfilledRequests() : Markets.getInstance().getRequestManager().getPlayerRequests(this.player);
+            }
+
             return this.playerRequests.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.playerRequests.size() / (double) 28L));

@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +25,9 @@ public class MarketManager {
 
     private final List<Market> markets = Collections.synchronizedList(new ArrayList<>());
     private final List<BlockedItem> blockedItems = Collections.synchronizedList(new ArrayList<>());
+
+    @Getter
+    private final ConcurrentHashMap<UUID, Long> featuredMarkets = new ConcurrentHashMap<>();
 
     @Setter
     @Getter
@@ -49,6 +53,7 @@ public class MarketManager {
     public void deleteMarket(Market market) {
         Objects.requireNonNull(market, "Market cannot be null when deleting market");
         this.markets.removeIf(theMarket -> theMarket.getId().equals(market.getId()));
+        this.featuredMarkets.remove(market.getId());
         Markets.getInstance().getData().set("markets." + market.getId().toString(), null);
         Markets.getInstance().getData().save();
     }
@@ -85,6 +90,7 @@ public class MarketManager {
             });
             Markets.getInstance().getData().save();
         }).execute();
+
     }
 
     public void loadBlockedItems() {
@@ -97,6 +103,31 @@ public class MarketManager {
                 Markets.getInstance().getData().getConfigurationSection("blocked items").getKeys(false).forEach(item -> addBlockedItem(new BlockedItem(UUID.fromString(item), Markets.getInstance().getData().getItemStack("blocked items." + item))));
             }).execute();
         }
+    }
+
+    public void loadFeaturedMarkets() {
+        if (Settings.DATABASE_USE.getBoolean()) {
+            Markets.getInstance().getDataManager().getFeaturedMarkets(this.featuredMarkets::putAll);
+        } else {
+            Markets.newChain().async(() -> {
+                ConfigurationSection section = Markets.getInstance().getData().getConfigurationSection("featured markets");
+                if (section == null || section.getKeys(false).size() == 0) return;
+                Markets.getInstance().getData().getConfigurationSection("featured markets").getKeys(false).forEach(item -> {
+                    this.featuredMarkets.put(UUID.fromString(item), Markets.getInstance().getData().getLong("featured markets." + item));
+                });
+            }).execute();
+        }
+    }
+
+    public void saveFeaturedMarkets() {
+        Markets.newChain().sync(() -> {
+            Markets.getInstance().getData().set("featured markets", null);
+            this.featuredMarkets.forEach((marketId, expiresAt) -> {
+                Markets.getInstance().getData().set("featured markets." + marketId.toString(), expiresAt);
+            });
+            Markets.getInstance().getData().save();
+        }).execute();
+
     }
 
     public void saveMarkets(Market... markets) {

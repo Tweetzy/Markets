@@ -2,6 +2,7 @@ package ca.tweetzy.markets.guis.market;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -145,6 +146,25 @@ public class GUIMarketEdit extends Gui {
             }
 
             e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market));
+        });
+
+        setButton(5, 2, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId()) ? Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE.getStringList(), 1, new HashMap<String, Object>(){{
+            put("%feature_cost%", String.format("%,.2f", Settings.FEATURE_COST.getDouble()));
+        }}), ClickType.LEFT, e -> {
+            if (Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId())) {
+                return;
+            }
+
+            if (!EconomyManager.hasBalance(e.player, Settings.FEATURE_COST.getDouble())) {
+                Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(e.player);
+                return;
+            }
+
+            EconomyManager.withdrawBalance(e.player, Settings.FEATURE_COST.getDouble());
+            Markets.getInstance().getLocale().getMessage("featured_market").sendPrefixedMessage(e.player);
+            Markets.getInstance().getMarketManager().getFeaturedMarkets().put(this.market.getId(), System.currentTimeMillis() + 1000L * Settings.FEATURE_TIME.getInt());
+
+            draw();
         });
 
         List<MarketCategory> data = this.market.getCategories().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());

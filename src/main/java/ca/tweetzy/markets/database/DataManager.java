@@ -247,6 +247,27 @@ public class DataManager extends DataManagerAbstract {
         statement.executeBatch();
     }
 
+    private void saveFeaturedMarket(Map<UUID, Long> featuredMarkets, Connection connection) throws SQLException {
+        String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "featured_markets SET id = ?, expires_at = ?";
+        String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "featured_markets";
+
+        try (PreparedStatement statement = connection.prepareStatement(truncate)) {
+            statement.execute();
+        }
+
+        PreparedStatement statement = connection.prepareStatement(saveMarket);
+        featuredMarkets.forEach((marketId, expiresAt) -> {
+            try {
+                statement.setString(1, marketId.toString());
+                statement.setLong(2, expiresAt);
+                statement.addBatch();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+        statement.executeBatch();
+    }
+
     private void saveItem(List<MarketItem> items, Connection connection) throws SQLException {
         String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "items SET item_id = ?, category_id = ?, item = ?, currency_item = ?, use_item_currency = ?, price = ?, price_for_stack = ?";
         String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "items";
@@ -413,6 +434,37 @@ public class DataManager extends DataManagerAbstract {
             }
 
             this.sync(() -> callback.accept(markets));
+        }));
+    }
+
+    public void saveFeaturedMarkets(Map<UUID, Long> featuredMarkets, boolean async) {
+        this.databaseConnector.connect(connection -> {
+            if (async) {
+                Markets.newChain().async(() -> {
+                    try {
+                        saveFeaturedMarket(featuredMarkets, connection);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }).execute();
+            } else {
+                saveFeaturedMarket(featuredMarkets, connection);
+            }
+        });
+    }
+
+    public void getFeaturedMarkets(Consumer<Map<UUID, Long>> callback) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            HashMap<UUID, Long> map = new HashMap();
+            String select = "SELECT * FROM " + this.getTablePrefix() + "featured_markets";
+
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(select);
+                while (result.next()) {
+                    map.put(UUID.fromString(result.getString("id")), result.getLong("expires_at"));
+                }
+            }
+            this.sync(() -> callback.accept(map));
         }));
     }
 

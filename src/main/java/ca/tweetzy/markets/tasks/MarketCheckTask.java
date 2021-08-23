@@ -8,6 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 18 2021
@@ -29,6 +33,10 @@ public class MarketCheckTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        if (!Markets.getInstance().getMarketManager().getFeaturedMarkets().isEmpty()) {
+            Markets.getInstance().getMarketManager().getFeaturedMarkets().entrySet().removeIf(entry -> System.currentTimeMillis() >= entry.getValue());
+        }
+
         if (Settings.UPKEEP_FEE_USE.getBoolean()) {
             long feeLastPaidOn = Markets.getInstance().getMarketManager().getFeeLastChargedOn();
 
@@ -38,14 +46,20 @@ public class MarketCheckTask extends BukkitRunnable {
                     if (market.isUnpaid()) continue;
                     OfflinePlayer player = Bukkit.getOfflinePlayer(market.getOwner());
 
-                    if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble())) {
+                   int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
+                   double itemsFee = totalItemsInMarket * Settings.UPKEEP_FEE_FEE_PER_ITEM.getDouble();
+
+
+                    if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)) {
                         market.setUnpaid(true);
                         if (player.isOnline()) {
                             Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player.getPlayer());
                         }
                     } else {
-                        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble());
-                        Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble())).sendPrefixedMessage(player.getPlayer());
+                        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee);
+                        if (player.isOnline()) {
+                            Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player.getPlayer());
+                        }
                     }
                 }
 

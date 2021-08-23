@@ -10,6 +10,7 @@ import ca.tweetzy.markets.request.Request;
 import ca.tweetzy.markets.request.RequestItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -100,6 +101,18 @@ public class CommandRequest extends AbstractCommand {
         request.setRequestedItems(requestItems);
         Markets.getInstance().getRequestManager().addRequest(request);
         Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
+        if (Settings.BROADCAST_REQUEST_CREATION.getBoolean()) {
+            String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
+            String info = Markets.getInstance().getLocale().getMessage("created_request_broadcast")
+                    .processPlaceholder("player", player.getName())
+                    .processPlaceholder("request_amount", requestedAmount)
+                    .processPlaceholder("request_item_name", Common.getItemName(heldItem))
+                    .processPlaceholder("request_price", String.format("%,.2f", priceForAll))
+                    .getMessage();
+
+            Bukkit.getOnlinePlayers().forEach(to -> MarketsAPI.getInstance().sendClickableCommand(to, prefix + " " + info, "markets show request " + player.getName() + " -L"));
+        }
+
         return ReturnType.SUCCESS;
     }
 

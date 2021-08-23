@@ -37,14 +37,17 @@ public class CommandPayUpKeep extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble())) {
+        int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
+        double itemsFee = totalItemsInMarket * Settings.UPKEEP_FEE_FEE_PER_ITEM.getDouble();
+
+        if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)) {
             Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
-        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble());
-        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble())).sendPrefixedMessage(player);
-        Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble())).sendPrefixedMessage(player);
+        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee);
+        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
+        Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
         market.setUnpaid(false);
 
         return ReturnType.SUCCESS;

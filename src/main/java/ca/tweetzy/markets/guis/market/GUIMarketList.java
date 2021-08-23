@@ -13,10 +13,7 @@ import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +48,10 @@ public class GUIMarketList extends Gui {
 
         Markets.newChain().asyncFirst(() -> {
             this.markets = Markets.getInstance().getMarketManager().getMarkets();
+            if (!Markets.getInstance().getMarketManager().getFeaturedMarkets().isEmpty()) {
+                this.markets = markets.stream().sorted(Comparator.comparing((Market market) -> Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId())).reversed()).collect(Collectors.toList());
+            }
+
             return this.markets.stream().filter(market -> market.isOpen() && !market.isUnpaid()).skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.markets.size() / (double) 28L));
@@ -61,7 +62,7 @@ public class GUIMarketList extends Gui {
 
             int slot = 10;
             for (Market market : data) {
-                setButton(slot, ConfigItemUtil.build(Common.getPlayerHead(market.getOwnerName()), Settings.GUI_MARKET_LIST_MARKET_NAME.getString(), Settings.GUI_MARKET_LIST_MARKET_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+                setButton(slot, ConfigItemUtil.build(Common.getPlayerHead(market.getOwnerName()), Settings.GUI_MARKET_LIST_MARKET_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId()) ? Settings.GUI_MARKET_LIST_MARKET_LORE_FEATURED.getStringList() : Settings.GUI_MARKET_LIST_MARKET_LORE.getStringList(), 1, new HashMap<String, Object>() {{
                     put("%market_name%", market.getName());
                     put("%market_description%", market.getDescription());
                     put("%market_owner%", market.getOwnerName());
