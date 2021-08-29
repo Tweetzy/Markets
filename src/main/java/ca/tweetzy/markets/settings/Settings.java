@@ -133,6 +133,12 @@ public class Settings {
             "&7that player's have made."
     ));
 
+    /*  ===============================
+     *         INSPECTION GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_INSPECT_TITLE = new ConfigSetting(config, "guis.inspect.title", "&7&LInspecting Container");
+    public static final ConfigSetting GUI_INSPECT_BG_ITEM = new ConfigSetting(config, "guis.inspect.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
     /*
     ==================================
             MARKET EDIT GUI
@@ -310,6 +316,9 @@ public class Settings {
             "&eRight-Click to view the required currency."
     ));
 
+    public static final ConfigSetting GUI_ALL_ITEMS_ITEMS_ITEM_INSPECT = new ConfigSetting(config, "guis.all items.items.market item.lore inspect", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box)");
+
+
     /*
    ==================================
            MARKET VIEW GUI
@@ -386,6 +395,8 @@ public class Settings {
             "&e(!) This is item has a custom currency",
             "&eRight-Click to view the required currency."
     ));
+
+    public static final ConfigSetting GUI_MARKET_CATEGORY_ITEM_INSPECT = new ConfigSetting(config, "guis.market category.item lore inspect", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box)");
 
     /*
     ==================================

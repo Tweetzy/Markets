@@ -63,15 +63,6 @@ public class GUIAddItem extends Gui {
 		setAllowClose(false);
 		setRows(6);
 		draw();
-//        setOnClose(close -> {
-//            if (getItem(2, 2) != null && getItem(2, 2).getType() != XMaterial.AIR.parseMaterial() && this.useCustomCurrency) {
-//                PlayerUtils.giveItem(close.player, getItem(2, 2));
-//            }
-//
-//            if (getItem(2, 4) != null && getItem(2, 4).getType() != XMaterial.AIR.parseMaterial()) {
-//                PlayerUtils.giveItem(close.player, getItem(2, 4));
-//            }
-//        });
 	}
 
 	public GUIAddItem(Player player, Market market) {
@@ -122,6 +113,7 @@ public class GUIAddItem extends Gui {
                 e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
             }
 		});
+
 		setActionForRange(32, 33, ClickType.LEFT, e -> {
 			assignItemStacks();
 
@@ -164,10 +156,13 @@ public class GUIAddItem extends Gui {
 
 			this.market.setUpdatedAt(System.currentTimeMillis());
 			Markets.getInstance().getMarketManager().addItemToCategory(this.selectedCategory, marketItem);
-            e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
+
+			if (this.useCustomCurrency) {
+				PlayerUtils.giveItem(e.player, getItem(2, 2));
+			}
+
+			e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
             Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(this.item)).processPlaceholder("market_category_name", this.selectedCategory.getName()).sendPrefixedMessage(e.player);
-			setItem(2, 4, XMaterial.AIR.parseItem());
-			e.gui.close();
 		});
 	}
 

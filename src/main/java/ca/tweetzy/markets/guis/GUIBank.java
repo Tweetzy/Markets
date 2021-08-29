@@ -62,24 +62,34 @@ public class GUIBank extends Gui {
         List<Currency> data = this.currencies.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         int slot = 10;
         for (Currency currency : data) {
-            setButton(slot++, ConfigItemUtil.build(currency.getItem(), Settings.GUI_BANK_CURRENCY_NAME.getString(), Settings.GUI_BANK_CURRENCY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
-                put("%item_name%", Common.getItemName(currency.getItem()));
+            setButton(slot++, ConfigItemUtil.build(currency.getItem().clone(), Settings.GUI_BANK_CURRENCY_NAME.getString(), Settings.GUI_BANK_CURRENCY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+                put("%item_name%", Common.getItemName(currency.getItem().clone()));
                 put("%currency_amount%", currency.getAmount());
             }}), ClickType.LEFT, e -> ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_withdraw_amount").getMessage()), chat -> {
                 String msg = chat.getMessage();
                 if (msg != null && msg.length() != 0 && NumberUtils.isInt(msg) && Integer.parseInt(msg) > 0) {
                     if (currency.getAmount() - Integer.parseInt(msg) >= 1) {
+
                         currency.setAmount(currency.getAmount() - Integer.parseInt(msg));
-                        Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", msg).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
+
                         ItemStack itemStack = currency.getItem().clone();
                         itemStack.setAmount(1);
 
                         for (int i = 0; i < Integer.parseInt(msg); i++) {
                             PlayerUtils.giveItem(e.player, itemStack);
                         }
+                    } else {
+                        ItemStack itemStack = currency.getItem().clone();
+                        itemStack.setAmount(1);
+                        for (int i = 0; i < Integer.parseInt(msg); i++) {
+                            PlayerUtils.giveItem(e.player, itemStack);
+                        }
 
-                        e.manager.showGUI(e.player, new GUIBank(e.player));
+                        Markets.getInstance().getCurrencyBank().removeCurrency(e.player.getUniqueId(), currency.getItem(), currency.getItem().getAmount());
                     }
+
+                    Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", msg).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
+                    e.manager.showGUI(e.player, new GUIBank(e.player));
                 }
             }).setOnCancel(() -> e.manager.showGUI(e.player, new GUIBank(e.player))).setOnClose(() -> e.manager.showGUI(e.player, new GUIBank(e.player))));
         }

@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.guis.GUIContainerInspect;
 import ca.tweetzy.markets.guis.items.GUIItemPurchase;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.guis.payment.GUICustomCurrencyView;
@@ -71,6 +72,10 @@ public class GUICategoryItems extends Gui {
                 List<String> lore = Common.getItemLore(item);
                 lore.addAll(marketItem.isUseItemCurrency() ? Settings.GUI_MARKET_CATEGORY_ITEM_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_MARKET_CATEGORY_ITEM_LORE.getStringList());
 
+                if (item.getType().name().contains("SHULKER_BOX")) {
+                    lore.addAll(Settings.GUI_MARKET_CATEGORY_ITEM_INSPECT.getStringList());
+                }
+
                 setButton(slot, ConfigItemUtil.build(item, Settings.GUI_MARKET_CATEGORY_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
                     put("%item_name%", Common.getItemName(item));
                     put("%market_item_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
@@ -90,6 +95,11 @@ public class GUICategoryItems extends Gui {
                                 return;
                             }
                             e.manager.showGUI(e.player, new GUICustomCurrencyView(this.market, this.marketCategory, marketItem, false));
+                            break;
+                        case SHIFT_RIGHT:
+                            if (item.getType().name().contains("SHULKER_BOX")) {
+                                e.manager.showGUI(e.player, new GUIContainerInspect(this.market, this.marketCategory, item));
+                            }
                             break;
                     }
                 });
