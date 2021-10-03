@@ -130,6 +130,11 @@ public class CommandAddItem extends AbstractCommand {
         if (useCustomCurrency) {
             Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(player.getUniqueId(), market, marketCategory, marketItem);
             Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(player);
+
+            final String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
+            final String content = Markets.getInstance().getLocale().getMessage("currency_select_option").getMessage();
+
+            MarketsAPI.getInstance().sendClickableCommand(player, prefix + " " + content, "markets internal marketsCustomCurrencySelectionGUI " + finalCategory);
             return ReturnType.SUCCESS;
         }
 

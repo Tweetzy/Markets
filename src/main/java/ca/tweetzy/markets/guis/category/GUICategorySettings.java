@@ -9,6 +9,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketCategoryRemoveEvent;
+import ca.tweetzy.markets.guis.GUIConfirm;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.guis.items.GUIIconSelect;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
@@ -120,18 +121,7 @@ public class GUICategorySettings extends Gui {
         });
 
         setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
-            MarketCategoryRemoveEvent marketCategoryRemoveEvent = new MarketCategoryRemoveEvent(this.market, this.marketCategory);
-            Bukkit.getPluginManager().callEvent(marketCategoryRemoveEvent);
-            if (marketCategoryRemoveEvent.isCancelled()) return;
-
-            if (Settings.GIVE_ITEMS_ON_CATEGORY_DELETE.getBoolean()) {
-                PlayerUtils.giveItem(e.player, this.marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
-            }
-
-            this.market.getCategories().remove(this.marketCategory);
-            this.market.setUpdatedAt(System.currentTimeMillis());
-            e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
-            Markets.getInstance().getLocale().getMessage("removed_category").processPlaceholder("market_category_name", this.marketCategory.getName()).sendPrefixedMessage(e.player);
+           e.manager.showGUI(e.player, new GUIConfirm(this.market, this.marketCategory, GUIConfirm.ConfirmAction.DELETE_CATEGORY));
         });
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));

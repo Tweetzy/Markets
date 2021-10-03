@@ -194,7 +194,8 @@ public class Markets extends TweetyPlugin {
                 new CommandConfiscate(),
                 new CommandReload(),
                 new CommandsBlockItem(),
-                new CommandForceSave()
+                new CommandForceSave(),
+                new CommandInternal()
         );
 
         MarketCheckTask.startTask();
@@ -216,31 +217,32 @@ public class Markets extends TweetyPlugin {
 
     public void saveData(boolean async) {
         if (Settings.DATABASE_USE.getBoolean()) {
-            this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);
-            this.dataManager.saveBlockedItems(this.marketManager.getBlockedItems(), async);
-            this.dataManager.saveTransactions(this.transactionManger.getTransactions(), async);
-            this.dataManager.savePayments(this.transactionManger.getPayments(), async);
-            this.dataManager.saveRequests(this.requestManager.getRequests(), async);
-            this.dataManager.saveBanks(this.currencyBank.getBank(), async);
-            this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
-            this.dataManager.saveFeaturedMarkets(this.marketManager.getFeaturedMarkets(), async);
+            newChain().async(() -> {
+                this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);
+                this.dataManager.saveBlockedItems(this.marketManager.getBlockedItems(), async);
+                this.dataManager.saveTransactions(this.transactionManger.getTransactions(), async);
+                this.dataManager.savePayments(this.transactionManger.getPayments(), async);
+                this.dataManager.saveRequests(this.requestManager.getRequests(), async);
+                this.dataManager.saveBanks(this.currencyBank.getBank(), async);
+                this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
+                this.dataManager.saveFeaturedMarkets(this.marketManager.getFeaturedMarkets(), async);
 
-            List<MarketCategory> categories = new ArrayList<>();
-            this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
-            this.dataManager.saveCategories(categories, async);
+                List<MarketCategory> categories = new ArrayList<>();
+                this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
+                this.dataManager.saveCategories(categories, async);
 
-            List<MarketItem> marketItems = new ArrayList<>();
-            categories.stream().map(MarketCategory::getItems).forEach(marketItems::addAll);
-            this.dataManager.saveItems(marketItems, async);
+                List<MarketItem> marketItems = new ArrayList<>();
+                categories.stream().map(MarketCategory::getItems).forEach(marketItems::addAll);
+                this.dataManager.saveItems(marketItems, async);
 
-            List<MarketRating> marketRatings = new ArrayList<>();
-            this.marketManager.getMarkets().stream().map(Market::getRatings).forEach(marketRatings::addAll);
-            this.dataManager.saveRatings(marketRatings, async);
+                List<MarketRating> marketRatings = new ArrayList<>();
+                this.marketManager.getMarkets().stream().map(Market::getRatings).forEach(marketRatings::addAll);
+                this.dataManager.saveRatings(marketRatings, async);
 
-            List<RequestItem> requestItems = new ArrayList<>();
-            this.requestManager.getRequests().stream().map(Request::getRequestedItems).forEach(requestItems::addAll);
-            this.dataManager.saveRequestItems(requestItems, async);
-
+                List<RequestItem> requestItems = new ArrayList<>();
+                this.requestManager.getRequests().stream().map(Request::getRequestedItems).forEach(requestItems::addAll);
+                this.dataManager.saveRequestItems(requestItems, async);
+            }).execute();
         } else {
             this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
             this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));

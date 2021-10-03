@@ -69,6 +69,7 @@ public class LocaleSettings {
         languageNodes.put("upkeep_already_paid", "&cYour market upkeep fee is already paid.");
         languageNodes.put("search_phrase_empty", "&cPlease enter a search phrase.");
         languageNodes.put("featured_market", "&aYou successfully featured your market");
+        languageNodes.put("currency_select_option", "&eClick me to select a currency item from a gui");
 
         languageNodes.put("created_request", "&aCreated a new request for x&2%request_amount% %request_item_name%");
         languageNodes.put("created_request_broadcast", "&2%player% &acreated a request for x&2%request_amount% %request_item_name% &8[&eView&8]");

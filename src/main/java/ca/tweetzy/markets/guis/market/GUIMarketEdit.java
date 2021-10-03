@@ -9,7 +9,9 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketDeleteEvent;
+import ca.tweetzy.markets.guis.GUIConfirm;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
@@ -125,17 +127,7 @@ public class GUIMarketEdit extends Gui {
         setButton(3, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
 
         setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
-            MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(e.player, this.market);
-            Bukkit.getPluginManager().callEvent(marketDeleteEvent);
-            if (marketDeleteEvent.isCancelled()) return;
-
-            if (Settings.GIVE_ITEMS_ON_MARKET_DELETE.getBoolean() && !this.market.getCategories().isEmpty()) {
-                List<ItemStack> items = new ArrayList<>();
-                Markets.newChain().async(() -> this.market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(e.player, items)).execute();
-            }
-            Markets.getInstance().getMarketManager().deleteMarket(this.market);
-            Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(e.player);
-            e.manager.showGUI(e.player, new GUIMain(e.player));
+            e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.DELETE_MARKET));
         });
 
         setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
@@ -151,20 +143,7 @@ public class GUIMarketEdit extends Gui {
         setButton(5, 2, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId()) ? Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE.getStringList(), 1, new HashMap<String, Object>(){{
             put("%feature_cost%", String.format("%,.2f", Settings.FEATURE_COST.getDouble()));
         }}), ClickType.LEFT, e -> {
-            if (Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId())) {
-                return;
-            }
-
-            if (!EconomyManager.hasBalance(e.player, Settings.FEATURE_COST.getDouble())) {
-                Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(e.player);
-                return;
-            }
-
-            EconomyManager.withdrawBalance(e.player, Settings.FEATURE_COST.getDouble());
-            Markets.getInstance().getLocale().getMessage("featured_market").sendPrefixedMessage(e.player);
-            Markets.getInstance().getMarketManager().getFeaturedMarkets().put(this.market.getId(), System.currentTimeMillis() + 1000L * Settings.FEATURE_TIME.getInt());
-
-            draw();
+            e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.FEATURE_MARKET));
         });
 
         List<MarketCategory> data = this.market.getCategories().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());
