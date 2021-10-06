@@ -12,6 +12,8 @@ import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.hooks.EconomyManager;
+import ca.tweetzy.core.hooks.PluginHook;
+import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
@@ -19,6 +21,7 @@ import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.database.migrations._2_FeaturedMarketMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
+import ca.tweetzy.markets.economy.UltraEconomyHook;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
@@ -89,6 +92,8 @@ public class Markets extends TweetyPlugin {
 
     protected Metrics metrics;
 
+    private PluginHook ultraEconomyHook;
+
     protected String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
     protected String SONGODA_NODE = "%%__SONGODA_NODE__%%";
     protected String TIMESTAMP = "%%__TIMESTAMP__%%";
@@ -121,18 +126,26 @@ public class Markets extends TweetyPlugin {
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
+        // Settings
+        Settings.setup();
+
+        this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
+
         // Load Economy
         EconomyManager.load();
-
-        // Setup the settings file
-        Settings.setup();
 
         // Setup the locale
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
 
         // Setup Economy
-        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
+        final String ECO_PLUGIN =Settings.ECONOMY_PLUGIN.getString();
+        if (ECO_PLUGIN.startsWith("UltraEconomy")) {
+            EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
+        } else {
+            EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
+        }
+
         if (!EconomyManager.getManager().isEnabled()) {
             getLogger().severe("Could not find a valid economy provider for shops");
             getServer().getPluginManager().disablePlugin(this);
