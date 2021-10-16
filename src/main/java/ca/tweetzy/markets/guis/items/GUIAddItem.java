@@ -8,6 +8,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
 import ca.tweetzy.markets.guis.category.GUICategorySelection;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
@@ -125,6 +126,15 @@ public class GUIAddItem extends Gui {
 			if (this.market.getCategories().isEmpty()) {
 				Markets.getInstance().getLocale().getMessage("market_category_required").sendPrefixedMessage(player);
 				return;
+			}
+
+			if (Settings.LIMIT_MARKET_ITEMS_BY_PERMISSION.getBoolean()) {
+				int maxAllowedItems = MarketsAPI.getInstance().maxAllowedMarketItems(player);
+				int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
+				if (totalItemsInMarket >= maxAllowedItems) {
+					Markets.getInstance().getLocale().getMessage("at_max_items_limit").sendPrefixedMessage(player);
+					return;
+				}
 			}
 
 			if (this.selectedCategory == null) {
