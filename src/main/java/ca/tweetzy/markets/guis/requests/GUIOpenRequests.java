@@ -62,12 +62,11 @@ public class GUIOpenRequests extends Gui {
         }
 
         if (!this.all) {
-            setButton(5, 0, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-//                Markets.getInstance().getRequestManager().deletePlayerRequests(this.player);
+            setButton(5, 0, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
                 draw();
             });
 
-            setButton(5, 8, new TItemBuilder(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+            setButton(5, 8, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
                 e.manager.showGUI(this.player, new GUIPaymentCollection(this.player));
             });
         }
@@ -80,9 +79,9 @@ public class GUIOpenRequests extends Gui {
             return this.playerRequests.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.playerRequests.size() / (double) 28L));
-            setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-            setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
-            setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+            setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+            setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(this.player, new GUIMain(this.player)));
+            setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
             setOnPage(e -> draw());
 
             int slot = 10;

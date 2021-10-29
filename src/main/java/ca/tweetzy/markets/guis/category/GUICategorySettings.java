@@ -64,11 +64,11 @@ public class GUICategorySettings extends Gui {
             if (Settings.GUI_CATEGORY_EDIT_GLOW_BORDER.getBoolean()) highlightItem(i);
         });
 
-        setPrevPage(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+        setPrevPage(5, 4, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+        setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
-        setButton(0, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(0, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%category_display_name%", marketCategory.getDisplayName());
             put("%category_name%", marketCategory.getName());
         }}), ClickType.LEFT, e -> {
@@ -90,7 +90,7 @@ public class GUICategorySettings extends Gui {
             input.start();
         });
 
-        setButton(1, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(1, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%category_description%", marketCategory.getDescription());
         }}), ClickType.LEFT, e -> {
             e.gui.exit();
@@ -113,19 +113,19 @@ public class GUICategorySettings extends Gui {
 
         setButton(2, 0, new TItemBuilder(this.marketCategory.getIcon()).setName(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_NAME.getString()).setLore(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIIconSelect(this.market, this.marketCategory)));
 
-        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+        setButton(3, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_EMPTY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             PlayerUtils.giveItem(e.player, this.marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
             this.marketCategory.getItems().clear();
             this.market.setUpdatedAt(System.currentTimeMillis());
             draw();
         });
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
+        setButton(4, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
            e.manager.showGUI(e.player, new GUIConfirm(this.market, this.marketCategory, GUIConfirm.ConfirmAction.DELETE_CATEGORY));
         });
 
-        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
-        setButton(5, 1, ConfigItemUtil.build(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+        setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
+        setButton(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory, 1D, false, false, null, null));
         });
 

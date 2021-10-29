@@ -18,8 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.Objects;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: April 30 2021
@@ -28,77 +26,77 @@ import java.util.Objects;
  */
 public class GUIMain extends Gui {
 
-    private final Player player;
+	private final Player player;
 
-    public GUIMain(Player player) {
-        this.player = player;
-        setTitle(TextUtils.formatText(Settings.GUI_MAIN_TITLE.getString()));
-        setAllowDrops(false);
-        setAcceptsItems(false);
-        setAllowShiftClick(false);
-        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MAIN_FILL_ITEM.getMaterial()));
-        setUseLockedCells(Settings.GUI_MAIN_FILL_SLOTS.getBoolean());
-        setRows(6);
+	public GUIMain(Player player) {
+		this.player = player;
+		setTitle(TextUtils.formatText(Settings.GUI_MAIN_TITLE.getString()));
+		setAllowDrops(false);
+		setAcceptsItems(false);
+		setAllowShiftClick(false);
+		setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_MAIN_FILL_ITEM.getMaterial()));
+		setUseLockedCells(Settings.GUI_MAIN_FILL_SLOTS.getBoolean());
+		setRows(6);
 
-        draw();
-    }
+		draw();
+	}
 
-    private void draw() {
-        if (Settings.GUI_MAIN_USE_BORDER.getBoolean()) {
-            for (int i : Numbers.GUI_BORDER_6_ROWS) {
-                setItem(i, GuiUtils.getBorderItem(Settings.GUI_MAIN_BORDER_ITEM.getMaterial()));
-                if (Settings.GUI_MAIN_GLOW_BORDER.getBoolean()) highlightItem(i);
+	private void draw() {
+		if (Settings.GUI_MAIN_USE_BORDER.getBoolean()) {
+			for (int i : Numbers.GUI_BORDER_6_ROWS) {
+				setItem(i, GuiUtils.getBorderItem(Settings.GUI_MAIN_BORDER_ITEM.getMaterial()));
+				if (Settings.GUI_MAIN_GLOW_BORDER.getBoolean()) highlightItem(i);
 
-            }
-        }
+			}
+		}
 
-        setButton(2, 2, new TItemBuilder(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_USE_CUSTOM_HEAD.getBoolean() ? Common.getCustomTextureHead(String.format("%s%s", "http://textures.minecraft.net/texture/", Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_CUSTOM_HEAD_LINK.getString()), false) : Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM.getMaterial().parseItem()).setName(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-            e.manager.showGUI(this.player, new GUIMarketList());
-        });
+		setButton(2, 2, new TItemBuilder(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_USE_CUSTOM_HEAD.getBoolean() ? Common.getCustomTextureHead(String.format("%s%s", "http://textures.minecraft.net/texture/", Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM_CUSTOM_HEAD_LINK.getString()), false) : Settings.GUI_MAIN_ITEMS_ALL_MARKETS_ITEM.getMaterial().parseItem()).setName(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_ALL_MARKETS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			e.manager.showGUI(this.player, new GUIMarketList());
+		});
 
-        setButton(2, 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-            Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+		setButton(2, 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
 
-            if (market == null) {
-                if (!Settings.AUTO_CREATE_MARKET.getBoolean()) {
-                    Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(this.player);
-                    return;
-                }
+			if (market == null) {
+				if (!Settings.AUTO_CREATE_MARKET.getBoolean()) {
+					Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(this.player);
+					return;
+				}
 
-                if (!Common.chargeCreationFee(player)) {
-                    return;
-                }
+				if (!Common.chargeCreationFee(player)) {
+					return;
+				}
 
-                market = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
+				market = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
 
-                MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
-                Bukkit.getPluginManager().callEvent(marketCreateEvent);
-                if (marketCreateEvent.isCancelled()) return;
+				MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
+				Bukkit.getPluginManager().callEvent(marketCreateEvent);
+				if (marketCreateEvent.isCancelled()) return;
 
-                // Create a new market for the player
-                Markets.getInstance().getMarketManager().addMarket(market);
-                Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
-            }
+				// Create a new market for the player
+				Markets.getInstance().getMarketManager().addMarket(market);
+				Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
+			}
 
-            market.setUnpaid(false);
-            if (market.isUnpaid()) {
-                Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
-                return;
-            }
+			market.setUnpaid(false);
+			if (market.isUnpaid()) {
+				Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
+				return;
+			}
 
-            e.manager.showGUI(this.player, new GUIMarketEdit(market));
-        });
+			e.manager.showGUI(this.player, new GUIMarketEdit(market));
+		});
 
-        setButton(2, 6, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-            e.manager.showGUI(this.player, new GUIOpenRequests(this.player, false));
-        });
+		setButton(2, 6, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			e.manager.showGUI(this.player, new GUIOpenRequests(this.player, false));
+		});
 
-        setButton(3, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-            e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
-        });
+		setButton(3, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
+		});
 
-        setButton(3, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-            e.manager.showGUI(this.player, new GUITransactionView(this.player));
-        });
-    }
+		setButton(3, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			e.manager.showGUI(this.player, new GUITransactionView(this.player));
+		});
+	}
 }

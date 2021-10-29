@@ -63,12 +63,12 @@ public class GUIItemPurchase extends Gui {
             if (Settings.GUI_ITEM_PURCHASE_GLOW_BORDER.getBoolean()) highlightItem(i);
         }
 
-        setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
+        setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketView(this.market)));
 
         setItem(2, 4, purchaseItemQtySpecific(this.purchaseQty));
         addPurchaseInfoItem();
 
-        setButton(2, 2, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(2, 2, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%decrement_amount%", Settings.DECREMENT_NUMBER_ONE.getInt());
         }}), e -> {
             if (purchaseQty - Settings.DECREMENT_NUMBER_ONE.getInt() >= 1) {
@@ -79,7 +79,7 @@ public class GUIItemPurchase extends Gui {
             updateDisplay();
         });
 
-        setButton(3, 2, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(3, 2, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_DECR_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%decrement_amount%", Settings.DECREMENT_NUMBER_TWO.getInt());
         }}), e -> {
             if (purchaseQty - Settings.DECREMENT_NUMBER_TWO.getInt() >= 1) {
@@ -90,7 +90,7 @@ public class GUIItemPurchase extends Gui {
             updateDisplay();
         });
 
-        setButton(2, 6, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_INC_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(2, 6, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_INC_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%increment_amount%", Settings.INCREMENT_NUMBER_ONE.getInt());
         }}), e -> {
             if (purchaseQty + Settings.INCREMENT_NUMBER_ONE.getInt() <= this.marketItem.getItemStack().getAmount()) {
@@ -101,7 +101,7 @@ public class GUIItemPurchase extends Gui {
             updateDisplay();
         });
 
-        setButton(3, 6, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_INC_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(3, 6, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_INC_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_NAME.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_INC_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%increment_amount%", Settings.INCREMENT_NUMBER_TWO.getInt());
         }}), e -> {
             if (purchaseQty + Settings.INCREMENT_NUMBER_TWO.getInt() <= this.marketItem.getItemStack().getAmount()) {
@@ -125,7 +125,7 @@ public class GUIItemPurchase extends Gui {
     }
 
     private void addPurchaseInfoItem() {
-        setButton(3, 4, ConfigItemUtil.build(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString(), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), marketItem.isUseItemCurrency() ? Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), marketItem.isUseItemCurrency() ? Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%purchase_quantity%", purchaseQty);
             put("%stack_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
             put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());

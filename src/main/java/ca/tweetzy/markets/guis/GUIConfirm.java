@@ -9,6 +9,7 @@ import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.utils.Common;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Objects;
@@ -42,7 +43,7 @@ public final class GUIConfirm extends Gui {
 
 		// 0 1 2 3 4 5 6 7 8
 		for (int i = 0; i < 4; i++) {
-			setButton(i, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_ITEMS_CANCEL_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_ITEMS_CANCEL_NAME.getString()).setLore(Settings.GUI_CONFIRM_ITEMS_CANCEL_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			setButton(i, new TItemBuilder(Common.getItemStack(Settings.GUI_CONFIRM_ITEMS_CANCEL_ITEM.getString())).setName(Settings.GUI_CONFIRM_ITEMS_CANCEL_NAME.getString()).setLore(Settings.GUI_CONFIRM_ITEMS_CANCEL_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 				switch (confirmAction) {
 					case DELETE_MARKET:
 					case FEATURE_MARKET:
@@ -56,7 +57,7 @@ public final class GUIConfirm extends Gui {
 		}
 
 		for (int i = 5; i < 9; i++) {
-			setButton(i, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_ITEMS_CONFIRM_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_ITEMS_CONFIRM_NAME.getString()).setLore(Settings.GUI_CONFIRM_ITEMS_CONFIRM_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			setButton(i, new TItemBuilder(Common.getItemStack(Settings.GUI_CONFIRM_ITEMS_CONFIRM_ITEM.getString())).setName(Settings.GUI_CONFIRM_ITEMS_CONFIRM_NAME.getString()).setLore(Settings.GUI_CONFIRM_ITEMS_CONFIRM_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 				switch (confirmAction) {
 					case DELETE_MARKET:
 						MarketsAPI.getInstance().deleteMarket(e.player, this.market);

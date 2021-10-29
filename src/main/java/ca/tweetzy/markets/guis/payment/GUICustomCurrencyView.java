@@ -9,6 +9,7 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import org.bukkit.event.inventory.ClickType;
 
@@ -43,6 +44,6 @@ public class GUICustomCurrencyView extends Gui {
 
     private void draw() {
         setItem(1, 4, this.marketItem.getCurrencyItem());
-        setButton(3, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
+        setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
     }
 }

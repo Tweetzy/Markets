@@ -8,6 +8,7 @@ import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
@@ -72,8 +73,8 @@ public class GUIContainerInspect extends Gui {
 
 		for (int i : fillSlots) setItem(i, getDefaultItem());
 
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setButton(5, 4, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+		setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+		setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1,null), e -> {
 			if (this.category == null) {
 				e.manager.showGUI(e.player, new GUIAllItems(this.market, false));
 			} else {

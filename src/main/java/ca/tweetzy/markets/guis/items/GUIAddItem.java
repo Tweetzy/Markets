@@ -96,8 +96,8 @@ public class GUIAddItem extends Gui {
 		}
 
 		// cancel / confirm buttons
-		setItems(29, 30, GuiUtils.createButtonItem(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_ITEM.getMaterial(), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_LORE.getStringList())));
-		setItems(32, 33, GuiUtils.createButtonItem(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_ITEM.getMaterial(), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_LORE.getStringList())));
+		setItems(29, 30, GuiUtils.createButtonItem(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_ITEM.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CANCEL_ADD_LORE.getStringList())));
+		setItems(32, 33, GuiUtils.createButtonItem(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_ITEM.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CONFIRM_ADD_LORE.getStringList())));
 		setActionForRange(29, 30, ClickType.LEFT, e -> {
 			setAllowClose(true);
 			if (getItem(2, 2) != null && getItem(2, 2).getType() != XMaterial.AIR.parseMaterial() && this.useCustomCurrency) {
@@ -177,7 +177,7 @@ public class GUIAddItem extends Gui {
 	}
 
 	private void placePriceButton() {
-		setButton(3, 4, ConfigItemUtil.build(Settings.GUI_ADD_ITEM_ITEMS_PRICE_ITEM.getString(), Settings.GUI_ADD_ITEM_ITEMS_PRICE_NAME.getString(), this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+		setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_PRICE_ITEM.getString()), Settings.GUI_ADD_ITEM_ITEMS_PRICE_NAME.getString(), this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 			put("%market_item_price%", useCustomCurrency ? Math.round(itemPrice) : String.format("%,.2f", itemPrice));
 			put("%market_item_currency%", useCustomCurrency && currency != null ? Common.getItemName(currency) : "");
 		}}), ClickType.LEFT, e -> {
@@ -196,7 +196,7 @@ public class GUIAddItem extends Gui {
 
 	private void placePriceForStackButton() {
 		setButton(2, 5, ConfigItemUtil.build(
-				this.priceIsForStack ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_ITEM.getString() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_ITEM.getString(),
+				this.priceIsForStack ? Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_ITEM.getString()) : Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_ITEM.getString()),
 				this.priceIsForStack ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_NAME.getString() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_NAME.getString(),
 				this.priceIsForStack ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_ENABLED_LORE.getStringList() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_FOR_STACK_DISABLED_LORE.getStringList(),
 				1, null), ClickType.LEFT, e -> {
@@ -207,7 +207,7 @@ public class GUIAddItem extends Gui {
 
 	private void placeUseCustomCurrencyButton() {
 		setButton(2, 3, ConfigItemUtil.build(
-				this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_ITEM.getString() : Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_ITEM.getString(),
+				this.useCustomCurrency ? Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_ITEM.getString()) : Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_ITEM.getString()),
 				this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_NAME.getString() : Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_NAME.getString(),
 				this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_LORE.getStringList() : Settings.GUI_ADD_ITEM_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_LORE.getStringList(),
 				1, null), ClickType.LEFT, e -> {
@@ -224,13 +224,13 @@ public class GUIAddItem extends Gui {
 			if (getItem(2, 2) != null && getItem(2, 2).getType() != XMaterial.AIR.parseMaterial()) {
 				PlayerUtils.giveItem(this.player, getItem(2, 2));
 			}
-			setItem(2, 2, GuiUtils.createButtonItem(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_ITEM.getMaterial(), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_LORE.getStringList())));
+			setItem(2, 2, GuiUtils.createButtonItem(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_ITEM.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_NAME.getString()), TextUtils.formatText(Settings.GUI_ADD_ITEM_ITEMS_CURRENCY_HOLDER_LORE.getStringList())));
 			setUnlocked(2, 2, false);
 		}
 	}
 
 	private void placeSelectedCategoryButton() {
-		setButton(2, 6, ConfigItemUtil.build(Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_ITEM.getString(), Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_NAME.getString(), Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+		setButton(2, 6, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_ITEM.getString()), Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_NAME.getString(), Settings.GUI_ADD_ITEM_ITEMS_SELECTED_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 			put("%selected_market_category%", selectedCategory != null ? selectedCategory.getDisplayName() : Markets.getInstance().getLocale().getMessage("misc.category not selected").getMessage());
 		}}), ClickType.LEFT, e -> {
 			assignItemStacks();

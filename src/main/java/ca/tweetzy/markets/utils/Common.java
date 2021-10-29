@@ -10,6 +10,8 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.events.MarketItemRemoveEvent;
+import ca.tweetzy.markets.api.heads.HeadDatabaseHook;
+import ca.tweetzy.markets.api.heads.SkullsHook;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
 import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.market.Market;
@@ -29,6 +31,8 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -120,6 +124,42 @@ public class Common {
         }
         head.setItemMeta(meta);
         return head;
+    }
+
+    private boolean isMinecraftTextureString(String value) {
+        return value.startsWith("https://textures.minecraft.net/texture/");
+    }
+
+    private boolean isSkullsTexture(String value) {
+        return value.toLowerCase().startsWith("skulls:");
+    }
+
+    private boolean isHeadDatabaseTexture(String value) {
+        return value.toLowerCase().startsWith("hdb:");
+    }
+
+    public ItemStack getItemStack(String value) {
+        if (isMinecraftTextureString(value)) {
+            return getCustomTextureHead(value, false);
+        }
+
+        if (isSkullsTexture(value)) {
+            final String[] parts = value.split(":");
+            if (NumberUtils.isInt(parts[1]))
+                return SkullsHook.getHead(Integer.parseInt(parts[1]));
+            else
+                return XMaterial.STONE.parseItem();
+        }
+
+        if (isHeadDatabaseTexture(value)) {
+            final String[] parts = value.split(":");
+            if (NumberUtils.isInt(parts[1]))
+                return HeadDatabaseHook.getHead(Integer.parseInt(parts[1]));
+            else
+                return XMaterial.STONE.parseItem();
+        }
+
+        return XMaterial.matchXMaterial(value.toUpperCase()).orElse(XMaterial.STONE).parseItem();
     }
 
     /**

@@ -19,6 +19,7 @@ import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,11 +62,11 @@ public class GUIMarketEdit extends Gui {
             if (Settings.GUI_MARKET_EDIT_GLOW_BORDER.getBoolean()) highlightItem(i);
         });
 
-        setPrevPage(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+        setPrevPage(5, 4, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+        setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 
-        setButton(0, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_NAME_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+        setButton(0, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_NAME_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_NAME_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_NAME_LORE.getStringList(), 1, new HashMap<String, Object>() {{
             put("%market_name%", market.getName());
         }}), ClickType.LEFT, e -> {
             e.gui.exit();
@@ -86,13 +87,13 @@ public class GUIMarketEdit extends Gui {
             input.start();
         });
 
-        setButton(1, 0, ConfigItemUtil.build(this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_ITEM.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_ITEM.getString(), this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_NAME.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_NAME.getString(), market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_LORE.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+        setButton(1, 0, ConfigItemUtil.build(this.market.isOpen() ? Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_ITEM.getString()) : Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_ITEM.getString()), this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_NAME.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_NAME.getString(), market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_LORE.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             this.market.setOpen(!this.market.isOpen());
             this.market.setUpdatedAt(System.currentTimeMillis());
             draw();
         });
 
-        setButton(2, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+        setButton(2, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             e.gui.exit();
 
             PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
@@ -124,14 +125,14 @@ public class GUIMarketEdit extends Gui {
             input.start();
         });
 
-        setButton(3, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
+        setButton(3, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
 
-        setButton(4, 0, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
+        setButton(4, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
             e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.DELETE_MARKET));
         });
 
-        setButton(5, 0, ConfigItemUtil.build(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
-        setButton(5, 1, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+        setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
+        setButton(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
             if (market.getCategories().isEmpty()) {
                 Markets.getInstance().getLocale().getMessage("market_category_required").sendPrefixedMessage(e.player);
                 return;
@@ -140,7 +141,7 @@ public class GUIMarketEdit extends Gui {
             e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market));
         });
 
-        setButton(5, 2, ConfigItemUtil.build(Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM.getString(), Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId()) ? Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE.getStringList(), 1, new HashMap<String, Object>(){{
+        setButton(5, 2, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId()) ? Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE.getStringList(), 1, new HashMap<String, Object>(){{
             put("%feature_cost%", String.format("%,.2f", Settings.FEATURE_COST.getDouble()));
         }}), ClickType.LEFT, e -> {
             e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.FEATURE_MARKET));
