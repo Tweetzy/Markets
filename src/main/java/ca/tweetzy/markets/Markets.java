@@ -20,6 +20,7 @@ import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.database.migrations._2_FeaturedMarketMigration;
+import ca.tweetzy.markets.database.migrations._3_InfiniteItemMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.economy.UltraEconomyHook;
 import ca.tweetzy.markets.listeners.PlayerListeners;
@@ -161,7 +162,8 @@ public class Markets extends TweetyPlugin {
             this.dataManager = new DataManager(this.databaseConnector, this);
             DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
                     new _1_InitialMigration(),
-                    new _2_FeaturedMarketMigration()
+                    new _2_FeaturedMarketMigration(),
+                    new _3_InfiniteItemMigration()
             );
             dataMigrationManager.runMigrations();
         }

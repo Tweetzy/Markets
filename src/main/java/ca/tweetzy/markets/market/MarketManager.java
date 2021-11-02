@@ -181,6 +181,7 @@ public class MarketManager {
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".price for stack", item.isPriceForStack());
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".currency item", item.getCurrencyItem());
                         Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".use item currency", item.isUseItemCurrency());
+                        Markets.getInstance().getData().set(node + ".items." + item.getId().toString() + ".infinite", item.isInfinite());
                     }
                 });
 
@@ -245,7 +246,7 @@ public class MarketManager {
                         List<MarketItem> marketItems = new ArrayList<>();
                         if (items != null && items.getKeys(false).size() != 0) {
                             Markets.getInstance().getData().getConfigurationSection("markets." + marketId + ".items").getKeys(false).forEach(marketItem -> {
-                                marketItems.add(new MarketItem(
+                                MarketItem itemToAdd = new MarketItem(
                                         UUID.fromString(marketItem),
                                         Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".item"),
                                         Markets.getInstance().getData().getItemStack("markets." + marketId + ".items." + marketItem + ".currency item"),
@@ -253,7 +254,11 @@ public class MarketManager {
                                         Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".use item currency"),
                                         Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".price for stack"),
                                         UUID.fromString(Markets.getInstance().getData().getString("markets." + marketId + ".items." + marketItem + ".category"))
-                                ));
+                                );
+
+                                itemToAdd.setInfinite( Markets.getInstance().getData().getBoolean("markets." + marketId + ".items." + marketItem + ".infinite", false));
+
+                                marketItems.add(itemToAdd);
                             });
                         }
 

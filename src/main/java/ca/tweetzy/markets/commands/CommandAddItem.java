@@ -123,6 +123,8 @@ public class CommandAddItem extends AbstractCommand {
         if (heldItem.getAmount() == 1) isPriceForStack = true;
 
         MarketItem marketItem = new MarketItem(marketCategory, heldItem, price, isPriceForStack);
+        marketItem.setInfinite(!MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-o") && player.hasPermission("markets.addinfiniteitems"));
+
         MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);
         Bukkit.getPluginManager().callEvent(marketItemAddEvent);
         if (marketItemAddEvent.isCancelled()) return ReturnType.FAILURE;

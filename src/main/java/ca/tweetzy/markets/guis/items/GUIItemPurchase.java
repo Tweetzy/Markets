@@ -176,11 +176,12 @@ public class GUIItemPurchase extends Gui {
 
         if (foundItem.isPriceForStack() || originalSize - this.purchaseQty <= 0) {
             PlayerUtils.giveItem(buyer, item);
-            foundCategory.getItems().remove(foundItem);
+            if (!foundItem.isInfinite())
+             foundCategory.getItems().remove(foundItem);
         } else {
             item.setAmount(this.purchaseQty);
             PlayerUtils.giveItem(buyer, item);
-            item.setAmount(originalSize - this.purchaseQty);
+            item.setAmount(foundItem.isInfinite() ? originalSize : originalSize - this.purchaseQty);
             foundItem.setItemStack(item);
         }
 

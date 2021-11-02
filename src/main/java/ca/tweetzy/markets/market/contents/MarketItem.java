@@ -28,6 +28,7 @@ public class MarketItem {
     private double price;
 
     private boolean priceForStack;
+    private boolean infinite;
 
     public MarketItem(UUID id, ItemStack itemStack, ItemStack currencyItem, double price, boolean useItemCurrency, boolean priceForStack, UUID categoryId) {
         this.id = id;
@@ -37,6 +38,7 @@ public class MarketItem {
         this.categoryId = categoryId;
         this.currencyItem = currencyItem;
         this.useItemCurrency = useItemCurrency;
+        this.infinite = false;
     }
 
     public MarketItem(MarketCategory category, ItemStack itemStack, double price, boolean priceForStack) {

@@ -20,6 +20,10 @@ public final class HeadDatabaseHook {
 	}
 
 	public ItemStack getHead(final int id) {
+		if (!enabled()) {
+			return XMaterial.PLAYER_HEAD.parseItem();
+		}
+
 		HeadDatabaseAPI api = new HeadDatabaseAPI();
 		try {
 			return api.getItemHead(String.valueOf(id));
