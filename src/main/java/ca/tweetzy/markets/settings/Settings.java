@@ -58,11 +58,21 @@ public class Settings {
     public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "setting.tax.enabled", false, "If enabled, when a sale is made, percentage of the sale will be removed / added");
     public static final ConfigSetting TAX_BUYER_INSTEAD_OF_SELLER = new ConfigSetting(config, "setting.tax.tax buyer instead of seller", true, "If enabled, markets will charge the buyer tax instead of the seller");
     public static final ConfigSetting TAX_AMOUNT = new ConfigSetting(config, "setting.tax.amount", 13, "This is a percentage, ex. 13 -> 13% tax");
+    public static final ConfigSetting LOG_SAVE_MSG = new ConfigSetting(config, "setting.log save message", true, "If true, the auto save msg will be shown in the console");
+    public static final ConfigSetting SEND_MONEY_WITHDRAW_MSG = new ConfigSetting(config, "setting.send money withdraw message", true, "If true, market transactions will show you how much money you spent");
+    public static final ConfigSetting SEND_MONEY_DEPOSIT_MSG = new ConfigSetting(config, "setting.send money deposit message", true, "If true, any sales will be told to the owner");
 
     public static final ConfigSetting INCREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.increment one", 1, "How much should the item qty be increased by (btn 1)");
     public static final ConfigSetting INCREMENT_NUMBER_TWO = new ConfigSetting(config, "setting.increment two", 5, "How much should the item qty be increased by (btn 2)");
     public static final ConfigSetting DECREMENT_NUMBER_ONE = new ConfigSetting(config, "setting.decrement one", 1, "How much should the item qty be decreased by (btn 1)");
     public static final ConfigSetting DECREMENT_NUMBER_TWO = new ConfigSetting(config, "setting.decrement two", 5, "How much should the item qty be decreased by (btn 2)");
+
+    /*  ===============================
+     *         SIGN SETTINGS
+     *  ===============================*/
+    public static final ConfigSetting SIGN_ACTIVATE_HEADER = new ConfigSetting(config, "setting.signs.header", "[market]");
+    public static final ConfigSetting SIGN_ACTIVATED_HEADER = new ConfigSetting(config, "setting.signs.activated header", "&8[&eMarket&8]");
+    public static final ConfigSetting SIGN_OWNER_NAME_COLOR = new ConfigSetting(config, "setting.signs.owner name colour", "&d");
 
     /*  ===============================
      *         DATABASE OPTIONS

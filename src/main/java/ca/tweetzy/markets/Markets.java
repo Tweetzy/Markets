@@ -24,6 +24,7 @@ import ca.tweetzy.markets.database.migrations._3_InfiniteItemMigration;
 import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.economy.UltraEconomyHook;
 import ca.tweetzy.markets.listeners.PlayerListeners;
+import ca.tweetzy.markets.listeners.SignListener;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
 import ca.tweetzy.markets.market.MarketPlayerManager;
@@ -56,234 +57,238 @@ import java.util.List;
  */
 public class Markets extends TweetyPlugin {
 
-    private static TaskChainFactory taskChainFactory;
+	private static TaskChainFactory taskChainFactory;
 
-    @Getter
-    private static Markets instance;
+	@Getter
+	private static Markets instance;
 
-    @Getter
-    private final Config data = new Config(this, "data.yml");
+	@Getter
+	private final Config data = new Config(this, "data.yml");
 
-    @Getter
-    private GuiManager guiManager;
+	@Getter
+	private GuiManager guiManager;
 
-    @Getter
-    private CommandManager commandManager;
+	@Getter
+	private CommandManager commandManager;
 
-    @Getter
-    private MarketManager marketManager;
+	@Getter
+	private MarketManager marketManager;
 
-    @Getter
-    private TransactionManger transactionManger;
+	@Getter
+	private TransactionManger transactionManger;
 
-    @Getter
-    private MarketPlayerManager marketPlayerManager;
+	@Getter
+	private MarketPlayerManager marketPlayerManager;
 
-    @Getter
-    private RequestManager requestManager;
+	@Getter
+	private RequestManager requestManager;
 
-    @Getter
-    private CurrencyBank currencyBank;
+	@Getter
+	private CurrencyBank currencyBank;
 
-    @Getter
-    private DataManager dataManager;
+	@Getter
+	private DataManager dataManager;
 
-    @Getter
-    protected DatabaseConnector databaseConnector;
+	@Getter
+	protected DatabaseConnector databaseConnector;
 
-    protected Metrics metrics;
+	protected Metrics metrics;
 
-    private PluginHook ultraEconomyHook;
+	private PluginHook ultraEconomyHook;
 
-    protected String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-    protected String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-    protected String TIMESTAMP = "%%__TIMESTAMP__%%";
-    protected String USER = "%%__USER__%%";
-    protected String USERNAME = "%%__USERNAME__%%";
-    protected String RESOURCE = "%%__RESOURCE__%%";
-    protected String NONCE = "%%__NONCE__%%";
+	protected String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+	protected String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+	protected String TIMESTAMP = "%%__TIMESTAMP__%%";
+	protected String USER = "%%__USER__%%";
+	protected String USERNAME = "%%__USERNAME__%%";
+	protected String RESOURCE = "%%__RESOURCE__%%";
+	protected String NONCE = "%%__NONCE__%%";
 
-    @Override
-    public void onPluginLoad() {
-        instance = this;
-    }
+	@Override
+	public void onPluginLoad() {
+		instance = this;
+	}
 
-    @Override
-    public void onPluginEnable() {
-        TweetyCore.registerPlugin(this, 101, XMaterial.CHEST.name());
+	@Override
+	public void onPluginEnable() {
+		TweetyCore.registerPlugin(this, 101, XMaterial.CHEST.name());
 
-        // Stop the plugin if the server version is not 1.8 or higher
-        if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+		// Stop the plugin if the server version is not 1.8 or higher
+		if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-        // Check server type
-        if (ServerProject.isServer(ServerProject.CRAFTBUKKIT, ServerProject.GLOWSTONE, ServerProject.TACO, ServerProject.UNKNOWN)) {
-            // I can't remember if spigot allows me to disable a plugin if its running a specific jar so just tell them AGAIN
-            // that they're running a non-supported server project even though the plugin page will state it....
-            getLogger().severe("You're running Markets on a non-supported server project. There is no guarantee anything will work.");
-        }
+		// Check server type
+		if (ServerProject.isServer(ServerProject.CRAFTBUKKIT, ServerProject.GLOWSTONE, ServerProject.TACO, ServerProject.UNKNOWN)) {
+			// I can't remember if spigot allows me to disable a plugin if its running a specific jar so just tell them AGAIN
+			// that they're running a non-supported server project even though the plugin page will state it....
+			getLogger().severe("You're running Markets on a non-supported server project. There is no guarantee anything will work.");
+		}
 
-        taskChainFactory = BukkitTaskChainFactory.create(this);
+		taskChainFactory = BukkitTaskChainFactory.create(this);
 
-        // Settings
-        Settings.setup();
+		// Settings
+		Settings.setup();
 
-        this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
+		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
 
-        // Load Economy
-        EconomyManager.load();
+		// Load Economy
+		EconomyManager.load();
 
-        // Setup the locale
-        setLocale(Settings.LANG.getString());
-        LocaleSettings.setup();
+		// Setup the locale
+		setLocale(Settings.LANG.getString());
+		LocaleSettings.setup();
 
-        // Setup Economy
-        final String ECO_PLUGIN =Settings.ECONOMY_PLUGIN.getString();
-        if (ECO_PLUGIN.startsWith("UltraEconomy")) {
-            EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
-        } else {
-            EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
-        }
+		// Setup Economy
+		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
+		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
+			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
+		} else {
+			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
+		}
 
-        if (!EconomyManager.getManager().isEnabled()) {
-            getLogger().severe("Could not find a valid economy provider for shops");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+		if (!EconomyManager.getManager().isEnabled()) {
+			getLogger().severe("Could not find a valid economy provider for shops");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-        // Load the data file
-        this.data.load();
+		// Load the data file
+		this.data.load();
 
-        // Setup the database if enabled
-        if (Settings.DATABASE_USE.getBoolean()) {
-            this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
-            this.dataManager = new DataManager(this.databaseConnector, this);
-            DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
-                    new _1_InitialMigration(),
-                    new _2_FeaturedMarketMigration(),
-                    new _3_InfiniteItemMigration()
-            );
-            dataMigrationManager.runMigrations();
-        }
+		// Setup the database if enabled
+		if (Settings.DATABASE_USE.getBoolean()) {
+			this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
+			this.dataManager = new DataManager(this.databaseConnector, this);
+			DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
+					new _1_InitialMigration(),
+					new _2_FeaturedMarketMigration(),
+					new _3_InfiniteItemMigration()
+			);
+			dataMigrationManager.runMigrations();
+		}
 
-        // Managers
-        this.guiManager = new GuiManager(this);
-        this.commandManager = new CommandManager(this);
-        this.marketManager = new MarketManager();
-        this.marketPlayerManager = new MarketPlayerManager();
-        this.transactionManger = new TransactionManger();
-        this.requestManager = new RequestManager();
-        this.currencyBank = new CurrencyBank();
+		// Managers
+		this.guiManager = new GuiManager(this);
+		this.commandManager = new CommandManager(this);
+		this.marketManager = new MarketManager();
+		this.marketPlayerManager = new MarketPlayerManager();
+		this.transactionManger = new TransactionManger();
+		this.requestManager = new RequestManager();
+		this.currencyBank = new CurrencyBank();
 
-        this.guiManager.init();
-        this.marketManager.loadMarkets();
-        this.marketManager.loadFeaturedMarkets();
-        this.transactionManger.loadTransactions();
-        this.transactionManger.loadPayments();
-        this.requestManager.loadRequests();
-        this.marketManager.loadBlockedItems();
-        this.currencyBank.loadBank();
+		this.guiManager.init();
+		this.marketManager.loadMarkets();
+		this.marketManager.loadFeaturedMarkets();
+		this.transactionManger.loadTransactions();
+		this.transactionManger.loadPayments();
+		this.requestManager.loadRequests();
+		this.marketManager.loadBlockedItems();
+		this.currencyBank.loadBank();
 
-        // Listeners
-        Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
+		// Listeners
+		Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
+		Bukkit.getPluginManager().registerEvents(new SignListener(), this);
 
-        // Commands
-        this.commandManager.addCommand(new CommandMarkets()).addSubCommands(
-                new CommandCreate(),
-                new CommandRemove(),
-                new CommandAddCategory(),
-                new CommandAddItem(),
-                new CommandRequest(),
-                new CommandShowRequest(),
-                new CommandPayments(),
-                new CommandPayUpKeep(),
-                new CommandBank(),
-                new CommandSet(),
-                new CommandSearch(),
-                new CommandView(),
-                new CommandList(),
-                new CommandHelp(),
-                new CommandSettings(),
-                new CommandConfiscate(),
-                new CommandReload(),
-                new CommandsBlockItem(),
-                new CommandForceSave(),
-                new CommandInternal()
-        );
 
-        MarketCheckTask.startTask();
+		// Commands
+		this.commandManager.addCommand(new CommandMarkets()).addSubCommands(
+				new CommandCreate(),
+				new CommandRemove(),
+				new CommandAddCategory(),
+				new CommandAddItem(),
+				new CommandRequest(),
+				new CommandShowRequest(),
+				new CommandPayments(),
+				new CommandPayUpKeep(),
+				new CommandBank(),
+				new CommandSet(),
+				new CommandSearch(),
+				new CommandView(),
+				new CommandList(),
+				new CommandHelp(),
+				new CommandSettings(),
+				new CommandConfiscate(),
+				new CommandReload(),
+				new CommandsBlockItem(),
+				new CommandForceSave(),
+				new CommandInternal()
+		);
 
-        // Perform the update check
-        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
-        if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
-            getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
-        }
+		MarketCheckTask.startTask();
 
-        this.metrics = new Metrics(this, 7689);
-    }
+		// Perform the update check
+		getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
+		if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
+			getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
+		}
 
-    @Override
-    public void onPluginDisable() {
-        saveData(false);
-        instance = null;
-    }
+		this.metrics = new Metrics(this, 7689);
+	}
 
-    public void saveData(boolean async) {
-        if (Settings.DATABASE_USE.getBoolean()) {
-            newChain().async(() -> {
-                this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);
-                this.dataManager.saveBlockedItems(this.marketManager.getBlockedItems(), async);
-                this.dataManager.saveTransactions(this.transactionManger.getTransactions(), async);
-                this.dataManager.savePayments(this.transactionManger.getPayments(), async);
-                this.dataManager.saveRequests(this.requestManager.getRequests(), async);
-                this.dataManager.saveBanks(this.currencyBank.getBank(), async);
-                this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
-                this.dataManager.saveFeaturedMarkets(this.marketManager.getFeaturedMarkets(), async);
+	@Override
+	public void onPluginDisable() {
+		saveData(false);
+		instance = null;
+	}
 
-                List<MarketCategory> categories = new ArrayList<>();
-                this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
-                this.dataManager.saveCategories(categories, async);
+	public void saveData(boolean async) {
+		if (Settings.DATABASE_USE.getBoolean()) {
+			newChain().async(() -> {
+				this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);
+				this.dataManager.saveBlockedItems(this.marketManager.getBlockedItems(), async);
+				this.dataManager.saveTransactions(this.transactionManger.getTransactions(), async);
+				this.dataManager.savePayments(this.transactionManger.getPayments(), async);
+				this.dataManager.saveRequests(this.requestManager.getRequests(), async);
+				this.dataManager.saveBanks(this.currencyBank.getBank(), async);
+				this.dataManager.saveUpKeeps(this.marketManager.getFeeLastChargedOn(), async);
+				this.dataManager.saveFeaturedMarkets(this.marketManager.getFeaturedMarkets(), async);
 
-                List<MarketItem> marketItems = new ArrayList<>();
-                categories.stream().map(MarketCategory::getItems).forEach(marketItems::addAll);
-                this.dataManager.saveItems(marketItems, async);
+				List<MarketCategory> categories = new ArrayList<>();
+				this.marketManager.getMarkets().stream().map(Market::getCategories).forEach(categories::addAll);
+				this.dataManager.saveCategories(categories, async);
 
-                List<MarketRating> marketRatings = new ArrayList<>();
-                this.marketManager.getMarkets().stream().map(Market::getRatings).forEach(marketRatings::addAll);
-                this.dataManager.saveRatings(marketRatings, async);
+				List<MarketItem> marketItems = new ArrayList<>();
+				categories.stream().map(MarketCategory::getItems).forEach(marketItems::addAll);
+				this.dataManager.saveItems(marketItems, async);
 
-                List<RequestItem> requestItems = new ArrayList<>();
-                this.requestManager.getRequests().stream().map(Request::getRequestedItems).forEach(requestItems::addAll);
-                this.dataManager.saveRequestItems(requestItems, async);
-            }).execute();
-        } else {
-            this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
-            this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
-            this.marketManager.saveBlockedItems();
-            this.marketManager.saveFeaturedMarkets();
-            this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
-            this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
-            this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
-            this.currencyBank.saveBank();
-        }
-        getLogger().info("Market data has been automatically saved");
-    }
+				List<MarketRating> marketRatings = new ArrayList<>();
+				this.marketManager.getMarkets().stream().map(Market::getRatings).forEach(marketRatings::addAll);
+				this.dataManager.saveRatings(marketRatings, async);
 
-    @Override
-    public void onConfigReload() {
-        Settings.setup();
-        setLocale(Settings.LANG.getString());
-        LocaleSettings.setup();
-    }
+				List<RequestItem> requestItems = new ArrayList<>();
+				this.requestManager.getRequests().stream().map(Request::getRequestedItems).forEach(requestItems::addAll);
+				this.dataManager.saveRequestItems(requestItems, async);
+			}).execute();
+		} else {
+			this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
+			this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
+			this.marketManager.saveBlockedItems();
+			this.marketManager.saveFeaturedMarkets();
+			this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
+			this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
+			this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
+			this.currencyBank.saveBank();
+		}
 
-    @Override
-    public List<Config> getExtraConfig() {
-        return null;
-    }
+		if (Settings.LOG_SAVE_MSG.getBoolean())
+			getLogger().info("Market data has been automatically saved");
+	}
 
-    public static <T> TaskChain<T> newChain() {
-        return taskChainFactory.newChain();
-    }
+	@Override
+	public void onConfigReload() {
+		Settings.setup();
+		setLocale(Settings.LANG.getString());
+		LocaleSettings.setup();
+	}
+
+	@Override
+	public List<Config> getExtraConfig() {
+		return null;
+	}
+
+	public static <T> TaskChain<T> newChain() {
+		return taskChainFactory.newChain();
+	}
 }
