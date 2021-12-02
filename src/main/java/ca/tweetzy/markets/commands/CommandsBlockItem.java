@@ -21,55 +21,55 @@ import java.util.UUID;
  */
 public class CommandsBlockItem extends AbstractCommand {
 
-    public CommandsBlockItem() {
-        super(CommandType.PLAYER_ONLY, "block item");
-    }
+	public CommandsBlockItem() {
+		super(CommandType.PLAYER_ONLY, "block item");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
 
-        if (args.length == 0) {
-            ItemStack heldItem = Common.getItemInHand(player).clone();
+		if (args.length == 0) {
+			ItemStack heldItem = Common.getItemInHand(player).clone();
 
-            if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
-                Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
+			if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
+				Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 
-            Markets.getInstance().getMarketManager().addBlockedItem(new BlockedItem(
-                    UUID.randomUUID(),
-                    heldItem
-            ));
+			Markets.getInstance().getMarketManager().addBlockedItem(new BlockedItem(
+					UUID.randomUUID(),
+					heldItem
+			));
 
-            Markets.getInstance().getLocale().getMessage("added_blocked_item").processPlaceholder("item_name", Common.getItemName(heldItem)).sendPrefixedMessage(player);
-            return ReturnType.SUCCESS;
-        }
+			Markets.getInstance().getLocale().getMessage("added_blocked_item").processPlaceholder("item_name", Common.getItemName(heldItem)).sendPrefixedMessage(player);
+			return ReturnType.SUCCESS;
+		}
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
-            Markets.getInstance().getGuiManager().showGUI(player, new GUIBlockedItems());
-        }
+		if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIBlockedItems());
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.blockitem";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.blockitem";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.block_item").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.block_item").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.block_item").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.block_item").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 }

@@ -16,19 +16,19 @@ import org.bukkit.entity.Player;
 @Setter
 public class MarketPlayer {
 
-    private Player player;
-    private Market market;
+	private Player player;
+	private Market market;
 
-    public MarketPlayer(Player player, Market market) {
-        this.player = player;
-        this.market = market;
-    }
+	public MarketPlayer(Player player, Market market) {
+		this.player = player;
+		this.market = market;
+	}
 
-    public MarketPlayer(Player player) {
-        this(player, null);
-    }
+	public MarketPlayer(Player player) {
+		this(player, null);
+	}
 
-    public int getItemLimit() {
-        return MarketsAPI.getInstance().maxAllowedMarketItems(this.player);
-    }
+	public int getItemLimit() {
+		return MarketsAPI.getInstance().maxAllowedMarketItems(this.player);
+	}
 }

@@ -8,6 +8,6 @@ package ca.tweetzy.markets.market;
  */
 public enum MarketType {
 
-    ADMIN,
-    PLAYER
+	ADMIN,
+	PLAYER
 }

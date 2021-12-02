@@ -19,51 +19,51 @@ import java.util.stream.Collectors;
  */
 public class CommandConfiscate extends AbstractCommand {
 
-    public CommandConfiscate() {
-        super(CommandType.PLAYER_ONLY, "confiscate");
-    }
+	public CommandConfiscate() {
+		super(CommandType.PLAYER_ONLY, "confiscate");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 1) return ReturnType.SYNTAX_ERROR;
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
+		Player player = (Player) sender;
 
-        Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
-        if (market == null) {
-            Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
+		if (market == null) {
+			Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        market.getCategories().forEach(marketCategory -> {
-            PlayerUtils.giveItem(player, marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
-            marketCategory.getItems().clear();
-        });
+		market.getCategories().forEach(marketCategory -> {
+			PlayerUtils.giveItem(player, marketCategory.getItems().stream().map(MarketItem::getItemStack).collect(Collectors.toList()));
+			marketCategory.getItems().clear();
+		});
 
-        market.setUpdatedAt(System.currentTimeMillis());
-        Markets.getInstance().getLocale().getMessage("confiscated_market").sendPrefixedMessage(player);
+		market.setUpdatedAt(System.currentTimeMillis());
+		Markets.getInstance().getLocale().getMessage("confiscated_market").sendPrefixedMessage(player);
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1)
-            return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1)
+			return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.confiscate";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.confiscate";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.confiscate").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.confiscate").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.confiscate").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.confiscate").getMessage();
+	}
 }

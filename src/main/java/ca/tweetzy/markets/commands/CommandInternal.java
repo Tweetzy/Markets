@@ -5,12 +5,10 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.guis.items.GUIIconSelect;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The current file has been created by Kiran Hart

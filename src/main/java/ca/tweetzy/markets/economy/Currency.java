@@ -17,15 +17,15 @@ import java.io.Serializable;
 @Setter
 public class Currency implements Serializable {
 
-    private ItemStack item;
-    private int amount;
+	private ItemStack item;
+	private int amount;
 
-    public Currency(ItemStack item, int amount) {
-        this.item = item;
-        this.amount = amount;
-    }
+	public Currency(ItemStack item, int amount) {
+		this.item = item;
+		this.amount = amount;
+	}
 
-    public Currency() {
-        this(null, 0);
-    }
+	public Currency() {
+		this(null, 0);
+	}
 }

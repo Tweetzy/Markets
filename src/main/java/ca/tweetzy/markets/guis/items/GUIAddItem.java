@@ -109,10 +109,10 @@ public class GUIAddItem extends Gui {
 			}
 
 			if (this.selectedCategory == null) {
-                e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
-            } else {
-                e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
-            }
+				e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
+			} else {
+				e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
+			}
 		});
 
 		setActionForRange(32, 33, ClickType.LEFT, e -> {
@@ -172,7 +172,7 @@ public class GUIAddItem extends Gui {
 			}
 
 			e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.selectedCategory));
-            Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(this.item)).processPlaceholder("market_category_name", this.selectedCategory.getName()).sendPrefixedMessage(e.player);
+			Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(this.item)).processPlaceholder("market_category_name", this.selectedCategory.getName()).sendPrefixedMessage(e.player);
 		});
 	}
 

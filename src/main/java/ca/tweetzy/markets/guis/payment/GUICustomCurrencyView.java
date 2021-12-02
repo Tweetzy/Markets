@@ -21,29 +21,29 @@ import org.bukkit.event.inventory.ClickType;
  */
 public class GUICustomCurrencyView extends Gui {
 
-    private final Market market;
-    private final MarketCategory category;
-    private final MarketItem marketItem;
-    private final boolean isFromAllItems;
+	private final Market market;
+	private final MarketCategory category;
+	private final MarketItem marketItem;
+	private final boolean isFromAllItems;
 
-    public GUICustomCurrencyView(Market market, MarketCategory category, MarketItem marketItem, boolean isFromAllItems) {
-        this.market = market;
-        this.category = category;
-        this.marketItem = marketItem;
-        this.isFromAllItems = isFromAllItems;
-        setTitle(TextUtils.formatText(Settings.GUI_CUSTOM_CURRENCY_VIEW_TITLE.getString()));
-        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM.getMaterial()));
-        setAcceptsItems(false);
-        setAllowDrops(false);
-        setUseLockedCells(true);
-        setRows(4);
-        draw();
+	public GUICustomCurrencyView(Market market, MarketCategory category, MarketItem marketItem, boolean isFromAllItems) {
+		this.market = market;
+		this.category = category;
+		this.marketItem = marketItem;
+		this.isFromAllItems = isFromAllItems;
+		setTitle(TextUtils.formatText(Settings.GUI_CUSTOM_CURRENCY_VIEW_TITLE.getString()));
+		setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_CUSTOM_CURRENCY_VIEW_FILL_ITEM.getMaterial()));
+		setAcceptsItems(false);
+		setAllowDrops(false);
+		setUseLockedCells(true);
+		setRows(4);
+		draw();
 
-        setOnClose(close -> close.manager.showGUI(close.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
-    }
+		setOnClose(close -> close.manager.showGUI(close.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
+	}
 
-    private void draw() {
-        setItem(1, 4, this.marketItem.getCurrencyItem());
-        setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
-    }
+	private void draw() {
+		setItem(1, 4, this.marketItem.getCurrencyItem());
+		setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, this.isFromAllItems ? new GUIAllItems(this.market, false) : new GUICategoryItems(this.market, this.category)));
+	}
 }

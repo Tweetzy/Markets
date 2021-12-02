@@ -24,55 +24,55 @@ import java.util.stream.Collectors;
  */
 public class CommandShowRequest extends AbstractCommand {
 
-    public CommandShowRequest() {
-        super(CommandType.PLAYER_ONLY, "show request");
-    }
+	public CommandShowRequest() {
+		super(CommandType.PLAYER_ONLY, "show request");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 1) return ReturnType.SYNTAX_ERROR;
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
+		Player player = (Player) sender;
 
-        OfflinePlayer target = Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> offlinePlayer.hasPlayedBefore() && offlinePlayer.getName().equalsIgnoreCase(args[0])).findFirst().orElse(null);
-        if (target == null) {
-            Markets.getInstance().getLocale().getMessage("player_not_found").sendPrefixedMessage(sender);
-            return ReturnType.FAILURE;
-        }
+		OfflinePlayer target = Arrays.stream(Bukkit.getOfflinePlayers()).filter(offlinePlayer -> offlinePlayer.hasPlayedBefore() && offlinePlayer.getName().equalsIgnoreCase(args[0])).findFirst().orElse(null);
+		if (target == null) {
+			Markets.getInstance().getLocale().getMessage("player_not_found").sendPrefixedMessage(sender);
+			return ReturnType.FAILURE;
+		}
 
-        List<Request> playerRequests = Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList());
-        if (playerRequests.size() == 0) {
-            Markets.getInstance().getLocale().getMessage("player_does_not_have_requests").sendPrefixedMessage(sender);
-            return ReturnType.FAILURE;
-        }
+		List<Request> playerRequests = Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList());
+		if (playerRequests.size() == 0) {
+			Markets.getInstance().getLocale().getMessage("player_does_not_have_requests").sendPrefixedMessage(sender);
+			return ReturnType.FAILURE;
+		}
 
-        if (args.length == 2 && args[1].equalsIgnoreCase("-L")) {
-            Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, Collections.singletonList(playerRequests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null))));
-            return ReturnType.SUCCESS;
-        }
+		if (args.length == 2 && args[1].equalsIgnoreCase("-L")) {
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, Collections.singletonList(playerRequests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null))));
+			return ReturnType.SUCCESS;
+		}
 
-        Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, playerRequests));
-        return ReturnType.SUCCESS;
-    }
+		Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, playerRequests));
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1 && Markets.getInstance().getMarketManager().getMarkets().size() != 0)
-            return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1 && Markets.getInstance().getMarketManager().getMarkets().size() != 0)
+			return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.showrequest";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.showrequest";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.showrequest").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.showrequest").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.showrequest").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.showrequest").getMessage();
+	}
 }

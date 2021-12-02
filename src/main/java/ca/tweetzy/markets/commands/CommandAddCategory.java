@@ -19,71 +19,71 @@ import java.util.List;
  */
 public class CommandAddCategory extends AbstractCommand {
 
-    public CommandAddCategory() {
-        super(CommandType.PLAYER_ONLY, "add category");
-    }
+	public CommandAddCategory() {
+		super(CommandType.PLAYER_ONLY, "add category");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 1) return ReturnType.SYNTAX_ERROR;
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
+		Player player = (Player) sender;
 
-        Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-        if (market == null) {
-            Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+		if (market == null) {
+			Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        if (market.isUnpaid()) {
-            Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (market.isUnpaid()) {
+			Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        String categoryName = args[0].toLowerCase();
+		String categoryName = args[0].toLowerCase();
 
-        StringBuilder description = null;
-        if (args.length > 1) {
-            description = new StringBuilder();
-            for (int i = 1; i < args.length; i++) {
-                description.append(args[i]).append(" ");
-            }
-        }
+		StringBuilder description = null;
+		if (args.length > 1) {
+			description = new StringBuilder();
+			for (int i = 1; i < args.length; i++) {
+				description.append(args[i]).append(" ");
+			}
+		}
 
-        if (market.getCategories().stream().anyMatch(category -> category.getName().equalsIgnoreCase(categoryName))) {
-            Markets.getInstance().getLocale().getMessage("category_already_created").processPlaceholder("market_category_name", categoryName).sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (market.getCategories().stream().anyMatch(category -> category.getName().equalsIgnoreCase(categoryName))) {
+			Markets.getInstance().getLocale().getMessage("category_already_created").processPlaceholder("market_category_name", categoryName).sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        MarketCategory marketCategory = description == null ? new MarketCategory(categoryName) : new MarketCategory(categoryName, description.toString().trim());
-        marketCategory.setMarketId(market.getId());
+		MarketCategory marketCategory = description == null ? new MarketCategory(categoryName) : new MarketCategory(categoryName, description.toString().trim());
+		marketCategory.setMarketId(market.getId());
 
-        MarketCategoryCreateEvent marketCategoryCreateEvent = new MarketCategoryCreateEvent(market, marketCategory);
-        Bukkit.getPluginManager().callEvent(marketCategoryCreateEvent);
-        if (marketCategoryCreateEvent.isCancelled()) return ReturnType.FAILURE;
+		MarketCategoryCreateEvent marketCategoryCreateEvent = new MarketCategoryCreateEvent(market, marketCategory);
+		Bukkit.getPluginManager().callEvent(marketCategoryCreateEvent);
+		if (marketCategoryCreateEvent.isCancelled()) return ReturnType.FAILURE;
 
-        Markets.getInstance().getMarketManager().addCategoryToMarket(market, marketCategory);
-        market.setUpdatedAt(System.currentTimeMillis());
-        Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", categoryName).sendPrefixedMessage(player);
-        return ReturnType.SUCCESS;
-    }
+		Markets.getInstance().getMarketManager().addCategoryToMarket(market, marketCategory);
+		market.setUpdatedAt(System.currentTimeMillis());
+		Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", categoryName).sendPrefixedMessage(player);
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.addcategory";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.addcategory";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.add_category").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.add_category").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.add_category").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.add_category").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 }

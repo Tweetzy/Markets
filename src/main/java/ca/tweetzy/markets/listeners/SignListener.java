@@ -16,8 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import javax.xml.soap.Text;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: November 03 2021

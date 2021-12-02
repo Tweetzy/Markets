@@ -20,38 +20,38 @@ import java.util.UUID;
 @Setter
 public class Market {
 
-    private UUID id;
-    private UUID owner;
-    private String ownerName;
+	private UUID id;
+	private UUID owner;
+	private String ownerName;
 
-    private String name;
-    private String description;
-    private MarketType marketType;
-    private boolean open;
-    private boolean unpaid;
+	private String name;
+	private String description;
+	private MarketType marketType;
+	private boolean open;
+	private boolean unpaid;
 
-    private long createdAt;
-    private long updatedAt;
+	private long createdAt;
+	private long updatedAt;
 
-    private List<MarketRating> ratings;
-    private List<MarketCategory> categories;
+	private List<MarketRating> ratings;
+	private List<MarketCategory> categories;
 
-    public Market(UUID id, UUID owner, String ownerName, String name, MarketType marketType) {
-        this.id = id;
-        this.owner = owner;
-        this.ownerName = ownerName;
-        this.name = name;
-        this.description = Markets.getInstance().getLocale().getMessage("misc.default market description").getMessage();
-        this.marketType = marketType;
-        this.createdAt = System.currentTimeMillis();
-        this.updatedAt = System.currentTimeMillis();
-        this.categories = new ArrayList<>();
-        this.ratings = new ArrayList<>();
-        this.open = true;
-        this.unpaid = false;
-    }
+	public Market(UUID id, UUID owner, String ownerName, String name, MarketType marketType) {
+		this.id = id;
+		this.owner = owner;
+		this.ownerName = ownerName;
+		this.name = name;
+		this.description = Markets.getInstance().getLocale().getMessage("misc.default market description").getMessage();
+		this.marketType = marketType;
+		this.createdAt = System.currentTimeMillis();
+		this.updatedAt = System.currentTimeMillis();
+		this.categories = new ArrayList<>();
+		this.ratings = new ArrayList<>();
+		this.open = true;
+		this.unpaid = false;
+	}
 
-    public Market(UUID owner, String ownerName, String name) {
-        this(UUID.randomUUID(), owner, ownerName, name, MarketType.PLAYER);
-    }
+	public Market(UUID owner, String ownerName, String name) {
+		this(UUID.randomUUID(), owner, ownerName, name, MarketType.PLAYER);
+	}
 }

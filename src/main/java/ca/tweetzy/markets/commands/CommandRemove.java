@@ -23,76 +23,76 @@ import java.util.stream.Collectors;
  */
 public class CommandRemove extends AbstractCommand {
 
-    public CommandRemove() {
-        super(CommandType.PLAYER_ONLY, "remove");
-    }
+	public CommandRemove() {
+		super(CommandType.PLAYER_ONLY, "remove");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
-        if (args.length == 0) {
-            Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-            if (market == null) {
-                Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
+		if (args.length == 0) {
+			Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+			if (market == null) {
+				Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 
-            if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-            deleteMarket(player, market, false);
-        }
+			if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
+			deleteMarket(player, market, false);
+		}
 
-        if (args.length == 1 && player.hasPermission("markets.admin")) {
-            Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
-            if (market == null) {
-                Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
+		if (args.length == 1 && player.hasPermission("markets.admin")) {
+			Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
+			if (market == null) {
+				Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 
-            if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-            deleteMarket(player, market, true);
-        }
+			if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
+			deleteMarket(player, market, true);
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.remove";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.remove";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.remove").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.remove").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.remove").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.remove").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1 && sender.hasPermission("markets.admin"))
-            return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1 && sender.hasPermission("markets.admin"))
+			return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
+		return null;
+	}
 
-    private boolean handleDeleteEvent(Player player, Market market) {
-        MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(player, market);
-        Bukkit.getPluginManager().callEvent(marketDeleteEvent);
-        return marketDeleteEvent.isCancelled();
-    }
+	private boolean handleDeleteEvent(Player player, Market market) {
+		MarketDeleteEvent marketDeleteEvent = new MarketDeleteEvent(player, market);
+		Bukkit.getPluginManager().callEvent(marketDeleteEvent);
+		return marketDeleteEvent.isCancelled();
+	}
 
-    private void deleteMarket(Player player, Market market, boolean admin) {
-        if (Settings.GIVE_ITEMS_ON_MARKET_DELETE.getBoolean() && !market.getCategories().isEmpty()) {
-            List<ItemStack> items = new ArrayList<>();
-            Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(player, items)).execute();
-        }
-        Markets.getInstance().getMarketManager().deleteMarket(market);
-        if (admin) {
-            Markets.getInstance().getLocale().getMessage("removed_player_market").processPlaceholder("player", market.getOwnerName()).sendPrefixedMessage(player);
-        } else {
-            Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(player);
-        }
-    }
+	private void deleteMarket(Player player, Market market, boolean admin) {
+		if (Settings.GIVE_ITEMS_ON_MARKET_DELETE.getBoolean() && !market.getCategories().isEmpty()) {
+			List<ItemStack> items = new ArrayList<>();
+			Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(player, items)).execute();
+		}
+		Markets.getInstance().getMarketManager().deleteMarket(market);
+		if (admin) {
+			Markets.getInstance().getLocale().getMessage("removed_player_market").processPlaceholder("player", market.getOwnerName()).sendPrefixedMessage(player);
+		} else {
+			Markets.getInstance().getLocale().getMessage("removed_market").sendPrefixedMessage(player);
+		}
+	}
 }

@@ -19,54 +19,54 @@ import java.util.List;
  */
 public class CommandPayments extends AbstractCommand {
 
-    public CommandPayments() {
-        super(CommandType.PLAYER_ONLY, "payments");
-    }
+	public CommandPayments() {
+		super(CommandType.PLAYER_ONLY, "payments");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
 
-        if (args.length == 0) {
-            Markets.getInstance().getGuiManager().showGUI(player, new GUIPaymentCollection(player));
-            return ReturnType.SUCCESS;
-        }
+		if (args.length == 0) {
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIPaymentCollection(player));
+			return ReturnType.SUCCESS;
+		}
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("collect")) {
-            Markets.newChain().asyncFirst(() -> Markets.getInstance().getTransactionManger().getPayments(player.getUniqueId())).syncLast((data) -> {
-                if (data.isEmpty()) {
-                    Markets.getInstance().getLocale().getMessage("no_payments_to_collect").sendPrefixedMessage(player);
-                    return;
-                }
+		if (args.length == 1 && args[0].equalsIgnoreCase("collect")) {
+			Markets.newChain().asyncFirst(() -> Markets.getInstance().getTransactionManger().getPayments(player.getUniqueId())).syncLast((data) -> {
+				if (data.isEmpty()) {
+					Markets.getInstance().getLocale().getMessage("no_payments_to_collect").sendPrefixedMessage(player);
+					return;
+				}
 
-                for (Payment payment : data) {
-                    PlayerUtils.giveItem(player, payment.getItem());
-                    Markets.getInstance().getTransactionManger().removePayment(payment);
-                }
-            }).execute();
-        }
+				for (Payment payment : data) {
+					PlayerUtils.giveItem(player, payment.getItem());
+					Markets.getInstance().getTransactionManger().removePayment(payment);
+				}
+			}).execute();
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1) return Collections.singletonList("collect");
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1) return Collections.singletonList("collect");
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.payments";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.payments";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.payments").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.payments").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.payments").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.payments").getMessage();
+	}
 }

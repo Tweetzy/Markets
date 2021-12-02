@@ -19,54 +19,54 @@ import java.util.List;
  */
 public class CommandCreate extends AbstractCommand {
 
-    public CommandCreate() {
-        super(CommandType.PLAYER_ONLY, "create");
-    }
+	public CommandCreate() {
+		super(CommandType.PLAYER_ONLY, "create");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
-        Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-        if (market != null) {
-            Markets.getInstance().getLocale().getMessage("already_have_market").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
+		Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+		if (market != null) {
+			Markets.getInstance().getLocale().getMessage("already_have_market").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        market = new Market(player.getUniqueId(), player.getName(), args.length == 1 ? args[0] : player.getName() + "'s Market");
+		market = new Market(player.getUniqueId(), player.getName(), args.length == 1 ? args[0] : player.getName() + "'s Market");
 
-        MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
-        Bukkit.getPluginManager().callEvent(marketCreateEvent);
-        if (marketCreateEvent.isCancelled()) return ReturnType.FAILURE;
+		MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
+		Bukkit.getPluginManager().callEvent(marketCreateEvent);
+		if (marketCreateEvent.isCancelled()) return ReturnType.FAILURE;
 
-        if (!Common.chargeCreationFee(player)) {
-            return ReturnType.FAILURE;
-        }
+		if (!Common.chargeCreationFee(player)) {
+			return ReturnType.FAILURE;
+		}
 
-        // Create a new market for the player
-        Markets.getInstance().getMarketManager().addMarket(market);
-        Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
+		// Create a new market for the player
+		Markets.getInstance().getMarketManager().addMarket(market);
+		Markets.getInstance().getLocale().getMessage("created_market").sendPrefixedMessage(player);
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.create";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.create";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.create").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.create").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.create").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.create").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
 }

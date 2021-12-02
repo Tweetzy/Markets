@@ -20,54 +20,54 @@ import java.util.stream.Collectors;
  */
 public class ConfigItemUtil {
 
-    public static ItemStack build(ItemStack stack, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
-        stack.setAmount(amount);
-        ItemMeta meta = stack.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(TextUtils.formatText(title));
+	public static ItemStack build(ItemStack stack, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
+		stack.setAmount(amount);
+		ItemMeta meta = stack.getItemMeta();
+		assert meta != null;
+		meta.setDisplayName(TextUtils.formatText(title));
 
-        if (replacements != null) {
-            for (String key : replacements.keySet()) {
-                if (title.contains(key)) title = title.replace(key, String.valueOf(replacements.get(key)));
-            }
+		if (replacements != null) {
+			for (String key : replacements.keySet()) {
+				if (title.contains(key)) title = title.replace(key, String.valueOf(replacements.get(key)));
+			}
 
-            for (int i = 0; i < lore.size(); i++) {
-                for (String key : replacements.keySet()) {
-                    if (lore.get(i).contains(key)) {
-                        lore.set(i, lore.get(i).replace(key, String.valueOf(replacements.get(key))));
-                    }
-                }
-            }
-        }
+			for (int i = 0; i < lore.size(); i++) {
+				for (String key : replacements.keySet()) {
+					if (lore.get(i).contains(key)) {
+						lore.set(i, lore.get(i).replace(key, String.valueOf(replacements.get(key))));
+					}
+				}
+			}
+		}
 
-        meta.setDisplayName(TextUtils.formatText(title));
-        meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
-        stack.setItemMeta(meta);
-        if (nbtData != null) {
-            for (String nbt : nbtData) {
-                stack = NBTEditor.set(stack, nbt.split(";")[1], nbt.split(";")[0]);
-            }
-        }
-        return stack;
-    }
+		meta.setDisplayName(TextUtils.formatText(title));
+		meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
+		stack.setItemMeta(meta);
+		if (nbtData != null) {
+			for (String nbt : nbtData) {
+				stack = NBTEditor.set(stack, nbt.split(";")[1], nbt.split(";")[0]);
+			}
+		}
+		return stack;
+	}
 
-    public static ItemStack build(Material item, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
-        return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).parseItem()), title, lore, amount, replacements, nbtData);
-    }
+	public static ItemStack build(Material item, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
+		return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).parseItem()), title, lore, amount, replacements, nbtData);
+	}
 
-    public static ItemStack build(String item, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
-        return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, amount, replacements, nbtData);
-    }
+	public static ItemStack build(String item, String title, List<String> lore, int amount, HashMap<String, Object> replacements, String... nbtData) {
+		return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, amount, replacements, nbtData);
+	}
 
-    public static ItemStack build(String item, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
-        return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, 1, replacements, nbtData);
-    }
+	public static ItemStack build(String item, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
+		return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, 1, replacements, nbtData);
+	}
 
-    public static ItemStack build(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
-        return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, 1, replacements);
-    }
+	public static ItemStack build(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
+		return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, 1, replacements);
+	}
 
-    public static ItemStack build(String item, String title, List<String> lore, int amount, HashMap<String, Object> replacements) {
-        return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, amount, replacements);
-    }
+	public static ItemStack build(String item, String title, List<String> lore, int amount, HashMap<String, Object> replacements) {
+		return build(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, amount, replacements);
+	}
 }

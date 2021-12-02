@@ -18,21 +18,21 @@ import org.bukkit.event.HandlerList;
 @Setter
 public class AbstractMarketEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
+	private static final HandlerList handlers = new HandlerList();
+	private boolean cancelled;
 
-    protected Market market;
+	protected Market market;
 
-    public AbstractMarketEvent(Market market, boolean async) {
-        super(async);
-        this.market = market;
-    }
+	public AbstractMarketEvent(Market market, boolean async) {
+		super(async);
+		this.market = market;
+	}
 
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

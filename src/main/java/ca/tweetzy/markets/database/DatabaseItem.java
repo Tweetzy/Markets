@@ -18,13 +18,13 @@ import java.io.Serializable;
 @Setter
 public class DatabaseItem implements Serializable {
 
-    private byte[] item;
+	private byte[] item;
 
-    public DatabaseItem(ItemStack item) {
-        this.item = MarketsAPI.getInstance().serializeItem(item);
-    }
+	public DatabaseItem(ItemStack item) {
+		this.item = MarketsAPI.getInstance().serializeItem(item);
+	}
 
-    public ItemStack getItem() {
-        return MarketsAPI.getInstance().deserializeItem(this.item);
-    }
+	public ItemStack getItem() {
+		return MarketsAPI.getInstance().deserializeItem(this.item);
+	}
 }

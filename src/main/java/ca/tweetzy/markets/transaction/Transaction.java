@@ -17,25 +17,25 @@ import java.util.UUID;
 @Setter
 public class Transaction {
 
-    private UUID id;
-    private UUID marketId;
-    private UUID purchaser;
-    private ItemStack itemStack;
-    private int purchaseQty;
-    private double finalPrice;
-    private long time;
+	private UUID id;
+	private UUID marketId;
+	private UUID purchaser;
+	private ItemStack itemStack;
+	private int purchaseQty;
+	private double finalPrice;
+	private long time;
 
-    public Transaction(UUID id, UUID marketId, UUID purchaser, ItemStack itemStack, int purchaseQty, double finalPrice) {
-        this.id = id;
-        this.marketId = marketId;
-        this.purchaser = purchaser;
-        this.itemStack = itemStack;
-        this.purchaseQty = purchaseQty;
-        this.finalPrice = finalPrice;
-        this.time = System.currentTimeMillis();
-    }
+	public Transaction(UUID id, UUID marketId, UUID purchaser, ItemStack itemStack, int purchaseQty, double finalPrice) {
+		this.id = id;
+		this.marketId = marketId;
+		this.purchaser = purchaser;
+		this.itemStack = itemStack;
+		this.purchaseQty = purchaseQty;
+		this.finalPrice = finalPrice;
+		this.time = System.currentTimeMillis();
+	}
 
-    public Transaction(UUID marketId, UUID purchaser, ItemStack itemStack, int purchaseQty, double finalPrice) {
-        this(UUID.randomUUID(), marketId, purchaser, itemStack, purchaseQty, finalPrice);
-    }
+	public Transaction(UUID marketId, UUID purchaser, ItemStack itemStack, int purchaseQty, double finalPrice) {
+		this(UUID.randomUUID(), marketId, purchaser, itemStack, purchaseQty, finalPrice);
+	}
 }

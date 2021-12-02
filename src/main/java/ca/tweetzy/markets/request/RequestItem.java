@@ -17,24 +17,24 @@ import java.util.UUID;
 @Setter
 public class RequestItem {
 
-    private UUID requestId;
+	private UUID requestId;
 
-    private ItemStack item;
-    private ItemStack currency;
+	private ItemStack item;
+	private ItemStack currency;
 
-    private int amount;
-    private double price;
+	private int amount;
+	private double price;
 
-    private boolean fulfilled;
-    private boolean useCustomCurrency;
+	private boolean fulfilled;
+	private boolean useCustomCurrency;
 
-    public RequestItem(UUID requestId, ItemStack item, ItemStack currency, int amount, double price, boolean fulfilled, boolean useCustomCurrency) {
-        this.requestId = requestId;
-        this.item = item;
-        this.currency = currency;
-        this.amount = amount;
-        this.price = price;
-        this.fulfilled = fulfilled;
-        this.useCustomCurrency = useCustomCurrency;
-    }
+	public RequestItem(UUID requestId, ItemStack item, ItemStack currency, int amount, double price, boolean fulfilled, boolean useCustomCurrency) {
+		this.requestId = requestId;
+		this.item = item;
+		this.currency = currency;
+		this.amount = amount;
+		this.price = price;
+		this.fulfilled = fulfilled;
+		this.useCustomCurrency = useCustomCurrency;
+	}
 }

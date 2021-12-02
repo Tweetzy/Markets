@@ -12,13 +12,13 @@ import lombok.Getter;
 @Getter
 public class Triple<L, M, R> {
 
-    private final L first;
-    private final M second;
-    private final R third;
+	private final L first;
+	private final M second;
+	private final R third;
 
-    public Triple(L first, M second, R third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-    }
+	public Triple(L first, M second, R third) {
+		this.first = first;
+		this.second = second;
+		this.third = third;
+	}
 }

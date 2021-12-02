@@ -12,11 +12,11 @@ import org.bukkit.entity.Player;
  */
 public class MarketCreateEvent extends AbstractMarketEvent {
 
-    @Getter
-    final Player creator;
+	@Getter
+	final Player creator;
 
-    public MarketCreateEvent(Player creator, Market market) {
-        super(market, false);
-        this.creator = creator;
-    }
+	public MarketCreateEvent(Player creator, Market market) {
+		super(market, false);
+		this.creator = creator;
+	}
 }

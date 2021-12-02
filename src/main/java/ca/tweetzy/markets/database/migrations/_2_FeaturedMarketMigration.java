@@ -1,10 +1,7 @@
 package ca.tweetzy.markets.database.migrations;
 
 import ca.tweetzy.core.database.DataMigration;
-import ca.tweetzy.core.database.MySQLConnector;
-import ca.tweetzy.markets.Markets;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,16 +14,16 @@ import java.sql.Statement;
  */
 public final class _2_FeaturedMarketMigration extends DataMigration {
 
-    public _2_FeaturedMarketMigration() {
-        super(2);
-    }
+	public _2_FeaturedMarketMigration() {
+		super(2);
+	}
 
-    @Override
-    public void migrate(Connection connection, String tablePrefix) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "featured_markets (" +
-                    "id VARCHAR(36) PRIMARY KEY, " +
-                    "expires_at BigInt(20) NULL )");
-        }
-    }
+	@Override
+	public void migrate(Connection connection, String tablePrefix) throws SQLException {
+		try (Statement statement = connection.createStatement()) {
+			statement.execute("CREATE TABLE " + tablePrefix + "featured_markets (" +
+					"id VARCHAR(36) PRIMARY KEY, " +
+					"expires_at BigInt(20) NULL )");
+		}
+	}
 }

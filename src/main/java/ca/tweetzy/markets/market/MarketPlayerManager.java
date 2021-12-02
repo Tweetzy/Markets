@@ -19,63 +19,63 @@ import java.util.UUID;
  */
 public class MarketPlayerManager {
 
-    private final Map<UUID, MarketPlayer> players = Collections.synchronizedMap(new HashMap<>());
-    private final Map<UUID, Triple<Market, MarketCategory, MarketItem>> addingCustomCurrencyItem = Collections.synchronizedMap(new HashMap<>());
-    private final Map<UUID, Triple<ItemStack, Integer, Double>> addingRequestCustomCurrencyItem = Collections.synchronizedMap(new HashMap<>());
+	private final Map<UUID, MarketPlayer> players = Collections.synchronizedMap(new HashMap<>());
+	private final Map<UUID, Triple<Market, MarketCategory, MarketItem>> addingCustomCurrencyItem = Collections.synchronizedMap(new HashMap<>());
+	private final Map<UUID, Triple<ItemStack, Integer, Double>> addingRequestCustomCurrencyItem = Collections.synchronizedMap(new HashMap<>());
 
-    public void addPlayer(MarketPlayer marketPlayer) {
-        this.players.putIfAbsent(marketPlayer.getPlayer().getUniqueId(), marketPlayer);
-    }
+	public void addPlayer(MarketPlayer marketPlayer) {
+		this.players.putIfAbsent(marketPlayer.getPlayer().getUniqueId(), marketPlayer);
+	}
 
-    public MarketPlayer getPlayer(UUID id) {
-        return this.players.getOrDefault(id, null);
-    }
+	public MarketPlayer getPlayer(UUID id) {
+		return this.players.getOrDefault(id, null);
+	}
 
-    public void removePlayer(UUID id) {
-        this.players.remove(id);
-    }
+	public void removePlayer(UUID id) {
+		this.players.remove(id);
+	}
 
-    public void removePlayer(Player player) {
-        this.removePlayer(player.getUniqueId());
-    }
+	public void removePlayer(Player player) {
+		this.removePlayer(player.getUniqueId());
+	}
 
     /*
     ================= ADDING ITEM WITH CUSTOM CURRENCY STUFF =================
      */
 
-    public void addPlayerToCustomCurrencyItem(UUID id, Market market, MarketCategory category, MarketItem item) {
-        this.addingCustomCurrencyItem.put(id, new Triple<>(market, category, item));
-    }
+	public void addPlayerToCustomCurrencyItem(UUID id, Market market, MarketCategory category, MarketItem item) {
+		this.addingCustomCurrencyItem.put(id, new Triple<>(market, category, item));
+	}
 
-    public void removePlayerFromCustomCurrencyItem(UUID id) {
-        this.addingCustomCurrencyItem.remove(id);
-    }
+	public void removePlayerFromCustomCurrencyItem(UUID id) {
+		this.addingCustomCurrencyItem.remove(id);
+	}
 
-    public Map<UUID, Triple<Market, MarketCategory, MarketItem>> getAddingCustomCurrencyItem() {
-        return Collections.unmodifiableMap(this.addingCustomCurrencyItem);
-    }
+	public Map<UUID, Triple<Market, MarketCategory, MarketItem>> getAddingCustomCurrencyItem() {
+		return Collections.unmodifiableMap(this.addingCustomCurrencyItem);
+	}
 
-    public Triple<Market, MarketCategory, MarketItem> getPlayerAddingCustomCurrencyItem(UUID id) {
-        return this.addingCustomCurrencyItem.get(id);
-    }
+	public Triple<Market, MarketCategory, MarketItem> getPlayerAddingCustomCurrencyItem(UUID id) {
+		return this.addingCustomCurrencyItem.get(id);
+	}
 
     /*
     ================= CREATING REQUEST USING A CUSTOM CURRENCY =================
      */
 
-    public void addPlayerToRequestCustomCurrencyItem(UUID id, ItemStack item, int amount, double price) {
-        this.addingRequestCustomCurrencyItem.put(id, new Triple<>(item, amount, price));
-    }
+	public void addPlayerToRequestCustomCurrencyItem(UUID id, ItemStack item, int amount, double price) {
+		this.addingRequestCustomCurrencyItem.put(id, new Triple<>(item, amount, price));
+	}
 
-    public void removePlayerFromRequestCustomCurrencyItem(UUID id) {
-        this.addingRequestCustomCurrencyItem.remove(id);
-    }
+	public void removePlayerFromRequestCustomCurrencyItem(UUID id) {
+		this.addingRequestCustomCurrencyItem.remove(id);
+	}
 
-    public Map<UUID, Triple<ItemStack, Integer, Double>> getAddingRequestCustomCurrencyItem() {
-        return Collections.unmodifiableMap(this.addingRequestCustomCurrencyItem);
-    }
+	public Map<UUID, Triple<ItemStack, Integer, Double>> getAddingRequestCustomCurrencyItem() {
+		return Collections.unmodifiableMap(this.addingRequestCustomCurrencyItem);
+	}
 
-    public Triple<ItemStack, Integer, Double> getPlayerAddingRequestCustomCurrencyItem(UUID id) {
-        return this.addingRequestCustomCurrencyItem.get(id);
-    }
+	public Triple<ItemStack, Integer, Double> getPlayerAddingRequestCustomCurrencyItem(UUID id) {
+		return this.addingRequestCustomCurrencyItem.get(id);
+	}
 }

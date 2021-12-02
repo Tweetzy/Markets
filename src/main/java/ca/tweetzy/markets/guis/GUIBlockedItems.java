@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -26,45 +25,45 @@ import java.util.stream.Collectors;
  */
 public class GUIBlockedItems extends Gui {
 
-    private List<BlockedItem> blockedItems;
+	private List<BlockedItem> blockedItems;
 
-    public GUIBlockedItems() {
-        setTitle(TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_TITLE.getString()));
-        setAllowDrops(false);
-        setAcceptsItems(false);
-        setUseLockedCells(true);
-        setAllowShiftClick(false);
-        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_BLOCKED_ITEMS_FILL_ITEM.getMaterial()));
-        setRows(6);
-        draw();
-    }
+	public GUIBlockedItems() {
+		setTitle(TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_TITLE.getString()));
+		setAllowDrops(false);
+		setAcceptsItems(false);
+		setUseLockedCells(true);
+		setAllowShiftClick(false);
+		setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_BLOCKED_ITEMS_FILL_ITEM.getMaterial()));
+		setRows(6);
+		draw();
+	}
 
-    private void draw() {
-        reset();
+	private void draw() {
+		reset();
 
-        // make border
-        for (int i : Numbers.GUI_BORDER_6_ROWS) {
-            setItem(i, GuiUtils.getBorderItem(Settings.GUI_BLOCKED_ITEMS_BORDER_ITEM.getMaterial()));
-            if (Settings.GUI_BLOCKED_ITEMS_GLOW_BORDER.getBoolean()) highlightItem(i);
-        }
+		// make border
+		for (int i : Numbers.GUI_BORDER_6_ROWS) {
+			setItem(i, GuiUtils.getBorderItem(Settings.GUI_BLOCKED_ITEMS_BORDER_ITEM.getMaterial()));
+			if (Settings.GUI_BLOCKED_ITEMS_GLOW_BORDER.getBoolean()) highlightItem(i);
+		}
 
-        Markets.newChain().asyncFirst(() -> {
-            this.blockedItems = Markets.getInstance().getMarketManager().getBlockedItems();
-            return this.blockedItems.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
-        }).asyncLast((data) -> {
-            pages = (int) Math.max(1, Math.ceil(this.blockedItems.size() / (double) 28L));
-            setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-            setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.exit());
-            setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-            setOnPage(e -> draw());
+		Markets.newChain().asyncFirst(() -> {
+			this.blockedItems = Markets.getInstance().getMarketManager().getBlockedItems();
+			return this.blockedItems.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+		}).asyncLast((data) -> {
+			pages = (int) Math.max(1, Math.ceil(this.blockedItems.size() / (double) 28L));
+			setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+			setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.exit());
+			setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+			setOnPage(e -> draw());
 
-            int slot = 10;
-            for (BlockedItem blockedItem : data) {
-                ItemStack item = blockedItem.getItem().clone();
-                setButton(slot, GuiUtils.createButtonItem(item, TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_NAME.getString().replace("%item_name%", Common.getItemName(item))), TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_LORE.getStringList())), ClickType.LEFT, e -> draw());
-                slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
-            }
+			int slot = 10;
+			for (BlockedItem blockedItem : data) {
+				ItemStack item = blockedItem.getItem().clone();
+				setButton(slot, GuiUtils.createButtonItem(item, TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_NAME.getString().replace("%item_name%", Common.getItemName(item))), TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_LORE.getStringList())), ClickType.LEFT, e -> draw());
+				slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
+			}
 
-        }).execute();
-    }
+		}).execute();
+	}
 }

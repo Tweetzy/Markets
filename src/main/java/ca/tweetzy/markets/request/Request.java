@@ -17,19 +17,19 @@ import java.util.UUID;
 @Setter
 public class Request {
 
-    private UUID id;
-    private UUID requester;
-    private long date;
-    private List<RequestItem> requestedItems;
+	private UUID id;
+	private UUID requester;
+	private long date;
+	private List<RequestItem> requestedItems;
 
-    public Request(UUID id, UUID requester, long date, List<RequestItem> requestedItems) {
-        this.id = id;
-        this.requester = requester;
-        this.date = date;
-        this.requestedItems = requestedItems;
-    }
+	public Request(UUID id, UUID requester, long date, List<RequestItem> requestedItems) {
+		this.id = id;
+		this.requester = requester;
+		this.date = date;
+		this.requestedItems = requestedItems;
+	}
 
-    public Request(UUID requester, List<RequestItem> requestedItems) {
-        this(UUID.randomUUID(), requester, System.currentTimeMillis(), requestedItems);
-    }
+	public Request(UUID requester, List<RequestItem> requestedItems) {
+		this(UUID.randomUUID(), requester, System.currentTimeMillis(), requestedItems);
+	}
 }

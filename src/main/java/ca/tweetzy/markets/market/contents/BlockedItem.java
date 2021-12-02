@@ -17,11 +17,11 @@ import java.util.UUID;
 @Setter
 public class BlockedItem {
 
-    private UUID id;
-    private ItemStack item;
+	private UUID id;
+	private ItemStack item;
 
-    public BlockedItem(UUID id, ItemStack item) {
-        this.id = id;
-        this.item = item;
-    }
+	public BlockedItem(UUID id, ItemStack item) {
+		this.id = id;
+		this.item = item;
+	}
 }

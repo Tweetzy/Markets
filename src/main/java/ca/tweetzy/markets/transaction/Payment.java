@@ -17,15 +17,15 @@ import java.util.UUID;
 @Getter
 public class Payment implements Serializable {
 
-    private final UUID to;
-    private final byte[] item;
+	private final UUID to;
+	private final byte[] item;
 
-    public Payment(UUID to, ItemStack item) {
-        this.to = to;
-        this.item = MarketsAPI.getInstance().serializeItem(item);
-    }
+	public Payment(UUID to, ItemStack item) {
+		this.to = to;
+		this.item = MarketsAPI.getInstance().serializeItem(item);
+	}
 
-    public ItemStack getItem() {
-        return MarketsAPI.getInstance().deserializeItem(this.item);
-    }
+	public ItemStack getItem() {
+		return MarketsAPI.getInstance().deserializeItem(this.item);
+	}
 }

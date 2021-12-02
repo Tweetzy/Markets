@@ -18,58 +18,58 @@ import java.util.List;
  */
 public class CommandPayUpKeep extends AbstractCommand {
 
-    public CommandPayUpKeep() {
-        super(CommandType.PLAYER_ONLY, "pay upkeep");
-    }
+	public CommandPayUpKeep() {
+		super(CommandType.PLAYER_ONLY, "pay upkeep");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
 
-        Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-        if (market == null) {
-            Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+		if (market == null) {
+			Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        if (!market.isUnpaid()) {
-            Markets.getInstance().getLocale().getMessage("upkeep_already_paid").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (!market.isUnpaid()) {
+			Markets.getInstance().getLocale().getMessage("upkeep_already_paid").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
-        double itemsFee = totalItemsInMarket * Settings.UPKEEP_FEE_FEE_PER_ITEM.getDouble();
+		int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
+		double itemsFee = totalItemsInMarket * Settings.UPKEEP_FEE_FEE_PER_ITEM.getDouble();
 
-        if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)) {
-            Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)) {
+			Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee);
-        Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
-        Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
-        market.setUnpaid(false);
+		EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee);
+		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
+		market.setUnpaid(false);
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.payupkeep";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.payupkeep";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.pay_upkeep").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.pay_upkeep").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.pay_upkeep").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.pay_upkeep").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 }

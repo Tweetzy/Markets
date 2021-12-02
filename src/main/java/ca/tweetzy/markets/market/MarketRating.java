@@ -16,22 +16,22 @@ import java.util.UUID;
 @Setter
 public class MarketRating {
 
-    private UUID marketId;
-    private UUID id;
-    private UUID rater;
-    private int stars;
-    private String message;
-    private long time;
+	private UUID marketId;
+	private UUID id;
+	private UUID rater;
+	private int stars;
+	private String message;
+	private long time;
 
-    public MarketRating(UUID id, UUID rater, int stars, String message, long time) {
-        this.id = id;
-        this.rater = rater;
-        this.stars = stars;
-        this.message = message;
-        this.time = time;
-    }
+	public MarketRating(UUID id, UUID rater, int stars, String message, long time) {
+		this.id = id;
+		this.rater = rater;
+		this.stars = stars;
+		this.message = message;
+		this.time = time;
+	}
 
-    public MarketRating(UUID rater, int stars, String message) {
-        this(UUID.randomUUID(), rater, stars, message, System.currentTimeMillis());
-    }
+	public MarketRating(UUID rater, int stars, String message) {
+		this(UUID.randomUUID(), rater, stars, message, System.currentTimeMillis());
+	}
 }

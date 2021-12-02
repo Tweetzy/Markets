@@ -14,33 +14,33 @@ import java.util.List;
  */
 public class CommandForceSave extends AbstractCommand {
 
-    public CommandForceSave() {
-        super(CommandType.CONSOLE_OK, "force save");
-    }
+	public CommandForceSave() {
+		super(CommandType.CONSOLE_OK, "force save");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Markets.newChain().async(() -> Markets.getInstance().saveData(true)).execute();
-        return ReturnType.SUCCESS;
-    }
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Markets.newChain().async(() -> Markets.getInstance().saveData(true, "Saving Data due to force save")).execute();
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "marekts.cmd.forcesave";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "marekts.cmd.forcesave";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.force_save").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.force_save").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.force_save").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.force_save").getMessage();
+	}
 }

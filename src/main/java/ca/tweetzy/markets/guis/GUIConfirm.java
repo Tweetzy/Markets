@@ -12,8 +12,6 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.Objects;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: September 28 2021

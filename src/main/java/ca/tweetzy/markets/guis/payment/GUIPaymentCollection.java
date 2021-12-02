@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,41 +24,41 @@ import java.util.stream.Collectors;
  */
 public class GUIPaymentCollection extends Gui {
 
-    private final Player player;
-    private final List<Payment> payments;
+	private final Player player;
+	private final List<Payment> payments;
 
-    public GUIPaymentCollection(Player player) {
-        this.player = player;
-        this.payments = Markets.getInstance().getTransactionManger().getPayments(this.player.getUniqueId());
-        setTitle(TextUtils.formatText(Settings.GUI_PAYMENT_COLLECTION_TITLE.getString()));
-        setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_PAYMENT_COLLECTION_FILL_ITEM.getMaterial()));
-        setAcceptsItems(false);
-        setAllowDrops(false);
-        setUseLockedCells(true);
-        setRows(6);
-        draw();
-    }
+	public GUIPaymentCollection(Player player) {
+		this.player = player;
+		this.payments = Markets.getInstance().getTransactionManger().getPayments(this.player.getUniqueId());
+		setTitle(TextUtils.formatText(Settings.GUI_PAYMENT_COLLECTION_TITLE.getString()));
+		setDefaultItem(GuiUtils.getBorderItem(Settings.GUI_PAYMENT_COLLECTION_FILL_ITEM.getMaterial()));
+		setAcceptsItems(false);
+		setAllowDrops(false);
+		setUseLockedCells(true);
+		setRows(6);
+		draw();
+	}
 
-    private void draw() {
-        reset();
-        pages = (int) Math.max(1, Math.ceil(this.payments.size() / (double) 45));
+	private void draw() {
+		reset();
+		pages = (int) Math.max(1, Math.ceil(this.payments.size() / (double) 45));
 
-        setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.close());
-        setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-        setOnPage(e -> draw());
+		setPrevPage(5, 3, new TItemBuilder(Common.getItemStack(Settings.GUI_BACK_BTN_ITEM.getString())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+		setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.close());
+		setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setOnPage(e -> draw());
 
-        Markets.newChain().async(() -> {
-            List<Payment> data = this.payments.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
+		Markets.newChain().async(() -> {
+			List<Payment> data = this.payments.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
 
-            int slot = 0;
-            for (Payment payment : data) {
-                setButton(slot++, payment.getItem(), e -> {
-                    PlayerUtils.giveItem(this.player, payment.getItem().clone());
-                    Markets.getInstance().getTransactionManger().removePayment(payment);
-                    e.manager.showGUI(e.player, new GUIPaymentCollection(e.player));
-                });
-            }
-        }).execute();
-    }
+			int slot = 0;
+			for (Payment payment : data) {
+				setButton(slot++, payment.getItem(), e -> {
+					PlayerUtils.giveItem(this.player, payment.getItem().clone());
+					Markets.getInstance().getTransactionManger().removePayment(payment);
+					e.manager.showGUI(e.player, new GUIPaymentCollection(e.player));
+				});
+			}
+		}).execute();
+	}
 }

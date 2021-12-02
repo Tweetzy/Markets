@@ -12,11 +12,11 @@ import lombok.Getter;
  */
 public class MarketCategoryCreateEvent extends AbstractMarketEvent {
 
-    @Getter
-    final MarketCategory marketCategory;
+	@Getter
+	final MarketCategory marketCategory;
 
-    public MarketCategoryCreateEvent(Market market, MarketCategory marketCategory) {
-        super(market, false);
-        this.marketCategory = marketCategory;
-    }
+	public MarketCategoryCreateEvent(Market market, MarketCategory marketCategory) {
+		super(market, false);
+		this.marketCategory = marketCategory;
+	}
 }

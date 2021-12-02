@@ -16,38 +16,38 @@ import java.util.List;
  */
 public class CommandMarkets extends AbstractCommand {
 
-    public CommandMarkets() {
-        super(CommandType.CONSOLE_OK, "markets");
-    }
+	public CommandMarkets() {
+		super(CommandType.CONSOLE_OK, "markets");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
 
-            Markets.getInstance().getGuiManager().showGUI(player, new GUIMain(player));
-        }
-        return ReturnType.SUCCESS;
-    }
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIMain(player));
+		}
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.markets").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.markets").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.markets").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.markets").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
 }

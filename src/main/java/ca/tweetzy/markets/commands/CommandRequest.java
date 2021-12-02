@@ -27,113 +27,113 @@ import java.util.List;
  */
 public class CommandRequest extends AbstractCommand {
 
-    public CommandRequest() {
-        super(CommandType.PLAYER_ONLY, "request");
-    }
+	public CommandRequest() {
+		super(CommandType.PLAYER_ONLY, "request");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 2) return ReturnType.SYNTAX_ERROR;
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (args.length < 2) return ReturnType.SYNTAX_ERROR;
+		Player player = (Player) sender;
 
-        ItemStack heldItem = Common.getItemInHand(player).clone();
-        if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
-            Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		ItemStack heldItem = Common.getItemInHand(player).clone();
+		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) {
+			Markets.getInstance().getLocale().getMessage("nothing_in_hand").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        // check the max allowed items
-        if (Settings.LIMIT_REQUESTS_BY_PERMISSION.getBoolean()) {
-            int maxAllowedRequests = MarketsAPI.getInstance().maxAllowedRequestsItems(player);
-            int totalItemsInMarket = Markets.getInstance().getRequestManager().getPlayerRequests(player).size();
-            if (totalItemsInMarket >= maxAllowedRequests) {
-                Markets.getInstance().getLocale().getMessage("at_max_request_limit").sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
-        }
+		// check the max allowed items
+		if (Settings.LIMIT_REQUESTS_BY_PERMISSION.getBoolean()) {
+			int maxAllowedRequests = MarketsAPI.getInstance().maxAllowedRequestsItems(player);
+			int totalItemsInMarket = Markets.getInstance().getRequestManager().getPlayerRequests(player).size();
+			if (totalItemsInMarket >= maxAllowedRequests) {
+				Markets.getInstance().getLocale().getMessage("at_max_request_limit").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
+		}
 
-        if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(heldItem))) {
-            Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(heldItem))) {
+			Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        if (!NumberUtils.isInt(args[0]) || !NumberUtils.isDouble(args[1])) {
-            Markets.getInstance().getLocale().getMessage("not_a_number").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (!NumberUtils.isInt(args[0]) || !NumberUtils.isDouble(args[1])) {
+			Markets.getInstance().getLocale().getMessage("not_a_number").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        if (Double.parseDouble(args[1]) <= 0) {
-            Markets.getInstance().getLocale().getMessage("price_is_zero_or_less").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		if (Double.parseDouble(args[1]) <= 0) {
+			Markets.getInstance().getLocale().getMessage("price_is_zero_or_less").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        int requestedAmount = Integer.parseInt(args[0]);
-        if (requestedAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
-            Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("request_max_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
+		int requestedAmount = Integer.parseInt(args[0]);
+		if (requestedAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
+			Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("request_max_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
-        boolean useCustomCurrency = args.length == 3 && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
+		boolean useCustomCurrency = args.length == 3 && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
 
-        double priceForAll = Double.parseDouble(args[1]);
-        double pricePerItem = priceForAll / requestedAmount;
-        int maxStackSize = heldItem.getMaxStackSize();
-        int fullStacks = requestedAmount / maxStackSize;
-        int remainder = requestedAmount % maxStackSize;
+		double priceForAll = Double.parseDouble(args[1]);
+		double pricePerItem = priceForAll / requestedAmount;
+		int maxStackSize = heldItem.getMaxStackSize();
+		int fullStacks = requestedAmount / maxStackSize;
+		int remainder = requestedAmount % maxStackSize;
 
-        if (useCustomCurrency) {
-            Markets.getInstance().getMarketPlayerManager().addPlayerToRequestCustomCurrencyItem(player.getUniqueId(), heldItem, requestedAmount, priceForAll);
-            Markets.getInstance().getLocale().getMessage("click_currency_item_request").sendPrefixedMessage(player);
-            return ReturnType.SUCCESS;
-        }
+		if (useCustomCurrency) {
+			Markets.getInstance().getMarketPlayerManager().addPlayerToRequestCustomCurrencyItem(player.getUniqueId(), heldItem, requestedAmount, priceForAll);
+			Markets.getInstance().getLocale().getMessage("click_currency_item_request").sendPrefixedMessage(player);
+			return ReturnType.SUCCESS;
+		}
 
-        Request request = new Request(player.getUniqueId(), null);
-        List<RequestItem> requestItems = new ArrayList<>();
+		Request request = new Request(player.getUniqueId(), null);
+		List<RequestItem> requestItems = new ArrayList<>();
 
-        for (int i = 0; i < fullStacks; i++) {
-            requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), maxStackSize, pricePerItem * maxStackSize, false, false));
-        }
+		for (int i = 0; i < fullStacks; i++) {
+			requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), maxStackSize, pricePerItem * maxStackSize, false, false));
+		}
 
-        if (remainder != 0) {
-            requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), remainder, pricePerItem * remainder, false, false));
-        }
+		if (remainder != 0) {
+			requestItems.add(new RequestItem(request.getId(), heldItem, XMaterial.AIR.parseItem(), remainder, pricePerItem * remainder, false, false));
+		}
 
-        request.setRequestedItems(requestItems);
-        Markets.getInstance().getRequestManager().addRequest(request);
-        Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
-        if (Settings.BROADCAST_REQUEST_CREATION.getBoolean()) {
-            String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
-            String info = Markets.getInstance().getLocale().getMessage("created_request_broadcast")
-                    .processPlaceholder("player", player.getName())
-                    .processPlaceholder("request_amount", requestedAmount)
-                    .processPlaceholder("request_item_name", Common.getItemName(heldItem))
-                    .processPlaceholder("request_price", String.format("%,.2f", priceForAll))
-                    .getMessage();
+		request.setRequestedItems(requestItems);
+		Markets.getInstance().getRequestManager().addRequest(request);
+		Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
+		if (Settings.BROADCAST_REQUEST_CREATION.getBoolean()) {
+			String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
+			String info = Markets.getInstance().getLocale().getMessage("created_request_broadcast")
+					.processPlaceholder("player", player.getName())
+					.processPlaceholder("request_amount", requestedAmount)
+					.processPlaceholder("request_item_name", Common.getItemName(heldItem))
+					.processPlaceholder("request_price", String.format("%,.2f", priceForAll))
+					.getMessage();
 
-            Bukkit.getOnlinePlayers().forEach(to -> MarketsAPI.getInstance().sendClickableCommand(to, prefix + " " + info, "markets show request " + player.getName() + " -L"));
-        }
+			Bukkit.getOnlinePlayers().forEach(to -> MarketsAPI.getInstance().sendClickableCommand(to, prefix + " " + info, "markets show request " + player.getName() + " -L"));
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1 || args.length == 2) return Arrays.asList("1", "2", "3", "4", "5");
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1 || args.length == 2) return Arrays.asList("1", "2", "3", "4", "5");
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "markets.cmd.request";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "markets.cmd.request";
+	}
 
-    @Override
-    public String getSyntax() {
-        return Markets.getInstance().getLocale().getMessage("command_syntax.request").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return Markets.getInstance().getLocale().getMessage("command_syntax.request").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return Markets.getInstance().getLocale().getMessage("command_description.request").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return Markets.getInstance().getLocale().getMessage("command_description.request").getMessage();
+	}
 }

@@ -19,33 +19,33 @@ import java.util.UUID;
 @Setter
 public class MarketItem {
 
-    private UUID id;
-    private UUID categoryId;
+	private UUID id;
+	private UUID categoryId;
 
-    private ItemStack itemStack;
-    private ItemStack currencyItem;
-    private boolean useItemCurrency;
-    private double price;
+	private ItemStack itemStack;
+	private ItemStack currencyItem;
+	private boolean useItemCurrency;
+	private double price;
 
-    private boolean priceForStack;
-    private boolean infinite;
+	private boolean priceForStack;
+	private boolean infinite;
 
-    public MarketItem(UUID id, ItemStack itemStack, ItemStack currencyItem, double price, boolean useItemCurrency, boolean priceForStack, UUID categoryId) {
-        this.id = id;
-        this.itemStack = itemStack;
-        this.price = price;
-        this.priceForStack = priceForStack;
-        this.categoryId = categoryId;
-        this.currencyItem = currencyItem;
-        this.useItemCurrency = useItemCurrency;
-        this.infinite = false;
-    }
+	public MarketItem(UUID id, ItemStack itemStack, ItemStack currencyItem, double price, boolean useItemCurrency, boolean priceForStack, UUID categoryId) {
+		this.id = id;
+		this.itemStack = itemStack;
+		this.price = price;
+		this.priceForStack = priceForStack;
+		this.categoryId = categoryId;
+		this.currencyItem = currencyItem;
+		this.useItemCurrency = useItemCurrency;
+		this.infinite = false;
+	}
 
-    public MarketItem(MarketCategory category, ItemStack itemStack, double price, boolean priceForStack) {
-        this(UUID.randomUUID(), itemStack, XMaterial.AIR.parseItem(), price, false, priceForStack, category.getId());
-    }
+	public MarketItem(MarketCategory category, ItemStack itemStack, double price, boolean priceForStack) {
+		this(UUID.randomUUID(), itemStack, XMaterial.AIR.parseItem(), price, false, priceForStack, category.getId());
+	}
 
-    public String getTranslatedPriceForStack() {
-        return priceForStack ? Markets.getInstance().getLocale().getMessage("misc.price is for stack.true").getMessage() : Markets.getInstance().getLocale().getMessage("misc.price is for stack.false").getMessage();
-    }
+	public String getTranslatedPriceForStack() {
+		return priceForStack ? Markets.getInstance().getLocale().getMessage("misc.price is for stack.true").getMessage() : Markets.getInstance().getLocale().getMessage("misc.price is for stack.false").getMessage();
+	}
 }

@@ -221,7 +221,7 @@ public class Markets extends TweetyPlugin {
 		// Perform the update check
 		getServer().getScheduler().runTaskLaterAsynchronously(this, () -> new UpdateChecker(this, 92178, getConsole()).check(), 1L);
 		if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
-			getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
+			getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true, "Saving data due to auto save"), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
 		}
 
 		this.metrics = new Metrics(this, 7689);
@@ -229,11 +229,13 @@ public class Markets extends TweetyPlugin {
 
 	@Override
 	public void onPluginDisable() {
-		saveData(false);
+		saveData(false, "Saving data due to plugin disable");
 		instance = null;
 	}
 
-	public void saveData(boolean async) {
+	public void saveData(boolean async, String saveType) {
+		if (Settings.LOG_SAVE_MSG.getBoolean())
+			getLogger().info(saveType);
 		if (Settings.DATABASE_USE.getBoolean()) {
 			newChain().async(() -> {
 				this.dataManager.saveMarkets(this.marketManager.getMarkets(), async);

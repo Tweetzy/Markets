@@ -12,11 +12,11 @@ import lombok.Getter;
  */
 public class MarketItemRemoveEvent extends AbstractMarketEvent {
 
-    @Getter
-    final MarketItem marketItem;
+	@Getter
+	final MarketItem marketItem;
 
-    public MarketItemRemoveEvent(Market market, MarketItem marketItem) {
-        super(market, false);
-        this.marketItem = marketItem;
-    }
+	public MarketItemRemoveEvent(Market market, MarketItem marketItem) {
+		super(market, false);
+		this.marketItem = marketItem;
+	}
 }

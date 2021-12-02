@@ -493,7 +493,9 @@ public class DataManager extends DataManagerAbstract {
 			try (Statement statement = connection.createStatement()) {
 				ResultSet result = statement.executeQuery(select);
 				while (result.next()) {
-					date = result.getLong("last_paid");
+					if (hasColumn(result, "last_paid"))
+						date = result.getLong("last_paid");
+					else date = -1L;
 				}
 			}
 			Long finalDate = date;

@@ -12,19 +12,19 @@ import lombok.Getter;
  */
 public class MarketItemPurchaseEvent extends AbstractMarketEvent {
 
-    @Getter
-    final MarketItem marketItem;
+	@Getter
+	final MarketItem marketItem;
 
-    @Getter
-    final double finalPrice;
+	@Getter
+	final double finalPrice;
 
-    @Getter
-    final int purchaseQty;
+	@Getter
+	final int purchaseQty;
 
-    public MarketItemPurchaseEvent(Market market, MarketItem marketItem, double finalPrice, int purchaseQty) {
-        super(market, false);
-        this.marketItem = marketItem;
-        this.finalPrice = finalPrice;
-        this.purchaseQty = purchaseQty;
-    }
+	public MarketItemPurchaseEvent(Market market, MarketItem marketItem, double finalPrice, int purchaseQty) {
+		super(market, false);
+		this.marketItem = marketItem;
+		this.finalPrice = finalPrice;
+		this.purchaseQty = purchaseQty;
+	}
 }
