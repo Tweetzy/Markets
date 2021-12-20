@@ -24,7 +24,7 @@ public class CommandHelp extends AbstractCommand {
 		sender.sendMessage(TextUtils.formatText("&6&lMarkets"));
 		sender.sendMessage(TextUtils.formatText("&8- &e/markets &7- Open the Market Menu"));
 		Markets.getInstance().getCommandManager().getAllCommands().forEach(command -> {
-			if (!command.getSyntax().equalsIgnoreCase("/markets")) {
+			if (command.getSyntax() != null && !command.getSyntax().equalsIgnoreCase("/markets")) {
 				if (command.getPermissionNode() == null || sender.hasPermission(command.getPermissionNode())) {
 					sender.sendMessage(TextUtils.formatText(String.format("&8- &e/markets %s &7- %s", command.getSyntax(), command.getDescription())));
 				}

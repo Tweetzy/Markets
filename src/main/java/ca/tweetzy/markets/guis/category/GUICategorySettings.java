@@ -139,7 +139,9 @@ public class GUICategorySettings extends Gui {
 					put("%market_item_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
 					put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
 					put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
-				}}), e -> Common.handleMarketItemEdit(e, this.market, marketItem, this.marketCategory));
+				}}), e -> {
+					Common.handleMarketItemEdit(e, this.market, marketItem, this.marketCategory);
+				});
 
 				slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 4 : slot + 1;
 			}

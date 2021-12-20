@@ -266,7 +266,7 @@ public class Settings {
 			"&7Price is for stack&f: &e%market_item_price_for_stack%",
 			"",
 			"&7Left-Click to edit price",
-			"&7Middle-Click to remove item from market",
+			"&7Press Q to remove item from market",
 			"&7Right-Click to toggle price per stack"
 	));
 
@@ -275,7 +275,7 @@ public class Settings {
 			"&7Price is for stack&f: &e%market_item_price_for_stack%",
 			"",
 			"&7Left-Click to edit price",
-			"&7Middle-Click to remove item from market",
+			"&7Press Q to remove item from market",
 			"&7Right-Click to toggle price per stack",
 			"&7Shift-Right Click to edit currency item."
 	));
@@ -308,7 +308,7 @@ public class Settings {
 			"&7Price is for stack&f: &e%market_item_price_for_stack%",
 			"",
 			"&7Left-Click to edit price",
-			"&7Middle-Click to remove item from market",
+			"&7Press Q to remove item from market",
 			"&7Right-Click to toggle price per stack"
 	));
 
@@ -317,7 +317,7 @@ public class Settings {
 			"&7Price is for stack&f: &e%market_item_price_for_stack%",
 			"",
 			"&7Left-Click to edit price",
-			"&7Middle-Click to remove item from market",
+			"&7Press Q to remove item from market",
 			"&7Right-Click to toggle price per stack",
 			"&7Shift-Right Click to edit currency item."
 	));
@@ -509,7 +509,7 @@ public class Settings {
 			"&7Item Requested&f: %request_item%",
 			"&7Amount Requested&f: %request_amount%",
 			"",
-			"&7Middle-Click to cancel request"
+			"&7Press Q to cancel request"
 	));
 
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL = new ConfigSetting(config, "guis.open request.items.request.lore all", Arrays.asList(

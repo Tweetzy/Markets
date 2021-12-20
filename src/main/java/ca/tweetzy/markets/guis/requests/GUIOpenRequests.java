@@ -99,7 +99,7 @@ public class GUIOpenRequests extends Gui {
 					put("%request_amount%", request.getRequestedItems().stream().mapToInt(RequestItem::getAmount).sum());
 					put("%request_requesting_player%", Bukkit.getOfflinePlayer(request.getRequester()).getName());
 				}}), e -> {
-					if (!this.all && e.clickType == ClickType.MIDDLE) {
+					if (!this.all && e.clickType == ClickType.DROP) {
 						Markets.getInstance().getRequestManager().deleteRequest(request);
 						draw();
 						return;

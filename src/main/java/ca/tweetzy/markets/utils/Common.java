@@ -71,7 +71,7 @@ public class Common {
 				market.setUpdatedAt(System.currentTimeMillis());
 				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory));
 				break;
-			case MIDDLE:
+			case DROP:
 				MarketItemRemoveEvent marketItemRemoveEvent = new MarketItemRemoveEvent(market, marketItem);
 				Bukkit.getPluginManager().callEvent(marketItemRemoveEvent);
 				if (marketItemRemoveEvent.isCancelled()) return;
