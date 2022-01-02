@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -56,7 +57,10 @@ public class GUIItemSearch extends Gui {
 		setOnPage(e -> draw());
 
 		int slot = 10;
-		for (Pair<Market, MarketItem> marketItem : this.items) {
+
+		List<Pair<Market, MarketItem>> data = this.items.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
+
+		for (Pair<Market, MarketItem> marketItem : data) {
 			ItemStack item = marketItem.getSecond().getItemStack().clone();
 			List<String> lore = Common.getItemLore(item);
 			lore.addAll(marketItem.getSecond().isUseItemCurrency() ? Settings.GUI_SEARCH_ITEM_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_SEARCH_ITEM_LORE.getStringList());
