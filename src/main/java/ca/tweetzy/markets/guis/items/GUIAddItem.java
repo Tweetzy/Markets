@@ -152,7 +152,8 @@ public class GUIAddItem extends Gui {
 				return;
 			}
 
-			this.priceIsForStack = this.item.getAmount() == 1;
+			if (!this.priceIsForStack && this.item.getAmount() == 1)
+				this.priceIsForStack = true;
 
 			MarketItem marketItem = new MarketItem(this.selectedCategory, this.item, this.itemPrice, this.priceIsForStack);
 			if (this.useCustomCurrency) {
