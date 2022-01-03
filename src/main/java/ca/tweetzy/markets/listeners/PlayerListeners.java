@@ -116,7 +116,7 @@ public class PlayerListeners implements Listener {
 		request.setRequestedItems(requestItems);
 
 		Markets.getInstance().getRequestManager().addRequest(request);
-		Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", toAdd.getSecond()).processPlaceholder("request_item_name", Common.getItemName(toAdd.getFirst())).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", toAdd.getSecond()).processPlaceholder("request_item_name", Common.getItemName(toAdd.getFirst())).processPlaceholder("request_price", MarketsAPI.formatNumber(priceForAll)).sendPrefixedMessage(player);
 		Markets.getInstance().getMarketPlayerManager().removePlayerFromRequestCustomCurrencyItem(player.getUniqueId());
 	}
 }

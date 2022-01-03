@@ -9,6 +9,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemRemoveEvent;
 import ca.tweetzy.markets.api.heads.HeadDatabaseHook;
 import ca.tweetzy.markets.api.heads.SkullsHook;
@@ -49,7 +50,7 @@ public class Common {
 			return false;
 		}
 		EconomyManager.withdrawBalance(player, Settings.CREATION_FEE_AMOUNT.getDouble());
-		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.CREATION_FEE_AMOUNT.getDouble())).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", MarketsAPI.formatNumber(Settings.CREATION_FEE_AMOUNT.getDouble())).sendPrefixedMessage(player);
 		return true;
 	}
 

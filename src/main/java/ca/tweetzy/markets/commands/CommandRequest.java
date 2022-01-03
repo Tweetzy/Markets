@@ -100,14 +100,14 @@ public class CommandRequest extends AbstractCommand {
 
 		request.setRequestedItems(requestItems);
 		Markets.getInstance().getRequestManager().addRequest(request);
-		Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", String.format("%,.2f", priceForAll)).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("created_request").processPlaceholder("request_amount", requestedAmount).processPlaceholder("request_item_name", Common.getItemName(heldItem)).processPlaceholder("request_price", MarketsAPI.formatNumber(priceForAll)).sendPrefixedMessage(player);
 		if (Settings.BROADCAST_REQUEST_CREATION.getBoolean()) {
 			String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
 			String info = Markets.getInstance().getLocale().getMessage("created_request_broadcast")
 					.processPlaceholder("player", player.getName())
 					.processPlaceholder("request_amount", requestedAmount)
 					.processPlaceholder("request_item_name", Common.getItemName(heldItem))
-					.processPlaceholder("request_price", String.format("%,.2f", priceForAll))
+					.processPlaceholder("request_price", MarketsAPI.formatNumber(priceForAll))
 					.getMessage();
 
 			Bukkit.getOnlinePlayers().forEach(to -> MarketsAPI.getInstance().sendClickableCommand(to, prefix + " " + info, "markets show request " + player.getName() + " -L"));

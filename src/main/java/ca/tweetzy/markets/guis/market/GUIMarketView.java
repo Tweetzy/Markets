@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.category.GUICategoryItems;
 import ca.tweetzy.markets.guis.items.GUIAllItems;
 import ca.tweetzy.markets.guis.ratings.GUIRatingStarSelect;
@@ -65,7 +66,7 @@ public class GUIMarketView extends Gui {
 		});
 
 		setButton(5, 7, ConfigItemUtil.build(Settings.GUI_MARKET_VIEW_ITEMS_RATINGS_USE_CUSTOM_SKULL.getBoolean() ? Common.getCustomTextureHead(String.format("%s%s", "http://textures.minecraft.net/texture/", Settings.GUI_MARKET_VIEW_ITEMS_RATINGS_CUSTOM_SKULL_LINK.getString()), false) : Settings.GUI_MARKET_VIEW_ITEMS_RATINGS_ITEM.getMaterial().parseItem(), Settings.GUI_MARKET_VIEW_ITEMS_RATINGS_NAME.getString(), Settings.GUI_MARKET_VIEW_ITEMS_RATINGS_LORE.getStringList(), 1, new HashMap<String, Object>() {{
-			put("%average_rating_number%", market.getRatings().size() == 0 ? Markets.getInstance().getLocale().getMessage("misc.no_ratings").getMessage() : String.format("%,.2f", market.getRatings().stream().mapToInt(MarketRating::getStars).average().orElse(0D)));
+			put("%average_rating_number%", market.getRatings().size() == 0 ? Markets.getInstance().getLocale().getMessage("misc.no_ratings").getMessage() : MarketsAPI.formatNumber(market.getRatings().stream().mapToInt(MarketRating::getStars).average().orElse(0D)));
 			put("%average_rating_stars%", market.getRatings().size() == 0 ? Markets.getInstance().getLocale().getMessage("misc.no_ratings").getMessage() : StringUtils.repeat("★", (int) Math.round(market.getRatings().stream().mapToInt(MarketRating::getStars).average().orElse(0D))));
 		}}), e -> {
 			switch (e.clickType) {

@@ -5,6 +5,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
@@ -75,7 +76,7 @@ public class GUITransactionView extends Gui {
 					put("%transaction_id%", transaction.getId().toString());
 					put("%transaction_buyer%", Bukkit.getOfflinePlayer(transaction.getPurchaser()).getName());
 					put("%transaction_market%", Markets.getInstance().getMarketManager().getMarketById(transaction.getMarketId()) == null ? "Not Available" : Markets.getInstance().getMarketManager().getMarketById(transaction.getMarketId()).getName());
-					put("%transaction_price%", String.format("%,.2f", transaction.getFinalPrice()));
+					put("%transaction_price%", MarketsAPI.formatNumber(transaction.getFinalPrice()));
 					put("%transaction_date%", Common.convertMillisToDate(transaction.getTime()));
 				}}));
 

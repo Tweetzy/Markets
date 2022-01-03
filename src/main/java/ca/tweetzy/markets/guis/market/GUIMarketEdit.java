@@ -6,6 +6,7 @@ import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIConfirm;
 import ca.tweetzy.markets.guis.GUIMain;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
@@ -137,7 +138,7 @@ public class GUIMarketEdit extends Gui {
 		});
 
 		setButton(5, 2, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(this.market.getId()) ? Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE_ALREADY.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_FEATURE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
-			put("%feature_cost%", String.format("%,.2f", Settings.FEATURE_COST.getDouble()));
+			put("%feature_cost%", MarketsAPI.formatNumber(Settings.FEATURE_COST.getDouble()));
 		}}), ClickType.LEFT, e -> {
 			e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.FEATURE_MARKET));
 		});

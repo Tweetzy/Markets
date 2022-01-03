@@ -3,6 +3,7 @@ package ca.tweetzy.markets.guis.items;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.payment.GUICustomCurrencyView;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketItem;
@@ -68,7 +69,7 @@ public class GUIItemSearch extends Gui {
 			setButton(slot, ConfigItemUtil.build(item, Common.getItemName(item), lore, item.getAmount(), new HashMap<String, Object>() {{
 				put("%item_name%", Common.getItemName(item));
 				put("%market_name%", marketItem.getFirst().getName());
-				put("%market_item_price%", marketItem.getSecond().isUseItemCurrency() ? Math.round(marketItem.getSecond().getPrice()) : String.format("%,.2f", marketItem.getSecond().getPrice()));
+				put("%market_item_price%", marketItem.getSecond().isUseItemCurrency() ? MarketsAPI.formatNumber(marketItem.getSecond().getPrice(), true) : MarketsAPI.formatNumber(marketItem.getSecond().getPrice()));
 				put("%market_item_price_for_stack%", marketItem.getSecond().getTranslatedPriceForStack());
 				put("%market_item_currency%", marketItem.getSecond().isUseItemCurrency() ? Common.getItemName(marketItem.getSecond().getCurrencyItem()) : "");
 			}}), e -> {

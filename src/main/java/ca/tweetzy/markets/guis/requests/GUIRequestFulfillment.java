@@ -73,7 +73,7 @@ public class GUIRequestFulfillment extends Gui {
 				setButton(slot, ConfigItemUtil.build(item, Common.getItemName(item), lore, requestItem.getAmount(), new HashMap<String, Object>() {{
 					put("%request_requesting_player%", Bukkit.getOfflinePlayer(request.getRequester()).getName());
 					put("%request_amount%", requestItem.getAmount());
-					put("%request_price%", requestItem.isUseCustomCurrency() ? Math.round(requestItem.getPrice()) : String.format("%,.2f", requestItem.getPrice()));
+					put("%request_price%", requestItem.isUseCustomCurrency() ? MarketsAPI.formatNumber(requestItem.getPrice(), true) : MarketsAPI.formatNumber(requestItem.getPrice()));
 					put("%market_item_currency%", requestItem.isUseCustomCurrency() ? Common.getItemName(requestItem.getCurrency()) : "");
 				}}), e -> {
 					Markets.newChain().async(() -> {
@@ -113,9 +113,9 @@ public class GUIRequestFulfillment extends Gui {
 								Markets.getInstance().getTransactionManger().addPayment(new Payment(e.player.getUniqueId(), remainderCurrency));
 							}
 
-							Markets.getInstance().getLocale().getMessage("money_add_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(e.player);
+							Markets.getInstance().getLocale().getMessage("money_add_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", MarketsAPI.formatNumber(requestItem.getPrice())).sendPrefixedMessage(e.player);
 							if (requester.isOnline()) {
-								Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
+								Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("currency_item", Common.getItemName(currency)).processPlaceholder("price", MarketsAPI.formatNumber(requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
 							}
 
 							handleRequest(requester, requestItem);
@@ -132,9 +132,9 @@ public class GUIRequestFulfillment extends Gui {
 						EconomyManager.withdrawBalance(requester, requestItem.getPrice());
 						EconomyManager.deposit(e.player, requestItem.getPrice());
 
-						Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(e.player);
+						Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", MarketsAPI.formatNumber(requestItem.getPrice())).sendPrefixedMessage(e.player);
 						if (requester.isOnline()) {
-							Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
+							Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", MarketsAPI.formatNumber(requestItem.getPrice())).sendPrefixedMessage(requester.getPlayer());
 						}
 
 						handleRequest(requester, requestItem);

@@ -68,7 +68,6 @@ public class GUIMain extends Gui {
 				}
 
 
-
 				market = new Market(player.getUniqueId(), player.getName(), Markets.getInstance().getLocale().getMessage("misc.default market name").processPlaceholder("player", player.getName()).getMessage());
 
 				MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);

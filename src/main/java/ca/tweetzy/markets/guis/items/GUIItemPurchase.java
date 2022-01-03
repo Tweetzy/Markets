@@ -135,9 +135,9 @@ public class GUIItemPurchase extends Gui {
 	private void addPurchaseInfoItem() {
 		setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_ITEM.getString()), Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_NAME.getString(), marketItem.isUseItemCurrency() ? Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ITEM_PURCHASE_ITEMS_PURCHASE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 			put("%purchase_quantity%", purchaseQty);
-			put("%stack_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
+			put("%stack_price%", marketItem.isUseItemCurrency() ? MarketsAPI.formatNumber(marketItem.getPrice(), true) : MarketsAPI.formatNumber(marketItem.getPrice()));
 			put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
-			put("%purchase_price%", marketItem.isUseItemCurrency() ? marketItem.isPriceForStack() ? Math.round(marketItem.getPrice()) : Math.round(purchaseQty * marketItem.getPrice()) : String.format("%,.2f", marketItem.isPriceForStack() ? marketItem.getPrice() : purchaseQty * marketItem.getPrice()));
+			put("%purchase_price%", marketItem.isUseItemCurrency() ? marketItem.isPriceForStack() ? MarketsAPI.formatNumber(marketItem.getPrice(), true) : MarketsAPI.formatNumber(purchaseQty * marketItem.getPrice(), true) : MarketsAPI.formatNumber(marketItem.isPriceForStack() ? marketItem.getPrice() : purchaseQty * marketItem.getPrice()));
 			put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
 		}}), e -> {
 			if (e.clickType == ClickType.LEFT) {
@@ -246,11 +246,11 @@ public class GUIItemPurchase extends Gui {
 		EconomyManager.withdrawBalance(buyer, Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price);
 
 		if (Settings.SEND_MONEY_WITHDRAW_MSG.getBoolean())
-			Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)).sendPrefixedMessage(buyer);
+			Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", MarketsAPI.formatNumber(Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price + totalTax : price)).sendPrefixedMessage(buyer);
 
 		if (Settings.SEND_MONEY_DEPOSIT_MSG.getBoolean())
 			if (theSeller.isOnline()) {
-				Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", String.format("%,.2f", Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax)).sendPrefixedMessage(theSeller.getPlayer());
+				Markets.getInstance().getLocale().getMessage("money_add").processPlaceholder("price", MarketsAPI.formatNumber(Settings.TAX_BUYER_INSTEAD_OF_SELLER.getBoolean() ? price : price - totalTax)).sendPrefixedMessage(theSeller.getPlayer());
 			}
 	}
 }

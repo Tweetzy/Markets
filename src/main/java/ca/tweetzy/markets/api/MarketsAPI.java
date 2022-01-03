@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -190,6 +189,17 @@ public class MarketsAPI {
 	public boolean isAlphaNumeric(String string) {
 		Matcher matcher = alphaNumericPattern.matcher(string);
 		return matcher.matches();
+	}
+
+	public static String formatNumber(double number, boolean round) {
+		if (round)
+			return String.valueOf(Math.round(number));
+		else
+			return String.format(Settings.CURRENCY_FORMAT.getString(), number);
+	}
+
+	public static String formatNumber(double number) {
+		return formatNumber(number, false);
 	}
 
 	/**

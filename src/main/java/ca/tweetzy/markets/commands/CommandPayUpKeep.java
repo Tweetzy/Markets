@@ -3,6 +3,7 @@ package ca.tweetzy.markets.commands;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.command.CommandSender;
@@ -46,8 +47,8 @@ public class CommandPayUpKeep extends AbstractCommand {
 		}
 
 		EconomyManager.withdrawBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee);
-		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
-		Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", String.format("%,.2f", Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", MarketsAPI.formatNumber(Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
+		Markets.getInstance().getLocale().getMessage("upkeep_fee_paid").processPlaceholder("upkeep_fee", MarketsAPI.formatNumber(Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)).sendPrefixedMessage(player);
 		market.setUnpaid(false);
 
 		return ReturnType.SUCCESS;

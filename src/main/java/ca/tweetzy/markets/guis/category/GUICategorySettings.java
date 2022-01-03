@@ -7,6 +7,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIConfirm;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.guis.items.GUIIconSelect;
@@ -136,7 +137,7 @@ public class GUICategorySettings extends Gui {
 
 				setButton(slot, ConfigItemUtil.build(item, Settings.GUI_CATEGORY_EDIT_ITEMS_ITEM_NAME.getString(), lore, item.getAmount(), new HashMap<String, Object>() {{
 					put("%item_name%", Common.getItemName(item));
-					put("%market_item_price%", marketItem.isUseItemCurrency() ? Math.round(marketItem.getPrice()) : String.format("%,.2f", marketItem.getPrice()));
+					put("%market_item_price%", marketItem.isUseItemCurrency() ? MarketsAPI.formatNumber(marketItem.getPrice(), true) : MarketsAPI.formatNumber(marketItem.getPrice()));
 					put("%market_item_price_for_stack%", marketItem.getTranslatedPriceForStack());
 					put("%market_item_currency%", marketItem.isUseItemCurrency() ? Common.getItemName(marketItem.getCurrencyItem()) : "");
 				}}), e -> {

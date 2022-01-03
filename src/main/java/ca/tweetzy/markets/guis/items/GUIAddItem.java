@@ -179,7 +179,7 @@ public class GUIAddItem extends Gui {
 
 	private void placePriceButton() {
 		setButton(3, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_ADD_ITEM_ITEMS_PRICE_ITEM.getString()), Settings.GUI_ADD_ITEM_ITEMS_PRICE_NAME.getString(), this.useCustomCurrency ? Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE_CUSTOM_CURRENCY.getStringList() : Settings.GUI_ADD_ITEM_ITEMS_PRICE_LORE.getStringList(), 1, new HashMap<String, Object>() {{
-			put("%market_item_price%", useCustomCurrency ? Math.round(itemPrice) : String.format("%,.2f", itemPrice));
+			put("%market_item_price%", useCustomCurrency ? MarketsAPI.formatNumber(itemPrice, true) : MarketsAPI.formatNumber(itemPrice));
 			put("%market_item_currency%", useCustomCurrency && currency != null ? Common.getItemName(currency) : "");
 		}}), ClickType.LEFT, e -> {
 			assignItemStacks();
