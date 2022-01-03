@@ -67,7 +67,9 @@ public class GUIMain extends Gui {
 					return;
 				}
 
-				market = new Market(player.getUniqueId(), player.getName(), player.getName() + "'s Market");
+
+
+				market = new Market(player.getUniqueId(), player.getName(), Markets.getInstance().getLocale().getMessage("misc.default market name").processPlaceholder("player", player.getName()).getMessage());
 
 				MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
 				Bukkit.getPluginManager().callEvent(marketCreateEvent);

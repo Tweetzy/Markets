@@ -87,6 +87,7 @@ public class LocaleSettings {
 
 		languageNodes.put("misc.price is for stack.true", "True");
 		languageNodes.put("misc.price is for stack.false", "False");
+		languageNodes.put("misc.default market name", "%player%'s Market");
 		languageNodes.put("misc.default category description", "Default Category Description");
 		languageNodes.put("misc.default market description", "&7Welcome to my market!");
 		languageNodes.put("misc.category not selected", "&cNone Selected");

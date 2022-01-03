@@ -32,7 +32,7 @@ public class CommandCreate extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		market = new Market(player.getUniqueId(), player.getName(), args.length == 1 ? args[0] : player.getName() + "'s Market");
+		market = new Market(player.getUniqueId(), player.getName(), Markets.getInstance().getLocale().getMessage("misc.default market name").processPlaceholder("player", args.length == 1 ? args[0] : player.getName()).getMessage());
 
 		MarketCreateEvent marketCreateEvent = new MarketCreateEvent(player, market);
 		Bukkit.getPluginManager().callEvent(marketCreateEvent);
