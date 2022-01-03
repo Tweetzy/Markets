@@ -46,6 +46,7 @@ public class Settings {
 	public static final ConfigSetting BROADCAST_REQUEST_CREATION = new ConfigSetting(config, "setting.broadcast request creation", true, "Should clickable request messages be sent to everyone upon a new request creation?");
 	public static final ConfigSetting FEATURE_COST = new ConfigSetting(config, "setting.feature.cost", 20000, "How much should it cost to feature a market?");
 	public static final ConfigSetting FEATURE_TIME = new ConfigSetting(config, "setting.feature.time", 60 * 60, "How long should a market feature last (in seconds)");
+	public static final ConfigSetting DISPLAY_EMPTY_MARKETS = new ConfigSetting(config, "setting.display empty markets", false, "Should empty markets be shown in the main listing?");
 
 	public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
 	public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");

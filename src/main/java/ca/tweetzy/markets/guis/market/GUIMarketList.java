@@ -50,7 +50,7 @@ public class GUIMarketList extends Gui {
 		}
 
 		Markets.newChain().asyncFirst(() -> {
-			this.markets = Markets.getInstance().getMarketManager().getMarkets();
+			this.markets = Settings.DISPLAY_EMPTY_MARKETS.getBoolean() ? Markets.getInstance().getMarketManager().getMarkets() : Markets.getInstance().getMarketManager().getNonEmptyMarkets();
 			if (!Markets.getInstance().getMarketManager().getFeaturedMarkets().isEmpty()) {
 				this.markets = markets.stream().sorted(Comparator.comparing((Market market) -> Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId())).reversed()).collect(Collectors.toList());
 			}

@@ -78,6 +78,23 @@ public class MarketManager {
 		return Collections.unmodifiableList(this.markets);
 	}
 
+	public List<Market> getNonEmptyMarkets() {
+		final List<Market> markets = new ArrayList<>();
+
+
+		this.markets.forEach(market -> {
+			List<MarketItem> marketItemList = new ArrayList<>();
+			market.getCategories().forEach(category -> marketItemList.addAll(category.getItems()));
+
+			if (!marketItemList.isEmpty()) {
+				markets.add(market);
+				marketItemList.clear();
+			}
+		});
+
+		return markets;
+	}
+
 	public List<BlockedItem> getBlockedItems() {
 		return Collections.unmodifiableList(this.blockedItems);
 	}
