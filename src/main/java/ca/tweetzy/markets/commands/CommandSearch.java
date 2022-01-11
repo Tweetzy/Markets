@@ -2,6 +2,7 @@ package ca.tweetzy.markets.commands;
 
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.Inflector;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.items.GUIItemSearch;
 import ca.tweetzy.markets.market.Market;
@@ -75,10 +76,12 @@ public class CommandSearch extends AbstractCommand {
 		return null;
 	}
 
-	private boolean checkSearchCriteria(String phrase, ItemStack item) {
-		return MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemName(item)) ||
-				MarketsAPI.getInstance().match(phrase, item.getType().name()) ||
-				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemLore(item)) ||
-				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemEnchantments(item));
+	private boolean checkSearchCriteria(String phrase, ItemStack stack) {
+
+		return MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemName(stack)) ||
+				MarketsAPI.getInstance().match(phrase, Inflector.getInstance().pluralize(stack.getType().name())) ||
+				MarketsAPI.getInstance().match(phrase, Inflector.getInstance().singularize(stack.getType().name())) ||
+				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemLore(stack)) ||
+				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemEnchantments(stack));
 	}
 }
