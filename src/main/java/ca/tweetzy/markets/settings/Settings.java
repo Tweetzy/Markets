@@ -48,6 +48,8 @@ public class Settings {
 	public static final ConfigSetting FEATURE_TIME = new ConfigSetting(config, "setting.feature.time", 60 * 60, "How long should a market feature last (in seconds)");
 	public static final ConfigSetting DISPLAY_EMPTY_MARKETS = new ConfigSetting(config, "setting.display empty markets", false, "Should empty markets be shown in the main listing?");
 	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "setting.currency format", "%,.2f", "The formatting for currency");
+	public static final ConfigSetting DISABLE_VIEW_ALL_MARKETS = new ConfigSetting(config, "setting.disable view all markets", false, "Disable access to the view all markets menu");
+	public static final ConfigSetting MARKET_CLOSE_BTN_CLOSES_MENU = new ConfigSetting(config, "setting.market close btn closes menu", false, "If true, the close button will just outright close the menu");
 
 	public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
 	public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");

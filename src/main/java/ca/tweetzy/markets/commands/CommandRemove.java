@@ -24,13 +24,14 @@ import java.util.stream.Collectors;
 public class CommandRemove extends AbstractCommand {
 
 	public CommandRemove() {
-		super(CommandType.PLAYER_ONLY, "remove");
+		super(CommandType.CONSOLE_OK, "remove");
 	}
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
 		if (args.length == 0) {
+			Player player = (Player) sender;
+
 			Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
 			if (market == null) {
 				Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
@@ -41,15 +42,15 @@ public class CommandRemove extends AbstractCommand {
 			deleteMarket(player, market, false);
 		}
 
-		if (args.length == 1 && player.hasPermission("markets.admin")) {
+		if (args.length == 1 && sender.hasPermission("markets.admin")) {
 			Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
 			if (market == null) {
-				Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
+				Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(sender);
 				return ReturnType.FAILURE;
 			}
 
-			if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-			deleteMarket(player, market, true);
+//			if (handleDeleteEvent(sender, market)) return ReturnType.FAILURE;
+			deleteMarket(sender, market, true);
 		}
 
 		return ReturnType.SUCCESS;
@@ -83,10 +84,13 @@ public class CommandRemove extends AbstractCommand {
 		return marketDeleteEvent.isCancelled();
 	}
 
-	private void deleteMarket(Player player, Market market, boolean admin) {
+	private void deleteMarket(CommandSender player, Market market, boolean admin) {
 		if (Settings.GIVE_ITEMS_ON_MARKET_DELETE.getBoolean() && !market.getCategories().isEmpty()) {
 			List<ItemStack> items = new ArrayList<>();
-			Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(player, items)).execute();
+			if (player instanceof Player) {
+				Player target = (Player) player;
+				Markets.newChain().async(() -> market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(item.getItemStack())))).sync(() -> PlayerUtils.giveItem(target, items)).execute();
+			}
 		}
 		Markets.getInstance().getMarketManager().deleteMarket(market);
 		if (admin) {
