@@ -39,18 +39,21 @@ public class CommandShowRequest extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		List<Request> playerRequests = Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList());
-		if (playerRequests.size() == 0) {
-			Markets.getInstance().getLocale().getMessage("player_does_not_have_requests").sendPrefixedMessage(sender);
-			return ReturnType.FAILURE;
-		}
+		Markets.newChain().asyncFirst(() -> Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList())).syncLast(requests -> {
+			if (requests.size() == 0) {
+				Markets.getInstance().getLocale().getMessage("player_does_not_have_requests").sendPrefixedMessage(sender);
+				return;
+			}
 
-		if (args.length == 2 && args[1].equalsIgnoreCase("-L")) {
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, Collections.singletonList(playerRequests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null))));
-			return ReturnType.SUCCESS;
-		}
+			if (args.length == 2 && args[1].equalsIgnoreCase("-L")) {
+				Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, Collections.singletonList(requests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null))));
+				return;
+			}
 
-		Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, playerRequests));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, requests));
+
+		}).execute();
+
 		return ReturnType.SUCCESS;
 	}
 
