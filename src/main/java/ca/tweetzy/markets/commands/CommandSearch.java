@@ -1,6 +1,8 @@
 package ca.tweetzy.markets.commands;
 
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.Inflector;
 import ca.tweetzy.markets.api.MarketsAPI;
@@ -8,6 +10,7 @@ import ca.tweetzy.markets.guis.items.GUIItemSearch;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.structures.Pair;
+import ca.tweetzy.markets.utils.Common;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,19 +33,26 @@ public class CommandSearch extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
 		Player player = (Player) sender;
 
 		StringBuilder builder = new StringBuilder();
-		for (String arg : args) {
-			builder.append(arg).append(" ");
+
+		final ItemStack hand = Common.getItemInHand(player);
+
+		if (args.length == 0 && hand != null && hand.getType() != XMaterial.AIR.parseMaterial()) {
+			builder.append(Common.getItemName(Common.getItemInHand(player)));
+		} else {
+			for (String arg : args) {
+				builder.append(arg).append(" ");
+			}
+
+			if (builder.toString().trim().length() == 0) {
+				Markets.getInstance().getLocale().getMessage("search_phrase_empty").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 		}
 
 		String phrase = builder.toString().trim();
-		if (phrase.length() == 0) {
-			Markets.getInstance().getLocale().getMessage("search_phrase_empty").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
 
 		Markets.newChain().asyncFirst(() -> {
 			List<Pair<Market, MarketItem>> items = new ArrayList<>();
@@ -50,7 +60,7 @@ public class CommandSearch extends AbstractCommand {
 				market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(new Pair<>(market, item))));
 			});
 
-			return items.stream().filter(marketItem -> checkSearchCriteria(phrase, marketItem.getSecond().getItemStack())).collect(Collectors.toList());
+			return items.stream().filter(marketItem -> MarketsAPI.getInstance().checkSearchCriteria(phrase, marketItem.getSecond().getItemStack())).collect(Collectors.toList());
 		}).syncLast(data -> Markets.getInstance().getGuiManager().showGUI(player, new GUIItemSearch(data))).execute();
 
 		return ReturnType.SUCCESS;
@@ -76,12 +86,4 @@ public class CommandSearch extends AbstractCommand {
 		return null;
 	}
 
-	private boolean checkSearchCriteria(String phrase, ItemStack stack) {
-
-		return MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemName(stack)) ||
-				MarketsAPI.getInstance().match(phrase, Inflector.getInstance().pluralize(stack.getType().name())) ||
-				MarketsAPI.getInstance().match(phrase, Inflector.getInstance().singularize(stack.getType().name())) ||
-				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemLore(stack)) ||
-				MarketsAPI.getInstance().match(phrase, MarketsAPI.getInstance().getItemEnchantments(stack));
-	}
 }
