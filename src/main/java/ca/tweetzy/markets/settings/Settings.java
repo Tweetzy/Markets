@@ -49,6 +49,7 @@ public class Settings {
 	public static final ConfigSetting DISPLAY_EMPTY_MARKETS = new ConfigSetting(config, "setting.display empty markets", false, "Should empty markets be shown in the main listing?");
 	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "setting.currency format", "%,.2f", "The formatting for currency");
 	public static final ConfigSetting DISABLE_VIEW_ALL_MARKETS = new ConfigSetting(config, "setting.disable view all markets", false, "Disable access to the view all markets menu");
+	public static final ConfigSetting REQUEST_ONLY_MODE = new ConfigSetting(config, "setting.request only mode", false, "Every feature but requests will be disabled");
 	public static final ConfigSetting MARKET_CLOSE_BTN_CLOSES_MENU = new ConfigSetting(config, "setting.market close btn closes menu", false, "If true, the close button will just outright close the menu");
 
 	public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
@@ -145,6 +146,19 @@ public class Settings {
 	public static final ConfigSetting GUI_MAIN_ITEMS_OPEN_REQUESTS_LORE = new ConfigSetting(config, "guis.main.items.open requests.lore", Arrays.asList(
 			"&7Click to view any open requests",
 			"&7that player's have made."
+	));
+
+	public static final ConfigSetting GUI_MAIN_ITEMS_BANK_ITEM = new ConfigSetting(config, "guis.main.items.bank.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_MAIN_ITEMS_BANK_NAME = new ConfigSetting(config, "guis.main.items.bank.name", "&eCurrency Bank");
+	public static final ConfigSetting GUI_MAIN_ITEMS_BANK_LORE = new ConfigSetting(config, "guis.main.items.bank.lore", Arrays.asList(
+			"&7Click to view your bank containing",
+			"&7custom currency for transactions"
+	));
+
+	public static final ConfigSetting GUI_MAIN_ITEMS_SEARCH_ITEM = new ConfigSetting(config, "guis.main.items.search.item", XMaterial.COMPASS.name());
+	public static final ConfigSetting GUI_MAIN_ITEMS_SEARCH_NAME = new ConfigSetting(config, "guis.main.items.search.name", "&eSearch");
+	public static final ConfigSetting GUI_MAIN_ITEMS_SEARCH_LORE = new ConfigSetting(config, "guis.main.items.search.lore", Collections.singletonList(
+			"&7Click to search items in all markets"
 	));
 
 	/*  ===============================
