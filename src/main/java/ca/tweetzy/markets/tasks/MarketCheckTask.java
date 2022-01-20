@@ -49,6 +49,7 @@ public class MarketCheckTask extends BukkitRunnable {
 
 					if (!EconomyManager.hasBalance(player, Settings.UPKEEP_FEE_FEE.getDouble() + itemsFee)) {
 						market.setUnpaid(true);
+						market.setOpen(false);
 						if (player.isOnline()) {
 							Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player.getPlayer());
 						}
