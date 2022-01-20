@@ -70,6 +70,10 @@ public class MarketManager {
 		this.blockedItems.add(blockedItem);
 	}
 
+	public void removeBlockedItem(BlockedItem blockedItem) {
+		this.blockedItems.remove(blockedItem);
+	}
+
 	public Market getMarketById(UUID id) {
 		return this.markets.stream().filter(market -> market.getId().equals(id)).findFirst().orElse(null);
 	}

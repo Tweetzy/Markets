@@ -60,7 +60,10 @@ public class GUIBlockedItems extends Gui {
 			int slot = 10;
 			for (BlockedItem blockedItem : data) {
 				ItemStack item = blockedItem.getItem().clone();
-				setButton(slot, GuiUtils.createButtonItem(item, TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_NAME.getString().replace("%item_name%", Common.getItemName(item))), TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_LORE.getStringList())), ClickType.LEFT, e -> draw());
+				setButton(slot, GuiUtils.createButtonItem(item, TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_NAME.getString().replace("%item_name%", Common.getItemName(item))), TextUtils.formatText(Settings.GUI_BLOCKED_ITEMS_ITEM_LORE.getStringList())), ClickType.LEFT, e -> {
+					Markets.getInstance().getMarketManager().removeBlockedItem(blockedItem);
+					draw();
+				});
 				slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
 			}
 

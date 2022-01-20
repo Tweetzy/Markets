@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,6 +71,8 @@ public class CommandsBlockItem extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1)
+			return Collections.singletonList("list");
 		return null;
 	}
 }
