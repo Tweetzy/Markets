@@ -93,6 +93,7 @@ public class LocaleSettings {
 		languageNodes.put("misc.category not selected", "&cNone Selected");
 		languageNodes.put("misc.no_ratings", "&cNo Ratings");
 		languageNodes.put("misc.no_rating_message", "&cNo Message");
+		languageNodes.put("misc.search", "&aEnter search keywords into chat");
 
 		languageNodes.put("command_syntax.add_category", "add category <name> [description]");
 		languageNodes.put("command_syntax.add_item", "add item <category> <price> [priceIsForStack]");
