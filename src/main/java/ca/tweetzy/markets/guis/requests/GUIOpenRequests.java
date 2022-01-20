@@ -66,7 +66,8 @@ public class GUIOpenRequests extends Gui {
 
 		if (!this.all) {
 			setButton(5, 0, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_EMPTY_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-				draw();
+				Markets.getInstance().getRequestManager().getPlayerRequests(this.player).forEach(Markets.getInstance().getRequestManager()::deleteRequest);
+				e.manager.showGUI(e.player, new GUIOpenRequests(this.player, false));
 			});
 
 			setButton(5, 8, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
@@ -101,7 +102,7 @@ public class GUIOpenRequests extends Gui {
 				}}), e -> {
 					if (!this.all && e.clickType == ClickType.DROP) {
 						Markets.getInstance().getRequestManager().deleteRequest(request);
-						draw();
+						e.manager.showGUI(e.player, new GUIOpenRequests(this.player, false));
 						return;
 					}
 
