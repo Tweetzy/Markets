@@ -320,6 +320,14 @@ public class MarketsAPI {
 		return enchantments;
 	}
 
+	public boolean checkSearchCriteria(String phrase, ItemStack stack) {
+		return match(phrase, MarketsAPI.getInstance().getItemName(stack)) ||
+				match(phrase, Inflector.getInstance().pluralize(stack.getType().name())) ||
+				match(phrase, Inflector.getInstance().singularize(stack.getType().name())) ||
+				match(phrase, MarketsAPI.getInstance().getItemLore(stack)) ||
+				match(phrase, MarketsAPI.getInstance().getItemEnchantments(stack));
+	}
+
 	/**
 	 * Used to match patterns
 	 *
