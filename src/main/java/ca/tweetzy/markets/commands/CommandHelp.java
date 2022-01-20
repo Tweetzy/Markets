@@ -22,7 +22,7 @@ public class CommandHelp extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		sender.sendMessage(TextUtils.formatText("&6&lMarkets"));
-		sender.sendMessage(TextUtils.formatText("&8- &e/markets &7- Open the Market Menu"));
+		sender.sendMessage(TextUtils.formatText("&8- &e/markets &7- " + Markets.getInstance().getLocale().getMessage("command_description.markets").getMessage()));
 		Markets.getInstance().getCommandManager().getAllCommands().forEach(command -> {
 			if (command.getSyntax() != null && !command.getSyntax().equalsIgnoreCase("/markets")) {
 				if (command.getPermissionNode() == null || sender.hasPermission(command.getPermissionNode())) {
