@@ -14,6 +14,7 @@ import ca.tweetzy.markets.guis.category.GUICategorySelection;
 import ca.tweetzy.markets.guis.category.GUICategorySettings;
 import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
@@ -125,6 +126,11 @@ public class GUIAddItem extends Gui {
 
 			if (this.market.getCategories().isEmpty()) {
 				Markets.getInstance().getLocale().getMessage("market_category_required").sendPrefixedMessage(player);
+				return;
+			}
+
+			if (Markets.getInstance().getMarketManager().getBlockedItems().size() != 0 && Markets.getInstance().getMarketManager().getBlockedItems().stream().map(BlockedItem::getItem).anyMatch(item -> item.isSimilar(this.item))) {
+				Markets.getInstance().getLocale().getMessage("item_is_blocked").sendPrefixedMessage(player);
 				return;
 			}
 
