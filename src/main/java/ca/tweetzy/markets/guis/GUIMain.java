@@ -110,11 +110,11 @@ public class GUIMain extends Gui {
 			e.manager.showGUI(this.player, new GUIOpenRequests(this.player, true));
 		});
 
-		setButton(3, viewAllDisabled ? 4 : 6, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+		setButton(3, viewAllDisabled ? 5 : 6, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_TRANSACTIONS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 			e.manager.showGUI(this.player, new GUITransactionView(this.player));
 		});
 
-		setButton(3, 4, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_BANK_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_BANK_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_BANK_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+		setButton(3, viewAllDisabled ? 3 : 4, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_BANK_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_BANK_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_BANK_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 			e.manager.showGUI(this.player, new GUIBank(this.player));
 		});
 
