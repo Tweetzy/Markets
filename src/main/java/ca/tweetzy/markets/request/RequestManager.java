@@ -40,6 +40,13 @@ public class RequestManager {
 		return Collections.unmodifiableList(this.requests.stream().filter(req -> req.getRequestedItems().size() != 0 && req.getRequester().equals(player.getUniqueId())).collect(Collectors.toList()));
 	}
 
+	public void setRequestsOnFile() {
+		Markets.getInstance().getData().set("open requests", null);
+		for (Request request : this.requests) {
+			saveRequest(request);
+		}
+	}
+
 	public void saveRequests(Request... requests) {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("open requests", null);

@@ -66,6 +66,18 @@ public class CurrencyBank {
 		return this.bank.get(id);
 	}
 
+	public void setBankOnFile() {
+		Markets.getInstance().getData().set("player banks", null);
+		this.bank.keySet().forEach(key -> {
+			String node = "player banks." + key.toString() + ".";
+			this.bank.get(key).forEach(currency -> {
+				String id = UUID.randomUUID().toString();
+				Markets.getInstance().getData().set(node + "currencies." + id + ".item", currency.getItem());
+				Markets.getInstance().getData().set(node + "currencies." + id + ".total", currency.getAmount());
+			});
+		});
+	}
+
 	public void saveBank() {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("player banks", null);

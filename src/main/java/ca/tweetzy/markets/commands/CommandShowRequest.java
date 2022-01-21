@@ -10,10 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,19 +36,22 @@ public class CommandShowRequest extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		Markets.newChain().asyncFirst(() -> Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList())).syncLast(requests -> {
+		Markets.newChain().asyncFirst(() -> {
+			List<Request> requests = Markets.getInstance().getRequestManager().getNonFulfilledRequests().stream().filter(request -> request.getRequester().equals(target.getUniqueId())).collect(Collectors.toList());
+
 			if (requests.size() == 0) {
 				Markets.getInstance().getLocale().getMessage("player_does_not_have_requests").sendPrefixedMessage(sender);
-				return;
+				return new ArrayList<Request>();
 			}
 
 			if (args.length == 2 && args[1].equalsIgnoreCase("-L")) {
-				Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, Collections.singletonList(requests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null))));
-				return;
+				return Collections.singletonList(requests.stream().sorted(Comparator.comparingLong(Request::getDate).reversed()).findFirst().orElse(null));
 			}
 
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, requests));
-
+			return requests;
+		}).syncLast(requests -> {
+			if (!requests.isEmpty())
+				Markets.getInstance().getGuiManager().showGUI(player, new GUIOpenRequests(player, requests));
 		}).execute();
 
 		return ReturnType.SUCCESS;

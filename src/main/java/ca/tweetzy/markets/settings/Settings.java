@@ -599,7 +599,8 @@ public class Settings {
 	*/
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_TITLE = new ConfigSetting(config, "guis.payment collection.title", "&ePayment Collection");
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_FILL_ITEM = new ConfigSetting(config, "guis.payment collection.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
-
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_BORDER_ITEM = new ConfigSetting(config, "guis.payment collection.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_GLOW_BORDER = new ConfigSetting(config, "guis.payment collection.glow border", true);
 	/*
 	==================================
 		PAYMENT COLLECTION GUI
@@ -714,6 +715,13 @@ public class Settings {
 	public static final ConfigSetting GUI_BANK_CURRENCY_LORE = new ConfigSetting(config, "guis.bank.item lore", Arrays.asList(
 			"&7Total Stored&f: &e%currency_amount%",
 			"&7Left-Click to withdraw"
+	));
+
+
+	public static final ConfigSetting GUI_BANK_PAYMENTS_ITEM = new ConfigSetting(config, "guis.bank.payment item.item", XMaterial.PAPER.name());
+	public static final ConfigSetting GUI_BANK_PAYMENTS_NAME = new ConfigSetting(config, "guis.bank.payment item.name", "&ePayment Collection");
+	public static final ConfigSetting GUI_BANK_PAYMENTS_LORE = new ConfigSetting(config, "guis.bank.payment item.lore", Collections.singletonList(
+			"&7Left-Click to view payments"
 	));
 
 	/*

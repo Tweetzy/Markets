@@ -55,6 +55,13 @@ public class TransactionManger {
 		Markets.getInstance().getData().set(node, MarketsAPI.getInstance().convertToBase64(payment));
 	}
 
+	public void setPaymentsOnFile() {
+		Markets.getInstance().getData().set("payment collection", null);
+		for (Payment payment : this.payments) {
+			savePayment(payment);
+		}
+	}
+
 	public void savePayments(Payment... payments) {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("payment collection", null);
@@ -76,6 +83,14 @@ public class TransactionManger {
 					addPayment((Payment) MarketsAPI.getInstance().convertBase64ToObject(Markets.getInstance().getData().getString("payment collection." + payment)));
 				});
 			}).execute();
+		}
+	}
+
+	public void setTransactionsOnFile() {
+		for (Transaction transaction : this.transactions) {
+			if (Markets.getInstance().getData().contains("transactions." + transaction.getId().toString()))
+				continue;
+			saveTransaction(transaction);
 		}
 	}
 

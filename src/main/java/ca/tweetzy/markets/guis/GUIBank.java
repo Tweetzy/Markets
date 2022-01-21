@@ -9,6 +9,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.economy.Currency;
+import ca.tweetzy.markets.guis.payment.GUIPaymentCollection;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,10 +60,14 @@ public class GUIBank extends Gui {
 		setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
 		setOnPage(e -> draw());
 
+		setButton(5, 8, new TItemBuilder(Common.getItemStack(Settings.GUI_BANK_PAYMENTS_ITEM.getString())).setName(Settings.GUI_BANK_PAYMENTS_NAME.getString()).setLore(Settings.GUI_BANK_PAYMENTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			e.manager.showGUI(e.player, new GUIPaymentCollection(e.player, true));
+		});
+
 		List<Currency> data = this.currencies.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
 		int slot = 10;
 		for (Currency currency : data) {
-			setButton(slot++, ConfigItemUtil.build(currency.getItem().clone(), Settings.GUI_BANK_CURRENCY_NAME.getString(), Settings.GUI_BANK_CURRENCY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+			setButton(slot, ConfigItemUtil.build(currency.getItem().clone(), Settings.GUI_BANK_CURRENCY_NAME.getString(), Settings.GUI_BANK_CURRENCY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 				put("%item_name%", Common.getItemName(currency.getItem().clone()));
 				put("%currency_amount%", currency.getAmount());
 			}}), ClickType.LEFT, e -> ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_withdraw_amount").getMessage()), chat -> {
@@ -91,6 +97,8 @@ public class GUIBank extends Gui {
 					e.manager.showGUI(e.player, new GUIBank(e.player));
 				}
 			}).setOnCancel(() -> e.manager.showGUI(e.player, new GUIBank(e.player))).setOnClose(() -> e.manager.showGUI(e.player, new GUIBank(e.player))));
+
+			slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
 		}
 	}
 }

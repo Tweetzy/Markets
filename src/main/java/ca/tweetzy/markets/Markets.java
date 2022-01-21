@@ -37,8 +37,6 @@ import ca.tweetzy.markets.request.RequestManager;
 import ca.tweetzy.markets.settings.LocaleSettings;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.tasks.MarketCheckTask;
-import ca.tweetzy.markets.transaction.Payment;
-import ca.tweetzy.markets.transaction.Transaction;
 import ca.tweetzy.markets.transaction.TransactionManger;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
@@ -179,13 +177,16 @@ public class Markets extends TweetyPlugin {
 		this.currencyBank = new CurrencyBank();
 
 		this.guiManager.init();
-		this.marketManager.loadMarkets();
-		this.marketManager.loadFeaturedMarkets();
-		this.transactionManger.loadTransactions();
-		this.transactionManger.loadPayments();
-		this.requestManager.loadRequests();
-		this.marketManager.loadBlockedItems();
-		this.currencyBank.loadBank();
+
+		newChain().async(() -> {
+			this.marketManager.loadMarkets();
+			this.marketManager.loadFeaturedMarkets();
+			this.transactionManger.loadTransactions();
+			this.transactionManger.loadPayments();
+			this.requestManager.loadRequests();
+			this.marketManager.loadBlockedItems();
+			this.currencyBank.loadBank();
+		}).execute();
 
 		// Listeners
 		Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -264,14 +265,17 @@ public class Markets extends TweetyPlugin {
 				this.dataManager.saveRequestItems(requestItems, async);
 			}).execute();
 		} else {
-			this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
-			this.marketManager.saveMarkets(this.marketManager.getMarkets().toArray(new Market[0]));
-			this.marketManager.saveBlockedItems();
-			this.marketManager.saveFeaturedMarkets();
-			this.transactionManger.saveTransactions(this.transactionManger.getTransactions().toArray(new Transaction[0]));
-			this.transactionManger.savePayments(this.transactionManger.getPayments().toArray(new Payment[0]));
-			this.requestManager.saveRequests(this.requestManager.getRequests().toArray(new Request[0]));
-			this.currencyBank.saveBank();
+			newChain().asyncFirst(() -> {
+				this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
+				this.marketManager.setMarketsOnFile();
+				this.marketManager.setBlockedItemsOnFile();
+				this.marketManager.setFeaturedMarketsOnFile();
+				this.transactionManger.setTransactionsOnFile();
+				this.transactionManger.setPaymentsOnFile();
+				this.requestManager.setRequestsOnFile();
+				this.currencyBank.setBankOnFile();
+				return null;
+			}).asyncLast((rs) -> this.data.save()).execute();
 		}
 
 		if (Settings.LOG_SAVE_MSG.getBoolean())

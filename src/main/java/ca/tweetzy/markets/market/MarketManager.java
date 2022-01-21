@@ -103,6 +103,13 @@ public class MarketManager {
 		return Collections.unmodifiableList(this.blockedItems);
 	}
 
+	public void setBlockedItemsOnFile() {
+		Markets.getInstance().getData().set("blocked items", null);
+		this.blockedItems.forEach(blockedItem -> {
+			Markets.getInstance().getData().set("blocked items." + blockedItem.getId().toString(), blockedItem.getItem());
+		});
+	}
+
 	public void saveBlockedItems() {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("blocked items", null);
@@ -111,7 +118,6 @@ public class MarketManager {
 			});
 			Markets.getInstance().getData().save();
 		}).execute();
-
 	}
 
 	public void loadBlockedItems() {
@@ -140,6 +146,13 @@ public class MarketManager {
 		}
 	}
 
+	public void setFeaturedMarketsOnFile() {
+		Markets.getInstance().getData().set("featured markets", null);
+		this.featuredMarkets.forEach((marketId, expiresAt) -> {
+			Markets.getInstance().getData().set("featured markets." + marketId.toString(), expiresAt);
+		});
+	}
+
 	public void saveFeaturedMarkets() {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("featured markets", null);
@@ -149,6 +162,12 @@ public class MarketManager {
 			Markets.getInstance().getData().save();
 		}).execute();
 
+	}
+
+	public void setMarketsOnFile() {
+		for (Market market : this.markets) {
+			saveMarket(market);
+		}
 	}
 
 	public void saveMarkets(Market... markets) {

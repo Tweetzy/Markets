@@ -71,7 +71,7 @@ public class GUIOpenRequests extends Gui {
 			});
 
 			setButton(5, 8, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
-				e.manager.showGUI(this.player, new GUIPaymentCollection(this.player));
+				e.manager.showGUI(this.player, new GUIPaymentCollection(this.player, false));
 			});
 		}
 

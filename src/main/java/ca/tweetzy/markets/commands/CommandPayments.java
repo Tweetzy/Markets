@@ -28,7 +28,7 @@ public class CommandPayments extends AbstractCommand {
 		Player player = (Player) sender;
 
 		if (args.length == 0) {
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIPaymentCollection(player));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIPaymentCollection(player, true));
 			return ReturnType.SUCCESS;
 		}
 
