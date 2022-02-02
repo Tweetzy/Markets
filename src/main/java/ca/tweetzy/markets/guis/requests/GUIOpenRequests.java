@@ -73,6 +73,10 @@ public class GUIOpenRequests extends Gui {
 			setButton(5, 8, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 				e.manager.showGUI(this.player, new GUIPaymentCollection(this.player, false));
 			});
+
+			setButton(5, 7, new TItemBuilder(Common.getItemStack(Settings.GUI_OPEN_REQUEST_ITEMS_NEW_ITEM.getString())).setName(Settings.GUI_OPEN_REQUEST_ITEMS_NEW_NAME.getString()).setLore(Settings.GUI_OPEN_REQUEST_ITEMS_NEW_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+				e.manager.showGUI(this.player, new GUINewRequest(this.player, 1.0, 1, false, null, null, false));
+			});
 		}
 
 		Markets.newChain().asyncFirst(() -> {

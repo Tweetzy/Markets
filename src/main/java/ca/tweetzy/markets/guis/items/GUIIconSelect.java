@@ -12,14 +12,12 @@ import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.structures.Triple;
 import ca.tweetzy.markets.utils.Common;
+import ca.tweetzy.markets.utils.InventorySafeMaterials;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -41,17 +39,9 @@ public class GUIIconSelect extends SimplePagedGui {
 		setFooterBackItem(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());
 		setDefaultItem(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());
 
-		List<Material> supportedVersionItems = new ArrayList<>();
-		for (XMaterial allValidItemMaterial : XMaterial.getAllValidItemMaterials()) {
-			if (allValidItemMaterial.isSupported() && allValidItemMaterial.parseMaterial() != null) {
-				supportedVersionItems.add(allValidItemMaterial.parseMaterial());
-			}
-		}
-
-		supportedVersionItems = supportedVersionItems.stream().distinct().collect(Collectors.toList());
 
 		int slot = 9;
-		for (Material material : supportedVersionItems) {
+		for (XMaterial material : InventorySafeMaterials.get()) {
 			setButton(slot++, GuiUtils.createButtonItem(material, material.name().toLowerCase(Locale.ROOT).replace("_", " ")), ClickType.LEFT, e -> {
 				if (isForCurrency) {
 
@@ -60,7 +50,7 @@ public class GUIIconSelect extends SimplePagedGui {
 						return;
 					}
 
-					ItemStack itemToBeUsedAsCurrency = XMaterial.matchXMaterial(material).parseItem();
+					ItemStack itemToBeUsedAsCurrency = material.parseItem();
 					assert itemToBeUsedAsCurrency != null;
 					itemToBeUsedAsCurrency.setAmount(1);
 
@@ -82,7 +72,7 @@ public class GUIIconSelect extends SimplePagedGui {
 					e.gui.exit();
 
 				} else {
-					marketCategory.setIcon(XMaterial.matchXMaterial(material).parseMaterial());
+					marketCategory.setIcon(material.parseMaterial());
 					market.setUpdatedAt(System.currentTimeMillis());
 					Markets.getInstance().getLocale().getMessage("updated_category_icon").sendPrefixedMessage(e.player);
 					e.gui.exit();

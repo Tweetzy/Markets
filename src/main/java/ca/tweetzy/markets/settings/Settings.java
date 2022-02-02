@@ -521,6 +521,10 @@ public class Settings {
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_COLLECTION_NAME = new ConfigSetting(config, "guis.open request.items.collection.name", "&eRequest Collection");
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_COLLECTION_LORE = new ConfigSetting(config, "guis.open request.items.collection.lore", Collections.singletonList("&7Click to view fulfilled requests"));
 
+	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_NEW_ITEM = new ConfigSetting(config, "guis.open request.items.new.item", XMaterial.LIME_DYE.name());
+	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_NEW_NAME = new ConfigSetting(config, "guis.open request.items.new.name", "&eNew Request");
+	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_NEW_LORE = new ConfigSetting(config, "guis.open request.items.new.lore", Collections.singletonList("&7Click to create request"));
+
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME = new ConfigSetting(config, "guis.open request.items.request.name", "%request_item_name%");
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE = new ConfigSetting(config, "guis.open request.items.request.lore", Arrays.asList(
 			"",
@@ -619,30 +623,50 @@ public class Settings {
               NEW REQUEST GUI
      ==================================
      */
-//    public static final ConfigSetting GUI_NEW_REQUEST_TITLE = new ConfigSetting(config, "guis.new request.title", "&eNew Request");
-//    public static final ConfigSetting GUI_NEW_REQUEST_GLOW_BORDER = new ConfigSetting(config, "guis.new request.glow border", true);
-//    public static final ConfigSetting GUI_NEW_REQUEST_FILL_ITEM = new ConfigSetting(config, "guis.new request.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
-//    public static final ConfigSetting GUI_NEW_REQUEST_BORDER_ITEM = new ConfigSetting(config, "guis.new request.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
-//
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_ITEM = new ConfigSetting(config, "guis.new request.items.price.item", XMaterial.SUNFLOWER.name());
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_NAME = new ConfigSetting(config, "guis.new request.items.price.name", "&e&LPayment");
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_LORE = new ConfigSetting(config, "guis.new request.items.price.lore", Arrays.asList(
-//            "&7Payment amount&f: &a$%market_payment_price%",
-//            "&7Click to change the payment"
-//    ));
-//
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.new requests.items.price.lore custom currency", Arrays.asList(
-//            "&7Payment amount&f: x%market_payment_price% %market_request_currency%",
-//            "&7Click to change the payment"
-//    ));
-//
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_ITEM = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.item", XMaterial.LIME_DYE.name());
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_NAME = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.name", "&a&LCustom Currency Enabled");
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_LORE = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.lore", Collections.singletonList("&7Click to &cdisable &7custom currency"));
-//
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_ITEM = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.item", XMaterial.RED_DYE.name());
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_NAME = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.name", "&c&LCustom Currency Disabled");
-//    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_LORE = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.lore", Collections.singletonList("&7Click to &aenable &7custom currency"));
+    public static final ConfigSetting GUI_NEW_REQUEST_TITLE = new ConfigSetting(config, "guis.new request.title", "&eNew Request");
+    public static final ConfigSetting GUI_NEW_REQUEST_GLOW_BORDER = new ConfigSetting(config, "guis.new request.glow border", true);
+    public static final ConfigSetting GUI_NEW_REQUEST_FILL_ITEM = new ConfigSetting(config, "guis.new request.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_NEW_REQUEST_BORDER_ITEM = new ConfigSetting(config, "guis.new request.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_AMOUNT_ITEM = new ConfigSetting(config, "guis.new request.items.amount.item", XMaterial.SUNFLOWER.name());
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_AMOUNT_NAME = new ConfigSetting(config, "guis.new request.items.amount.name", "&e&lRequest Amount");
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_AMOUNT_LORE = new ConfigSetting(config, "guis.new request.items.amount.lore", Arrays.asList(
+			"&7Request Amount&f: &a%request_amount%",
+			"&7Click to change the request amount"
+	));
+
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_ITEM = new ConfigSetting(config, "guis.new request.items.price.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_NAME = new ConfigSetting(config, "guis.new request.items.price.name", "&e&LPayment");
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_LORE = new ConfigSetting(config, "guis.new request.items.price.lore", Arrays.asList(
+            "&7Payment amount&f: &a$%market_payment_price%",
+            "&7Click to change the payment"
+    ));
+
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_PRICE_LORE_CUSTOM_CURRENCY = new ConfigSetting(config, "guis.new requests.items.price.lore custom currency", Arrays.asList(
+            "&7Payment amount&f: x%market_payment_price% %market_request_currency%",
+            "&7Click to change the payment"
+    ));
+
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CANCEL_ADD_ITEM = new ConfigSetting(config, "guis.new request.items.cancel add.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CANCEL_ADD_NAME = new ConfigSetting(config, "guis.new request.items.cancel add.name", "&c&LCancel");
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CANCEL_ADD_LORE = new ConfigSetting(config, "guis.new request.items.cancel add.lore", Collections.singletonList("&7Click to cancel request creation"));
+
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CONFIRM_ADD_ITEM = new ConfigSetting(config, "guis.new request.items.confirm add.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CONFIRM_ADD_NAME = new ConfigSetting(config, "guis.new request.items.confirm add.name", "&a&lConfirm");
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CONFIRM_ADD_LORE = new ConfigSetting(config, "guis.new request.items.confirm add.lore", Collections.singletonList("&7Click to create request"));
+
+
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_ITEM = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.item", XMaterial.LIME_DYE.name());
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_NAME = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.name", "&a&LCustom Currency Enabled");
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_ENABLED_LORE = new ConfigSetting(config, "guis.new request.items.use custom currency.enabled.lore", Collections.singletonList("&7Click to &cdisable &7custom currency"));
+
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_ITEM = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.item", XMaterial.RED_DYE.name());
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_NAME = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.name", "&c&LCustom Currency Disabled");
+    public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_USE_CUSTOM_CURRENCY_DISABLED_LORE = new ConfigSetting(config, "guis.new request.items.use custom currency.disabled.lore", Collections.singletonList("&7Click to &aenable &7custom currency"));
+
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CURRENCY_HOLDER_ITEM = new ConfigSetting(config, "guis.new request.items.currency holder.item", XMaterial.BARRIER.name());
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CURRENCY_HOLDER_NAME = new ConfigSetting(config, "guis.new request.items.currency holder.name", "&c&lDisabled");
+	public static final ConfigSetting GUI_NEW_REQUEST_ITEMS_CURRENCY_HOLDER_LORE = new ConfigSetting(config, "guis.new request.items.currency holder.lore", Collections.singletonList("&7You must &aenable &7custom currency to place an item here."));
 
 
 	/*

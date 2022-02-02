@@ -144,6 +144,8 @@ public class LocaleSettings {
 		languageNodes.put("prompt.enter_market_item_price", "&aEnter the new price:");
 		languageNodes.put("prompt.enter_withdraw_amount", "&aEnter the amount you wish to withdraw:");
 		languageNodes.put("prompt.enter_rating_message", "&aPlease enter your rating message:");
+		languageNodes.put("prompt.enter_request_amount", "&eEnter the amount of items you're requesting:");
+
 	}
 
 	public static void setup() {
