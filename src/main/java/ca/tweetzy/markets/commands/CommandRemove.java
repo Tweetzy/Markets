@@ -29,6 +29,8 @@ public class CommandRemove extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
+
 		if (args.length == 0) {
 			Player player = (Player) sender;
 

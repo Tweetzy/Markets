@@ -25,6 +25,8 @@ public class CommandCreate extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
+
 		Player player = (Player) sender;
 		Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
 		if (market != null) {

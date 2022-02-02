@@ -23,6 +23,8 @@ public class CommandSet extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
+
 		if (args.length < 2) return ReturnType.SUCCESS;
 		Player player = (Player) sender;
 

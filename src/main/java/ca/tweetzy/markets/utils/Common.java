@@ -45,10 +45,12 @@ public class Common {
 
 	public boolean chargeCreationFee(Player player) {
 		if (!Settings.USE_CREATION_FEE.getBoolean()) return true;
+
 		if (!EconomyManager.hasBalance(player, Settings.CREATION_FEE_AMOUNT.getDouble())) {
 			Markets.getInstance().getLocale().getMessage("not_enough_money_create").sendPrefixedMessage(player);
 			return false;
 		}
+
 		EconomyManager.withdrawBalance(player, Settings.CREATION_FEE_AMOUNT.getDouble());
 		Markets.getInstance().getLocale().getMessage("money_remove").processPlaceholder("price", MarketsAPI.formatNumber(Settings.CREATION_FEE_AMOUNT.getDouble())).sendPrefixedMessage(player);
 		return true;

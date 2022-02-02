@@ -25,6 +25,8 @@ public class CommandConfiscate extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
+
 		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
 		Player player = (Player) sender;
 
