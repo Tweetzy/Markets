@@ -67,7 +67,7 @@ public class GUIMarketEdit extends Gui {
 		}}), ClickType.LEFT, e -> {
 			e.gui.exit();
 			PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> str.trim().length() >= 1);
+			builder.isValidInput((p, str) -> ChatColor.stripColor(str).trim().length() >= 1);
 			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_name").getMessage()));
 			builder.toCancel("cancel");
 			builder.onCancel(p -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));

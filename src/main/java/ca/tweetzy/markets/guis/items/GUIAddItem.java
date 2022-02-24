@@ -22,6 +22,7 @@ import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -192,7 +193,7 @@ public class GUIAddItem extends Gui {
 			setAllowClose(true);
 			e.gui.exit();
 			ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()), chat -> {
-				String msg = chat.getMessage();
+				String msg = ChatColor.stripColor(chat.getMessage());
 				if (msg != null && msg.length() != 0 && NumberUtils.isDouble(msg) && Double.parseDouble(msg) > 0) {
 					this.itemPrice = Double.parseDouble(msg);
 					reopen(e.player);

@@ -15,6 +15,7 @@ import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.hooks.PluginHook;
 import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
+import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.api.UpdateChecker;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
@@ -169,7 +170,12 @@ public class Markets extends TweetyPlugin {
 
 		// Managers
 		this.guiManager = new GuiManager(this);
+
 		this.commandManager = new CommandManager(this);
+		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(Settings.COMMAND_SYNTAX_ERROR.getStringList()));
+		this.commandManager.setNoCommandMessage(TextUtils.formatText(Settings.COMMAND_INVALID_COMMAND.getString()));
+		this.commandManager.setNoPermsMessage(TextUtils.formatText(Settings.COMMAND_NO_PERMISSION.getString()));
+
 		this.marketManager = new MarketManager();
 		this.marketPlayerManager = new MarketPlayerManager();
 		this.transactionManger = new TransactionManger();

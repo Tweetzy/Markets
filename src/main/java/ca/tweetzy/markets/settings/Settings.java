@@ -51,6 +51,15 @@ public class Settings {
 	public static final ConfigSetting DISABLE_VIEW_ALL_MARKETS = new ConfigSetting(config, "setting.disable view all markets", false, "Disable access to the view all markets menu");
 	public static final ConfigSetting REQUEST_ONLY_MODE = new ConfigSetting(config, "setting.request only mode", false, "Every feature but requests will be disabled");
 	public static final ConfigSetting MARKET_CLOSE_BTN_CLOSES_MENU = new ConfigSetting(config, "setting.market close btn closes menu", false, "If true, the close button will just outright close the menu");
+	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+	public static final ConfigSetting ADD_SEARCH_TO_MAIN = new ConfigSetting(config, "setting.add search to main", true, "Should the main menu have a search button added to it?");
+
+	public static final ConfigSetting COMMAND_INVALID_COMMAND = new ConfigSetting(config, "setting.command.invalid command", "&7The command you entered does not exist or is spelt incorrectly.");
+	public static final ConfigSetting COMMAND_NO_PERMISSION = new ConfigSetting(config, "setting.command.no permission", "&cYou do not have permission to do that..");
+	public static final ConfigSetting COMMAND_SYNTAX_ERROR = new ConfigSetting(config, "setting.command.syntax error", Arrays.asList(
+			"&cInvalid Syntax!",
+			"&7The valid syntax is: &6%syntax%&7."
+	));
 
 	public static final ConfigSetting USE_CREATION_FEE = new ConfigSetting(config, "setting.creation fee.enabled", true, "Should markets charge players a fee to create their market?");
 	public static final ConfigSetting CREATION_FEE_AMOUNT = new ConfigSetting(config, "setting.creation fee.amount", 1000, "How much should the market creation fee be?");

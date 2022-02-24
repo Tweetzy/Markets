@@ -24,6 +24,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -61,7 +62,7 @@ public class Common {
 			case LEFT:
 				e.gui.exit();
 				ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()), chat -> {
-					String val = chat.getMessage().trim();
+					String val = ChatColor.stripColor(chat.getMessage()).trim();
 					if (NumberUtils.isDouble(val) && Double.parseDouble(val) > 0) {
 						marketItem.setPrice(Double.parseDouble(val));
 						market.setUpdatedAt(System.currentTimeMillis());
@@ -218,7 +219,7 @@ public class Common {
 	 * @return a readable date format
 	 */
 	public String convertMillisToDate(long milliseconds) {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Settings.DATE_FORMAT.getString());
 		Date date = new Date(milliseconds);
 		return simpleDateFormat.format(date);
 	}

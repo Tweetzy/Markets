@@ -120,7 +120,7 @@ public class GUIMain extends Gui {
 			e.manager.showGUI(this.player, new GUIBank(this.player));
 		});
 
-		if (!requestOnlyMode)
+		if (!requestOnlyMode && Settings.ADD_SEARCH_TO_MAIN.getBoolean())
 			setButton(4, 4, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_SEARCH_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_SEARCH_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_SEARCH_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 				e.gui.exit();
 
