@@ -116,7 +116,7 @@ public class GUIOpenRequests extends Gui {
 							return;
 						}
 
-						e.manager.showGUI(e.player, new GUIRequestFulfillment(request));
+						e.manager.showGUI(e.player, new GUIRequestFulfillment(e.player, request));
 					}
 				});
 

@@ -16,6 +16,7 @@ import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -32,9 +33,11 @@ import java.util.stream.Collectors;
  */
 public class GUIRequestFulfillment extends Gui {
 
+	private final Player player;
 	private final Request request;
 
-	public GUIRequestFulfillment(Request request) {
+	public GUIRequestFulfillment(Player player, Request request) {
+		this.player = player;
 		this.request = request;
 		setTitle(TextUtils.formatText(Settings.GUI_REQUEST_FULFILLMENT_TITLE.getString()));
 		setAllowDrops(false);
@@ -62,6 +65,14 @@ public class GUIRequestFulfillment extends Gui {
 			setButton(5, 4, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.gui.close());
 			setNextPage(5, 5, new TItemBuilder(Common.getItemStack(Settings.GUI_NEXT_BTN_ITEM.getString())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
 			setOnPage(e -> draw());
+
+			if (player.hasPermission("markets.admin")) {
+				setButton(5, 7, new TItemBuilder(Common.getItemStack(Settings.GUI_REQUEST_FULFILLMENT_DELETE_ITEM.getString())).setName(Settings.GUI_REQUEST_FULFILLMENT_DELETE_NAME.getString()).setLore(Settings.GUI_REQUEST_FULFILLMENT_DELETE_LORE.getStringList()).toItemStack(), click -> {
+					Markets.getInstance().getRequestManager().deleteRequest(this.request);
+					click.manager.showGUI(click.player, new GUIOpenRequests(click.player, true));
+				});
+
+			}
 
 			int slot = 10;
 			for (RequestItem requestItem : data) {

@@ -582,6 +582,16 @@ public class Settings {
 			"&7Click to fulfill this request."
 	));
 
+	public static final ConfigSetting GUI_REQUEST_FULFILLMENT_DELETE_ITEM = new ConfigSetting(config, "guis.request fulfillment.items.delete.item", XMaterial.LAVA_BUCKET.name());
+	public static final ConfigSetting GUI_REQUEST_FULFILLMENT_DELETE_NAME = new ConfigSetting(config, "guis.request fulfillment.items.delete.name", "&c&lDelete Request");
+	public static final ConfigSetting GUI_REQUEST_FULFILLMENT_DELETE_LORE = new ConfigSetting(config, "guis.request fulfillment.items.delete.lore", Arrays.asList(
+			"&7You are able to delete this entire",
+			"&7request since you have admin permission to markets",
+			"",
+			"&cClick to delete request"
+	));
+
+
 	/*
 	==================================
 		   BLOCKED ITEMS GUI
