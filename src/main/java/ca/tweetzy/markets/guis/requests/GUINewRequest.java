@@ -135,6 +135,12 @@ public class GUINewRequest extends Gui {
 				}
 			}
 
+			if (this.requestAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
+				Markets.getInstance().getLocale().getMessage("max_request_amount").processPlaceholder("request_max_amount", Settings.MAX_REQUEST_AMOUNT.getInt()).sendPrefixedMessage(player);
+				return;
+			}
+
+
 			if (this.currency == null || this.currency.getType() == XMaterial.AIR.parseMaterial() && this.useCustomCurrency) {
 				Markets.getInstance().getLocale().getMessage("place_currency_item").sendPrefixedMessage(e.player);
 				return;
