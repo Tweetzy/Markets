@@ -94,7 +94,7 @@ public class GUIOpenRequests extends Gui {
 
 			int slot = 10;
 			for (Request request : data) {
-				ItemStack item = Common.getPlayerHead(Bukkit.getOfflinePlayer(request.getRequester()).getName());
+				ItemStack item = Settings.DONT_USE_PLAYER_HEADS.getBoolean() ? Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_ITEM.getMaterial().parseItem() : Common.getPlayerHead(Bukkit.getOfflinePlayer(request.getRequester()).getName());
 
 				List<String> lore = new ArrayList<>(this.all ? Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE_ALL.getStringList() : Settings.GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE.getStringList());
 

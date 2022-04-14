@@ -151,10 +151,6 @@ public class GUINewRequest extends Gui {
 				return;
 			}
 
-			if (this.useCustomCurrency) {
-				PlayerUtils.giveItem(e.player, getItem(2, 2));
-			}
-
 			double priceForAll = this.itemPrice;
 			double pricePerItem = priceForAll / this.requestAmount;
 			int maxStackSize = this.item.getMaxStackSize();

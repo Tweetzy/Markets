@@ -53,6 +53,7 @@ public class Settings {
 	public static final ConfigSetting MARKET_CLOSE_BTN_CLOSES_MENU = new ConfigSetting(config, "setting.market close btn closes menu", false, "If true, the close button will just outright close the menu");
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting ADD_SEARCH_TO_MAIN = new ConfigSetting(config, "setting.add search to main", true, "Should the main menu have a search button added to it?");
+	public static final ConfigSetting DONT_USE_PLAYER_HEADS = new ConfigSetting(config, "setting.dont use player heads", false, "If enabled, markets will use the provided item for specific gui elements rather than loading the player skull texture");
 
 	public static final ConfigSetting COMMAND_INVALID_COMMAND = new ConfigSetting(config, "setting.command.invalid command", "&7The command you entered does not exist or is spelt incorrectly.");
 	public static final ConfigSetting COMMAND_NO_PERMISSION = new ConfigSetting(config, "setting.command.no permission", "&cYou do not have permission to do that..");
@@ -130,6 +131,7 @@ public class Settings {
 			"&7player's who have one."
 	));
 
+	public static final ConfigSetting GUI_MAIN_ITEMS_YOUR_MARKET_ITEM = new ConfigSetting(config, "guis.main.items.your market.item", XMaterial.CHEST.name(), "Only used if the global setting for disabling player heads is on");
 	public static final ConfigSetting GUI_MAIN_ITEMS_YOUR_MARKET_NAME = new ConfigSetting(config, "guis.main.items.your market.name", "&eView your market");
 	public static final ConfigSetting GUI_MAIN_ITEMS_YOUR_MARKET_LORE = new ConfigSetting(config, "guis.main.items.your market.lore", Arrays.asList(
 			"&7Click to edit or view information",
@@ -402,6 +404,8 @@ public class Settings {
 	public static final ConfigSetting GUI_MARKET_LIST_GLOW_BORDER = new ConfigSetting(config, "guis.market list.glow border", true);
 	public static final ConfigSetting GUI_MARKET_LIST_FILL_ITEM = new ConfigSetting(config, "guis.market list.fill item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_MARKET_LIST_BORDER_ITEM = new ConfigSetting(config, "guis.market list.border item", XMaterial.ORANGE_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_MARKET_LIST_MARKET_ITEM = new ConfigSetting(config, "guis.market list.market item", XMaterial.CHEST.name(), "Only used if the global setting for disabling player heads is on");
 	public static final ConfigSetting GUI_MARKET_LIST_MARKET_NAME = new ConfigSetting(config, "guis.market list.market name", "%market_name%");
 	public static final ConfigSetting GUI_MARKET_LIST_MARKET_LORE = new ConfigSetting(config, "guis.market list.market lore", Arrays.asList(
 			"%market_description%",
@@ -534,6 +538,7 @@ public class Settings {
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_NEW_NAME = new ConfigSetting(config, "guis.open request.items.new.name", "&eNew Request");
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_NEW_LORE = new ConfigSetting(config, "guis.open request.items.new.lore", Collections.singletonList("&7Click to create request"));
 
+	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_ITEM = new ConfigSetting(config, "guis.open request.items.request.item", XMaterial.CHEST.name(), "Only used if the global setting to disable heads is on");
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_NAME = new ConfigSetting(config, "guis.open request.items.request.name", "%request_item_name%");
 	public static final ConfigSetting GUI_OPEN_REQUEST_ITEMS_REQUEST_LORE = new ConfigSetting(config, "guis.open request.items.request.lore", Arrays.asList(
 			"",

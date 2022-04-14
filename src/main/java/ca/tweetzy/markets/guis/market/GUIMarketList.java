@@ -65,7 +65,7 @@ public class GUIMarketList extends Gui {
 
 			int slot = 10;
 			for (Market market : data) {
-				setButton(slot, ConfigItemUtil.build(Common.getPlayerHead(market.getOwnerName()), Settings.GUI_MARKET_LIST_MARKET_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId()) ? Settings.GUI_MARKET_LIST_MARKET_LORE_FEATURED.getStringList() : Settings.GUI_MARKET_LIST_MARKET_LORE.getStringList(), 1, new HashMap<String, Object>() {{
+				setButton(slot, ConfigItemUtil.build(Settings.DONT_USE_PLAYER_HEADS.getBoolean() ? Settings.GUI_MARKET_LIST_MARKET_ITEM.getMaterial().parseItem() : Common.getPlayerHead(market.getOwnerName()), Settings.GUI_MARKET_LIST_MARKET_NAME.getString(), Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId()) ? Settings.GUI_MARKET_LIST_MARKET_LORE_FEATURED.getStringList() : Settings.GUI_MARKET_LIST_MARKET_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 					put("%market_name%", market.getName());
 					put("%market_description%", market.getDescription());
 					put("%market_owner%", market.getOwnerName());

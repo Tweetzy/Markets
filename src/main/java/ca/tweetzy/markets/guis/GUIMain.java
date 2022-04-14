@@ -70,7 +70,7 @@ public class GUIMain extends Gui {
 		}
 
 		if (!requestOnlyMode)
-			setButton(2, viewAllDisabled ? 2 : 4, new TItemBuilder(Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
+			setButton(2, viewAllDisabled ? 2 : 4, new TItemBuilder(Settings.DONT_USE_PLAYER_HEADS.getBoolean() ? Settings.GUI_MAIN_ITEMS_YOUR_MARKET_ITEM.getMaterial().parseItem() : Common.getPlayerHead(this.player)).setName(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_YOUR_MARKET_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {
 				Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
 
 				if (market == null) {
