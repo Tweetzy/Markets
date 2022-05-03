@@ -61,16 +61,6 @@ public class CommandAddItem extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		// check the max allowed items
-		if (Settings.LIMIT_MARKET_ITEMS_BY_PERMISSION.getBoolean()) {
-			int maxAllowedItems = MarketsAPI.getInstance().maxAllowedMarketItems(player);
-			int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
-			if (totalItemsInMarket >= maxAllowedItems) {
-				Markets.getInstance().getLocale().getMessage("at_max_items_limit").sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
-		}
-
 		if (args.length == 0) {
 			// open the add menu
 			Markets.getInstance().getGuiManager().showGUI(player, new GUIAddItem(player, market));
@@ -93,6 +83,7 @@ public class CommandAddItem extends AbstractCommand {
 
 		boolean useCustomCurrency = !MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-c");
 		boolean isPriceForStack = false;
+		boolean addMaxAllowed = !MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-a");
 		String category = "";
 		double price = 0;
 
@@ -122,30 +113,72 @@ public class CommandAddItem extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		if (heldItem.getAmount() == 1) isPriceForStack = true;
+		int maxAllowedItems = MarketsAPI.getInstance().maxAllowedMarketItems(player);
+		int totalItemsInMarket = market.getCategories().stream().mapToInt(cat -> cat.getItems().size()).sum();
 
-		MarketItem marketItem = new MarketItem(marketCategory, heldItem, price, isPriceForStack);
-		marketItem.setInfinite(!MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-o") && player.hasPermission("markets.addinfiniteitems"));
-
-		MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);
-		Bukkit.getPluginManager().callEvent(marketItemAddEvent);
-		if (marketItemAddEvent.isCancelled()) return ReturnType.FAILURE;
-
-		if (useCustomCurrency) {
-			Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(player.getUniqueId(), market, marketCategory, marketItem);
-			Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(player);
-
-			final String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
-			final String content = Markets.getInstance().getLocale().getMessage("currency_select_option").getMessage();
-
-			MarketsAPI.getInstance().sendClickableCommand(player, prefix + " " + content, "markets internal marketsCustomCurrencySelectionGUI " + finalCategory);
-			return ReturnType.SUCCESS;
+		// check the max allowed items
+		if (Settings.LIMIT_MARKET_ITEMS_BY_PERMISSION.getBoolean()) {
+			if (totalItemsInMarket >= maxAllowedItems) {
+				Markets.getInstance().getLocale().getMessage("at_max_items_limit").sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 		}
 
-		market.setUpdatedAt(System.currentTimeMillis());
-		Markets.getInstance().getMarketManager().addItemToCategory(marketCategory, marketItem);
-		Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(heldItem)).processPlaceholder("market_category_name", marketCategory.getName()).sendPrefixedMessage(player);
-		PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, heldItem.getAmount());
+		if (heldItem.getAmount() == 1) isPriceForStack = true;
+
+		if (addMaxAllowed) {
+			int amountInInventory = MarketsAPI.getInstance().getItemCountInPlayerInventory(player, heldItem);
+			int stackSplitSize = heldItem.getAmount();
+
+			final ItemStack toAdd = heldItem.clone();
+			toAdd.setAmount(stackSplitSize);
+
+			for (int i = 0; i < amountInInventory / stackSplitSize; i++) {
+				if (Settings.LIMIT_MARKET_ITEMS_BY_PERMISSION.getBoolean()) {
+					if (totalItemsInMarket >= maxAllowedItems) {
+						Markets.getInstance().getLocale().getMessage("at_max_items_limit").sendPrefixedMessage(player);
+						return ReturnType.FAILURE;
+					}
+				}
+
+				MarketItem marketItem = new MarketItem(marketCategory, toAdd, price, isPriceForStack);
+				marketItem.setInfinite(false);
+
+				MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);
+				Bukkit.getPluginManager().callEvent(marketItemAddEvent);
+				if (marketItemAddEvent.isCancelled()) return ReturnType.FAILURE;
+
+				market.setUpdatedAt(System.currentTimeMillis());
+				Markets.getInstance().getMarketManager().addItemToCategory(marketCategory, marketItem);
+				Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(toAdd)).processPlaceholder("market_category_name", marketCategory.getName()).sendPrefixedMessage(player);
+				MarketsAPI.getInstance().removeSpecificItemQuantityFromPlayer(player, toAdd, stackSplitSize);
+			}
+
+		} else {
+			MarketItem marketItem = new MarketItem(marketCategory, heldItem, price, isPriceForStack);
+			marketItem.setInfinite(!MarketsAPI.getInstance().getCommandFlags(args).isEmpty() && MarketsAPI.getInstance().getCommandFlags(args).contains("-o") && player.hasPermission("markets.addinfiniteitems"));
+
+			MarketItemAddEvent marketItemAddEvent = new MarketItemAddEvent(market, marketItem);
+			Bukkit.getPluginManager().callEvent(marketItemAddEvent);
+			if (marketItemAddEvent.isCancelled()) return ReturnType.FAILURE;
+
+			if (useCustomCurrency) {
+				Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(player.getUniqueId(), market, marketCategory, marketItem);
+				Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(player);
+
+				final String prefix = Markets.getInstance().getLocale().getMessage("general.prefix").getMessage();
+				final String content = Markets.getInstance().getLocale().getMessage("currency_select_option").getMessage();
+
+				MarketsAPI.getInstance().sendClickableCommand(player, prefix + " " + content, "markets internal marketsCustomCurrencySelectionGUI " + finalCategory);
+				return ReturnType.SUCCESS;
+			}
+
+			market.setUpdatedAt(System.currentTimeMillis());
+			Markets.getInstance().getMarketManager().addItemToCategory(marketCategory, marketItem);
+			Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(heldItem)).processPlaceholder("market_category_name", marketCategory.getName()).sendPrefixedMessage(player);
+			PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, heldItem.getAmount());
+		}
+
 		return ReturnType.SUCCESS;
 	}
 
