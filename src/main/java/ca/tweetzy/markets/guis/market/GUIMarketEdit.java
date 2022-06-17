@@ -99,7 +99,7 @@ public class GUIMarketEdit extends Gui {
 			builder.onCancel(p -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
 			builder.setValue((p, value) -> value);
 			builder.onFinish((p, value) -> {
-				String possibleName = ChatColor.stripColor(value.trim());
+				String possibleName = ChatColor.stripColor(value.trim()).replaceAll("[^a-zA-Z0-9\\s]", "");
 
 				MarketCategory newMarketCategory = new MarketCategory(possibleName);
 				newMarketCategory.setMarketId(market.getId());

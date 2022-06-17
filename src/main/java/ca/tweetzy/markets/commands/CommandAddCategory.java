@@ -6,6 +6,7 @@ import ca.tweetzy.markets.api.events.MarketCategoryCreateEvent;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,7 +42,7 @@ public class CommandAddCategory extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		String categoryName = args[0].toLowerCase();
+		String categoryName = ChatColor.stripColor(args[0].toLowerCase()).replaceAll("[^a-zA-Z0-9\\s]", "");
 
 		StringBuilder description = null;
 		if (args.length > 1) {
