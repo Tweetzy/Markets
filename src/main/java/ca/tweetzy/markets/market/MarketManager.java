@@ -54,8 +54,10 @@ public class MarketManager {
 		Objects.requireNonNull(market, "Market cannot be null when deleting market");
 		this.markets.removeIf(theMarket -> theMarket.getId().equals(market.getId()));
 		this.featuredMarkets.remove(market.getId());
-		Markets.getInstance().getData().set("markets." + market.getId().toString(), null);
-		Markets.getInstance().getData().save();
+		Markets.newChain().async(() -> {
+			Markets.getInstance().getData().set("markets." + market.getId().toString(), null);
+			Markets.getInstance().getData().save();
+		}).execute();
 	}
 
 	public Market getMarketByPlayer(Player player) {

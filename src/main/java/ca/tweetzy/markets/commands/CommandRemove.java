@@ -31,29 +31,29 @@ public class CommandRemove extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
 
-		if (args.length == 0) {
-			Player player = (Player) sender;
-
-			Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
-			if (market == null) {
-				Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
-
-			if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
-			deleteMarket(player, market, false);
-		}
-
-		if (args.length == 1 && sender.hasPermission("markets.admin")) {
-			Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
-			if (market == null) {
-				Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(sender);
-				return ReturnType.FAILURE;
-			}
-
-//			if (handleDeleteEvent(sender, market)) return ReturnType.FAILURE;
-			deleteMarket(sender, market, true);
-		}
+//		if (args.length == 0) {
+//			Player player = (Player) sender;
+//
+//			Market market = Markets.getInstance().getMarketManager().getMarketByPlayer(player);
+//			if (market == null) {
+//				Markets.getInstance().getLocale().getMessage("market_required").sendPrefixedMessage(player);
+//				return ReturnType.FAILURE;
+//			}
+//
+//			if (handleDeleteEvent(player, market)) return ReturnType.FAILURE;
+//			deleteMarket(player, market, false);
+//		}
+//
+//		if (args.length == 1 && sender.hasPermission("markets.admin")) {
+//			Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
+//			if (market == null) {
+//				Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(sender);
+//				return ReturnType.FAILURE;
+//			}
+//
+////			if (handleDeleteEvent(sender, market)) return ReturnType.FAILURE;
+//			deleteMarket(sender, market, true);
+//		}
 
 		return ReturnType.SUCCESS;
 	}
