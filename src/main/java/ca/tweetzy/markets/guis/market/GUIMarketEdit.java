@@ -124,7 +124,7 @@ public class GUIMarketEdit extends Gui {
 		setButton(3, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));
 
 		setButton(4, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_DELETE_MARKET_LORE.getStringList(), 1, null), ClickType.RIGHT, e -> {
-//			e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.DELETE_MARKET));
+			e.manager.showGUI(e.player, new GUIConfirm(this.market, null, GUIConfirm.ConfirmAction.DELETE_MARKET));
 		});
 
 		setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMain(e.player)));
