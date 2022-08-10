@@ -54,6 +54,7 @@ public class Settings {
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting ADD_SEARCH_TO_MAIN = new ConfigSetting(config, "setting.add search to main", true, "Should the main menu have a search button added to it?");
 	public static final ConfigSetting DONT_USE_PLAYER_HEADS = new ConfigSetting(config, "setting.dont use player heads", false, "If enabled, markets will use the provided item for specific gui elements rather than loading the player skull texture");
+	public static final ConfigSetting ALLOW_MOBILE_USERS_TO_USE_IS_STACK = new ConfigSetting(config, "setting.allow mobile users to use price stack option", false, "If enabled, mobile users will be able to use the option to change whether the price for an item", "is for the entire stack or just a single item");
 
 	public static final ConfigSetting COMMAND_INVALID_COMMAND = new ConfigSetting(config, "setting.command.invalid command", "&7The command you entered does not exist or is spelt incorrectly.");
 	public static final ConfigSetting COMMAND_NO_PERMISSION = new ConfigSetting(config, "setting.command.no permission", "&cYou do not have permission to do that..");

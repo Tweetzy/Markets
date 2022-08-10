@@ -2,8 +2,7 @@ package ca.tweetzy.markets.api.heads;
 
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.skulls.Skulls;
-import ca.tweetzy.skulls.api.SkullsAPI;
-import ca.tweetzy.skulls.impl.Skull;
+import ca.tweetzy.skulls.api.interfaces.Skull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +21,7 @@ public final class SkullsHook {
 	}
 
 	public ItemStack getHead(final int id) {
-		final Skull skull = SkullsAPI.getSkull(id);
+		final Skull skull = Skulls.getAPI().getSkull(id);
 		return enabled() && skull != null ? skull.getItemStack() : XMaterial.PLAYER_HEAD.parseItem();
 	}
 }

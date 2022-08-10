@@ -8,6 +8,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.FloodGateHook;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
 import ca.tweetzy.markets.guis.category.GUICategorySelection;
@@ -82,7 +83,16 @@ public class GUIAddItem extends Gui {
 		}
 
 		placePriceButton();
-		placePriceForStackButton();
+
+
+		// mobile user
+		if (FloodGateHook.isMobileUser(player)) {
+			if (Settings.ALLOW_MOBILE_USERS_TO_USE_IS_STACK.getBoolean())
+				placePriceForStackButton();
+		} else {
+			placePriceForStackButton();
+		}
+
 		placeUseCustomCurrencyButton();
 		placeSelectedCategoryButton();
 
@@ -161,6 +171,9 @@ public class GUIAddItem extends Gui {
 
 			if (!this.priceIsForStack && this.item.getAmount() == 1)
 				this.priceIsForStack = true;
+
+			if (FloodGateHook.isFloodGateUser(player))
+				this.priceIsForStack = false;
 
 			MarketItem marketItem = new MarketItem(this.selectedCategory, this.item, this.itemPrice, this.priceIsForStack);
 			if (this.useCustomCurrency) {
