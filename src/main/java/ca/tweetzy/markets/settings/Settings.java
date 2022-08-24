@@ -273,6 +273,12 @@ public class Settings {
 			"&7Click to change this category's icon"
 	));
 
+	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM_MOBILE = new ConfigSetting(config, "guis.category edit.items.add item.item mobile", XMaterial.ENDER_EYE.name());
+	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME_MOBILE = new ConfigSetting(config, "guis.category edit.items.add item.name mobile", "&eAdd Item");
+	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE_MOBILE = new ConfigSetting(config, "guis.category edit.items.add item.lore mobile", Collections.singletonList(
+			"&7/markets add item <category> <price> [priceIsForStack]"
+	));
+
 	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM = new ConfigSetting(config, "guis.category edit.items.add item.item", XMaterial.ENDER_EYE.name());
 	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME = new ConfigSetting(config, "guis.category edit.items.add item.name", "&eAdd Item");
 	public static final ConfigSetting GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE = new ConfigSetting(config, "guis.category edit.items.add item.lore", Collections.singletonList(

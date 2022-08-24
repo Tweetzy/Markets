@@ -48,7 +48,7 @@ public final class GUIConfirm extends Gui {
 						e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
 						break;
 					case DELETE_CATEGORY:
-						e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.marketCategory));
+						e.manager.showGUI(e.player, new GUICategorySettings(e.player,this.market, this.marketCategory));
 						break;
 				}
 			});

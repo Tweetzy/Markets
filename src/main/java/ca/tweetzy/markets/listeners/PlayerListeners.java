@@ -74,7 +74,7 @@ public class PlayerListeners implements Listener {
 			Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(toAdd.getThird().getItemStack())).processPlaceholder("market_category_name", toAdd.getSecond().getName()).sendPrefixedMessage(player);
 		} else {
 			Markets.getInstance().getLocale().getMessage("updated_market_item_currency").sendPrefixedMessage(player);
-			Markets.getInstance().getGuiManager().showGUI(player, new GUICategorySettings(toAdd.getFirst(), toAdd.getSecond()));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUICategorySettings(player, toAdd.getFirst(), toAdd.getSecond()));
 		}
 
 		Markets.getInstance().getMarketPlayerManager().removePlayerFromCustomCurrencyItem(player.getUniqueId());

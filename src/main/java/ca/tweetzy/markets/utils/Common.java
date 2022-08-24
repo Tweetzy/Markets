@@ -67,13 +67,13 @@ public class Common {
 						marketItem.setPrice(Double.parseDouble(val));
 						market.setUpdatedAt(System.currentTimeMillis());
 					}
-				}).setOnCancel(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory))).setOnClose(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory)));
+				}).setOnCancel(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory))).setOnClose(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory)));
 				break;
 			case RIGHT:
 				if (marketItem.getItemStack().getAmount() == 1) return;
 				marketItem.setPriceForStack(!marketItem.isPriceForStack());
 				market.setUpdatedAt(System.currentTimeMillis());
-				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory));
+				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory));
 				break;
 			case DROP:
 				MarketItemRemoveEvent marketItemRemoveEvent = new MarketItemRemoveEvent(market, marketItem);
@@ -88,7 +88,7 @@ public class Common {
 
 				PlayerUtils.giveItem(e.player, marketItem.getItemStack());
 				market.setUpdatedAt(System.currentTimeMillis());
-				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(market, marketCategory));
+				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory));
 				break;
 			case SHIFT_RIGHT:
 				if (!marketItem.isUseItemCurrency()) return;

@@ -7,6 +7,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.FloodGateHook;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.guis.GUIConfirm;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
@@ -18,6 +19,7 @@ import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,10 +36,12 @@ import java.util.stream.Collectors;
  */
 public class GUICategorySettings extends Gui {
 
+	private final Player player;
 	private final Market market;
 	private final MarketCategory marketCategory;
 
-	public GUICategorySettings(Market market, MarketCategory marketCategory) {
+	public GUICategorySettings(Player player, Market market, MarketCategory marketCategory) {
+		this.player = player;
 		this.market = market;
 		this.marketCategory = marketCategory;
 		setTitle(TextUtils.formatText(Settings.GUI_CATEGORY_EDIT_TITLE.getString().replace("%category_name%", this.marketCategory.getName())));
@@ -74,13 +78,13 @@ public class GUICategorySettings extends Gui {
 			builder.isValidInput((p, str) -> str.trim().length() >= 1);
 			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_display_name").getMessage()));
 			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.marketCategory)));
+			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory)));
 			builder.setValue((p, value) -> value);
 			builder.onFinish((p, value) -> {
 				this.marketCategory.setDisplayName(value);
 				this.market.setUpdatedAt(System.currentTimeMillis());
 				Markets.getInstance().getLocale().getMessage("updated_category_name").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.marketCategory));
+				e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory));
 			});
 
 			PlayerChatInput<String> input = builder.build();
@@ -95,13 +99,13 @@ public class GUICategorySettings extends Gui {
 			builder.isValidInput((p, str) -> str.trim().length() >= 1);
 			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_description").getMessage()));
 			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.marketCategory)));
+			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory)));
 			builder.setValue((p, value) -> value);
 			builder.onFinish((p, value) -> {
 				this.marketCategory.setDescription(value);
 				this.market.setUpdatedAt(System.currentTimeMillis());
 				Markets.getInstance().getLocale().getMessage("updated_category_description").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUICategorySettings(this.market, this.marketCategory));
+				e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory));
 			});
 
 			PlayerChatInput<String> input = builder.build();
@@ -122,9 +126,14 @@ public class GUICategorySettings extends Gui {
 		});
 
 		setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
-		setButton(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
-			e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory, 1D, false, false, null, null));
-		});
+
+		if (FloodGateHook.isMobileUser(player)) {
+			setItem(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM_MOBILE.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME_MOBILE.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE_MOBILE.getStringList(), 1, null));
+		} else {
+			setButton(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
+				e.manager.showGUI(e.player, new GUIAddItem(e.player, this.market, this.marketCategory, 1D, false, false, null, null));
+			});
+		}
 
 		Markets.newChain().async(() -> {
 			List<MarketItem> data = this.marketCategory.getItems().stream().skip((page - 1) * 24L).limit(24L).collect(Collectors.toList());

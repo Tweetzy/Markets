@@ -13,7 +13,6 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.structures.Triple;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.InventorySafeMaterials;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -65,7 +64,7 @@ public class GUIIconSelect extends SimplePagedGui {
 						Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(toAdd.getThird().getItemStack())).processPlaceholder("market_category_name", toAdd.getSecond().getName()).sendPrefixedMessage(e.player);
 					} else {
 						Markets.getInstance().getLocale().getMessage("updated_market_item_currency").sendPrefixedMessage(e.player);
-						Markets.getInstance().getGuiManager().showGUI(e.player, new GUICategorySettings(toAdd.getFirst(), toAdd.getSecond()));
+						Markets.getInstance().getGuiManager().showGUI(e.player, new GUICategorySettings(e.player, toAdd.getFirst(), toAdd.getSecond()));
 					}
 
 					Markets.getInstance().getMarketPlayerManager().removePlayerFromCustomCurrencyItem(e.player.getUniqueId());
@@ -76,7 +75,7 @@ public class GUIIconSelect extends SimplePagedGui {
 					market.setUpdatedAt(System.currentTimeMillis());
 					Markets.getInstance().getLocale().getMessage("updated_category_icon").sendPrefixedMessage(e.player);
 					e.gui.exit();
-					e.manager.showGUI(e.player, new GUICategorySettings(market, marketCategory));
+					e.manager.showGUI(e.player, new GUICategorySettings(e.player, market, marketCategory));
 				}
 			});
 		}

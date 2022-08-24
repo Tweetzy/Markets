@@ -150,7 +150,7 @@ public class GUIMarketEdit extends Gui {
 			setButton(slot, ConfigItemUtil.build(category.getIcon(), Settings.GUI_MARKET_EDIT_ITEMS_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_CATEGORY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 				put("%category_name%", category.getName());
 				put("%category_display_name%", category.getDisplayName());
-			}}), e -> e.manager.showGUI(e.player, new GUICategorySettings(this.market, category)));
+			}}), e -> e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, category)));
 
 			slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 4 : slot + 1;
 		}
