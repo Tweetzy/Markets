@@ -125,9 +125,9 @@ public class GUICategorySettings extends Gui {
 			e.manager.showGUI(e.player, new GUIConfirm(this.market, this.marketCategory, GUIConfirm.ConfirmAction.DELETE_CATEGORY));
 		});
 
-		setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(this.market)));
+		setButton(5, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CLOSE_BTN_ITEM.getString()), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market)));
 
-		if (FloodGateHook.isMobileUser(player)) {
+		if (FloodGateHook.isMobileUser(this.player)) {
 			setItem(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM_MOBILE.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME_MOBILE.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE_MOBILE.getStringList(), 1, null));
 		} else {
 			setButton(5, 1, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_ADD_ITEM_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {

@@ -101,7 +101,7 @@ public class GUIMain extends Gui {
 					return;
 				}
 
-				e.manager.showGUI(this.player, new GUIMarketEdit(market));
+				e.manager.showGUI(this.player, new GUIMarketEdit(e.player, market));
 			});
 
 		setButton(2, 6, new TItemBuilder(Common.getItemStack(Settings.GUI_MAIN_ITEMS_REQUESTS_ITEM.getString())).setName(Settings.GUI_MAIN_ITEMS_REQUESTS_NAME.getString()).setLore(Settings.GUI_MAIN_ITEMS_REQUESTS_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> {

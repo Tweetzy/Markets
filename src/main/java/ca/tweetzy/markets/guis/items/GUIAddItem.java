@@ -121,7 +121,7 @@ public class GUIAddItem extends Gui {
 			}
 
 			if (this.selectedCategory == null) {
-				e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
+				e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
 			} else {
 				e.manager.showGUI(e.player, new GUICategorySettings(e.player,this.market, this.selectedCategory));
 			}

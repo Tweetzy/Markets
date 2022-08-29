@@ -392,7 +392,7 @@ public class MarketsAPI {
 		MarketCategoryRemoveEvent marketCategoryRemoveEvent = new MarketCategoryRemoveEvent(market, marketCategory);
 		Bukkit.getPluginManager().callEvent(marketCategoryRemoveEvent);
 		if (marketCategoryRemoveEvent.isCancelled()) {
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(market));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(player, market));
 			return;
 		}
 
@@ -402,25 +402,25 @@ public class MarketsAPI {
 
 		market.getCategories().remove(marketCategory);
 		market.setUpdatedAt(System.currentTimeMillis());
-		Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(market));
+		Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(player, market));
 		Markets.getInstance().getLocale().getMessage("removed_category").processPlaceholder("market_category_name", marketCategory.getName()).sendPrefixedMessage(player);
 	}
 
 	public void featureMarket(Player player, Market market) {
 		if (Markets.getInstance().getMarketManager().getFeaturedMarkets().containsKey(market.getId())) {
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(market));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(player, market));
 			return;
 		}
 
 		if (!EconomyManager.hasBalance(player, Settings.FEATURE_COST.getDouble())) {
 			Markets.getInstance().getLocale().getMessage("not_enough_money").sendPrefixedMessage(player);
-			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(market));
+			Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(player, market));
 			return;
 		}
 
 		EconomyManager.withdrawBalance(player, Settings.FEATURE_COST.getDouble());
 		Markets.getInstance().getLocale().getMessage("featured_market").sendPrefixedMessage(player);
 		Markets.getInstance().getMarketManager().getFeaturedMarkets().put(market.getId(), System.currentTimeMillis() + 1000L * Settings.FEATURE_TIME.getInt());
-		Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(market));
+		Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketEdit(player, market));
 	}
 }

@@ -45,7 +45,7 @@ public final class GUIConfirm extends Gui {
 				switch (confirmAction) {
 					case DELETE_MARKET:
 					case FEATURE_MARKET:
-						e.manager.showGUI(e.player, new GUIMarketEdit(this.market));
+						e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
 						break;
 					case DELETE_CATEGORY:
 						e.manager.showGUI(e.player, new GUICategorySettings(e.player,this.market, this.marketCategory));
