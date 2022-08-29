@@ -6,7 +6,7 @@
 
     <groupId>ca.tweetzy</groupId>
     <artifactId>markets</artifactId>
-    <version>1.32.0</version>
+    <version>1.33.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -185,7 +185,7 @@
         <dependency>
             <groupId>ca.tweetzy</groupId>
             <artifactId>tweetycore</artifactId>
-            <version>3.3.0</version>
+            <version>3.3.1</version>
         </dependency>
         <dependency>
             <groupId>me.TechsCode</groupId>
