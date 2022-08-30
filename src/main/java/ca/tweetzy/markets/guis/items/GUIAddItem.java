@@ -4,6 +4,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.input.ChatPrompt;
+import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -205,13 +206,23 @@ public class GUIAddItem extends Gui {
 			assignItemStacks();
 			setAllowClose(true);
 			e.gui.exit();
-			ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()), chat -> {
-				String msg = ChatColor.stripColor(chat.getMessage());
-				if (msg != null && msg.length() != 0 && NumberUtils.isDouble(msg) && Double.parseDouble(msg) > 0) {
-					this.itemPrice = Double.parseDouble(msg);
-					reopen(e.player);
-				}
-			}).setOnClose(() -> reopen(e.player)).setOnCancel(() -> reopen(e.player));
+
+			PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
+			builder.isValidInput((p, str) -> validateChatNumber(str));
+
+			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()));
+			builder.toCancel("cancel");
+			builder.onCancel(p -> reopen(e.player));
+			builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
+			builder.onFinish((p, value) -> {
+				this.itemPrice = value;
+				reopen(e.player);
+			});
+
+			builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.item, this.currency));
+
+			PlayerChatInput<Double> input = builder.build();
+			input.start();
 		});
 	}
 
@@ -267,5 +278,10 @@ public class GUIAddItem extends Gui {
 	private void assignItemStacks() {
 		this.item = getItem(2, 4);
 		this.currency = getItem(2, 2);
+	}
+
+	private boolean validateChatNumber(String input) {
+		String val = ChatColor.stripColor(input);
+		return NumberUtils.isDouble(val) && Double.parseDouble(val) >= 0;
 	}
 }
