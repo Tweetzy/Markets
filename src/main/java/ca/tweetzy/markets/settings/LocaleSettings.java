@@ -27,6 +27,7 @@ public class LocaleSettings {
 		languageNodes.put("not_enough_money", "&cYou do not have enough money!");
 		languageNodes.put("not_enough_money_custom_currency", "&cYou do not have enough %currency_item% &cto buy that.");
 		languageNodes.put("not_enough_money_create", "&cYou do not have enough money to create a market!");
+		languageNodes.put("mobile_user", "&cYou are not allowed to do that on mobile!");
 		languageNodes.put("player_does_not_have_funds", "&4%player% &cdoes not have enough money to pay!");
 		languageNodes.put("not_enough_items", "&cYou do not have enough items to fulfill the request.");
 		languageNodes.put("player_does_not_have_requests", "&cThat player doesn't have any open requests");

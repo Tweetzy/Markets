@@ -9,6 +9,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.FloodGateHook;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemRemoveEvent;
 import ca.tweetzy.markets.api.heads.HeadDatabaseHook;
@@ -58,6 +59,11 @@ public class Common {
 	}
 
 	public void handleMarketItemEdit(GuiClickEvent e, Market market, MarketItem marketItem, MarketCategory marketCategory) {
+		if (FloodGateHook.isMobileUser(e.player)) {
+			Markets.getInstance().getLocale().getMessage("mobile_user").sendPrefixedMessage(e.player);
+			return;
+		}
+
 		switch (e.clickType) {
 			case LEFT:
 				e.gui.exit();
