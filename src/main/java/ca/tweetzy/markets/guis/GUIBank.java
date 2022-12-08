@@ -14,6 +14,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -77,22 +78,26 @@ public class GUIBank extends Gui {
 					final int requestedWithdrawAmount = Integer.parseInt(msg);
 					final int currencyCount = currency.getAmount();
 
-					final int maxAllowedToWithdraw = currencyCount - requestedWithdrawAmount <= 0 ? currencyCount : currencyCount - requestedWithdrawAmount;
-					final int newTotal = currencyCount - maxAllowedToWithdraw;
-
 					final ItemStack currencyItem = currency.getItem().clone();
 					currencyItem.setAmount(1);
 
-					for (int i = 0; i < maxAllowedToWithdraw; i++)
+					int maxWithdrawalAmount = requestedWithdrawAmount;
+
+					if (requestedWithdrawAmount >= currencyCount)
+						maxWithdrawalAmount = currencyCount;
+
+					Bukkit.broadcastMessage(maxWithdrawalAmount + "");
+
+					for (int i = 0; i < maxWithdrawalAmount; i++)
 						PlayerUtils.giveItem(e.player, currencyItem);
 
-					if (newTotal <= 0)
-						Markets.getInstance().getCurrencyBank().removeCurrency(e.player.getUniqueId(), currency.getItem(), currency.getItem().getAmount());
+					if (currencyCount - requestedWithdrawAmount <= 0)
+						Markets.getInstance().getCurrencyBank().removeCurrency(e.player.getUniqueId(), currency.getItem(), currencyCount);
 					else
-						currency.setAmount(newTotal);
+						currency.setAmount(currencyCount - maxWithdrawalAmount);
 
 
-					Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", maxAllowedToWithdraw).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
+					Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", maxWithdrawalAmount).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
 					e.manager.showGUI(e.player, new GUIBank(e.player));
 				}
 			}).setOnCancel(() -> e.manager.showGUI(e.player, new GUIBank(e.player))).setOnClose(() -> e.manager.showGUI(e.player, new GUIBank(e.player))));
