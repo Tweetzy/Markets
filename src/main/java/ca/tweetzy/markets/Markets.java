@@ -231,6 +231,9 @@ public class Markets extends TweetyPlugin {
 			getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveData(true, "Saving data due to auto save"), 20L * 5, (long) 20 * Settings.AUTO_SAVE_DELAY.getInt());
 		}
 
+		if (Settings.FILE_BACKUP_ON_START.getBoolean())
+			getServer().getScheduler().runTaskLaterAsynchronously(this, this::forceBackup, 20L * Settings.FILE_BACKUP_ON_START_DELAY.getInt());
+
 		this.metrics = new Metrics(this, 7689);
 	}
 
@@ -286,6 +289,20 @@ public class Markets extends TweetyPlugin {
 
 		if (Settings.LOG_SAVE_MSG.getBoolean())
 			getLogger().info("Market data has been automatically saved");
+	}
+
+	private void forceBackup() {
+		newChain().asyncFirst(() -> {
+			this.data.set("up keep", this.marketManager.getFeeLastChargedOn());
+			this.marketManager.setMarketsOnFile();
+			this.marketManager.setBlockedItemsOnFile();
+			this.marketManager.setFeaturedMarketsOnFile();
+			this.transactionManger.setTransactionsOnFile();
+			this.transactionManger.setPaymentsOnFile();
+			this.requestManager.setRequestsOnFile();
+			this.currencyBank.setBankOnFile();
+			return null;
+		}).asyncLast((rs) -> this.data.save()).execute();
 	}
 
 	@Override

@@ -29,6 +29,8 @@ public class Settings {
 	public static final ConfigSetting GIVE_ITEMS_ON_CATEGORY_DELETE = new ConfigSetting(config, "setting.give back items on category delete", true, "Should Markets give the player all their items from the category", "back when they click the delete button?");
 	public static final ConfigSetting GIVE_ITEMS_ON_MARKET_DELETE = new ConfigSetting(config, "setting.give back items on market delete", true, "Should markets give the player all their items in all categories", "when they decide to delete their market?");
 	public static final ConfigSetting LOG_TRANSACTIONS = new ConfigSetting(config, "setting.log transactions", true, "Should transactions be logged?");
+	public static final ConfigSetting FILE_BACKUP_ON_START = new ConfigSetting(config, "setting.back on start.enabled", false, "If true, after x seconds, it will backup to the default flat file. Enable if using mysql");
+	public static final ConfigSetting FILE_BACKUP_ON_START_DELAY = new ConfigSetting(config, "setting.back on start.delay", 20, "How long should markets wait after the plugin loads to run a backup, Give enough time to ensure everything is fetched from mysql db");
 	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "setting.max amount per request", 256, "How many items can a player request per request creation?");
 	public static final ConfigSetting AUTO_CREATE_MARKET = new ConfigSetting(config, "setting.auto create market", true, "If a player tries to access a the market menu without owning a market", "should markets automatically create a market for them?");
 	public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "setting.auto save.enabled", true, "Should markets automatically save market data?");
