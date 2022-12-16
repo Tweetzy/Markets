@@ -6,6 +6,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.FloodGateHook;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.api.events.MarketItemAddEvent;
 import ca.tweetzy.markets.guis.items.GUIAddItem;
@@ -62,6 +63,8 @@ public class CommandAddItem extends AbstractCommand {
 		}
 
 		if (args.length == 0) {
+			// stop mobile players
+			if (FloodGateHook.isMobileUser(player)) return ReturnType.FAILURE;
 			// open the add menu
 			Markets.getInstance().getGuiManager().showGUI(player, new GUIAddItem(player, market));
 			return ReturnType.SUCCESS;
