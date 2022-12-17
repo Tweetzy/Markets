@@ -18,6 +18,7 @@ import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -70,21 +71,28 @@ public class GUIMarketEdit extends Gui {
 			put("%market_name%", market.getName());
 		}}), ClickType.LEFT, e -> {
 			e.gui.exit();
-			PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> ChatColor.stripColor(str).trim().length() >= 1);
-			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_name").getMessage()));
-			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market)));
-			builder.setValue((p, value) -> value);
-			builder.onFinish((p, value) -> {
-				this.market.setName(value.trim());
-				this.market.setUpdatedAt(System.currentTimeMillis());
-				e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
-			});
 
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_name.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_name.subtitle").getMessage()) {
 
-			PlayerChatInput<String> input = builder.build();
-			input.start();
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUIMarketEdit.this);
+				}
+
+				@Override
+				public boolean onResult(String string) {
+					if (string.length() < 1) return false;
+
+					GUIMarketEdit.this.market.setName(string.trim());
+					GUIMarketEdit.this.market.setUpdatedAt(System.currentTimeMillis());
+					e.manager.showGUI(e.player, new GUIMarketEdit(e.player, GUIMarketEdit.this.market));
+					return true;
+				}
+			};
 		});
 
 		setButton(1, 0, ConfigItemUtil.build(this.market.isOpen() ? Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_ITEM.getString()) : Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_ITEM.getString()), this.market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_NAME.getString() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_NAME.getString(), market.isOpen() ? Settings.GUI_MARKET_EDIT_ITEMS_OPEN_ENABLE_LORE.getStringList() : Settings.GUI_MARKET_EDIT_ITEMS_OPEN_DISABLE_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
@@ -96,33 +104,39 @@ public class GUIMarketEdit extends Gui {
 		setButton(2, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ADD_CATEGORY_LORE.getStringList(), 1, null), ClickType.LEFT, e -> {
 			e.gui.exit();
 
-			PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> ChatColor.stripColor(str.trim()).length() >= 1);
-			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_name").getMessage()));
-			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market)));
-			builder.setValue((p, value) -> value);
-			builder.onFinish((p, value) -> {
-				String possibleName = ChatColor.stripColor(value.trim()).replaceAll("[^a-zA-Z0-9\\s]", "");
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_name.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_name.subtitle").getMessage()) {
 
-				MarketCategory newMarketCategory = new MarketCategory(possibleName);
-				newMarketCategory.setMarketId(market.getId());
-
-				if (this.market.getCategories().stream().anyMatch(marketCategory -> marketCategory.getName().equalsIgnoreCase(possibleName))) {
-					Markets.getInstance().getLocale().getMessage("category_already_created").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
-					e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
-					return;
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUIMarketEdit.this);
 				}
 
-				Markets.getInstance().getMarketManager().addCategoryToMarket(this.market, newMarketCategory);
-				this.market.setUpdatedAt(System.currentTimeMillis());
-				Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
-			});
+				@Override
+				public boolean onResult(String string) {
+					if (string.length() < 1) return false;
 
+					String possibleName = ChatColor.stripColor(string.trim()).replaceAll("[^a-zA-Z0-9\\s]", "");
 
-			PlayerChatInput<String> input = builder.build();
-			input.start();
+					MarketCategory newMarketCategory = new MarketCategory(possibleName);
+					newMarketCategory.setMarketId(market.getId());
+
+					if (GUIMarketEdit.this.market.getCategories().stream().anyMatch(marketCategory -> marketCategory.getName().equalsIgnoreCase(possibleName))) {
+						Markets.getInstance().getLocale().getMessage("category_already_created").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
+						e.manager.showGUI(e.player, new GUIMarketEdit(e.player, GUIMarketEdit.this.market));
+						return true;
+					}
+
+					Markets.getInstance().getMarketManager().addCategoryToMarket(GUIMarketEdit.this.market, newMarketCategory);
+					GUIMarketEdit.this.market.setUpdatedAt(System.currentTimeMillis());
+					Markets.getInstance().getLocale().getMessage("created_category").processPlaceholder("market_category_name", possibleName).sendPrefixedMessage(e.player);
+					e.manager.showGUI(e.player, new GUIMarketEdit(e.player, GUIMarketEdit.this.market));
+					return true;
+				}
+			};
 		});
 
 		setButton(3, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_ITEM.getString()), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_NAME.getString(), Settings.GUI_MARKET_EDIT_ITEMS_ALL_ITEMS_LORE.getStringList(), 1, null), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAllItems(this.market, true)));

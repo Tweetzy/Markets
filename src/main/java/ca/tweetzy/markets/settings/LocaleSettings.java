@@ -138,15 +138,24 @@ public class LocaleSettings {
 		languageNodes.put("command_description.search", "Search for items in all markets");
 		languageNodes.put("command_description.showrequest", "Show requests made by a single player");
 
-		languageNodes.put("prompt.enter_market_name", "&aEnter the new market name:");
-		languageNodes.put("prompt.enter_category_name", "&aEnter name for new category:");
-		languageNodes.put("prompt.enter_category_display_name", "&aEnter a new display name for the category:");
-		languageNodes.put("prompt.enter_category_description", "&aEnter the new description for the category:");
-		languageNodes.put("prompt.enter_market_item_price", "&aEnter the new price:");
-		languageNodes.put("prompt.enter_withdraw_amount", "&aEnter the amount you wish to withdraw:");
-		languageNodes.put("prompt.enter_rating_message", "&aPlease enter your rating message:");
-		languageNodes.put("prompt.enter_request_amount", "&eEnter the amount of items you're requesting:");
 
+		languageNodes.put("inputs.enter_market_name.title", "&aMarket Name");
+		languageNodes.put("inputs.enter_market_name.subtitle", "&fEnter name for market in chat.");
+		languageNodes.put("inputs.enter_category_name.title", "&aCategory Name");
+		languageNodes.put("inputs.enter_category_name.subtitle", "&fEnter name for category in chat.");
+		languageNodes.put("inputs.enter_category_display_name.title", "&aCategory Display Name");
+		languageNodes.put("inputs.enter_category_display_name.subtitle", "&fEnter category display name in chat.");
+		languageNodes.put("inputs.enter_category_description.title", "&aCategory Description");
+		languageNodes.put("inputs.enter_category_description.subtitle", "&fEnter category description in chat.");
+		languageNodes.put("inputs.enter_market_item_price.title", "&aItem Price");
+		languageNodes.put("inputs.enter_market_item_price.subtitle", "&fEnter price in chat");
+		languageNodes.put("inputs.enter_withdraw_amount.title", "&aWithdrawal");
+		languageNodes.put("inputs.enter_withdraw_amount.subtitle", "&fEnter amount to withdraw in chat.");
+
+		languageNodes.put("inputs.enter_rating_message.title", "&aRating");
+		languageNodes.put("inputs.enter_rating_message.subtitle", "&fEnter rating message in chat.");
+		languageNodes.put("inputs.enter_request_amount.title", "&aRequest Amount");
+		languageNodes.put("inputs.enter_request_amount.subtitle", "&fEnter # of requested items in chat.");
 	}
 
 	public static void setup() {

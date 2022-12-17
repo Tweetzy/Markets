@@ -3,8 +3,6 @@ package ca.tweetzy.markets.guis.items;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
-import ca.tweetzy.core.input.ChatPrompt;
-import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -23,6 +21,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -124,7 +123,7 @@ public class GUIAddItem extends Gui {
 			if (this.selectedCategory == null) {
 				e.manager.showGUI(e.player, new GUIMarketEdit(e.player, this.market));
 			} else {
-				e.manager.showGUI(e.player, new GUICategorySettings(e.player,this.market, this.selectedCategory));
+				e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.selectedCategory));
 			}
 		});
 
@@ -193,7 +192,7 @@ public class GUIAddItem extends Gui {
 				PlayerUtils.giveItem(e.player, getItem(2, 2));
 			}
 
-			e.manager.showGUI(e.player, new GUICategorySettings(e.player,this.market, this.selectedCategory));
+			e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.selectedCategory));
 			Markets.getInstance().getLocale().getMessage("added_item_to_category").processPlaceholder("item_name", Common.getItemName(this.item)).processPlaceholder("market_category_name", this.selectedCategory.getName()).sendPrefixedMessage(e.player);
 		});
 	}
@@ -207,22 +206,33 @@ public class GUIAddItem extends Gui {
 			setAllowClose(true);
 			e.gui.exit();
 
-			PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> validateChatNumber(str));
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.subtitle").getMessage()) {
 
-			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()));
-			builder.toCancel("cancel");
-			builder.onCancel(p -> reopen(e.player));
-			builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
-			builder.onFinish((p, value) -> {
-				this.itemPrice = value;
-				reopen(e.player);
-			});
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUIAddItem.this);
+				}
 
-			builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.item, this.currency));
+				@Override
+				public boolean onResult(String string) {
+					if (!(NumberUtils.isDouble(string) && Double.parseDouble(string) > 0)) return false;
 
-			PlayerChatInput<Double> input = builder.build();
-			input.start();
+					e.manager.showGUI(e.player, new GUIAddItem(
+							e.player,
+							GUIAddItem.this.market,
+							GUIAddItem.this.selectedCategory,
+							Double.parseDouble(string),
+							GUIAddItem.this.useCustomCurrency,
+							GUIAddItem.this.priceIsForStack,
+							GUIAddItem.this.item,
+							GUIAddItem.this.currency));
+					return true;
+				}
+			};
 		});
 	}
 

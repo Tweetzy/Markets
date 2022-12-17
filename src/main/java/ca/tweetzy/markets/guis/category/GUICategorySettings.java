@@ -2,7 +2,6 @@ package ca.tweetzy.markets.guis.category;
 
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.GuiUtils;
-import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
@@ -19,6 +18,7 @@ import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -74,42 +74,60 @@ public class GUICategorySettings extends Gui {
 			put("%category_name%", marketCategory.getName());
 		}}), ClickType.LEFT, e -> {
 			e.gui.exit();
-			PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> str.trim().length() >= 1);
-			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_display_name").getMessage()));
-			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory)));
-			builder.setValue((p, value) -> value);
-			builder.onFinish((p, value) -> {
-				this.marketCategory.setDisplayName(value);
-				this.market.setUpdatedAt(System.currentTimeMillis());
-				Markets.getInstance().getLocale().getMessage("updated_category_name").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory));
-			});
 
-			PlayerChatInput<String> input = builder.build();
-			input.start();
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_display_name.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_display_name.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUICategorySettings.this);
+				}
+
+				@Override
+				public boolean onResult(String string) {
+					if (string.length() < 1) return false;
+
+					GUICategorySettings.this.marketCategory.setDisplayName(string);
+					GUICategorySettings.this.market.setUpdatedAt(System.currentTimeMillis());
+					Markets.getInstance().getLocale().getMessage("updated_category_name").sendPrefixedMessage(e.player);
+					e.manager.showGUI(e.player, new GUICategorySettings(e.player, GUICategorySettings.this.market, GUICategorySettings.this.marketCategory));
+
+					return true;
+				}
+			};
 		});
 
 		setButton(1, 0, ConfigItemUtil.build(Common.getItemStack(Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_ITEM.getString()), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_NAME.getString(), Settings.GUI_CATEGORY_EDIT_ITEMS_DESCRIPTION_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 			put("%category_description%", marketCategory.getDescription());
 		}}), ClickType.LEFT, e -> {
 			e.gui.exit();
-			PlayerChatInput.PlayerChatInputBuilder<String> builder = new PlayerChatInput.PlayerChatInputBuilder<>(Markets.getInstance(), e.player);
-			builder.isValidInput((p, str) -> str.trim().length() >= 1);
-			builder.sendValueMessage(TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_category_description").getMessage()));
-			builder.toCancel("cancel");
-			builder.onCancel(p -> e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory)));
-			builder.setValue((p, value) -> value);
-			builder.onFinish((p, value) -> {
-				this.marketCategory.setDescription(value);
-				this.market.setUpdatedAt(System.currentTimeMillis());
-				Markets.getInstance().getLocale().getMessage("updated_category_description").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUICategorySettings(e.player, this.market, this.marketCategory));
-			});
 
-			PlayerChatInput<String> input = builder.build();
-			input.start();
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_description.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_category_description.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUICategorySettings.this);
+				}
+
+				@Override
+				public boolean onResult(String string) {
+					if (string.length() < 1) return false;
+
+					GUICategorySettings.this.marketCategory.setDescription(string);
+					GUICategorySettings.this.market.setUpdatedAt(System.currentTimeMillis());
+					Markets.getInstance().getLocale().getMessage("updated_category_description").sendPrefixedMessage(e.player);
+					e.manager.showGUI(e.player, new GUICategorySettings(e.player, GUICategorySettings.this.market, GUICategorySettings.this.marketCategory));
+
+					return true;
+				}
+			};
 		});
 
 		setButton(2, 0, new TItemBuilder(this.marketCategory.getIcon()).setName(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_NAME.getString()).setLore(Settings.GUI_CATEGORY_EDIT_ITEMS_ICON_LORE.getStringList()).toItemStack(), ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIIconSelect(this.market, this.marketCategory)));

@@ -5,13 +5,16 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.guis.market.GUIMarketEdit;
 import ca.tweetzy.markets.guis.market.GUIMarketView;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketRating;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,20 +91,37 @@ public class GUIRatingStarSelect extends Gui {
 			put("%rating_message%", message);
 		}}), e -> {
 			e.gui.exit();
-			ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_rating_message").getMessage()), chat -> {
-				String msg = chat.getMessage();
-				if (msg != null && msg.length() != 0) {
-					if (msg.length() > Settings.RATING_MAX_MESSAGE_LENGTH.getInt()) {
-						Markets.getInstance().getLocale().getMessage("rating_message_too_long").sendPrefixedMessage(e.player);
-						reOpen(e);
-						return;
-					}
 
-					this.message = ChatColor.stripColor(msg);
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_rating_message.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_rating_message.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
 					reOpen(e);
 				}
 
-			}).setOnClose(() -> reOpen(e)).setOnCancel(() -> reOpen(e));
+				@Override
+				public boolean onResult(String string) {
+					if (string.length() < 1) return false;
+
+					String msg = ChatColor.stripColor(string).trim();
+
+					if (msg != null && msg.length() != 0) {
+						if (msg.length() > Settings.RATING_MAX_MESSAGE_LENGTH.getInt()) {
+							Markets.getInstance().getLocale().getMessage("rating_message_too_long").sendPrefixedMessage(e.player);
+							reOpen(e);
+							return true;
+						}
+
+						GUIRatingStarSelect.this.message = ChatColor.stripColor(msg);
+						reOpen(e);
+					}
+					return true;
+				}
+			};
 		});
 
 		for (int i = 20; i < 22; i++) {

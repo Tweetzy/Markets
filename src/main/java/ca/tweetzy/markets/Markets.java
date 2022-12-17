@@ -158,7 +158,7 @@ public class Markets extends TweetyPlugin {
 
 		// Setup the database if enabled
 		if (Settings.DATABASE_USE.getBoolean()) {
-			this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
+			this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString());
 			this.dataManager = new DataManager(this.databaseConnector, this);
 			DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
 					new _1_InitialMigration(),

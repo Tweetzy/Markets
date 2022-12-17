@@ -9,12 +9,15 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.economy.Currency;
+import ca.tweetzy.markets.guis.items.GUIAddItem;
 import ca.tweetzy.markets.guis.payment.GUIPaymentCollection;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.Numbers;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -71,36 +74,50 @@ public class GUIBank extends Gui {
 			setButton(slot, ConfigItemUtil.build(currency.getItem().clone(), Settings.GUI_BANK_CURRENCY_NAME.getString(), Settings.GUI_BANK_CURRENCY_LORE.getStringList(), 1, new HashMap<String, Object>() {{
 				put("%item_name%", Common.getItemName(currency.getItem().clone()));
 				put("%currency_amount%", currency.getAmount());
-			}}), ClickType.LEFT, e -> ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_withdraw_amount").getMessage()), chat -> {
-				String msg = chat.getMessage();
-				if (msg != null && msg.length() != 0 && NumberUtils.isInt(msg) && Integer.parseInt(msg) > 0) {
+			}}), ClickType.LEFT, e -> new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_withdraw_amount.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_withdraw_amount.subtitle").getMessage()) {
 
-					final int requestedWithdrawAmount = Integer.parseInt(msg);
-					final int currencyCount = currency.getAmount();
-
-					final ItemStack currencyItem = currency.getItem().clone();
-					currencyItem.setAmount(1);
-
-					int maxWithdrawalAmount = requestedWithdrawAmount;
-
-					if (requestedWithdrawAmount >= currencyCount)
-						maxWithdrawalAmount = currencyCount;
-
-					Bukkit.broadcastMessage(maxWithdrawalAmount + "");
-
-					for (int i = 0; i < maxWithdrawalAmount; i++)
-						PlayerUtils.giveItem(e.player, currencyItem);
-
-					if (currencyCount - requestedWithdrawAmount <= 0)
-						Markets.getInstance().getCurrencyBank().removeCurrency(e.player.getUniqueId(), currency.getItem(), currencyCount);
-					else
-						currency.setAmount(currencyCount - maxWithdrawalAmount);
-
-
-					Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", maxWithdrawalAmount).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
-					e.manager.showGUI(e.player, new GUIBank(e.player));
+				@Override
+				public void onExit(Player player) {
+					e.manager.showGUI(e.player, GUIBank.this);
 				}
-			}).setOnCancel(() -> e.manager.showGUI(e.player, new GUIBank(e.player))).setOnClose(() -> e.manager.showGUI(e.player, new GUIBank(e.player))));
+
+				@Override
+				public boolean onResult(String string) {
+					String msg = ChatColor.stripColor(string);
+
+					if (msg != null && msg.length() != 0 && NumberUtils.isInt(msg) && Integer.parseInt(msg) > 0) {
+
+						final int requestedWithdrawAmount = Integer.parseInt(msg);
+						final int currencyCount = currency.getAmount();
+
+						final ItemStack currencyItem = currency.getItem().clone();
+						currencyItem.setAmount(1);
+
+						int maxWithdrawalAmount = requestedWithdrawAmount;
+
+						if (requestedWithdrawAmount >= currencyCount)
+							maxWithdrawalAmount = currencyCount;
+
+						for (int i = 0; i < maxWithdrawalAmount; i++)
+							PlayerUtils.giveItem(e.player, currencyItem);
+
+						if (currencyCount - requestedWithdrawAmount <= 0)
+							Markets.getInstance().getCurrencyBank().removeCurrency(e.player.getUniqueId(), currency.getItem(), currencyCount);
+						else
+							currency.setAmount(currencyCount - maxWithdrawalAmount);
+
+
+						Markets.getInstance().getLocale().getMessage("money_remove_custom_currency").processPlaceholder("price", maxWithdrawalAmount).processPlaceholder("currency_item", Common.getItemName(currency.getItem())).sendPrefixedMessage(e.player);
+						e.manager.showGUI(e.player, new GUIBank(e.player));
+					}
+
+					return true;
+				}
+			});
 
 			slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
 		}

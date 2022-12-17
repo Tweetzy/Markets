@@ -18,7 +18,9 @@ import ca.tweetzy.markets.utils.Common;
 import ca.tweetzy.markets.utils.ConfigItemUtil;
 import ca.tweetzy.markets.utils.InventorySafeMaterials;
 import ca.tweetzy.markets.utils.Numbers;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -204,13 +206,29 @@ public class GUINewRequest extends Gui {
 			assignItemStacks();
 			setAllowClose(true);
 			e.gui.exit();
-			ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()), chat -> {
-				String msg = chat.getMessage();
-				if (msg != null && msg.length() != 0 && NumberUtils.isDouble(msg) && Double.parseDouble(msg) > 0) {
-					this.itemPrice = Double.parseDouble(msg);
-					reopen(e.player);
+
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
+					reopen(player);
 				}
-			}).setOnClose(() -> reopen(e.player)).setOnCancel(() -> reopen(e.player));
+
+				@Override
+				public boolean onResult(String string) {
+					String val = ChatColor.stripColor(string).trim();
+
+					if (!(NumberUtils.isDouble(val) && Double.parseDouble(val) > 0)) return false;
+
+					GUINewRequest.this.itemPrice = Double.parseDouble(val);
+					reopen(player);
+					return true;
+				}
+			};
 		});
 	}
 
@@ -221,13 +239,29 @@ public class GUINewRequest extends Gui {
 			assignItemStacks();
 			setAllowClose(true);
 			e.gui.exit();
-			ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_request_amount").getMessage()), chat -> {
-				String msg = chat.getMessage();
-				if (msg != null && msg.length() != 0 && NumberUtils.isInt(msg) && Integer.parseInt(msg) > 0) {
-					this.requestAmount = Integer.parseInt(msg);
-					reopen(e.player);
+
+			new TitleInput(
+					Markets.getInstance(),
+					e.player,
+					Markets.getInstance().getLocale().getMessage("inputs.enter_request_amount.title").getMessage(),
+					Markets.getInstance().getLocale().getMessage("inputs.enter_request_amount.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
+					reopen(player);
 				}
-			}).setOnClose(() -> reopen(e.player)).setOnCancel(() -> reopen(e.player));
+
+				@Override
+				public boolean onResult(String string) {
+					String msg = ChatColor.stripColor(string).trim();
+
+					if (msg.length() != 0 && NumberUtils.isInt(msg) && Integer.parseInt(msg) > 0) {
+						GUINewRequest.this.requestAmount = Integer.parseInt(msg);
+						reopen(e.player);
+					}
+					return true;
+				}
+			};
 		});
 	}
 

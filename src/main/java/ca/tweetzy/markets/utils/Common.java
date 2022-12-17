@@ -20,6 +20,7 @@ import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.contents.MarketCategory;
 import ca.tweetzy.markets.market.contents.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.utils.input.TitleInput;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.experimental.UtilityClass;
@@ -67,13 +68,31 @@ public class Common {
 		switch (e.clickType) {
 			case LEFT:
 				e.gui.exit();
-				ChatPrompt.showPrompt(Markets.getInstance(), e.player, TextUtils.formatText(Markets.getInstance().getLocale().getMessage("prompt.enter_market_item_price").getMessage()), chat -> {
-					String val = ChatColor.stripColor(chat.getMessage()).trim();
-					if (NumberUtils.isDouble(val) && Double.parseDouble(val) > 0) {
+
+				new TitleInput(
+						Markets.getInstance(),
+						e.player,
+						Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.title").getMessage(),
+						Markets.getInstance().getLocale().getMessage("inputs.enter_market_item_price.subtitle").getMessage()) {
+
+					@Override
+					public void onExit(Player player) {
+						e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory));
+					}
+
+					@Override
+					public boolean onResult(String string) {
+						String val = ChatColor.stripColor(string).trim();
+
+						if (!(NumberUtils.isDouble(val) && Double.parseDouble(val) > 0)) return false;
+
 						marketItem.setPrice(Double.parseDouble(val));
 						market.setUpdatedAt(System.currentTimeMillis());
+						e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory));
+
+						return true;
 					}
-				}).setOnCancel(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory))).setOnClose(() -> e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory)));
+				};
 				break;
 			case RIGHT:
 				if (marketItem.getItemStack().getAmount() == 1) return;
