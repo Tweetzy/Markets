@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl.market;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.*;
 import lombok.NonNull;
@@ -111,7 +112,10 @@ public final class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public void store(@NonNull Consumer<Market> stored) {
-
+		Markets.getDataManager().createMarket(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
 	}
 
 	@Override
