@@ -10,7 +10,9 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 
 	@NonNull UUID getOwnerUUID();
 
-	@NonNull UUID getOwnerName();
+	@NonNull String getOwnerName();
+
+	void setOwnerName(@NonNull String ownerName);
 
 	@NonNull List<Category> getCategories();
 
