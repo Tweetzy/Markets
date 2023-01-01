@@ -26,6 +26,7 @@ import ca.tweetzy.markets.economy.CurrencyBank;
 import ca.tweetzy.markets.economy.UltraEconomyHook;
 import ca.tweetzy.markets.listeners.PlayerListeners;
 import ca.tweetzy.markets.listeners.SignListener;
+import ca.tweetzy.markets.manager.DelayManager;
 import ca.tweetzy.markets.market.Market;
 import ca.tweetzy.markets.market.MarketManager;
 import ca.tweetzy.markets.market.MarketPlayerManager;
@@ -84,6 +85,9 @@ public class Markets extends TweetyPlugin {
 
 	@Getter
 	private CurrencyBank currencyBank;
+
+	@Getter
+	private DelayManager delayManager;
 
 	@Getter
 	private DataManager dataManager;
@@ -176,6 +180,7 @@ public class Markets extends TweetyPlugin {
 		this.commandManager.setNoCommandMessage(TextUtils.formatText(Settings.COMMAND_INVALID_COMMAND.getString()));
 		this.commandManager.setNoPermsMessage(TextUtils.formatText(Settings.COMMAND_NO_PERMISSION.getString()));
 
+		this.delayManager = new DelayManager();
 		this.marketManager = new MarketManager();
 		this.marketPlayerManager = new MarketPlayerManager();
 		this.transactionManger = new TransactionManger();

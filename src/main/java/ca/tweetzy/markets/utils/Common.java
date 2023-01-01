@@ -4,7 +4,6 @@ import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -68,6 +67,7 @@ public class Common {
 		switch (e.clickType) {
 			case LEFT:
 				e.gui.exit();
+				if (!Markets.getInstance().getDelayManager().canClick(e.player)) return;
 
 				new TitleInput(
 						Markets.getInstance(),
@@ -96,6 +96,8 @@ public class Common {
 				break;
 			case RIGHT:
 				if (marketItem.getItemStack().getAmount() == 1) return;
+				if (!Markets.getInstance().getDelayManager().canClick(e.player)) return;
+
 				marketItem.setPriceForStack(!marketItem.isPriceForStack());
 				market.setUpdatedAt(System.currentTimeMillis());
 				e.manager.showGUI(e.player, marketCategory == null ? new GUIAllItems(market, true) : new GUICategorySettings(e.player, market, marketCategory));
@@ -104,6 +106,8 @@ public class Common {
 				MarketItemRemoveEvent marketItemRemoveEvent = new MarketItemRemoveEvent(market, marketItem);
 				Bukkit.getPluginManager().callEvent(marketItemRemoveEvent);
 				if (marketItemRemoveEvent.isCancelled()) return;
+
+				if (!Markets.getInstance().getDelayManager().canClick(e.player)) return;
 
 				if (marketCategory == null) {
 					market.getCategories().stream().filter(category -> category.getId().equals(marketItem.getCategoryId())).findFirst().get().getItems().remove(marketItem);
@@ -117,6 +121,7 @@ public class Common {
 				break;
 			case SHIFT_RIGHT:
 				if (!marketItem.isUseItemCurrency()) return;
+				if (!Markets.getInstance().getDelayManager().canClick(e.player)) return;
 				e.event.setCancelled(true);
 				Markets.getInstance().getMarketPlayerManager().addPlayerToCustomCurrencyItem(e.player.getUniqueId(), market, marketCategory, marketItem);
 				Markets.getInstance().getLocale().getMessage("click_currency_item").sendPrefixedMessage(e.player);
