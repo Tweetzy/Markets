@@ -60,22 +60,23 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-//	public void getSpawnerPresets(@NonNull final Callback<List<Preset>> callback) {
-//		final List<Preset> presets = new ArrayList<>();
-//		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-//			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "spawner_preset")) {
-//				final ResultSet resultSet = statement.executeQuery();
-//				while (resultSet.next()) {
-//					final Preset preset = extractSpawnerPreset(resultSet);
-//					presets.add(preset);
-//				}
-//
-//				callback.accept(null, presets);
-//			} catch (Exception e) {
-//				resolveCallback(callback, e);
-//			}
-//		}));
-//	}
+	public void getMarkets(@NonNull final Callback<List<AbstractMarket>> callback) {
+		final List<AbstractMarket> markets = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "market")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final AbstractMarket market = extractMarket(resultSet);
+					markets.add(market);
+				}
+
+				callback.accept(null, markets);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
 
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		return new PlayerMarket(

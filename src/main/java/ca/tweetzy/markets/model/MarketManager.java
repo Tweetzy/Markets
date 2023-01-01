@@ -8,6 +8,10 @@ public final class MarketManager extends ListManager<AbstractMarket> {
 		super("Market");
 	}
 
+	public void create() {
+
+	}
+
 	@Override
 	public void load() {
 	}
