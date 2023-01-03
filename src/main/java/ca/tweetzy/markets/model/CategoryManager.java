@@ -16,6 +16,23 @@ public final class CategoryManager extends ListManager<Category> {
 		super("Category");
 	}
 
+	public Category getByName(@NonNull final UUID owningMarket, @NonNull final String name) {
+		return getManagerContent().stream().filter(category -> category.getOwningMarket().equals(owningMarket) && category.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+	}
+
+	public Category getByName(@NonNull final Market owningMarket, @NonNull final String name) {
+		return getByName(owningMarket.getId(), name);
+	}
+
+	public boolean doesCategoryExistAlready(@NonNull final UUID owningMarket, @NonNull final String name) {
+		return getByName(owningMarket, name) != null;
+	}
+
+	public boolean doesCategoryExistAlready(@NonNull final Market owningMarket, @NonNull final String name) {
+		return doesCategoryExistAlready(owningMarket.getId(), name);
+	}
+
+
 	public void create(@NonNull final Market market, @NonNull final String name, @NonNull final Consumer<Boolean> created) {
 		final Category category = new MarketCategory(
 				market.getId(),

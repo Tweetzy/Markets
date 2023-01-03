@@ -4,6 +4,7 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
@@ -35,16 +36,12 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 		// name
 		setButton(1, 1, QuickItem
-				.of(CompMaterial.NAME_TAG)
-				.name("<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>")
-				.lore(
-						"&7The display name of your market, this",
-						"&7is what others will see in the search.",
-						"",
-						"&7Current&f: " + this.market.getDisplayName(),
-						"",
-						"&a&lClick &7to change display name"
-				).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM.getItemStack())
+				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME.getString())
+				.lore(Replacer.replaceVariables(
+						Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE.getStringList(),
+						"%market_display_name%", this.market.getDisplayName()
+				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -65,17 +62,12 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 		// description
 		setButton(2, 1, QuickItem
-				.of(CompMaterial.ENCHANTED_BOOK)
-				.name("<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>")
-				.lore(
-						"&7A brief description of market, something",
-						"&7to help catch someone's attention",
-						"",
-						"&7Current&f: ",
-						this.market.getDescription().get(0),
-						"",
-						"&a&lClick &7to change description"
-				).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM.getItemStack())
+				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME.getString())
+				.lore(Replacer.replaceVariables(
+						Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE.getStringList(),
+						"%market_description%", this.market.getDescription().get(0)
+				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -95,24 +87,30 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 		// settings button
 		setButton(3, 1, QuickItem
-				.of(CompMaterial.REPEATER)
-				.name("<GRADIENT:65B1B4>&LMarket Settings</GRADIENT:2B6F8A>")
-				.lore("&7This is used to configure market details.", "", "&a&lClick &7to adjust settings")
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM.getItemStack())
+				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_NAME.getString())
+				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_LORE.getStringList())
 				.make(), click -> {
 
 		});
 
 		// create category
 		setButton(getRows() - 1, 4, QuickItem
-				.of(CompMaterial.LIME_DYE)
-				.name("&A&LNew Category")
-				.lore("&7Used to make a new category", "&a&lClick &7to create new category")
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM.getItemStack())
+				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_NAME.getString())
+				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_LORE.getStringList())
 				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>", "&fEnter category name in chat") {
 
 			@Override
 			public boolean onResult(String string) {
 				string = ChatColor.stripColor(string);
 				if (string.length() > 32) return false; // todo tell them it's too long
+
+				// check category name beforehand
+				if (Markets.getCategoryManager().doesCategoryExistAlready(MarketOverviewView.this.market, string)) {
+					// todo tell them their market already has a category with that name
+					return false;
+				}
 
 				Markets.getCategoryManager().create(MarketOverviewView.this.market, string, created -> {
 					click.manager.showGUI(click.player, new MarketOverviewView(click.player, MarketOverviewView.this.market));
@@ -124,9 +122,9 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 		// delete button
 		setButton(getRows() - 1, 8, QuickItem
-				.of(CompMaterial.LAVA_BUCKET)
-				.name("&c&lDelete Market")
-				.lore("&7This action &4&lCANNOT &7be undone!", "", "&a&lClick &7to delete market")
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
+				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME.getString())
+				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE.getStringList())
 				.make(), click -> {
 
 		});
