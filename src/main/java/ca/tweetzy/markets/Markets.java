@@ -8,12 +8,14 @@ import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
+import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.commands.CommandAdmin;
 import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.database.migrations._2_UserProfileMigration;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
+import ca.tweetzy.markets.model.CategoryManager;
 import ca.tweetzy.markets.model.MarketManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -28,6 +30,7 @@ public final class Markets extends FlightPlugin {
 	private final GuiManager guiManager = new GuiManager(this);
 
 	private final MarketManager marketManager = new MarketManager();
+	private final CategoryManager categoryManager = new CategoryManager();
 
 	private final MarketsAPI API = new MarketsAPIImpl();
 
@@ -84,5 +87,9 @@ public final class Markets extends FlightPlugin {
 
 	public static MarketManager getMarketManager() {
 		return getInstance().marketManager;
+	}
+
+	public static CategoryManager getCategoryManager() {
+		return getInstance().categoryManager;
 	}
 }

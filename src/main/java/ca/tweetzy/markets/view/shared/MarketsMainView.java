@@ -25,12 +25,10 @@ public final class MarketsMainView extends BaseGUI {
 		final Market playerMarket = Markets.getMarketManager().getByOwner(this.player.getUniqueId());
 
 		// your market
-
-		// 1. NO Market
 		setButton(2, 4, QuickItem
 				.of(SkullUtils.getSkull(this.player.getUniqueId()))
-				.name("&e&lYour Market")
-				.lore(playerMarket == null ? "&7Click to create your market" : "&7View your market")
+				.name(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME.getString())
+				.lore(playerMarket == null ? Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE.getStringList() : Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW.getStringList())
 				.make(), click -> {
 
 			if (playerMarket == null) {
@@ -39,6 +37,7 @@ public final class MarketsMainView extends BaseGUI {
 			}
 
 			// open market
+			click.manager.showGUI(click.player, new MarketOverviewView(click.player, playerMarket));
 		});
 
 	}

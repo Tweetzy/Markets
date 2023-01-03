@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +86,9 @@ public final class MarketCategory implements Category {
 
 	@Override
 	public void store(@NonNull Consumer<Category> stored) {
-
+		Markets.getDataManager().createCategory(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
 	}
 }

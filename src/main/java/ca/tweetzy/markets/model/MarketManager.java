@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -20,6 +19,10 @@ public final class MarketManager extends ListManager<Market> {
 
 	public Market getByOwner(@NonNull final UUID uuid) {
 		return getManagerContent().stream().filter(market -> market.getOwnerUUID().equals(uuid)).findFirst().orElse(null);
+	}
+
+	public Market getByUUID(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(market -> market.getId().equals(uuid)).findFirst().orElse(null);
 	}
 
 	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
@@ -52,6 +55,9 @@ public final class MarketManager extends ListManager<Market> {
 		Markets.getDataManager().getMarkets((error, found) -> {
 			if (error != null) return;
 			found.forEach(this::add);
+
+			// after markets have been added let's load categories
+			Markets.getCategoryManager().load();
 		});
 	}
 }
