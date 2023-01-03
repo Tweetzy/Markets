@@ -76,6 +76,58 @@ public final class Settings extends FlightSettings {
 			"&a&lClick &7to delete market"
 	));
 
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_TITLE = create("gui.market category edit.title", "&eMarkets &f- &7Edit &f- &7%category_name%").withComment("The tile of the menu");
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_NAME = create("gui.market category edit.items.icon.name", "<GRADIENT:65B1B4>&lCategory Icon</GRADIENT:2B6F8A>");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_LORE = create("gui.market category edit.items.icon.lore", List.of(
+			"&7The icon of your category, this",
+			"&7is what is shown to other players",
+			"",
+			"&7Current&f: %category_icon%",
+			"",
+			"&a&lClick &7to change icon"
+	));
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM = create("gui.market category edit.items.display name.item", CompMaterial.NAME_TAG.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME = create("gui.market category edit.items.display name.name", "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE = create("gui.market category edit.items.display name.lore", List.of(
+			"&7The display name of your category, this",
+			"&7is what others will see in the search.",
+			"",
+			"&7Current&f: %category_display_name%",
+			"",
+			"&a&lClick &7to change display name"
+	));
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_ITEM = create("gui.market category edit.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_NAME = create("gui.market category edit.items.description.name", "<GRADIENT:65B1B4>&lCategory Description</GRADIENT:2B6F8A>");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_LORE = create("gui.market category edit.items.description.lore", List.of(
+			"&7A brief description of category, something",
+			"&7to describe what the category contains.",
+			"",
+			"&7Current&f: ",
+			"%category_description%",
+			"",
+			"&a&lClick &7to change description"
+	));
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_ITEM = create("gui.market category edit.items.settings.item", CompMaterial.REPEATER.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_NAME = create("gui.market category edit.items.settings.name", "<GRADIENT:65B1B4>&lCategory Settings</GRADIENT:2B6F8A>");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_LORE = create("gui.market category edit.items.settings.lore", List.of(
+			"&7This is used to configure market details.",
+			"",
+			"&a&lClick &7to adjust settings"
+	));
+	
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM = create("gui.market category edit.items.delete category.item", CompMaterial.LAVA_BUCKET.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.delete category.name", "&c&lDelete Category");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.delete category.lore", List.of(
+			"&7This action &4&lCANNOT &7be undone!",
+			"",
+			"&a&lClick &7to delete this category"
+	));
+
 	public static void init() {
 		Markets.getCoreConfig().init();
 	}

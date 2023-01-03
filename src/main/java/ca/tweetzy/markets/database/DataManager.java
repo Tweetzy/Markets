@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.database;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.Callback;
 import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
@@ -122,7 +123,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createCategory(@NonNull final Category category, final Callback<Category> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "category (id, owning_market, name, display_name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category (id, owning_market, name, icon, display_name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -133,10 +134,11 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(1, category.getId().toString());
 				preparedStatement.setString(2, category.getOwningMarket().toString());
 				preparedStatement.setString(3, category.getName().toLowerCase());
-				preparedStatement.setString(4, category.getDisplayName());
-				preparedStatement.setString(5, String.join(";;;", category.getDescription()));
-				preparedStatement.setLong(6, category.getTimeCreated());
-				preparedStatement.setLong(7, category.getLastUpdated());
+				preparedStatement.setString(4, category.getIcon().getType().name());
+				preparedStatement.setString(5, category.getDisplayName());
+				preparedStatement.setString(6, String.join(";;;", category.getDescription()));
+				preparedStatement.setLong(7, category.getTimeCreated());
+				preparedStatement.setLong(8, category.getLastUpdated());
 
 				preparedStatement.executeUpdate();
 
@@ -145,6 +147,33 @@ public final class DataManager extends DataManagerAbstract {
 					res.next();
 					callback.accept(null, extractCategory(res));
 				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateCategory(@NonNull final Category category, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			//id, owning_market, name, icon, display_name, description, created_at, updated_at
+			final String query = "UPDATE " + this.getTablePrefix() + "category SET  icon = ?, display_name = ?, description = ?, updated_at = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, category.getIcon().getType().toString());
+				preparedStatement.setString(2, category.getDisplayName());
+				preparedStatement.setString(3, String.join(";;;", category.getDescription()));
+				preparedStatement.setLong(4, category.getLastUpdated());
+				preparedStatement.setString(5, category.getId().toString());
+
+				preparedStatement.executeUpdate();
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -189,9 +218,11 @@ public final class DataManager extends DataManagerAbstract {
 		return new MarketCategory(
 				UUID.fromString(resultSet.getString("owning_market")),
 				UUID.fromString(resultSet.getString("id")),
+				CompMaterial.matchCompMaterial(resultSet.getString("icon")).orElse(CompMaterial.CHEST).parseItem(),
 				resultSet.getString("name"),
 				resultSet.getString("display_name"),
 				new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
+				new ArrayList<>(),
 				resultSet.getLong("created_at"),
 				resultSet.getLong("updated_at")
 		);
