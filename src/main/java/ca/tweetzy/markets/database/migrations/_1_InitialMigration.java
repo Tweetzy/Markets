@@ -32,6 +32,7 @@ public final class _1_InitialMigration extends DataMigration {
 					"id VARCHAR(36) PRIMARY KEY, " +
 					"owning_market VARCHAR(36) NOT NULL, " +
 					"name VARCHAR(32) NOT NULL, " +
+					"icon VARCHAR(50) NOT NULL, " +
 					"display_name VARCHAR(72) NOT NULL, " +
 					"description TEXT NOT NULL, " +
 					"created_at BigInt NOT NULL, " +

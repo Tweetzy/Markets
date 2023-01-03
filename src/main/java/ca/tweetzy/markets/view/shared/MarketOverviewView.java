@@ -15,6 +15,7 @@ import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME.getString())
 				.lore(Replacer.replaceVariables(
 						Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE.getStringList(),
-						"%market_display_name%", this.market.getDisplayName()
+						"market_display_name", this.market.getDisplayName()
 				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
 
 			@Override
@@ -66,7 +67,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME.getString())
 				.lore(Replacer.replaceVariables(
 						Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE.getStringList(),
-						"%market_description%", this.market.getDescription().get(0)
+						"market_description", this.market.getDescription().get(0)
 				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
 
 			@Override
@@ -133,7 +134,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 	@Override
 	protected ItemStack makeDisplayItem(Category category) {
 		return QuickItem
-				.of(CompMaterial.CHEST)
+				.of(category.getIcon())
 				.name(category.getDisplayName())
 				.lore("id: " + category.getName())
 				.lore(category.getDescription())
@@ -141,8 +142,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 	}
 
 	@Override
-	protected void onClick(Category category, GuiClickEvent clickEvent) {
-
+	protected void onClick(Category category, GuiClickEvent click) {
+		click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, this.market, category));
 	}
 
 	@Override

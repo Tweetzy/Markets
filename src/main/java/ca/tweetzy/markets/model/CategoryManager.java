@@ -1,11 +1,13 @@
 package ca.tweetzy.markets.model;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.impl.MarketCategory;
 import lombok.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -37,9 +39,11 @@ public final class CategoryManager extends ListManager<Category> {
 		final Category category = new MarketCategory(
 				market.getId(),
 				UUID.randomUUID(),
+				CompMaterial.CHEST.parseItem(),
 				name.toLowerCase(),
 				"&e" + name,
 				List.of("&7Market category"),
+				new ArrayList<>(),
 				System.currentTimeMillis(),
 				System.currentTimeMillis()
 		);
