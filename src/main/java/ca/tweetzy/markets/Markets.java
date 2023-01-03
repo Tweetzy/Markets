@@ -7,9 +7,14 @@ import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.markets.api.MarketsAPI;
+import ca.tweetzy.markets.commands.CommandAdmin;
 import ca.tweetzy.markets.commands.MarketsCommand;
-import ca.tweetzy.markets.commands.ParseCommand;
 import ca.tweetzy.markets.database.DataManager;
+import ca.tweetzy.markets.database.migrations._1_InitialMigration;
+import ca.tweetzy.markets.database.migrations._2_UserProfileMigration;
+import ca.tweetzy.markets.impl.MarketsAPIImpl;
+import ca.tweetzy.markets.model.MarketManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 
@@ -22,6 +27,10 @@ public final class Markets extends FlightPlugin {
 	private final CommandManager commandManager = new CommandManager(this);
 	private final GuiManager guiManager = new GuiManager(this);
 
+	private final MarketManager marketManager = new MarketManager();
+
+	private final MarketsAPI API = new MarketsAPIImpl();
+
 	@Override
 	protected void onFlight() {
 		Settings.init();
@@ -33,16 +42,22 @@ public final class Markets extends FlightPlugin {
 		this.databaseConnector = new SQLiteConnector(this);
 		this.dataManager = new DataManager(this.databaseConnector, this);
 
-		final DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager);
+		final DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
+				new _1_InitialMigration(),
+				new _2_UserProfileMigration()
+		);
 
 		// run migrations for tables
 		dataMigrationManager.runMigrations();
 
 		// gui system
 		this.guiManager.init();
+		this.marketManager.load();
 
 		// setup commands
-		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommand(new ParseCommand());
+		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
+				new CommandAdmin()
+		);
 	}
 
 	@Override
@@ -65,5 +80,9 @@ public final class Markets extends FlightPlugin {
 
 	public static DataManager getDataManager() {
 		return getInstance().dataManager;
+	}
+
+	public static MarketManager getMarketManager() {
+		return getInstance().marketManager;
 	}
 }

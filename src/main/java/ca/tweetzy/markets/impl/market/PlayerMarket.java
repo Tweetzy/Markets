@@ -119,6 +119,9 @@ public final class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-
+		Markets.getDataManager().updateMarket(this, (error, updateStatus) -> {
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
 	}
 }

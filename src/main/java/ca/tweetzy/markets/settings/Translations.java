@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.settings;
 
-import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
 import lombok.NonNull;
@@ -11,9 +10,6 @@ public final class Translations extends TranslationManager {
 	public Translations(@NonNull JavaPlugin plugin) {
 		super(plugin);
 	}
-
-	public static TranslationEntry NO_PERMISSION = create("no permission", "&cYou do not have permission");
-
 
 
 	public static void init() {

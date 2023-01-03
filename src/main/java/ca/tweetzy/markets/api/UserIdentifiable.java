@@ -5,5 +5,5 @@ import lombok.NonNull;
 public interface UserIdentifiable {
 
 	@NonNull
-	String getId();
+	String getName();
 }

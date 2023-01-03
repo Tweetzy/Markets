@@ -2,6 +2,7 @@ package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.api.market.Category;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,7 +10,8 @@ import java.util.function.Consumer;
 
 public final class MarketCategory implements Category {
 
-	private final String id;
+	private final UUID id;
+	private final String name;
 	private final UUID owningMarket;
 	private String displayName;
 	private List<String> description;
@@ -19,13 +21,15 @@ public final class MarketCategory implements Category {
 
 	public MarketCategory(
 			@NonNull final UUID owningMarket,
-			@NonNull final String id,
+			@NonNull final UUID id,
+			@NonNull final String name,
 			@NonNull final String displayName,
 			@NonNull final List<String> description,
 			final long createdAt,
 			final long updatedAt
 	) {
 		this.id = id;
+		this.name = name;
 		this.owningMarket = owningMarket;
 		this.displayName = displayName;
 		this.description = description;
@@ -34,8 +38,14 @@ public final class MarketCategory implements Category {
 	}
 
 	@Override
-	public @NonNull String getId() {
+	public @NonNull UUID getId() {
 		return this.id;
+	}
+
+	@NotNull
+	@Override
+	public String getName() {
+		return this.name;
 	}
 
 	@Override

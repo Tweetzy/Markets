@@ -1,18 +1,57 @@
 package ca.tweetzy.markets.model;
 
-import ca.tweetzy.markets.api.market.AbstractMarket;
+import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.impl.market.PlayerMarket;
+import lombok.NonNull;
+import org.bukkit.entity.Player;
 
-public final class MarketManager extends ListManager<AbstractMarket> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+public final class MarketManager extends ListManager<Market> {
 
 	public MarketManager() {
 		super("Market");
 	}
 
-	public void create() {
+	public Market getByOwner(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(market -> market.getOwnerUUID().equals(uuid)).findFirst().orElse(null);
+	}
 
+	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
+		final Market market = new PlayerMarket(
+				UUID.randomUUID(),
+				player.getUniqueId(),
+				player.getName(),
+				"&e" + player.getName() + "'s Market",
+				List.of("&aWelcome to my market"),
+				new ArrayList<>(),
+				new ArrayList<>(),
+				System.currentTimeMillis(),
+				System.currentTimeMillis()
+		);
+
+		market.store(storedMarket -> {
+			if (storedMarket != null) {
+				add(storedMarket);
+				created.accept(true);
+			} else {
+				created.accept(false);
+			}
+		});
 	}
 
 	@Override
 	public void load() {
+		clear();
+
+		Markets.getDataManager().getMarkets((error, found) -> {
+			if (error != null) return;
+			found.forEach(this::add);
+		});
 	}
 }
