@@ -26,7 +26,6 @@ public final class PlayerMarket extends AbstractMarket {
 	private final long createdAt;
 	private long updatedAt;
 
-
 	public PlayerMarket(
 			@NonNull final UUID id,
 			@NonNull final UUID ownerUUID,
