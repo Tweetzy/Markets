@@ -27,15 +27,15 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarket(@NonNull final AbstractMarket market, final Callback<AbstractMarket> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "market (id, type, display_name, description, owner_uuid, owner_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "market WHERE id = ?";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "markets (id, type, display_name, description, owner, owner_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "markets WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
 
-				fetch.setString(1, market.toString());
+				fetch.setString(1, market.getId().toString());
 
-				preparedStatement.setString(1, market.toString());
+				preparedStatement.setString(1, market.getId().toString());
 				preparedStatement.setString(2, market.getMarketType().name());
 				preparedStatement.setString(3, market.getDisplayName());
 				preparedStatement.setString(4, String.join(";;;", market.getDescription()));
@@ -56,7 +56,46 @@ public final class DataManager extends DataManagerAbstract {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
+		}));
+	}
 
+	public void updateMarket(@NonNull final AbstractMarket market, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, market.getDisplayName());
+				preparedStatement.setString(2, String.join(";;;", market.getDescription()));
+				preparedStatement.setString(3, market.getOwnerName());
+				preparedStatement.setLong(4, market.getLastUpdated());
+				preparedStatement.setString(5, market.getId().toString());
+
+				preparedStatement.executeUpdate();
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteMarket(@NonNull final AbstractMarket market, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "markets WHERE id = ?")) {
+				statement.setString(1, market.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
 		}));
 	}
 
@@ -64,7 +103,7 @@ public final class DataManager extends DataManagerAbstract {
 		final List<AbstractMarket> markets = new ArrayList<>();
 
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "market")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "markets")) {
 				final ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
 					final AbstractMarket market = extractMarket(resultSet);
@@ -81,7 +120,7 @@ public final class DataManager extends DataManagerAbstract {
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
-				UUID.fromString(resultSet.getString("owner_uuid")),
+				UUID.fromString(resultSet.getString("owner")),
 				resultSet.getString("owner_name"),
 				resultSet.getString("display_name"),
 				new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
