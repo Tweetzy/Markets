@@ -9,7 +9,6 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 	}
 
 
-
 	@Override
 	public void load() {
 

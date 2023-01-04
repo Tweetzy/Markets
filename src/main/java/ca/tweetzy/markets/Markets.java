@@ -8,7 +8,6 @@ import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
-import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.commands.CommandAdmin;
 import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;

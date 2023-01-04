@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.view.shared;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -15,7 +14,6 @@ import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 

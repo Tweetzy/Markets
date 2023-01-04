@@ -45,13 +45,13 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 						"category_icon", ChatUtil.capitalizeFully(this.category.getIcon().getType())
 				)).make(), click -> click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
 
-				if (selected != null) {
-					this.category.setIcon(selected.parseItem());
-					this.category.sync(result -> {
-						if (result == SynchronizeResult.SUCCESS)
-							click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
-					});
-				}
+			if (selected != null) {
+				this.category.setIcon(selected.parseItem());
+				this.category.sync(result -> {
+					if (result == SynchronizeResult.SUCCESS)
+						click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
+				});
+			}
 		})));
 
 		setButton(2, 1, QuickItem
@@ -114,7 +114,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 		});
 
-		setButton(getRows() - 1,4, QuickItem
+		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME.getString())
 				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE.getStringList())
