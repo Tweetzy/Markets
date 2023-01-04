@@ -25,7 +25,7 @@ public final class MarketsMainView extends BaseGUI {
 		final Market playerMarket = Markets.getMarketManager().getByOwner(this.player.getUniqueId());
 
 		// your market
-		setButton(2, 4, QuickItem
+		setButton(1, 1, QuickItem
 				.of(SkullUtils.getSkull(this.player.getUniqueId()))
 				.name(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME.getString())
 				.lore(playerMarket == null ? Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE.getStringList() : Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW.getStringList())

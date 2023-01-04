@@ -5,8 +5,11 @@ import ca.tweetzy.flight.database.Callback;
 import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
+import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.api.market.AbstractMarket;
 import ca.tweetzy.markets.api.market.Category;
+import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.impl.MarketCategory;
 import ca.tweetzy.markets.impl.market.PlayerMarket;
 import lombok.NonNull;
@@ -158,7 +161,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateCategory(@NonNull final Category category, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			//id, owning_market, name, icon, display_name, description, created_at, updated_at
-			final String query = "UPDATE " + this.getTablePrefix() + "category SET  icon = ?, display_name = ?, description = ?, updated_at = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "category SET icon = ?, display_name = ?, description = ?, updated_at = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -182,6 +185,20 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void deleteCategory(@NonNull final Category category, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category WHERE id = ?")) {
+				statement.setString(1, category.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 	public void getCategories(@NonNull final Callback<List<Category>> callback) {
 		final List<Category> categories = new ArrayList<>();
 
@@ -194,6 +211,98 @@ public final class DataManager extends DataManagerAbstract {
 				}
 
 				callback.accept(null, categories);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, price, stock, price_is_for_all) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category_item WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, marketItem.getId().toString());
+
+				preparedStatement.setString(1, marketItem.getId().toString());
+				preparedStatement.setString(2, marketItem.getOwningCategory().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(marketItem.getItem()));
+				preparedStatement.setString(4, marketItem.getCurrency());
+				preparedStatement.setDouble(5, marketItem.getPrice());
+				preparedStatement.setInt(6, marketItem.getStock());
+				preparedStatement.setBoolean(7, marketItem.isPriceForAll());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketItem(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, marketItem.getCurrency());
+				preparedStatement.setDouble(2, marketItem.getPrice());
+				preparedStatement.setInt(3, marketItem.getStock());
+				preparedStatement.setBoolean(4, marketItem.isPriceForAll());
+				preparedStatement.setString(5, marketItem.getId().toString());
+
+				preparedStatement.executeUpdate();
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteMarketItem(@NonNull final MarketItem marketItem, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category_item WHERE id = ?")) {
+				statement.setString(1, marketItem.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getMarketItems(@NonNull final Callback<List<MarketItem>> callback) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "category_item")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final MarketItem marketItem = extractMarketItem(resultSet);
+					marketItems.add(marketItem);
+				}
+
+				callback.accept(null, marketItems);
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
@@ -225,6 +334,18 @@ public final class DataManager extends DataManagerAbstract {
 				new ArrayList<>(),
 				resultSet.getLong("created_at"),
 				resultSet.getLong("updated_at")
+		);
+	}
+
+	private MarketItem extractMarketItem(@NonNull final ResultSet resultSet) throws SQLException {
+		return new CategoryItem(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owning_category")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getString("currency"),
+				resultSet.getDouble("price"),
+				resultSet.getInt("stock"),
+				resultSet.getBoolean("price_is_for_all")
 		);
 	}
 

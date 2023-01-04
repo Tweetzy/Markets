@@ -1,8 +1,11 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.MarketItem;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -92,6 +95,17 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void store(@NonNull Consumer<MarketItem> stored) {
+		Markets.getDataManager().createMarketItem(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
+	}
 
+	@Override
+	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().updateMarketItem(this, (error, updateStatus) -> {
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
 	}
 }

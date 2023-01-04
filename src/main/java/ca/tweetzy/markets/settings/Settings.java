@@ -118,7 +118,14 @@ public final class Settings extends FlightSettings {
 			"",
 			"&a&lClick &7to adjust settings"
 	));
-	
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM = create("gui.market overview.items.new item.item", CompMaterial.LIME_DYE.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME = create("gui.market overview.items.new item.name", "<GRADIENT:65B1B4>&LNew Item</GRADIENT:2B6F8A>");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE = create("gui.market overview.items.new item.lore", List.of(
+			"&7Used to add a new item",
+			"&a&lClick &7to add item to category"
+	));
+
 
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM = create("gui.market category edit.items.delete category.item", CompMaterial.LAVA_BUCKET.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.delete category.name", "&c&lDelete Category");
