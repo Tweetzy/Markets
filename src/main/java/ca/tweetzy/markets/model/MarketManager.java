@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.model;
 
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.impl.market.PlayerMarket;
@@ -54,6 +55,7 @@ public final class MarketManager extends ListManager<Market> {
 
 		Markets.getDataManager().getMarkets((error, found) -> {
 			if (error != null) return;
+			Common.log("&aLoading Markets");
 			found.forEach(this::add);
 
 			// after markets have been added let's load categories

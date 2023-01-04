@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.model;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
@@ -16,6 +17,10 @@ public final class CategoryManager extends ListManager<Category> {
 
 	public CategoryManager() {
 		super("Category");
+	}
+
+	public Category getByUUID(@NonNull final UUID id) {
+		return getManagerContent().stream().filter(category -> category.getId().equals(id)).findFirst().orElse(null);
 	}
 
 	public Category getByName(@NonNull final UUID owningMarket, @NonNull final String name) {
@@ -65,13 +70,15 @@ public final class CategoryManager extends ListManager<Category> {
 
 		Markets.getDataManager().getCategories((error, found) -> {
 			if (error != null) return;
+			Common.log("&aLoading Market Categories");
+
 			found.forEach(category -> {
 				final Market locatedMarket = Markets.getMarketManager().getByUUID(category.getOwningMarket());
 				if (locatedMarket == null) return;
 
 				locatedMarket.getCategories().add(category);
 				// After categories have been added to corresponding markets, load the items
-
+				Markets.getCategoryItemManager().load();
 			});
 		});
 	}
