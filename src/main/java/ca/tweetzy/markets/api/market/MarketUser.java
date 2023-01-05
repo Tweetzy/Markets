@@ -1,5 +1,7 @@
-package ca.tweetzy.markets.api;
+package ca.tweetzy.markets.api.market;
 
+import ca.tweetzy.markets.api.Storeable;
+import ca.tweetzy.markets.api.Synchronize;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;

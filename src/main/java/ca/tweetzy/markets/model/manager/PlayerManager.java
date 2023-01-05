@@ -1,6 +1,7 @@
-package ca.tweetzy.markets.model;
+package ca.tweetzy.markets.model.manager;
 
-import ca.tweetzy.markets.api.MarketUser;
+import ca.tweetzy.markets.api.market.MarketUser;
+import ca.tweetzy.markets.api.manager.KeyValueManager;
 
 import java.util.UUID;
 

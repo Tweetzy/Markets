@@ -1,6 +1,5 @@
-package ca.tweetzy.markets.model;
+package ca.tweetzy.markets.api.manager;
 
-import ca.tweetzy.markets.api.Manager;
 import lombok.NonNull;
 
 import java.util.ArrayList;

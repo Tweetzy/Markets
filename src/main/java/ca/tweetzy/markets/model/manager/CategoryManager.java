@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.model;
+package ca.tweetzy.markets.model.manager;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.Common;
@@ -6,6 +6,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.impl.MarketCategory;
+import ca.tweetzy.markets.api.manager.ListManager;
 import lombok.NonNull;
 
 import java.util.ArrayList;
