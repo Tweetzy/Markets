@@ -16,6 +16,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 
 	@NonNull String getCurrency();
 
+	ItemStack getCurrencyItem();
+
 	double getPrice();
 
 	int getStock();
@@ -25,6 +27,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 	void setCurrency(@NonNull final String currency);
 
 	void setPrice(final double price);
+
+	void setCurrencyItem(@NonNull final ItemStack currencyItem);
 
 	void setStock(final int stock);
 

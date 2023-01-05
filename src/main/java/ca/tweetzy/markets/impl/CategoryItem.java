@@ -16,6 +16,7 @@ public final class CategoryItem implements MarketItem {
 	private final UUID owningCategory;
 	private final ItemStack item;
 	private String currency;
+	private ItemStack currencyItem;
 	private double price;
 	private int stock;
 	private boolean priceIsForAll;
@@ -25,6 +26,7 @@ public final class CategoryItem implements MarketItem {
 			@NonNull final UUID owningCategory,
 			@NonNull final ItemStack item,
 			@NonNull final String currency,
+			@NonNull final ItemStack currencyItem,
 			final double price,
 			final int stock,
 			final boolean priceIsForAll
@@ -33,6 +35,7 @@ public final class CategoryItem implements MarketItem {
 		this.owningCategory = owningCategory;
 		this.item = item;
 		this.currency = currency;
+		this.currencyItem = currencyItem;
 		this.price = price;
 		this.stock = stock;
 		this.priceIsForAll = priceIsForAll;
@@ -59,6 +62,11 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	@Override
+	public ItemStack getCurrencyItem() {
+		return this.currencyItem;
+	}
+
+	@Override
 	public double getPrice() {
 		return this.price;
 	}
@@ -76,6 +84,11 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void setCurrency(@NonNull String currency) {
 		this.currency = currency;
+	}
+
+	@Override
+	public void setCurrencyItem(@NonNull ItemStack currencyItem) {
+		this.currencyItem = currencyItem;
 	}
 
 	@Override
