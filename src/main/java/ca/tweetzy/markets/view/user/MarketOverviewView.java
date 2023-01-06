@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.shared;
+package ca.tweetzy.markets.view.user;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;

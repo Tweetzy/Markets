@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.shared;
+package ca.tweetzy.markets.view.user;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
@@ -127,9 +127,11 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString())
 				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList())
-				.make(), click -> {
+				.make(), click -> this.category.unStore(result -> {
 
-		});
+			if (result == SynchronizeResult.SUCCESS)
+				click.manager.showGUI(click.player, new MarketOverviewView(click.player, this.market));
+		}));
 	}
 
 	@Override
