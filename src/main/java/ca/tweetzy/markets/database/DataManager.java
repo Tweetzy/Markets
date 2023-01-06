@@ -220,7 +220,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, price, stock, price_is_for_all) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, currency_item, price, stock, price_is_for_all) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category_item WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -232,9 +232,10 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(2, marketItem.getOwningCategory().toString());
 				preparedStatement.setString(3, SerializeUtil.encodeItem(marketItem.getItem()));
 				preparedStatement.setString(4, marketItem.getCurrency());
-				preparedStatement.setDouble(5, marketItem.getPrice());
-				preparedStatement.setInt(6, marketItem.getStock());
-				preparedStatement.setBoolean(7, marketItem.isPriceForAll());
+				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
+				preparedStatement.setDouble(6, marketItem.getPrice());
+				preparedStatement.setInt(7, marketItem.getStock());
+				preparedStatement.setBoolean(8, marketItem.isPriceForAll());
 
 				preparedStatement.executeUpdate();
 
@@ -253,7 +254,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ? currency_item = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -261,7 +262,8 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setDouble(2, marketItem.getPrice());
 				preparedStatement.setInt(3, marketItem.getStock());
 				preparedStatement.setBoolean(4, marketItem.isPriceForAll());
-				preparedStatement.setString(5, marketItem.getId().toString());
+				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
+				preparedStatement.setString(65, marketItem.getId().toString());
 
 				preparedStatement.executeUpdate();
 
@@ -343,6 +345,7 @@ public final class DataManager extends DataManagerAbstract {
 				UUID.fromString(resultSet.getString("owning_category")),
 				SerializeUtil.decodeItem(resultSet.getString("item")),
 				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
 				resultSet.getDouble("price"),
 				resultSet.getInt("stock"),
 				resultSet.getBoolean("price_is_for_all")
