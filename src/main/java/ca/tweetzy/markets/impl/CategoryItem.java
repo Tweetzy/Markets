@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.MarketItem;
@@ -14,7 +15,7 @@ public final class CategoryItem implements MarketItem {
 
 	private final UUID id;
 	private final UUID owningCategory;
-	private final ItemStack item;
+	private ItemStack item;
 	private String currency;
 	private ItemStack currencyItem;
 	private double price;
@@ -39,6 +40,10 @@ public final class CategoryItem implements MarketItem {
 		this.price = price;
 		this.stock = stock;
 		this.priceIsForAll = priceIsForAll;
+	}
+
+	public CategoryItem(@NonNull final UUID owningCategory) {
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault", CompMaterial.AIR.parseItem(), 0, 0, false);
 	}
 
 	@Override
@@ -79,6 +84,11 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public boolean isPriceForAll() {
 		return this.priceIsForAll;
+	}
+
+	@Override
+	public void setItem(@NonNull ItemStack item) {
+		this.item = item;
 	}
 
 	@Override

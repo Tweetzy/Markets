@@ -24,6 +24,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 
 	boolean isPriceForAll();
 
+	void setItem(@NonNull final ItemStack item);
+
 	void setCurrency(@NonNull final String currency);
 
 	void setPrice(final double price);
