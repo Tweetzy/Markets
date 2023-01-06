@@ -3,9 +3,9 @@ package ca.tweetzy.markets.view.user;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
 import ca.tweetzy.flight.gui.template.PagedGUI;
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.ChatUtil;
 import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
@@ -13,6 +13,7 @@ import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 	private final Category category;
 
 	public MarketCategoryEditView(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketOverviewView(player, market), Replacer.replaceVariables(Settings.GUI_MARKET_CATEGORY_EDIT_TITLE.getString(), "category_name", category.getName()), 6, category.getItems());
+		super(new MarketOverviewView(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_EDIT_TITLE, "category_name", category.getName()), 6, category.getItems());
 		this.player = player;
 		this.market = market;
 		this.category = category;
@@ -39,11 +40,9 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 		setButton(1, 1, QuickItem
 				.of(this.category.getIcon())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_NAME.getString())
-				.lore(Replacer.replaceVariables(
-						Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_LORE.getStringList(),
-						"category_icon", ChatUtil.capitalizeFully(this.category.getIcon().getType())
-				)).make(), click -> click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_ICON_LORE, "category_icon", ChatUtil.capitalizeFully(this.category.getIcon().getType())))
+				.make(), click -> click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
 
 			if (selected != null) {
 				this.category.setIcon(selected.parseItem());
@@ -56,11 +55,9 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 		setButton(2, 1, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME.getString())
-				.lore(Replacer.replaceVariables(
-						Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE.getStringList(),
-						"category_display_name", this.category.getDisplayName()
-				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE, "category_display_name", this.category.getDisplayName()))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -82,11 +79,9 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 		// description
 		setButton(3, 1, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_NAME.getString())
-				.lore(Replacer.replaceVariables(
-						Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_LORE.getStringList(),
-						"category_description", this.category.getDescription().get(0)
-				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_LORE, "category_description", this.category.getDescription().get(0)))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -107,8 +102,8 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 		// settings button
 		setButton(getRows() - 1, 2, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_NAME.getString())
-				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_LORE.getStringList())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_LORE))
 				.make(), click -> {
 
 
@@ -117,15 +112,15 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 		// new item button
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME.getString())
-				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE.getStringList())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE))
 				.make(), click -> click.manager.showGUI(click.player, new CategoryNewItemView(this.player, this.market, this.category)));
 
 		// unStore button
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString())
-				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE.getStringList())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE))
 				.make(), click -> this.category.unStore(result -> {
 
 			if (result == SynchronizeResult.SUCCESS)

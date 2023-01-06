@@ -5,7 +5,6 @@ import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
@@ -26,7 +25,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 	private final Market market;
 
 	public MarketOverviewView(@NonNull final Player player, @NonNull final Market market) {
-		super(new MarketsMainView(player), Settings.GUI_MARKET_OVERVIEW_TITLE.getString(), 6, market.getCategories());
+		super(new MarketsMainView(player), TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
 		this.player = player;
 		this.market = market;
 
@@ -39,8 +38,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		// name
 		setButton(1, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE.getStringList(), "market_display_name", this.market.getDisplayName()))
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME))
+				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE, "market_display_name", this.market.getDisplayName()))
 				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
 
 			@Override
@@ -67,8 +66,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		// description
 		setButton(2, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE.getStringList(), "market_description", this.market.getDescription().get(0)))
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE, "market_description", this.market.getDescription().get(0)))
 				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
 
 			@Override
@@ -90,8 +89,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		// settings button
 		setButton(3, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_NAME.getString())
-				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_LORE.getStringList())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_LORE))
 				.make(), click -> {
 
 		});
@@ -99,8 +98,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		// create category
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_NAME.getString())
-				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_LORE.getStringList())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_LORE))
 				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>", "&fEnter category name in chat") {
 
 			@Override
@@ -128,8 +127,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		// unStore button
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
-				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME.getString())
-				.lore(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE.getStringList())
+				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
+				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
 				.make(), click -> {
 
 		});

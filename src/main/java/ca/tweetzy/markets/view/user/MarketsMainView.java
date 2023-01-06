@@ -2,20 +2,20 @@ package ca.tweetzy.markets.view.user;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.template.BaseGUI;
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings("ConstantConditions")
 public final class MarketsMainView extends BaseGUI {
 
 	private final Player player;
 
 	public MarketsMainView(@NonNull final Player player) {
-		super(null, Settings.GUI_MAIN_VIEW_TITLE.getString(), 6);
+		super(null, TranslationManager.string(player, Translations.GUI_MAIN_VIEW_TITLE), 6);
 		this.player = player;
 		draw();
 	}
@@ -27,8 +27,8 @@ public final class MarketsMainView extends BaseGUI {
 		// your market
 		setButton(1, 1, QuickItem
 				.of(SkullUtils.getSkull(this.player.getUniqueId()))
-				.name(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME.getString())
-				.lore(playerMarket == null ? Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE.getStringList() : Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW.getStringList())
+				.name(TranslationManager.string(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME))
+				.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
 				.make(), click -> {
 
 			if (playerMarket == null) {
