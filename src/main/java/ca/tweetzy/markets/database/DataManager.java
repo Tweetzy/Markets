@@ -311,6 +311,27 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void getMarketItemsByCategory(@NonNull final UUID categoryId, @NonNull final Callback<List<MarketItem>> callback) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "category_item WHERE owning_category = ?")) {
+				statement.setString(1, categoryId.toString());
+
+				final ResultSet resultSet = statement.executeQuery();
+
+				while (resultSet.next()) {
+					final MarketItem marketItem = extractMarketItem(resultSet);
+					marketItems.add(marketItem);
+				}
+
+				callback.accept(null, marketItems);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
