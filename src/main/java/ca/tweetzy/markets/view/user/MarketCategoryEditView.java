@@ -114,15 +114,14 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 		});
 
+		// new item button
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME.getString())
 				.lore(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE.getStringList())
-				.make(), click -> {
+				.make(), click -> click.manager.showGUI(click.player, new CategoryNewItemView(this.player, this.market, this.category)));
 
-		});
-
-		// delete button
+		// unStore button
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME.getString())

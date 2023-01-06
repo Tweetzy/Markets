@@ -1,6 +1,6 @@
 package ca.tweetzy.markets.impl;
 
-import ca.tweetzy.markets.api.MarketUser;
+import ca.tweetzy.markets.api.market.MarketUser;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;

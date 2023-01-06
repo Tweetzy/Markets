@@ -51,7 +51,6 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 
 		Markets.getDataManager().getMarketItems((error, found) -> {
 			if (error != null) return;
-			Common.log("&aLoading Category Items");
 
 			found.forEach(marketItem -> {
 				final Category locatedCategory = Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory());

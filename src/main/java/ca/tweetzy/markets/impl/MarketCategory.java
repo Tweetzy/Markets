@@ -136,8 +136,10 @@ public final class MarketCategory implements Category {
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
 		Markets.getDataManager().deleteCategory(this, (error, updateStatus) -> {
-			if (updateStatus)
+			if (updateStatus) {
 				Markets.getMarketManager().getByUUID(this.owningMarket).getCategories().removeIf(category -> category.getId().equals(this.id));
+				Markets.getCategoryManager().remove(this);
+			}
 
 			if (syncResult != null)
 				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);

@@ -29,15 +29,15 @@ public final class CategoryManager extends ListManager<Category> {
 	}
 
 	public Category getByName(@NonNull final Market owningMarket, @NonNull final String name) {
-		return getByName(owningMarket.getId(), name);
+		return getByName(owningMarket.getId(), name.toLowerCase());
 	}
 
 	public boolean doesCategoryExistAlready(@NonNull final UUID owningMarket, @NonNull final String name) {
-		return getByName(owningMarket, name) != null;
+		return getByName(owningMarket, name.toLowerCase()) != null;
 	}
 
 	public boolean doesCategoryExistAlready(@NonNull final Market owningMarket, @NonNull final String name) {
-		return doesCategoryExistAlready(owningMarket.getId(), name);
+		return doesCategoryExistAlready(owningMarket.getId(), name.toLowerCase());
 	}
 
 
@@ -79,6 +79,7 @@ public final class CategoryManager extends ListManager<Category> {
 
 				locatedMarket.getCategories().add(category);
 				// After categories have been added to corresponding markets, load the items
+				Common.log("&aLoading Category Items");
 				Markets.getCategoryItemManager().load();
 			});
 		});

@@ -14,10 +14,11 @@ import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations._1_InitialMigration;
 import ca.tweetzy.markets.database.migrations._2_UserProfileMigration;
 import ca.tweetzy.markets.database.migrations._3_CategoryItemMigration;
+import ca.tweetzy.markets.database.migrations._4_CategoryItemCurrencyMigration;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
-import ca.tweetzy.markets.model.CategoryItemManager;
-import ca.tweetzy.markets.model.CategoryManager;
-import ca.tweetzy.markets.model.MarketManager;
+import ca.tweetzy.markets.model.manager.CategoryItemManager;
+import ca.tweetzy.markets.model.manager.CategoryManager;
+import ca.tweetzy.markets.model.manager.MarketManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 
@@ -50,7 +51,8 @@ public final class Markets extends FlightPlugin {
 		final DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
 				new _1_InitialMigration(),
 				new _2_UserProfileMigration(),
-				new _3_CategoryItemMigration()
+				new _3_CategoryItemMigration(),
+				new _4_CategoryItemCurrencyMigration()
 		);
 
 		// run migrations for tables

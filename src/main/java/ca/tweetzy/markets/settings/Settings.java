@@ -68,12 +68,12 @@ public final class Settings extends FlightSettings {
 			"&a&lClick &7to create new category"
 	));
 
-	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM = create("gui.market overview.items.delete market.item", CompMaterial.LAVA_BUCKET.name());
-	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.delete market.name", "&c&lDelete Market");
-	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.delete market.lore", List.of(
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM = create("gui.market overview.items.unStore market.item", CompMaterial.LAVA_BUCKET.name());
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.unStore market.name", "&c&lDelete Market");
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.unStore market.lore", List.of(
 			"&7This action &4&lCANNOT &7be undone!",
 			"",
-			"&a&lClick &7to delete market"
+			"&a&lClick &7to unStore market"
 	));
 
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_TITLE = create("gui.market category edit.title", "&eMarkets &f- &7Edit &f- &7%category_name%").withComment("The tile of the menu");
@@ -127,12 +127,12 @@ public final class Settings extends FlightSettings {
 	));
 
 
-	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM = create("gui.market category edit.items.delete category.item", CompMaterial.LAVA_BUCKET.name());
-	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.delete category.name", "&c&lDelete Category");
-	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.delete category.lore", List.of(
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM = create("gui.market category edit.items.unStore category.item", CompMaterial.LAVA_BUCKET.name());
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.unStore category.name", "&c&lDelete Category");
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.unStore category.lore", List.of(
 			"&7This action &4&lCANNOT &7be undone!",
 			"",
-			"&a&lClick &7to delete this category"
+			"&a&lClick &7to unStore this category"
 	));
 
 	public static void init() {

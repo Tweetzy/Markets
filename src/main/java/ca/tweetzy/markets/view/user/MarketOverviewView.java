@@ -2,6 +2,8 @@ package ca.tweetzy.markets.view.user;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.input.TitleInput;
@@ -10,6 +12,7 @@ import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -37,10 +40,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		setButton(1, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME.getString())
-				.lore(Replacer.replaceVariables(
-						Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE.getStringList(),
-						"market_display_name", this.market.getDisplayName()
-				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
+				.lore(Replacer.replaceVariables(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE.getStringList(), "market_display_name", this.market.getDisplayName()))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -49,7 +50,11 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 			@Override
 			public boolean onResult(String string) {
-				if (string.length() > 72) return false; // TODO tell them it's too long
+				if (string.length() > 72) {
+					Common.tell(click.player, TranslationManager.string(Translations.MARKET_NAME_TOO_LONG));
+					return false;
+				}
+
 				MarketOverviewView.this.market.setDisplayName(string);
 				MarketOverviewView.this.market.sync(result -> {
 					if (result == SynchronizeResult.SUCCESS)
@@ -63,10 +68,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		setButton(2, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME.getString())
-				.lore(Replacer.replaceVariables(
-						Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE.getStringList(),
-						"market_description", this.market.getDescription().get(0)
-				)).make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
+				.lore(Replacer.replaceVariables(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE.getStringList(), "market_description", this.market.getDescription().get(0)))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
 
 			@Override
 			public void onExit(Player player) {
@@ -103,11 +106,14 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 			@Override
 			public boolean onResult(String string) {
 				string = ChatColor.stripColor(string);
-				if (string.length() > 32) return false; // todo tell them it's too long
+				if (string.length() > 32) {
+					Common.tell(click.player, TranslationManager.string(Translations.CATEGORY_NAME_TOO_LONG));
+					return false;
+				}
 
 				// check category name beforehand
-				if (Markets.getCategoryManager().doesCategoryExistAlready(MarketOverviewView.this.market, string)) {
-					// todo tell them their market already has a category with that name
+				if (Markets.getCategoryManager().doesCategoryExistAlready(MarketOverviewView.this.market, string.toLowerCase())) {
+					Common.tell(click.player, TranslationManager.string(Translations.CATEGORY_NAME_USED, "category_name", string));
 					return false;
 				}
 
@@ -119,7 +125,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 			}
 		});
 
-		// delete button
+		// unStore button
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
 				.name(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME.getString())
@@ -134,8 +140,8 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 		return QuickItem
 				.of(category.getIcon())
 				.name(category.getDisplayName())
-				.lore("id: " + category.getName())
 				.lore(category.getDescription())
+				.hideTags(true)//todo make this shit customizable
 				.make();
 	}
 
