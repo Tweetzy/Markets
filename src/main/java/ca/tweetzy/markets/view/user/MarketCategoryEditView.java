@@ -130,11 +130,32 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
-		return null;
+		return QuickItem
+				.of(marketItem.getItem())
+				.lore(
+						"&7----------------------------",
+						"&7Price&f: &a$%market_item_price%",
+						"&7Currency&f: &eVault ($)",
+						"",
+						"&a&l%left_click% &7to edit price",
+						"&a&l%right_click% &7to toggle price per stack",
+						"&c&l%drop_button% &7to remove item",
+						"&7----------------------------"
+				)
+				.make();
 	}
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
 
+	}
+
+	@Override
+	protected List<Integer> fillSlots() {
+		return List.of(
+				12, 13, 14, 15, 16,
+				21, 22, 23, 24, 25,
+				30, 31, 32, 33, 34
+		);
 	}
 }
