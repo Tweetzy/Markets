@@ -77,10 +77,14 @@ public final class CategoryManager extends ListManager<Category> {
 				final Market locatedMarket = Markets.getMarketManager().getByUUID(category.getOwningMarket());
 				if (locatedMarket == null) return;
 
-				locatedMarket.getCategories().add(category);
-				// After categories have been added to corresponding markets, load the items
-				Common.log("&aLoading Category Items");
-				Markets.getCategoryItemManager().load();
+				// load items for the category, this is likely going to create way too many tasks when there's hundreds of categories... but we will see.
+				Markets.getDataManager().getMarketItemsByCategory(category.getId(), (itemsError, foundItems) -> {
+					if (itemsError != null) return;
+
+					category.getItems().addAll(foundItems);
+					locatedMarket.getCategories().add(category);
+
+				});
 			});
 		});
 	}

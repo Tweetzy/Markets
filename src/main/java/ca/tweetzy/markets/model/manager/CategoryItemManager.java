@@ -54,7 +54,9 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 
 			found.forEach(marketItem -> {
 				final Category locatedCategory = Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory());
-				if (locatedCategory == null) return;
+				if (locatedCategory == null) {
+					return;
+				}
 
 				locatedCategory.getItems().add(marketItem);
 			});
