@@ -4,6 +4,7 @@ import ca.tweetzy.markets.api.market.MarketUser;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,6 +18,11 @@ public final class MarketPlayer implements MarketUser {
 	private Player player;
 	private String lastKnownName;
 	private List<String> bio;
+
+	private String preferredLanguage;
+
+	private String currencyFormatCountry;
+
 	private long lastSeenAt;
 
 	@Override
@@ -40,6 +46,17 @@ public final class MarketPlayer implements MarketUser {
 	}
 
 	@Override
+	public @NonNull String getPreferredLanguage() {
+		return this.preferredLanguage;
+	}
+
+	@NotNull
+	@Override
+	public String getCurrencyFormatCountry() {
+		return this.currencyFormatCountry;
+	}
+
+	@Override
 	public long getLastSeenAt() {
 		return this.lastSeenAt;
 	}
@@ -57,6 +74,16 @@ public final class MarketPlayer implements MarketUser {
 	@Override
 	public void setBio(@NonNull List<String> bio) {
 		this.bio = bio;
+	}
+
+	@Override
+	public void setPreferredLanguage(@NotNull String preferredLanguage) {
+		this.preferredLanguage = preferredLanguage;
+	}
+
+	@Override
+	public void setCurrencyFormatCountry(@NotNull String currencyFormatCountry) {
+		this.currencyFormatCountry = currencyFormatCountry;
 	}
 
 	@Override

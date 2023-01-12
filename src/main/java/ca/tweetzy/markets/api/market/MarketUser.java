@@ -19,6 +19,10 @@ public interface MarketUser extends Synchronize, Storeable<MarketUser> {
 
 	@NonNull List<String> getBio();
 
+	@NonNull String getPreferredLanguage();
+
+	@NonNull String getCurrencyFormatCountry();
+
 	long getLastSeenAt();
 
 	void setLastKnownName(@NonNull final String name);
@@ -26,6 +30,10 @@ public interface MarketUser extends Synchronize, Storeable<MarketUser> {
 	void setPlayer(@NonNull final Player player);
 
 	void setBio(@NonNull final List<String> bio);
+
+	void setPreferredLanguage(@NonNull final String preferredLanguage);
+
+	void setCurrencyFormatCountry(@NonNull final String currencyFormatCountry);
 
 	void setLastSeenAt(final long lastSeenAt);
 }
