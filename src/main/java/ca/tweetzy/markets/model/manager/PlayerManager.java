@@ -18,16 +18,18 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		super("Player");
 	}
 
+//	public MarketUser getOrRaw(@NonNull final Player player) {
+//		final MarketUser foundUser = get(player.getUniqueId());
+//
+//		if (foundUser != null)
+//			return foundUser;
+//
+//		return createRawPlayer(player);
+//	}
+//
+
 	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
-		final MarketUser marketUser = new MarketPlayer(
-				player.getUniqueId(),
-				player,
-				player.getName(),
-				List.of("Hi there, welcome to my profile"),
-				"english",
-				"us",
-				System.currentTimeMillis()
-		);
+		final MarketUser marketUser = createRawPlayer(player);
 
 		marketUser.store(storedUser -> {
 			if (storedUser != null) {
@@ -38,6 +40,19 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			}
 		});
 	}
+
+	public MarketUser createRawPlayer(@NonNull final Player player) {
+		return new MarketPlayer(
+				player.getUniqueId(),
+				player,
+				player.getName(),
+				List.of("Hi there, welcome to my profile"),
+				"english",
+				"us",
+				System.currentTimeMillis()
+		);
+	}
+
 
 	@Override
 	public void load() {
