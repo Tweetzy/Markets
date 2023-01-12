@@ -15,7 +15,7 @@ import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +64,7 @@ public final class CategoryNewItemView extends BaseGUI {
 
 		setButton(2, 4, QuickItem
 				.of(CompMaterial.SUNFLOWER)
-				.name("&bPrice")
+				.name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>")
 				.lore("&7The current price is &f: &a$" + this.marketItem.getPrice())
 				.make(), click -> {
 

@@ -18,16 +18,6 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		super("Player");
 	}
 
-//	public MarketUser getOrRaw(@NonNull final Player player) {
-//		final MarketUser foundUser = get(player.getUniqueId());
-//
-//		if (foundUser != null)
-//			return foundUser;
-//
-//		return createRawPlayer(player);
-//	}
-//
-
 	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
 		final MarketUser marketUser = createRawPlayer(player);
 

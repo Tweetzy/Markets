@@ -13,6 +13,7 @@ import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
+import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.CategoryItemManager;
 import ca.tweetzy.markets.model.manager.CategoryManager;
 import ca.tweetzy.markets.model.manager.MarketManager;
@@ -62,6 +63,9 @@ public final class Markets extends FlightPlugin {
 		this.guiManager.init();
 		this.marketManager.load();
 		this.playerManager.load();
+
+		// listeners
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(

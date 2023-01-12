@@ -6,6 +6,7 @@ import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.ChatUtil;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
@@ -15,6 +16,9 @@ import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.KeybindComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,6 +32,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 	public MarketCategoryEditView(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
 		super(new MarketOverviewView(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_EDIT_TITLE, "category_name", category.getName()), 6, category.getItems());
+
 		this.player = player;
 		this.market = market;
 		this.category = category;
@@ -132,22 +137,29 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
 		return QuickItem
 				.of(marketItem.getItem())
-				.lore(
-						"&7----------------------------",
-						"&7Price&f: &a$%market_item_price%",
-						"&7Currency&f: &eVault ($)",
-						"",
-						"&a&l%left_click% &7to edit price",
-						"&a&l%right_click% &7to toggle price per stack",
-						"&c&l%drop_button% &7to remove item",
-						"&7----------------------------"
-				)
-				.make();
+				.lore(Replacer.replaceVariables(
+						List.of("&7----------------------------",
+								"&7Price&f: &a$%market_item_price%",
+								"&7Currency&f: &eVault ($)",
+								"",
+								"&a&l%left_click% &7to edit price",
+								"&b&l%right_click% &7to toggle price per stack",
+								"&c&l%drop_button% &7to remove item",
+								"&7----------------------------")
+						, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+						, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+						, "drop_button", TranslationManager.string(this.player, Translations.DROP_KEY) //todo add a variable customization to replacer // TranslationManager.string(this.player, Translations.DROP_KEY)
+
+				)).make();
 	}
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
+		final Player player = click.player;
 
+		KeybindComponent keybindComponent = new KeybindComponent("key.drop");
+		player.spigot().sendMessage(keybindComponent);
+		player.sendMessage(keybindComponent.getKeybind());
 	}
 
 	@Override

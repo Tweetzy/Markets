@@ -17,6 +17,9 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry CATEGORY_NAME_USED = create("category name used", "&cYou already have a category named&F: &4%category_name%");
 
 
+	public static TranslationEntry COLOURS_SUCCESS = create("colours.success", "#009933,#66FF99");
+
+
 	// guis
 	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
 
