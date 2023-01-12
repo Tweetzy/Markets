@@ -15,7 +15,8 @@ public final class _5_UserProfilePrefsMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "user ADD preferred_language VARCHAR(48) NOT NULL, currency_format_country VARCHAR(3) NOT NULL;");
+			statement.execute("ALTER TABLE " + tablePrefix + "user ADD preferred_language VARCHAR(48) NOT NULL;");
+			statement.execute("ALTER TABLE " + tablePrefix + "user ADD currency_format_country VARCHAR(3) NOT NULL;");
 		}
 	}
 }
