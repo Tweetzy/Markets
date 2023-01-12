@@ -1,5 +1,7 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.MarketUser;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -93,6 +95,16 @@ public final class MarketPlayer implements MarketUser {
 
 	@Override
 	public void store(@NonNull Consumer<MarketUser> stored) {
+		Markets.getDataManager().createMarketUser(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
+	}
 
+	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().updateMarketUser(this, (error, updateStatus) -> {
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
 	}
 }

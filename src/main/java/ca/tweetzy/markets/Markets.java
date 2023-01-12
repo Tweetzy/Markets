@@ -11,14 +11,12 @@ import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.commands.CommandAdmin;
 import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;
-import ca.tweetzy.markets.database.migrations._1_InitialMigration;
-import ca.tweetzy.markets.database.migrations._2_UserProfileMigration;
-import ca.tweetzy.markets.database.migrations._3_CategoryItemMigration;
-import ca.tweetzy.markets.database.migrations._4_CategoryItemCurrencyMigration;
+import ca.tweetzy.markets.database.migrations.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.model.manager.CategoryItemManager;
 import ca.tweetzy.markets.model.manager.CategoryManager;
 import ca.tweetzy.markets.model.manager.MarketManager;
+import ca.tweetzy.markets.model.manager.PlayerManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 
@@ -32,6 +30,7 @@ public final class Markets extends FlightPlugin {
 	private final GuiManager guiManager = new GuiManager(this);
 
 	private final MarketManager marketManager = new MarketManager();
+	private final PlayerManager playerManager = new PlayerManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final CategoryItemManager categoryItemManager = new CategoryItemManager();
 
@@ -52,7 +51,8 @@ public final class Markets extends FlightPlugin {
 				new _1_InitialMigration(),
 				new _2_UserProfileMigration(),
 				new _3_CategoryItemMigration(),
-				new _4_CategoryItemCurrencyMigration()
+				new _4_CategoryItemCurrencyMigration(),
+				new _5_UserProfilePrefsMigration()
 		);
 
 		// run migrations for tables
@@ -61,6 +61,7 @@ public final class Markets extends FlightPlugin {
 		// gui system
 		this.guiManager.init();
 		this.marketManager.load();
+		this.playerManager.load();
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
@@ -100,5 +101,9 @@ public final class Markets extends FlightPlugin {
 
 	public static CategoryItemManager getCategoryItemManager() {
 		return getInstance().categoryItemManager;
+	}
+
+	public static PlayerManager getPlayerManager() {
+		return getInstance().playerManager;
 	}
 }

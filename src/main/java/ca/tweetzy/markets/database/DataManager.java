@@ -6,11 +6,10 @@ import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
-import ca.tweetzy.markets.api.market.AbstractMarket;
-import ca.tweetzy.markets.api.market.Category;
-import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.api.market.*;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.impl.MarketCategory;
+import ca.tweetzy.markets.impl.MarketPlayer;
 import ca.tweetzy.markets.impl.market.PlayerMarket;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
@@ -332,6 +331,84 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createMarketUser(@NonNull final MarketUser marketUser, final Callback<MarketUser> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "user (id, last_known_name, bio, preferred_language, currency_format_country, last_seen_at) VALUES (?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "user WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, marketUser.getUUID().toString());
+
+				preparedStatement.setString(1, marketUser.getUUID().toString());
+				preparedStatement.setString(2, marketUser.getLastKnownName());
+				preparedStatement.setString(3, String.join(";;;", marketUser.getBio()));
+				preparedStatement.setString(4, marketUser.getPreferredLanguage());
+				preparedStatement.setString(5, marketUser.getCurrencyFormatCountry());
+				preparedStatement.setLong(6, marketUser.getLastSeenAt());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketUser(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateMarketUser(@NonNull final MarketUser marketUser, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "user SET last_known_name = ?, bio = ?, preferred_language = ?, currency_format_country = ?, last_seen_at = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, marketUser.getLastKnownName());
+				preparedStatement.setString(2, String.join(";;;", marketUser.getBio()));
+				preparedStatement.setString(3, marketUser.getPreferredLanguage());
+				preparedStatement.setString(4, marketUser.getCurrencyFormatCountry());
+				preparedStatement.setLong(5, marketUser.getLastSeenAt());
+				preparedStatement.setString(6, marketUser.getUUID().toString());
+
+				preparedStatement.executeUpdate();
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getMarketUsers(@NonNull final Callback<List<MarketUser>> callback) {
+		final List<MarketUser> marketUsers = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "user")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final MarketUser marketUser = extractMarketUser(resultSet);
+					marketUsers.add(marketUser);
+				}
+
+				callback.accept(null, marketUsers);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
@@ -372,6 +449,20 @@ public final class DataManager extends DataManagerAbstract {
 				resultSet.getBoolean("price_is_for_all")
 		);
 	}
+
+	private MarketUser extractMarketUser(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketPlayer(
+				UUID.fromString(resultSet.getString("id")),
+				null,
+				resultSet.getString("last_known_name"),
+				new ArrayList<>(List.of(resultSet.getString("bio").split(";;;"))),
+				resultSet.getString("preferred_language"),
+				resultSet.getString("currency_format_country"),
+				resultSet.getLong("last_seen_at")
+		);
+	}
+
+//	final String query = "INSERT INTO " + this.getTablePrefix() + "user (id, last_known_name, bio, preferred_language, currency_format_country, last_seen_at) VALUES (?, ?, ?, ?, ?, ?)";
 
 	private void resolveUpdateCallback(@Nullable UpdateCallback callback, @Nullable Exception ex) {
 		if (callback != null) {
