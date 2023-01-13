@@ -3,6 +3,7 @@ package ca.tweetzy.markets.impl;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
+import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.MarketItem;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
@@ -121,6 +122,20 @@ public final class CategoryItem implements MarketItem {
 		Markets.getDataManager().createMarketItem(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
+		});
+	}
+
+	@Override
+	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().deleteMarketItem(this, (error, updateStatus) -> {
+
+			if (updateStatus) {
+				Markets.getCategoryManager().getByUUID(this.owningCategory).getItems().removeIf(category -> category.getId().equals(this.id));
+				Markets.getCategoryItemManager().remove(this);
+			}
+
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
 		});
 	}
 

@@ -83,7 +83,7 @@ public final class CategoryManager extends ListManager<Category> {
 
 					category.getItems().addAll(foundItems);
 					locatedMarket.getCategories().add(category);
-
+					add(category);
 				});
 			});
 		});

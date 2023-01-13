@@ -76,8 +76,6 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setLong(4, market.getLastUpdated());
 				preparedStatement.setString(5, market.getId().toString());
 
-				preparedStatement.executeUpdate();
-
 				int result = preparedStatement.executeUpdate();
 
 				if (callback != null)
@@ -170,8 +168,6 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setLong(4, category.getLastUpdated());
 				preparedStatement.setString(5, category.getId().toString());
 
-				preparedStatement.executeUpdate();
-
 				int result = preparedStatement.executeUpdate();
 
 				if (callback != null)
@@ -253,7 +249,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ? currency_item = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ?, currency_item = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -262,9 +258,7 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setInt(3, marketItem.getStock());
 				preparedStatement.setBoolean(4, marketItem.isPriceForAll());
 				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
-				preparedStatement.setString(65, marketItem.getId().toString());
-
-				preparedStatement.executeUpdate();
+				preparedStatement.setString(6, marketItem.getId().toString());
 
 				int result = preparedStatement.executeUpdate();
 
@@ -273,6 +267,7 @@ public final class DataManager extends DataManagerAbstract {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				resolveCallback(callback, e);
 				resolveCallback(callback, e);
 			}
 		}));
@@ -288,6 +283,7 @@ public final class DataManager extends DataManagerAbstract {
 
 			} catch (Exception e) {
 				resolveCallback(callback, e);
+				e.printStackTrace();
 			}
 		}));
 	}
@@ -376,8 +372,6 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(4, marketUser.getCurrencyFormatCountry());
 				preparedStatement.setLong(5, marketUser.getLastSeenAt());
 				preparedStatement.setString(6, marketUser.getUUID().toString());
-
-				preparedStatement.executeUpdate();
 
 				int result = preparedStatement.executeUpdate();
 

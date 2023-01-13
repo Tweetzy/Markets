@@ -83,7 +83,9 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&f: %category_icon%",
 			"",
-			"&a&lClick &7to change icon"
+			"&a&l%left_click% &7to use selector",
+			"&b&l%right_click% &7while holding the item",
+			"&7you wish to use as the category icon."
 	);
 
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME = create("gui.market category edit.items.display name.name", "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>");
