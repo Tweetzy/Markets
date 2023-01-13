@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.model.manager;
 
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.Category;

@@ -3,7 +3,6 @@ package ca.tweetzy.markets.impl;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
-import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.MarketItem;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
