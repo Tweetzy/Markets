@@ -20,6 +20,8 @@ import ca.tweetzy.markets.model.manager.MarketManager;
 import ca.tweetzy.markets.model.manager.PlayerManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public final class Markets extends FlightPlugin {
 
@@ -34,6 +36,9 @@ public final class Markets extends FlightPlugin {
 	private final PlayerManager playerManager = new PlayerManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final CategoryItemManager categoryItemManager = new CategoryItemManager();
+
+	// default vault economy
+	private Economy economy = null;
 
 	private final MarketsAPI API = new MarketsAPIImpl();
 
@@ -59,6 +64,9 @@ public final class Markets extends FlightPlugin {
 
 		// run migrations for tables
 		dataMigrationManager.runMigrations();
+
+		// setup vault
+		setupEconomy();
 
 		// gui system
 		this.guiManager.init();
@@ -110,5 +118,24 @@ public final class Markets extends FlightPlugin {
 
 	public static PlayerManager getPlayerManager() {
 		return getInstance().playerManager;
+	}
+
+	public static Economy getEconomy() {
+		return getInstance().economy;
+	}
+
+	// helpers
+	private void setupEconomy() {
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			return;
+		}
+
+		final RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+
+		if (rsp == null) {
+			return;
+		}
+
+		this.economy = rsp.getProvider();
 	}
 }
