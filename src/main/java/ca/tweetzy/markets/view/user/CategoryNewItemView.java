@@ -8,6 +8,7 @@ import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
@@ -32,10 +33,8 @@ public final class CategoryNewItemView extends BaseGUI {
 		this.player = player;
 		this.market = market;
 		this.category = category;
-		if (marketItem == null)
-			this.marketItem = new CategoryItem(this.category.getId());
-		else
-			this.marketItem = marketItem;
+		if (marketItem == null) this.marketItem = new CategoryItem(this.category.getId());
+		else this.marketItem = marketItem;
 
 		// pre setup
 		setAcceptsItems(true);
@@ -44,8 +43,7 @@ public final class CategoryNewItemView extends BaseGUI {
 		setOnClose(close -> {
 			final ItemStack placedItem = getItem(1, 4);
 
-			if (placedItem != null)
-				PlayerUtil.giveItem(close.player, placedItem);
+			if (placedItem != null) PlayerUtil.giveItem(close.player, placedItem);
 		});
 
 		draw();
@@ -58,18 +56,12 @@ public final class CategoryNewItemView extends BaseGUI {
 	@Override
 	protected void draw() {
 
-		if (this.marketItem.getItem().getType() != CompMaterial.AIR.parseMaterial())
-			setItem(1, 4, this.marketItem.getItem());
+		if (this.marketItem.getItem().getType() != CompMaterial.AIR.parseMaterial()) setItem(1, 4, this.marketItem.getItem());
 
 
-		setButton(2, 4, QuickItem
-				.of(CompMaterial.SUNFLOWER)
-				.name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>")
-				.lore("&7The current price is &f: &a$" + this.marketItem.getPrice())
-				.make(), click -> {
+		setButton(2, 4, QuickItem.of(CompMaterial.SUNFLOWER).name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>").lore("&7The current price is &f: &a$" + this.marketItem.getPrice()).make(), click -> {
 
-			if (getItem(1, 4) != null)
-				this.marketItem.setItem(getItem(1, 4));
+			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
 			click.gui.exit();
 
@@ -98,12 +90,16 @@ public final class CategoryNewItemView extends BaseGUI {
 			};
 		});
 
+		// currency
+		setButton(getRows() - 1, 7, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "market_item_currency", this.marketItem.getCurrency())).make(), click -> {
+
+		});
+
+		// offers
+		drawOffersButton();
+
 		// new item button
-		setButton(getRows() - 1, 4, QuickItem
-				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_LORE))
-				.make(), click -> {
+		setButton(getRows() - 1, 4, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK))).make(), click -> {
 
 			final ItemStack placedItem = getItem(1, 4);
 			if (placedItem == null) return;
@@ -113,19 +109,12 @@ public final class CategoryNewItemView extends BaseGUI {
 			if (this.marketItem.getPrice() <= 0) return;
 
 			// create the item
-			Markets.getCategoryItemManager().create(
-					this.category,
-					this.marketItem.getItem(),
-					this.marketItem.getCurrency(),
-					this.marketItem.getCurrencyItem(),
-					this.marketItem.getPrice(),
-					this.marketItem.isPriceForAll(),
-					created -> {
-						if (created) {
-							setItem(1, 4, CompMaterial.AIR.parseItem());
-							click.manager.showGUI(click.player, new MarketCategoryEditView(this.player, this.market, this.category));
-						}
-					});
+			Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), created -> {
+				if (created) {
+					setItem(1, 4, CompMaterial.AIR.parseItem());
+					click.manager.showGUI(click.player, new MarketCategoryEditView(this.player, this.market, this.category));
+				}
+			});
 		});
 
 
@@ -140,6 +129,13 @@ public final class CategoryNewItemView extends BaseGUI {
 			}
 
 			click.manager.showGUI(click.player, new MarketCategoryEditView(this.player, this.market, this.category));
+		});
+	}
+
+	private void drawOffersButton() {
+		setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
+			this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
+			click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
 		});
 	}
 }

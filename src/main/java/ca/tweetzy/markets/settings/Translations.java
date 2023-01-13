@@ -135,6 +135,27 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to add item to category"
 	);
 
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME = create("gui.category add item.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE = create("gui.category add item.items.currency.lore",
+			"&7Used to adjust which currency you will",
+			"&7be accepting for this particular item.",
+			"",
+			"&7Current&f: &e%market_item_currency%",
+			"",
+			"&a&l%left_click% &7to edit currency"
+	);
+
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME = create("gui.category add item.items.offers.name", "<GRADIENT:65B1B4>&lToggle Offers</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE = create("gui.category add item.items.offers.lore",
+			"&7By default offers are enabled, if enabled",
+			"&7players can make an offer on an item they want.",
+			"",
+			"&7Current&f: %enabled%",
+			"",
+			"&a&l%left_click% &7to toggle offers"
+	);
+
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}

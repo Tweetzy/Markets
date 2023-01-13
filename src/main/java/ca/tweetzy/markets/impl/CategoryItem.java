@@ -22,6 +22,7 @@ public final class CategoryItem implements MarketItem {
 	private double price;
 	private int stock;
 	private boolean priceIsForAll;
+	private boolean acceptingOffers;
 
 	public CategoryItem(
 			@NonNull final UUID id,
@@ -31,7 +32,8 @@ public final class CategoryItem implements MarketItem {
 			@NonNull final ItemStack currencyItem,
 			final double price,
 			final int stock,
-			final boolean priceIsForAll
+			final boolean priceIsForAll,
+			final boolean acceptingOffers
 	) {
 		this.id = id;
 		this.owningCategory = owningCategory;
@@ -41,10 +43,11 @@ public final class CategoryItem implements MarketItem {
 		this.price = price;
 		this.stock = stock;
 		this.priceIsForAll = priceIsForAll;
+		this.acceptingOffers = acceptingOffers;
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
-		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault", CompMaterial.AIR.parseItem(), 0, 0, false);
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault", CompMaterial.AIR.parseItem(), 0, 0, false, true);
 	}
 
 	@Override
@@ -88,6 +91,11 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	@Override
+	public boolean isAcceptingOffers() {
+		return this.acceptingOffers;
+	}
+
+	@Override
 	public void setItem(@NonNull ItemStack item) {
 		this.item = item;
 	}
@@ -115,6 +123,11 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void setPriceIsForAll(boolean priceIsForAll) {
 		this.priceIsForAll = priceIsForAll;
+	}
+
+	@Override
+	public void setIsAcceptingOffers(boolean acceptingOffers) {
+		this.acceptingOffers = acceptingOffers;
 	}
 
 	@Override

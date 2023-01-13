@@ -31,7 +31,8 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 				currencyItem,
 				price,
 				item.getAmount(),
-				priceIsForAll
+				priceIsForAll,
+				true
 		);
 
 		marketItem.store(storedItem -> {

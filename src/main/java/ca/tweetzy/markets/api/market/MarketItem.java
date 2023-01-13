@@ -24,6 +24,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 
 	boolean isPriceForAll();
 
+	boolean isAcceptingOffers();
+
 	void setItem(@NonNull final ItemStack item);
 
 	void setCurrency(@NonNull final String currency);
@@ -35,6 +37,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 	void setStock(final int stock);
 
 	void setPriceIsForAll(final boolean priceIsForAll);
+
+	void setIsAcceptingOffers(final boolean acceptingOffers);
 
 	// todo this is needs to be changed
 	default void addStock(@NonNull final ItemStack item) {

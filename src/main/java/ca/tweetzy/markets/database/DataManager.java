@@ -6,7 +6,10 @@ import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
-import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.api.market.AbstractMarket;
+import ca.tweetzy.markets.api.market.Category;
+import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.api.market.MarketUser;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.impl.MarketCategory;
 import ca.tweetzy.markets.impl.MarketPlayer;
@@ -215,7 +218,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, currency_item, price, stock, price_is_for_all) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, currency_item, price, stock, price_is_for_all, accepting_offers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category_item WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -231,6 +234,7 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setDouble(6, marketItem.getPrice());
 				preparedStatement.setInt(7, marketItem.getStock());
 				preparedStatement.setBoolean(8, marketItem.isPriceForAll());
+				preparedStatement.setBoolean(9, marketItem.isAcceptingOffers());
 
 				preparedStatement.executeUpdate();
 
@@ -249,7 +253,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ?, currency_item = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ?, currency_item = ?, accepting_offers = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -258,7 +262,8 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setInt(3, marketItem.getStock());
 				preparedStatement.setBoolean(4, marketItem.isPriceForAll());
 				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
-				preparedStatement.setString(6, marketItem.getId().toString());
+				preparedStatement.setBoolean(6, marketItem.isAcceptingOffers());
+				preparedStatement.setString(7, marketItem.getId().toString());
 
 				int result = preparedStatement.executeUpdate();
 
@@ -440,7 +445,8 @@ public final class DataManager extends DataManagerAbstract {
 				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
 				resultSet.getDouble("price"),
 				resultSet.getInt("stock"),
-				resultSet.getBoolean("price_is_for_all")
+				resultSet.getBoolean("price_is_for_all"),
+				resultSet.getBoolean("accepting_offers")
 		);
 	}
 
