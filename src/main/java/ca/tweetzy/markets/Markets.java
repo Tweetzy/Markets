@@ -14,10 +14,7 @@ import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
-import ca.tweetzy.markets.model.manager.CategoryItemManager;
-import ca.tweetzy.markets.model.manager.CategoryManager;
-import ca.tweetzy.markets.model.manager.MarketManager;
-import ca.tweetzy.markets.model.manager.PlayerManager;
+import ca.tweetzy.markets.model.manager.*;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import net.milkbowl.vault.economy.Economy;
@@ -36,6 +33,7 @@ public final class Markets extends FlightPlugin {
 	private final PlayerManager playerManager = new PlayerManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final CategoryItemManager categoryItemManager = new CategoryItemManager();
+	private final CurrencyManager currencyManager = new CurrencyManager();
 
 	// default vault economy
 	private Economy economy = null;
@@ -70,8 +68,11 @@ public final class Markets extends FlightPlugin {
 
 		// gui system
 		this.guiManager.init();
+
+		// managers
 		this.marketManager.load();
 		this.playerManager.load();
+		this.currencyManager.load();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -118,6 +119,10 @@ public final class Markets extends FlightPlugin {
 
 	public static PlayerManager getPlayerManager() {
 		return getInstance().playerManager;
+	}
+
+	public static CurrencyManager getCurrencyManager() {
+		return getInstance().currencyManager;
 	}
 
 	public static Economy getEconomy() {
