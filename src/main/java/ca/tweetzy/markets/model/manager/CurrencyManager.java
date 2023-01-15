@@ -3,9 +3,11 @@ package ca.tweetzy.markets.model.manager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.manager.ListManager;
+import ca.tweetzy.markets.impl.currency.VaultCurrency;
 import ca.tweetzy.markets.model.currency.FundsEconomyLoader;
 import ca.tweetzy.markets.model.currency.UltraEconomyLoader;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
@@ -48,12 +50,14 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 	@Override
 	public void load() {
 		clear();
+		// add vault by default
+		add(new VaultCurrency());
 
 		// load currencies from providers that allow multiple currencies
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("UltraEconomy"))
+			new UltraEconomyLoader().getCurrencies().forEach(this::add);
 
-		List.of(
-				new UltraEconomyLoader(),
-				new FundsEconomyLoader()
-		).forEach(loader -> loader.getCurrencies().forEach(this::add));
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("Funds"))
+			new FundsEconomyLoader().getCurrencies().forEach(this::add);
 	}
 }
