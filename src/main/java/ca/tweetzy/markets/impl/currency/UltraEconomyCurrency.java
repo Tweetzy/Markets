@@ -11,8 +11,11 @@ public final class UltraEconomyCurrency extends AbstractCurrency {
 	private final Currency currency;
 
 	public UltraEconomyCurrency(String currencyName) {
-		super("UltraEconomy", currencyName);
-		this.currency = UltraEconomy.getAPI().getCurrencies().name(currencyName).orElseThrow();
+		super("UltraEconomy", currencyName, "");
+		this.currency = UltraEconomy.getAPI().getCurrencies().name(currencyName).orElse(null);
+
+		if (this.currency != null)
+			this.displayName = this.currency.getName();
 	}
 
 	@Override

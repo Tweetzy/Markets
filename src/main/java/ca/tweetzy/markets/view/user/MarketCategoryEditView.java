@@ -166,13 +166,14 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 				.lore(Replacer.replaceVariables(
 						List.of("&7----------------------------",
 								"&7Price&f: &a$%market_item_price%",
-								"&7Currency&f: &eVault ($)",
+								"&7Currency&f: &e%market_item_currency%",
 								"",
 								"&a&l%left_click% &7to edit price",
 								"&b&l%right_click% &7to toggle price per stack",
 								"&c&l%drop_button% &7to remove item",
 								"&7----------------------------")
 						, "market_item_price", String.format("%,.2f", marketItem.getPrice())
+						, "market_item_currency", marketItem.getCurrency().split("/")[2]
 						, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 						, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 						, "drop_button", TranslationManager.string(this.player, Translations.DROP_KEY)

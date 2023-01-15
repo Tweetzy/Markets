@@ -41,7 +41,7 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 		QuickItem quickItem = QuickItem.of(CompMaterial.PAPER);
 
 		if (currency instanceof final FundsCurrency fundsCurrency) {
-			quickItem.name(fundsCurrency.getCurrencyDisplayName());
+			quickItem.name(fundsCurrency.getDisplayName());
 		} else {
 			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : currency.getOwningPlugin() + " - " + currency.getCurrencyName());
 		}

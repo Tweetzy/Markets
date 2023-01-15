@@ -91,22 +91,22 @@ public final class CategoryNewItemView extends BaseGUI {
 		});
 
 		// currency
-		setButton(getRows() - 1, 7, QuickItem
+		setButton(getRows() - 1, 6, QuickItem
 				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"market_item_currency", this.marketItem.getCurrency()))
+						"market_item_currency", this.marketItem.getCurrency().split("/")[1]))
 				.make(), click -> {
 
-			final ItemStack placedItem = getItem(1,4);
+			final ItemStack placedItem = getItem(1, 4);
 			if (placedItem != null && placedItem.getType() != CompMaterial.AIR.parseMaterial())
 				this.marketItem.setItem(placedItem);
 
 			click.manager.showGUI(click.player, new CurrencyPickerView(this, click.player, (currency, item) -> {
 				click.gui.exit();
 
-				this.marketItem.setCurrency(currency.getStoreableName().split("/")[1]);
+				this.marketItem.setCurrency(currency.getStoreableName());
 
 				if (item != null)
 					this.marketItem.setItem(item);

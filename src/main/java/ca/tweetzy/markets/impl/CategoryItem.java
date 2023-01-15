@@ -46,7 +46,7 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
-		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault", CompMaterial.AIR.parseItem(), 0, 0, false, true);
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault/Vault/Vault ($)", CompMaterial.AIR.parseItem(), 1, 0, false, true);
 	}
 
 	@Override

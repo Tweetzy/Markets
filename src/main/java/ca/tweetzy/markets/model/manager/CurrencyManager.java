@@ -10,8 +10,6 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import java.util.List;
-
 public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
 	public CurrencyManager() {

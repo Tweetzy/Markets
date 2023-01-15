@@ -7,7 +7,8 @@ import org.bukkit.OfflinePlayer;
 public final class VaultCurrency extends AbstractCurrency {
 
 	public VaultCurrency() {
-		super("Vault", "Vault");
+		super("Vault", "Vault", "");
+		this.displayName = "Vault ($)";
 	}
 
 	@Override

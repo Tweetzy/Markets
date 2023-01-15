@@ -4,22 +4,18 @@ import ca.tweetzy.funds.api.FundsAPI;
 import ca.tweetzy.funds.api.interfaces.Account;
 import ca.tweetzy.funds.api.interfaces.Currency;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
-import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 
 public final class FundsCurrency extends AbstractCurrency {
 
 	private final Currency currency;
 
-	@Getter
-	private String currencyDisplayName;
-
 	public FundsCurrency(String currencyName) {
-		super("Funds", currencyName);
+		super("Funds", currencyName, "");
 		this.currency = FundsAPI.getInstance().getCurrency(currencyName);
 
 		if (this.currency != null)
-			this.currencyDisplayName = this.currency.getName();
+			this.displayName = this.currency.getName();
 	}
 
 	@Override
