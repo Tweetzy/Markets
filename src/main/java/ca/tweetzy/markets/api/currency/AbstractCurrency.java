@@ -9,4 +9,8 @@ public abstract class AbstractCurrency implements Chargeable {
 
 	protected String owningPlugin;
 	protected String currencyName;
+
+	public String getStoreableName() {
+		return this.owningPlugin + "/" + this.currencyName;
+	}
 }
