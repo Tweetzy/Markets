@@ -23,6 +23,15 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_NEW_CATEGORY_TITLE = create("prompts.new category.title", "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_NEW_CATEGORY_SUBTITLE = create("prompts.new category.subtitle", "&fEnter new category id into chat");
 
+	public static TranslationEntry PROMPT_ITEM_PRICE_TITLE = create("prompts.item price.title", "<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_ITEM_PRICE_SUBTITLE = create("prompts.item price.subtitle", "&fEnter item price into chat");
+
+	public static TranslationEntry PROMPT_MARKET_NAME_TITLE = create("prompts.market name.title", "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_MARKET_NAME_SUBTITLE = create("prompts.market name.subtitle", "&fEnter new market name into chat");
+
+	public static TranslationEntry PROMPT_MARKET_DESC_TITLE = create("prompts.market description.title", "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_MARKET_DESC_SUBTITLE = create("prompts.market description.subtitle", "&fEnter new description into chat");
+
 
 
 	// guis
@@ -140,6 +149,11 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to add item to category"
 	);
 
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_NAME = create("gui.category add item.items.price.name", "<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_LORE = create("gui.category add item.items.price.lore",
+			"&7The current price is &f: &a%market_item_price%"
+	);
+
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME = create("gui.category add item.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE = create("gui.category add item.items.currency.lore",
 			"&7Used to adjust which currency you will",
@@ -159,6 +173,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&a&l%left_click% &7to toggle offers"
 	);
+	
 
 
 	public static void init() {

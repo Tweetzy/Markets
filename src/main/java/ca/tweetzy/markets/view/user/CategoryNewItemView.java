@@ -74,15 +74,15 @@ public final class CategoryNewItemView extends BaseGUI {
 
 		setButton(2, 4, QuickItem
 				.of(CompMaterial.SUNFLOWER)
-				.name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>")
-				.lore("&7The current price is &f: &a$" + this.marketItem.getPrice())
+				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_LORE, "market_item_price", this.marketItem.getPrice()))
 				.make(), click -> {
 
 			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
 			click.gui.exit();
 
-			new TitleInput(Markets.getInstance(), click.player, "&eItem Price", "&fEnter item price in chat") {
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
 
 				@Override
 				public void onExit(Player player) {
@@ -110,9 +110,9 @@ public final class CategoryNewItemView extends BaseGUI {
 		// currency
 		setButton(getRows() - 1, 6, QuickItem
 				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+				.name(Translations.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
+				.lore(Translations.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
+						"left_click", Translations.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"market_item_currency", this.marketItem.getCurrency().split("/")[1]))
 				.make(), click -> {
 
