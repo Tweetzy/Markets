@@ -137,6 +137,7 @@ public final class MarketCategory implements Category {
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
 		Markets.getDataManager().deleteCategory(this, (error, updateStatus) -> {
 			if (updateStatus) {
+				// TODO return all items when category is removed
 				Markets.getMarketManager().getByUUID(this.owningMarket).getCategories().removeIf(category -> category.getId().equals(this.id));
 				Markets.getCategoryManager().remove(this);
 			}
