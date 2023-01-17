@@ -108,6 +108,11 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_NEW_CATEGORY_TITLE), TranslationManager.string(click.player, Translations.PROMPT_NEW_CATEGORY_SUBTITLE)) {
 
 				@Override
+				public void onExit(Player player) {
+					click.manager.showGUI(click.player, MarketOverviewView.this);
+				}
+
+				@Override
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string).replace(" ", "");
 					if (string.length() > 32) {
