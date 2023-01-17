@@ -46,4 +46,9 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 			setStock(getStock() + item.getAmount());
 		}
 	}
+
+	default boolean isCurrencyOfItem() {
+		final String[] split = getCurrency().split("/");
+		return split[1].equalsIgnoreCase("item");
+	}
 }
