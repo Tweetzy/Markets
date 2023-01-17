@@ -74,7 +74,7 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 		QuickItem quickItem = QuickItem.of(CompMaterial.PAPER);
 
 		if (currency instanceof final IconableCurrency iconableCurrency)
-			quickItem.item(iconableCurrency.getIcon());
+			quickItem = QuickItem.of(iconableCurrency.getIcon());
 
 		if (currency instanceof final FundsCurrency fundsCurrency) {
 			quickItem.name(fundsCurrency.getDisplayName());

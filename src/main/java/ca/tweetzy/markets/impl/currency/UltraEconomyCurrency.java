@@ -17,7 +17,7 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
-			setIcon(this.currency.getIcon().getAsItemStack().orElse(CompMaterial.PAPER.parseItem()));
+//			setIcon(this.currency.getIcon().getAsItemStack().orElse(CompMaterial.PAPER.parseItem()));
 		}
 	}
 

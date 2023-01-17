@@ -73,7 +73,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		if (playerMarket == null)
 			return false;
 
-		return playerMarket.getCategories().stream().map(Category::getItems).count() < maxAllowedItems;
+		return playerMarket.getCategories().stream().map(Category::getItems).count()> maxAllowedItems;
 	}
 
 	public int getMaxAllowedMarketCategories(@NonNull final Player player) {
@@ -104,7 +104,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		if (playerMarket == null)
 			return false;
 
-		return playerMarket.getCategories().size() < maxAllowedCategories;
+		return playerMarket.getCategories().size() > maxAllowedCategories;
 	}
 
 
