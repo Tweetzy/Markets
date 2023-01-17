@@ -15,6 +15,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_NAME_TOO_LONG = create("market name too long", "&cMarket name too long, max is 72 characters.");
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("category name too long", "&cCategory name too long, max is 32 characters.");
 	public static TranslationEntry CATEGORY_NAME_USED = create("category name used", "&cYou already have a category named&F: &4%category_name%");
+	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("take out item", "&cPlease remove your item from the menu first!");
 
 
 	public static TranslationEntry COLOURS_SUCCESS = create("colours.success", "#009933,#66FF99");

@@ -58,8 +58,25 @@ public final class CategoryNewItemView extends BaseGUI {
 
 		if (this.marketItem.getItem().getType() != CompMaterial.AIR.parseMaterial()) setItem(1, 4, this.marketItem.getItem());
 
+		if (this.marketItem.getCurrencyItem() != null && this.marketItem.isCurrencyOfItem()) {
+			final ItemStack currencyItem = this.marketItem.getCurrencyItem().clone();
 
-		setButton(2, 4, QuickItem.of(CompMaterial.SUNFLOWER).name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>").lore("&7The current price is &f: &a$" + this.marketItem.getPrice()).make(), click -> {
+			setItem(3, 4, QuickItem
+					.of(currencyItem)
+					.lore(
+							"&7----------------------------",
+							"&d&oThis item is the custom currency",
+							"&7----------------------------"
+					)
+					.make()
+			);
+		}
+
+		setButton(2, 4, QuickItem
+				.of(CompMaterial.SUNFLOWER)
+				.name("<GRADIENT:65B1B4>&LItem Price</GRADIENT:2B6F8A>")
+				.lore("&7The current price is &f: &a$" + this.marketItem.getPrice())
+				.make(), click -> {
 
 			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
@@ -109,7 +126,7 @@ public final class CategoryNewItemView extends BaseGUI {
 				this.marketItem.setCurrency(currency.getStoreableName());
 
 				if (item != null)
-					this.marketItem.setItem(item);
+					this.marketItem.setCurrencyItem(item);
 
 				click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
 			}));
@@ -144,7 +161,7 @@ public final class CategoryNewItemView extends BaseGUI {
 			final ItemStack placedItem = getItem(1, 4);
 
 			if (placedItem != null) {
-				Common.tell(click.player, "&ctake yo shit out first");//todo add msg for dis
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.TAKE_OUT_ITEM_FIRST));//todo add msg for dis
 				return;
 			}
 
