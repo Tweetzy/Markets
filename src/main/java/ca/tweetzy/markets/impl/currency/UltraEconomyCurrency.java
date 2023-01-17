@@ -1,21 +1,24 @@
 package ca.tweetzy.markets.impl.currency;
 
-import ca.tweetzy.markets.api.currency.AbstractCurrency;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.markets.api.currency.IconableCurrency;
 import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
 import org.bukkit.OfflinePlayer;
 
-public final class UltraEconomyCurrency extends AbstractCurrency {
+public final class UltraEconomyCurrency extends IconableCurrency {
 
 	private final Currency currency;
 
 	public UltraEconomyCurrency(String currencyName) {
-		super("UltraEconomy", currencyName, "");
+		super("UltraEconomy", currencyName, "", CompMaterial.PAPER.parseItem());
 		this.currency = UltraEconomy.getAPI().getCurrencies().name(currencyName).orElse(null);
 
-		if (this.currency != null)
-			this.displayName = this.currency.getName();
+		if (this.currency != null) {
+			setDisplayName(this.currency.getName());
+			setIcon(this.currency.getIcon().getAsItemStack().orElse(CompMaterial.PAPER.parseItem()));
+		}
 	}
 
 	@Override

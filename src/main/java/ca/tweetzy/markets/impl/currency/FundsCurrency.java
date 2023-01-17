@@ -1,21 +1,24 @@
 package ca.tweetzy.markets.impl.currency;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.funds.api.FundsAPI;
 import ca.tweetzy.funds.api.interfaces.Account;
 import ca.tweetzy.funds.api.interfaces.Currency;
-import ca.tweetzy.markets.api.currency.AbstractCurrency;
+import ca.tweetzy.markets.api.currency.IconableCurrency;
 import org.bukkit.OfflinePlayer;
 
-public final class FundsCurrency extends AbstractCurrency {
+public final class FundsCurrency extends IconableCurrency {
 
 	private final Currency currency;
 
 	public FundsCurrency(String currencyName) {
-		super("Funds", currencyName, "");
+		super("Funds", currencyName, "", CompMaterial.PAPER.parseItem());
 		this.currency = FundsAPI.getInstance().getCurrency(currencyName);
 
-		if (this.currency != null)
-			this.displayName = this.currency.getName();
+		if (this.currency != null) {
+			setDisplayName(this.currency.getName());
+			setIcon(this.currency.getIcon().parseItem());
+		}
 	}
 
 	@Override
