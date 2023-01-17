@@ -157,7 +157,7 @@ public final class CategoryNewItemView extends BaseGUI {
 			final ItemStack placedItem = getItem(1, 4);
 
 			if (placedItem != null) {
-				Common.tell(click.player, TranslationManager.string(click.player, Translations.TAKE_OUT_ITEM_FIRST));//todo add msg for dis
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.TAKE_OUT_ITEM_FIRST));
 				return;
 			}
 

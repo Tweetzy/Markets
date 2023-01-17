@@ -180,6 +180,19 @@ public final class Translations extends TranslationManager {
 			"&7----------------------------"
 	);
 
+
+
+	public static TranslationEntry GUI_CURRENCY_PICKER_TITLE = create("gui.currency picker.title", "&eMarkets &f- &7Pick a currency");
+	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME = create("gui.currency picker.items.custom currency.name", "<GRADIENT:65B1B4>&lCustom Item</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.currency picker.items.custom currency.lore",
+			"&7If you want to use use a specific item for",
+			"&7the currency, you can set that here.",
+			"",
+			"&b&l%right_click% &7to open a material picker &eor",
+			"&a&l%left_click% &7with the item you want to use",
+			"&7as the currency onto this icon."
+	);
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}

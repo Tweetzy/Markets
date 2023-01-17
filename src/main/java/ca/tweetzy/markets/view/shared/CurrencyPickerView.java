@@ -11,6 +11,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
+import ca.tweetzy.markets.api.currency.IconableCurrency;
 import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.settings.Translations;
@@ -28,7 +29,7 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public CurrencyPickerView(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, "&ePick a Currency", 6, Markets.getCurrencyManager().getManagerContent());
+		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), 6, Markets.getCurrencyManager().getManagerContent());
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
@@ -40,15 +41,9 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 		// custom item
 		setButton(getRows() - 1, 4, QuickItem
 				.of(CompMaterial.HOPPER)
-				.name("<GRADIENT:65B1B4>&lCustom Item</GRADIENT:2B6F8A>")
-				.lore(Replacer.replaceVariables(List.of(
-								"&7If you want to use use a specific item for",
-								"&7the currency, you can set that here.",
-								"",
-								"&b&l%right_click% &7to open a material picker &eor",
-								"&a&l%left_click% &7with the item you want to use",
-								"&7as the currency onto this icon."
-						),
+				.name(TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME))
+				.lore(Replacer.replaceVariables(
+						TranslationManager.list(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_LORE),
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				)).make(), click -> {
@@ -78,10 +73,13 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 	protected ItemStack makeDisplayItem(AbstractCurrency currency) {
 		QuickItem quickItem = QuickItem.of(CompMaterial.PAPER);
 
+		if (currency instanceof final IconableCurrency iconableCurrency)
+			quickItem.item(iconableCurrency.getIcon());
+
 		if (currency instanceof final FundsCurrency fundsCurrency) {
 			quickItem.name(fundsCurrency.getDisplayName());
 		} else {
-			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : currency.getOwningPlugin() + " - " + currency.getCurrencyName());
+			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : "&e"+ currency.getCurrencyName());
 		}
 
 		quickItem.lore(Replacer.replaceVariables(List.of(
