@@ -63,11 +63,7 @@ public final class CategoryNewItemView extends BaseGUI {
 
 			setItem(3, 4, QuickItem
 					.of(currencyItem)
-					.lore(
-							"&7----------------------------",
-							"&d&oThis item is the custom currency",
-							"&7----------------------------"
-					)
+					.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CUSTOM_CURRENCY_LORE))
 					.make()
 			);
 		}

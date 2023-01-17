@@ -10,7 +10,6 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;

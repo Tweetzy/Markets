@@ -173,8 +173,12 @@ public final class Translations extends TranslationManager {
 			"",
 			"&a&l%left_click% &7to toggle offers"
 	);
-	
 
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.category add item.items.custom currency.lore",
+			"&7----------------------------",
+			"&eThis item is the custom currency",
+			"&7----------------------------"
+	);
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
