@@ -69,7 +69,7 @@ public final class CategoryNewItemView extends BaseGUI {
 		}
 
 		setButton(2, 4, QuickItem
-				.of(CompMaterial.SUNFLOWER)
+				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_LORE, "market_item_price", this.marketItem.getPrice()))
 				.make(), click -> {
