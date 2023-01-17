@@ -16,9 +16,13 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("category name too long", "&cCategory name too long, max is 32 characters.");
 	public static TranslationEntry CATEGORY_NAME_USED = create("category name used", "&cYou already have a category named&F: &4%category_name%");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("take out item", "&cPlease remove your item from the menu first!");
+	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("at maximum category limit", "&cYou aren't allowed to create more categories.");
 
 
-	public static TranslationEntry COLOURS_SUCCESS = create("colours.success", "#009933,#66FF99");
+	// inputs
+	public static TranslationEntry PROMPT_NEW_CATEGORY_TITLE = create("prompts.new category.title", "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_NEW_CATEGORY_SUBTITLE = create("prompts.new category.subtitle", "&fEnter new category id into chat");
+
 
 
 	// guis
