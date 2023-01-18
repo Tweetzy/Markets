@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public final class PlayerJoinListener implements Listener {
 
-	@EventHandler // TODO possibly adjust priority
+	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 

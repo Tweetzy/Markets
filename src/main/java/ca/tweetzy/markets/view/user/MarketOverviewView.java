@@ -147,7 +147,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 	@Override
 	protected ItemStack makeDisplayItem(Category category) {
-		return QuickItem.of(category.getIcon()).name(category.getDisplayName()).lore(category.getDescription()).hideTags(true)//todo make this shit customizable
+		return QuickItem.of(category.getIcon()).name(category.getDisplayName()).lore(category.getDescription()).hideTags(true)
 				.make();
 	}
 
