@@ -22,6 +22,9 @@ public final class PlayerMarket extends AbstractMarket {
 
 	private final List<Category> categories;
 	private final List<Rating> ratings;
+	private final List<UUID> bannedUsers;
+	private boolean open;
+	private boolean closeWhenOutOfStock;
 
 	private final long createdAt;
 	private long updatedAt;
@@ -34,6 +37,9 @@ public final class PlayerMarket extends AbstractMarket {
 			@NonNull final List<String> description,
 			@NonNull final List<Category> categories,
 			@NonNull final List<Rating> ratings,
+			@NonNull final List<UUID> bannedUsers,
+			final boolean open,
+			final boolean closeWhenOutOfStock,
 			final long createdAt,
 			final long updatedAt
 	) {
@@ -45,6 +51,9 @@ public final class PlayerMarket extends AbstractMarket {
 		this.description = description;
 		this.categories = categories;
 		this.ratings = ratings;
+		this.bannedUsers = bannedUsers;
+		this.open = open;
+		this.closeWhenOutOfStock = closeWhenOutOfStock;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -82,6 +91,31 @@ public final class PlayerMarket extends AbstractMarket {
 	@Override
 	public @NonNull List<Rating> getRatings() {
 		return this.ratings;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return this.open;
+	}
+
+	@Override
+	public List<UUID> getBannedUsers() {
+		return this.bannedUsers;
+	}
+
+	@Override
+	public boolean isCloseWhenOutOfStock() {
+		return this.closeWhenOutOfStock;
+	}
+
+	@Override
+	public void setOpen(boolean open) {
+		this.open = open;
+	}
+
+	@Override
+	public void setCloseWhenOutOfStock(boolean closeWhenOutOfStock) {
+		this.closeWhenOutOfStock = closeWhenOutOfStock;
 	}
 
 	@Override

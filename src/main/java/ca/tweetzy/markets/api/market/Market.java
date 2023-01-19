@@ -18,4 +18,14 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 
 	@NonNull List<Rating> getRatings();
 
+	boolean isOpen();
+
+	List<UUID> getBannedUsers();
+
+	boolean isCloseWhenOutOfStock();
+
+	void setOpen(final boolean open);
+
+	void setCloseWhenOutOfStock(final boolean closeWhenOutOfStock);
+
 }
