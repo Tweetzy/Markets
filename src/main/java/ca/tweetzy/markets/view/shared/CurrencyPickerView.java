@@ -48,7 +48,7 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				)).make(), click -> {
 
-			if (click.clickType == ClickType.RIGHT){
+			if (click.clickType == ClickType.RIGHT) {
 				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
 					if (selected != null) {
 						this.selectedCurrency.accept(new ItemCurrency(), selected.parseItem());
@@ -79,7 +79,7 @@ public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
 		if (currency instanceof final FundsCurrency fundsCurrency) {
 			quickItem.name(fundsCurrency.getDisplayName());
 		} else {
-			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : "&e"+ currency.getCurrencyName());
+			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : "&e" + currency.getCurrencyName());
 		}
 
 		quickItem.lore(Replacer.replaceVariables(List.of(
