@@ -36,6 +36,9 @@ public final class MarketManager extends ListManager<Market> {
 				List.of("&aWelcome to my market"),
 				new ArrayList<>(),
 				new ArrayList<>(),
+				new ArrayList<>(),
+				true,
+				false,
 				System.currentTimeMillis(),
 				System.currentTimeMillis()
 		);

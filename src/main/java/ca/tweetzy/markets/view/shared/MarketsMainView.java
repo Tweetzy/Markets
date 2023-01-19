@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user;
+package ca.tweetzy.markets.view.shared;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.template.BaseGUI;
@@ -7,6 +7,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.settings.Translations;
+import ca.tweetzy.markets.view.user.market.MarketOverviewView;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 

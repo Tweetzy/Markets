@@ -57,7 +57,8 @@ public final class Markets extends FlightPlugin {
 				new _3_CategoryItemMigration(),
 				new _4_CategoryItemCurrencyMigration(),
 				new _5_UserProfilePrefsMigration(),
-				new _6_MarketItemOffersColMigration()
+				new _6_MarketItemOffersColMigration(),
+				new _7_MarketSettingsInitialMigration()
 		);
 
 		// run migrations for tables

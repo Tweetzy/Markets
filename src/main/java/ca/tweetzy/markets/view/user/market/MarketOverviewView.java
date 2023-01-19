@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user;
+package ca.tweetzy.markets.view.user.market;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
@@ -12,6 +12,8 @@ import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
+import ca.tweetzy.markets.view.shared.MarketsMainView;
+import ca.tweetzy.markets.view.user.category.MarketCategoryEditView;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -89,9 +91,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_LORE))
-				.make(), click -> {
-
-		});
+				.make(), click -> click.manager.showGUI(click.player, new MarketSettingsView(this.player, this.market)));
 
 		// create category
 		setButton(getRows() - 1, 4, QuickItem

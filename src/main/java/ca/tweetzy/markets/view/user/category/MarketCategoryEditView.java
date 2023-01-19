@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user;
+package ca.tweetzy.markets.view.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
+import ca.tweetzy.markets.view.user.market.MarketOverviewView;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;

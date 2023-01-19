@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user;
+package ca.tweetzy.markets.view.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
