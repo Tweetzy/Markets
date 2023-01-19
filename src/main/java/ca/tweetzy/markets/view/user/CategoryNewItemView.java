@@ -95,6 +95,12 @@ public final class CategoryNewItemView extends BaseGUI {
 					}
 
 					final double price = Double.parseDouble(string);
+					if (price <= 0) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.MUST_BE_HIGHER_THAN_ZERO, "value", string));
+
+						return false;
+					}
+
 					CategoryNewItemView.this.marketItem.setPrice(price);
 
 					click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
@@ -103,8 +109,10 @@ public final class CategoryNewItemView extends BaseGUI {
 			};
 		});
 
+		drawPriceForAllButton();
+
 		// currency
-		setButton(getRows() - 1, 6, QuickItem
+		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
 				.name(Translations.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
 				.lore(Translations.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
@@ -135,7 +143,10 @@ public final class CategoryNewItemView extends BaseGUI {
 		setButton(getRows() - 1, 4, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK))).make(), click -> {
 
 			final ItemStack placedItem = getItem(1, 4);
-			if (placedItem == null) return;
+			if (placedItem == null) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_ITEM_TO_ADD));
+				return;
+			}
 
 			this.marketItem.setItem(placedItem.clone());
 			this.marketItem.setStock(placedItem.clone().getAmount());
@@ -171,4 +182,20 @@ public final class CategoryNewItemView extends BaseGUI {
 			click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
 		});
 	}
+
+	private void drawPriceForAllButton() {
+		setButton(getRows() - 1, 6, QuickItem
+				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+						"enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
+				.hideTags(true)
+				.make(), click -> {
+
+			this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
+			click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
+		});
+	}
+
 }

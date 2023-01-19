@@ -17,6 +17,8 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry CATEGORY_NAME_USED = create("category name used", "&cYou already have a category named&F: &4%category_name%");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("take out item", "&cPlease remove your item from the menu first!");
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("at maximum category limit", "&cYou aren't allowed to create more categories.");
+	public static TranslationEntry PLACE_ITEM_TO_ADD = create("placed item to add", "&cPlease put the item you wish to add into the empty slot");
+	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("must be higher than zero", "&cPlease enter a number that is higher than 0");
 
 
 	// inputs
@@ -172,6 +174,17 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: %enabled%",
 			"",
 			"&a&l%left_click% &7to toggle offers"
+	);
+
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME = create("gui.category add item.items.price for all.name", "<GRADIENT:65B1B4>&lToggle 'Wholesale'</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE = create("gui.category add item.items.price for all.lore",
+			"&7By default the price will be for a single item",
+			"&7from the entire stack/stock. If enabled, the price will",
+			"&7be for the entire stack/stock that is available.",
+			"",
+			"&7Current&f: %enabled%",
+			"",
+			"&a&l%left_click% &7to toggle price mode"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.category add item.items.custom currency.lore",
