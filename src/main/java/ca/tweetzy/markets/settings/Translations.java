@@ -104,6 +104,18 @@ public final class Translations extends TranslationManager {
 			"&7you wish to use as the category icon."
 	);
 
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_MARKET_ITEM_LORE = create("gui.market category edit.items.market item.lore",
+			"&7----------------------------",
+			"&7Price&f: &a%market_item_price%",
+			"&7Currency&f: &e%market_item_currency%",
+			"&7Stock&f: &e%market_item_stock%",
+			"",
+			"&a&l%left_click% &7to edit price",
+			"&b&l%right_click% &7to edit settings",
+			"&c&l%drop_button% &7to remove item",
+			"&7----------------------------"
+	);
+
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME = create("gui.market category edit.items.display name.name", "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE = create("gui.market category edit.items.display name.lore",
 			"&7The display name of your category, this",
