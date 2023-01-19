@@ -35,7 +35,6 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_MARKET_DESC_SUBTITLE = create("prompts.market description.subtitle", "&fEnter new description into chat");
 
 
-
 	// guis
 	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
 
@@ -206,7 +205,6 @@ public final class Translations extends TranslationManager {
 	);
 
 
-
 	public static TranslationEntry GUI_CURRENCY_PICKER_TITLE = create("gui.currency picker.title", "&eMarkets &f- &7Pick a currency");
 	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME = create("gui.currency picker.items.custom currency.name", "<GRADIENT:65B1B4>&lCustom Item</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.currency picker.items.custom currency.lore",
@@ -217,6 +215,18 @@ public final class Translations extends TranslationManager {
 			"&a&l%left_click% &7with the item you want to use",
 			"&7as the currency onto this icon."
 	);
+
+	public static TranslationEntry GUI_MARKET_SETTINGS_TITLE = create("gui.market settings.title", "&eMarkets &f- &7Settings");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_TOGGLE_OPEN_NAME = create("gui.market settings.items.toggle open.name", "<GRADIENT:65B1B4>&lToggle Open</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_TOGGLE_OPEN_LORE = create("gui.market settings.items.toggle open.lore",
+			"&7Used to toggle whether or not your market",
+			"&7is open/closed. If closed, player's will not see it.",
+			"",
+			"&7Current&F: %open%",
+			"",
+			"&a&l%left_click% &7to open/close market"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
