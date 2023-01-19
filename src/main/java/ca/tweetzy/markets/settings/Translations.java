@@ -227,6 +227,16 @@ public final class Translations extends TranslationManager {
 			"&a&l%left_click% &7to open/close market"
 	);
 
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_TOGGLE_CLOSE_WHEN_OUT_OF_STOCK_NAME = create("gui.market settings.items.toggle close when out of stock.name", "<GRADIENT:65B1B4>&lToggle Auto Close</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_TOGGLE_CLOSE_WHEN_OUT_OF_STOCK_LORE = create("gui.market settings.items.toggle close when out of stock.lore",
+			"&7Used to toggle whether or not your market",
+			"&7will auto close when you completely run out of stock.",
+			"",
+			"&7Current&F: %enabled%",
+			"",
+			"&a&l%left_click% &7to toggle auto close"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
