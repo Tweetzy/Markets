@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user.category;
+package ca.tweetzy.markets.gui.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
@@ -14,22 +14,22 @@ import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
-import ca.tweetzy.markets.view.shared.CurrencyPickerView;
+import ca.tweetzy.markets.gui.shared.CurrencyPickerGUI;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public final class CategoryNewItemView extends BaseGUI {
+public final class CategoryNewItemGUI extends BaseGUI {
 
 	private final Player player;
 	private final Market market;
 	private final Category category;
 	private final MarketItem marketItem;
 
-	public CategoryNewItemView(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, final MarketItem marketItem) {
-		super(new MarketCategoryEditView(player, market, category), TranslationManager.string(Translations.GUI_CATEGORY_ADD_ITEM_TITLE, "category_name", category.getName()), 6);
+	public CategoryNewItemGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, final MarketItem marketItem) {
+		super(new MarketCategoryEditGUI(player, market, category), TranslationManager.string(Translations.GUI_CATEGORY_ADD_ITEM_TITLE, "category_name", category.getName()), 6);
 		this.player = player;
 		this.market = market;
 		this.category = category;
@@ -49,7 +49,7 @@ public final class CategoryNewItemView extends BaseGUI {
 		draw();
 	}
 
-	public CategoryNewItemView(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
+	public CategoryNewItemGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
 		this(player, market, category, null);
 	}
 
@@ -82,7 +82,7 @@ public final class CategoryNewItemView extends BaseGUI {
 
 				@Override
 				public void onExit(Player player) {
-					click.manager.showGUI(click.player, CategoryNewItemView.this);
+					click.manager.showGUI(click.player, CategoryNewItemGUI.this);
 				}
 
 				@Override
@@ -101,9 +101,9 @@ public final class CategoryNewItemView extends BaseGUI {
 						return false;
 					}
 
-					CategoryNewItemView.this.marketItem.setPrice(price);
+					CategoryNewItemGUI.this.marketItem.setPrice(price);
 
-					click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
+					click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
 					return true;
 				}
 			};
@@ -124,7 +124,7 @@ public final class CategoryNewItemView extends BaseGUI {
 			if (placedItem != null && placedItem.getType() != CompMaterial.AIR.parseMaterial())
 				this.marketItem.setItem(placedItem);
 
-			click.manager.showGUI(click.player, new CurrencyPickerView(this, click.player, (currency, item) -> {
+			click.manager.showGUI(click.player, new CurrencyPickerGUI(this, click.player, (currency, item) -> {
 				click.gui.exit();
 
 				this.marketItem.setCurrency(currency.getStoreableName());
@@ -132,7 +132,7 @@ public final class CategoryNewItemView extends BaseGUI {
 				if (item != null)
 					this.marketItem.setCurrencyItem(item);
 
-				click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
+				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
 			}));
 		});
 
@@ -156,7 +156,7 @@ public final class CategoryNewItemView extends BaseGUI {
 			Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), created -> {
 				if (created) {
 					setItem(1, 4, CompMaterial.AIR.parseItem());
-					click.manager.showGUI(click.player, new MarketCategoryEditView(this.player, this.market, this.category));
+					click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
 				}
 			});
 		});
@@ -172,14 +172,14 @@ public final class CategoryNewItemView extends BaseGUI {
 				return;
 			}
 
-			click.manager.showGUI(click.player, new MarketCategoryEditView(this.player, this.market, this.category));
+			click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
 		});
 	}
 
 	private void drawOffersButton() {
 		setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
 			this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
-			click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
+			click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
 		});
 	}
 
@@ -194,7 +194,7 @@ public final class CategoryNewItemView extends BaseGUI {
 				.make(), click -> {
 
 			this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
-			click.manager.showGUI(click.player, new CategoryNewItemView(CategoryNewItemView.this.player, CategoryNewItemView.this.market, CategoryNewItemView.this.category, CategoryNewItemView.this.marketItem));
+			click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
 		});
 	}
 

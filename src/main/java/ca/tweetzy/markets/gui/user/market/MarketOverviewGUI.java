@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user.market;
+package ca.tweetzy.markets.gui.user.market;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
@@ -12,8 +12,8 @@ import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
-import ca.tweetzy.markets.view.shared.MarketsMainView;
-import ca.tweetzy.markets.view.user.category.MarketCategoryEditView;
+import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,13 +21,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public final class MarketOverviewView extends PagedGUI<Category> {
+public final class MarketOverviewGUI extends PagedGUI<Category> {
 
 	private final Player player;
 	private final Market market;
 
-	public MarketOverviewView(@NonNull final Player player, @NonNull final Market market) {
-		super(new MarketsMainView(player), TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
+	public MarketOverviewGUI(@NonNull final Player player, @NonNull final Market market) {
+		super(new MarketsMainGUI(player), TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
 		this.player = player;
 		this.market = market;
 
@@ -46,7 +46,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 			@Override
 			public void onExit(Player player) {
-				click.manager.showGUI(click.player, MarketOverviewView.this);
+				click.manager.showGUI(click.player, MarketOverviewGUI.this);
 			}
 
 			@Override
@@ -56,9 +56,9 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 					return false;
 				}
 
-				MarketOverviewView.this.market.setDisplayName(string);
-				MarketOverviewView.this.market.sync(result -> {
-					if (result == SynchronizeResult.SUCCESS) click.manager.showGUI(click.player, new MarketOverviewView(click.player, MarketOverviewView.this.market));
+				MarketOverviewGUI.this.market.setDisplayName(string);
+				MarketOverviewGUI.this.market.sync(result -> {
+					if (result == SynchronizeResult.SUCCESS) click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
 				});
 				return true;
 			}
@@ -73,14 +73,14 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 			@Override
 			public void onExit(Player player) {
-				click.manager.showGUI(click.player, MarketOverviewView.this);
+				click.manager.showGUI(click.player, MarketOverviewGUI.this);
 			}
 
 			@Override
 			public boolean onResult(String string) {
-				MarketOverviewView.this.market.setDescription(List.of(string));
-				MarketOverviewView.this.market.sync(result -> {
-					if (result == SynchronizeResult.SUCCESS) click.manager.showGUI(click.player, new MarketOverviewView(click.player, MarketOverviewView.this.market));
+				MarketOverviewGUI.this.market.setDescription(List.of(string));
+				MarketOverviewGUI.this.market.sync(result -> {
+					if (result == SynchronizeResult.SUCCESS) click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
 				});
 				return true;
 			}
@@ -91,7 +91,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_LORE))
-				.make(), click -> click.manager.showGUI(click.player, new MarketSettingsView(this.player, this.market)));
+				.make(), click -> click.manager.showGUI(click.player, new MarketSettingsGUI(this.player, this.market)));
 
 		// create category
 		setButton(getRows() - 1, 4, QuickItem
@@ -109,7 +109,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 				@Override
 				public void onExit(Player player) {
-					click.manager.showGUI(click.player, MarketOverviewView.this);
+					click.manager.showGUI(click.player, MarketOverviewGUI.this);
 				}
 
 				@Override
@@ -121,13 +121,13 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 					}
 
 					// check category name beforehand
-					if (Markets.getCategoryManager().doesCategoryExistAlready(MarketOverviewView.this.market, string.toLowerCase())) {
+					if (Markets.getCategoryManager().doesCategoryExistAlready(MarketOverviewGUI.this.market, string.toLowerCase())) {
 						Common.tell(click.player, TranslationManager.string(Translations.CATEGORY_NAME_USED, "category_name", string));
 						return false;
 					}
 
-					Markets.getCategoryManager().create(MarketOverviewView.this.market, string, created -> {
-						click.manager.showGUI(click.player, new MarketOverviewView(click.player, MarketOverviewView.this.market));
+					Markets.getCategoryManager().create(MarketOverviewGUI.this.market, string, created -> {
+						click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
 					});
 
 					return true;
@@ -153,7 +153,7 @@ public final class MarketOverviewView extends PagedGUI<Category> {
 
 	@Override
 	protected void onClick(Category category, GuiClickEvent click) {
-		click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, this.market, category));
+		click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, this.market, category));
 	}
 
 	@Override

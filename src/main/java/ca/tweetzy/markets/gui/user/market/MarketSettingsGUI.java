@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user.market;
+package ca.tweetzy.markets.gui.user.market;
 
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
@@ -9,14 +9,14 @@ import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
-public final class MarketSettingsView extends BaseGUI {
+public final class MarketSettingsGUI extends BaseGUI {
 
 	private final Player player;
 	private final Market market;
 
 
-	public MarketSettingsView(@NonNull final Player player, @NonNull final Market market) {
-		super(new MarketOverviewView(player, market), TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
+	public MarketSettingsGUI(@NonNull final Player player, @NonNull final Market market) {
+		super(new MarketOverviewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
 		this.player = player;
 		this.market = market;
 		draw();

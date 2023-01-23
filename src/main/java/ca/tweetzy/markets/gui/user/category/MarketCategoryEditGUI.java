@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.user.category;
+package ca.tweetzy.markets.gui.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
@@ -14,7 +14,7 @@ import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
-import ca.tweetzy.markets.view.user.market.MarketOverviewView;
+import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;
@@ -24,14 +24,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
+public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 
 	private final Player player;
 	private final Market market;
 	private final Category category;
 
-	public MarketCategoryEditView(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketOverviewView(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_EDIT_TITLE, "category_name", category.getName()), 6, category.getItems());
+	public MarketCategoryEditGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
+		super(new MarketOverviewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_EDIT_TITLE, "category_name", category.getName()), 6, category.getItems());
 
 		this.player = player;
 		this.market = market;
@@ -54,16 +54,16 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 			@Override
 			public void onExit(Player player) {
-				click.manager.showGUI(click.player, MarketCategoryEditView.this);
+				click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
 			}
 
 			@Override
 			public boolean onResult(String string) {
 				if (string.length() > 72) return false; // TODO tell them it's too long
-				MarketCategoryEditView.this.category.setDisplayName(string);
-				MarketCategoryEditView.this.category.sync(result -> {
+				MarketCategoryEditGUI.this.category.setDisplayName(string);
+				MarketCategoryEditGUI.this.category.sync(result -> {
 					if (result == SynchronizeResult.SUCCESS)
-						click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
+						click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));
 				});
 				return true;
 			}
@@ -78,15 +78,15 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 
 			@Override
 			public void onExit(Player player) {
-				click.manager.showGUI(click.player, MarketCategoryEditView.this);
+				click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
 			}
 
 			@Override
 			public boolean onResult(String string) {
-				MarketCategoryEditView.this.category.setDescription(List.of(string));
-				MarketCategoryEditView.this.category.sync(result -> {
+				MarketCategoryEditGUI.this.category.setDescription(List.of(string));
+				MarketCategoryEditGUI.this.category.sync(result -> {
 					if (result == SynchronizeResult.SUCCESS)
-						click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
+						click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));
 				});
 				return true;
 			}
@@ -107,7 +107,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE))
-				.make(), click -> click.manager.showGUI(click.player, new CategoryNewItemView(this.player, this.market, this.category)));
+				.make(), click -> click.manager.showGUI(click.player, new CategoryNewItemGUI(this.player, this.market, this.category)));
 
 		// delete button
 		setButton(getRows() - 1, 8, QuickItem
@@ -117,7 +117,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 				.make(), click -> this.category.unStore(result -> {
 
 			if (result == SynchronizeResult.SUCCESS)
-				click.manager.showGUI(click.player, new MarketOverviewView(click.player, this.market));
+				click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, this.market));
 		}));
 	}
 
@@ -152,7 +152,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 						this.category.setIcon(selected.parseItem());
 						this.category.sync(result -> {
 							if (result == SynchronizeResult.SUCCESS)
-								click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
+								click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));
 						});
 					}
 				}));
@@ -184,7 +184,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 			case LEFT -> new TitleInput(Markets.getInstance(), click.player, "&eItem Price", "&fEnter item price in chat") {
 				@Override
 				public void onExit(Player player) {
-					click.manager.showGUI(click.player, MarketCategoryEditView.this);
+					click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
 				}
 
 				@Override
@@ -224,7 +224,7 @@ public final class MarketCategoryEditView extends PagedGUI<MarketItem> {
 	}
 
 	private void reopen(@NonNull GuiClickEvent click) {
-		click.manager.showGUI(click.player, new MarketCategoryEditView(click.player, MarketCategoryEditView.this.market, MarketCategoryEditView.this.category));
+		click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));
 
 	}
 

@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.view.shared;
+package ca.tweetzy.markets.gui.shared;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
@@ -23,12 +23,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public final class CurrencyPickerView extends PagedGUI<AbstractCurrency> {
+public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 
 	private final Player player;
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
-	public CurrencyPickerView(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
+	public CurrencyPickerGUI(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
 		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), 6, Markets.getCurrencyManager().getManagerContent());
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;

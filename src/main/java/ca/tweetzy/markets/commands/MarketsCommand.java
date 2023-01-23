@@ -4,7 +4,7 @@ import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.view.shared.MarketsMainView;
+import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +19,7 @@ public final class MarketsCommand extends Command {
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
 		if (sender instanceof final Player player) {
-			Markets.getGuiManager().showGUI(player, new MarketsMainView(player));
+			Markets.getGuiManager().showGUI(player, new MarketsMainGUI(player));
 			return ReturnType.SUCCESS;
 		}
 
