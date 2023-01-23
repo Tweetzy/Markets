@@ -23,10 +23,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class DataManager extends DataManagerAbstract {
 
@@ -74,7 +74,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void updateMarket(@NonNull final AbstractMarket market, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ?, banned_users = ?, open = ?, close_when_out_of_stock WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ?, banned_users = ?, open = ?, close_when_out_of_stock = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -419,6 +419,20 @@ public final class DataManager extends DataManagerAbstract {
 	}
 
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
+		final ArrayList<UUID> bannedUsers = new ArrayList<>();
+
+		if (resultSet.getString("banned_users") != null) {
+			final List<String> possibleUUIDS = Arrays.stream(resultSet.getString("banned_users").split(",")).toList();
+
+			for (String id : possibleUUIDS) {
+				try {
+					bannedUsers.add(UUID.fromString(id));
+				} catch (IllegalArgumentException ignored) {
+					continue;
+				}
+			}
+		}
+
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("owner")),
@@ -427,7 +441,7 @@ public final class DataManager extends DataManagerAbstract {
 				new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
 				new ArrayList<>(),
 				new ArrayList<>(),
-				resultSet.getString("banned_users") == null ? new ArrayList<>() : new ArrayList<>(Stream.of(resultSet.getString("banned_users").split(",")).map(UUID::fromString).collect(Collectors.toList())),
+				bannedUsers,
 				resultSet.getBoolean("open"),
 				resultSet.getBoolean("close_when_out_of_stock"),
 				resultSet.getLong("created_at"),

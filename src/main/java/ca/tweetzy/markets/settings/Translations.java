@@ -204,6 +204,8 @@ public final class Translations extends TranslationManager {
 			"&7----------------------------"
 	);
 
+	public static TranslationEntry GUI_USER_PICKER_TITLE = create("gui.user picker.title", "&eMarkets &f- &7Pick a user");
+
 
 	public static TranslationEntry GUI_CURRENCY_PICKER_TITLE = create("gui.currency picker.title", "&eMarkets &f- &7Pick a currency");
 	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME = create("gui.currency picker.items.custom currency.name", "<GRADIENT:65B1B4>&lCustom Item</GRADIENT:2B6F8A>");
@@ -244,6 +246,22 @@ public final class Translations extends TranslationManager {
 			"",
 			"&a&l%left_click% &7to edit banned users"
 	);
+
+	public static TranslationEntry GUI_MARKET_BANNED_USERS_TITLE = create("gui.market banned users.title", "&eMarkets &f- &7Settings &F- &cBans");
+	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_PLAYER_NAME = create("gui.market banned users.items.player.name", "<GRADIENT:65B1B4>&l%player_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_PLAYER_LORE = create("gui.market banned users.items.player.lore",
+			"&7This user is currently banned from",
+			"&7interacting with your market.",
+			"",
+			"&a&l%left_click% &7to unban them"
+	);
+
+	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN_NAME = create("gui.market banned users.items.new ban.name", "<GRADIENT:65B1B4>&lAdd Banned User</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN_LORE = create("gui.market banned users.items.new ban.lore",
+			"&7Used to add a new user to the ban list",
+			"&a&l%left_click% &7to ban a player"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
