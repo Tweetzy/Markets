@@ -70,5 +70,15 @@ public final class MarketSettingsGUI extends BaseGUI {
 	}
 
 	private void drawBannedUsersButton() {
+		setButton(1, 5, QuickItem
+				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_ITEM.getItemStack())
+				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_NAME))
+				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+				))
+				.make(), click -> {
+			// open banned users pannel
+
+		});
 	}
 }

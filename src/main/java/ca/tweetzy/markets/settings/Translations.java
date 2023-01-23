@@ -237,6 +237,13 @@ public final class Translations extends TranslationManager {
 			"&a&l%left_click% &7to toggle auto close"
 	);
 
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_NAME = create("gui.market settings.items.banned users.name", "<GRADIENT:65B1B4>&lBanned Users</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_LORE = create("gui.market settings.items.banned users.lore",
+			"&7Used to add and remove certain users from",
+			"&7your market ban list, banned users cannot buy anything.",
+			"",
+			"&a&l%left_click% &7to edit banned users"
+	);
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
