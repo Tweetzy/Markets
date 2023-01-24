@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.impl.market;
+package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
