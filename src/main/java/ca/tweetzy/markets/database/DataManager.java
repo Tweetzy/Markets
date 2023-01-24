@@ -6,14 +6,9 @@ import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
-import ca.tweetzy.markets.api.market.AbstractMarket;
-import ca.tweetzy.markets.api.market.Category;
-import ca.tweetzy.markets.api.market.MarketItem;
-import ca.tweetzy.markets.api.market.MarketUser;
-import ca.tweetzy.markets.impl.CategoryItem;
-import ca.tweetzy.markets.impl.MarketCategory;
-import ca.tweetzy.markets.impl.MarketPlayer;
-import ca.tweetzy.markets.impl.PlayerMarket;
+import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.impl.*;
+import ca.tweetzy.markets.impl.layout.HomeLayout;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -424,6 +419,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		final ArrayList<UUID> bannedUsers = new ArrayList<>();
+		Layout homeLayout, categoryLayout;
 
 		if (resultSet.getString("banned_users") != null) {
 			final List<String> possibleUUIDS = Arrays.stream(resultSet.getString("banned_users").split(",")).toList();
@@ -437,6 +433,9 @@ public final class DataManager extends DataManagerAbstract {
 			}
 		}
 
+		homeLayout = resultSet.getString("home_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("home_layout")) : new HomeLayout();
+		categoryLayout = resultSet.getString("category_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("category_layout")) : new HomeLayout();
+
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("owner")),
@@ -448,8 +447,8 @@ public final class DataManager extends DataManagerAbstract {
 				bannedUsers,
 				resultSet.getBoolean("open"),
 				resultSet.getBoolean("close_when_out_of_stock"),
-				null,
-				null,
+				homeLayout,
+				categoryLayout,
 				resultSet.getLong("created_at"),
 				resultSet.getLong("updated_at")
 		);
