@@ -5,6 +5,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.impl.PlayerMarket;
+import ca.tweetzy.markets.impl.layout.HomeLayout;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public final class MarketManager extends ListManager<Market> {
 		return getManagerContent().stream().filter(market -> market.getId().equals(uuid)).findFirst().orElse(null);
 	}
 
-	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
+	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {//todo add layout
 		final Market market = new PlayerMarket(
 				UUID.randomUUID(),
 				player.getUniqueId(),
@@ -39,6 +40,8 @@ public final class MarketManager extends ListManager<Market> {
 				new ArrayList<>(),
 				true,
 				false,
+				new HomeLayout(),
+				new HomeLayout(),
 				System.currentTimeMillis(),
 				System.currentTimeMillis()
 		);
