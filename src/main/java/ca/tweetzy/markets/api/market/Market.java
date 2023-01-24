@@ -24,6 +24,10 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 
 	boolean isCloseWhenOutOfStock();
 
+	Layout getHomeLayout();
+
+	Layout getCategoryLayout();
+
 	void setOpen(final boolean open);
 
 	void setCloseWhenOutOfStock(final boolean closeWhenOutOfStock);
