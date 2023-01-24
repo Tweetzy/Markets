@@ -37,7 +37,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarket(@NonNull final AbstractMarket market, final Callback<AbstractMarket> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "markets (id, type, display_name, description, owner, owner_name, created_at, updated_at, banned_users, open, close_when_out_of_stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "markets (id, type, display_name, description, owner, owner_name, created_at, updated_at, banned_users, open, close_when_out_of_stock, home_layout, category_layout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "markets WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -56,6 +56,8 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(9, market.getBannedUsers().stream().map(UUID::toString).collect(Collectors.joining(",")));
 				preparedStatement.setBoolean(10, market.isOpen());
 				preparedStatement.setBoolean(11, market.isCloseWhenOutOfStock());
+				preparedStatement.setString(12, market.getHomeLayout().getJSONString());
+				preparedStatement.setString(13, market.getCategoryLayout().getJSONString());
 
 				preparedStatement.executeUpdate();
 
@@ -74,7 +76,7 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void updateMarket(@NonNull final AbstractMarket market, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ?, banned_users = ?, open = ?, close_when_out_of_stock = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ?, banned_users = ?, open = ?, close_when_out_of_stock = ?, home_layout = ?, category_layout = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -87,7 +89,9 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setBoolean(6, market.isOpen());
 				preparedStatement.setBoolean(7, market.isCloseWhenOutOfStock());
 
-				preparedStatement.setString(8, market.getId().toString());
+				preparedStatement.setString(8, market.getHomeLayout().getJSONString());
+				preparedStatement.setString(9, market.getCategoryLayout().getJSONString());
+				preparedStatement.setString(10, market.getId().toString());
 
 				int result = preparedStatement.executeUpdate();
 
@@ -444,6 +448,8 @@ public final class DataManager extends DataManagerAbstract {
 				bannedUsers,
 				resultSet.getBoolean("open"),
 				resultSet.getBoolean("close_when_out_of_stock"),
+				null,
+				null,
 				resultSet.getLong("created_at"),
 				resultSet.getLong("updated_at")
 		);
