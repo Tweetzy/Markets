@@ -9,6 +9,7 @@ import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.commands.CommandAdmin;
+import ca.tweetzy.markets.commands.CommandView;
 import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
@@ -59,7 +60,8 @@ public final class Markets extends FlightPlugin {
 				new _4_CategoryItemCurrencyMigration(),
 				new _5_UserProfilePrefsMigration(),
 				new _6_MarketItemOffersColMigration(),
-				new _7_MarketSettingsInitialMigration()
+				new _7_MarketSettingsInitialMigration(),
+				new _8_MarketLayoutMigration()
 		);
 
 		// run migrations for tables
@@ -82,6 +84,7 @@ public final class Markets extends FlightPlugin {
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
+				new CommandView(),
 				new CommandAdmin()
 		);
 	}
