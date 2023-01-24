@@ -1,13 +1,21 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.api.market.Layout;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class MarketLayout implements Layout {
+@AllArgsConstructor
+public class MarketLayout implements Layout {
 
 	private int exitButtonSlot;
 	private int prevPageButtonSlot;
@@ -107,6 +115,61 @@ public final class MarketLayout implements Layout {
 
 	@Override
 	public String getJSONString() {
-		return null;
+		final JsonObject object = new JsonObject();
+
+		object.addProperty("exitButtonSlot", this.exitButtonSlot);
+		object.addProperty("prevPageButtonSlot", this.prevPageButtonSlot);
+		object.addProperty("nextPageButtonSlot", this.nextPageButtonSlot);
+		object.addProperty("ownerProfileButtonSlot", this.ownerProfileButtonSlot);
+		object.addProperty("reviewButtonSlot", this.reviewButtonSlot);
+		object.addProperty("searchButtonSlot", this.searchButtonSlot);
+
+		final JsonArray fillSlotsArray = new JsonArray();
+		this.fillSlots.forEach(fillSlotsArray::add);
+
+		object.addProperty("backgroundItem", SerializeUtil.encodeItem(this.background));
+		object.add("fillSlots", fillSlotsArray);
+
+		final JsonArray decorationsArray = new JsonArray();
+		this.decorations.forEach((slot, item) -> {
+			final JsonObject decoration = new JsonObject();
+
+			decoration.addProperty("slot", slot);
+			decoration.addProperty("item", SerializeUtil.encodeItem(item));
+
+			decorationsArray.add(decoration);
+		});
+
+		object.add("decorations", decorationsArray);
+
+		return object.toString();
+	}
+
+	public static MarketLayout decodeJSON(@NonNull final String json) {
+		final JsonObject parentObject = JsonParser.parseString(json).getAsJsonObject();
+		final JsonArray fillSlotsArray = parentObject.get("fillSlots").getAsJsonArray();
+		final JsonArray decorationsArray = parentObject.get("decorations").getAsJsonArray();
+
+		final List<Integer> fillSlots = new ArrayList<>();
+		final Map<Integer, ItemStack> decoration = new HashMap<>();
+
+		decorationsArray.forEach(element -> {
+			final JsonObject decoObj = element.getAsJsonObject();
+			decoration.put(decoObj.get("slot").getAsInt(), SerializeUtil.decodeItem(decoObj.get("item").getAsString()));
+		});
+
+		fillSlotsArray.forEach(element -> fillSlots.add(element.getAsInt()));
+
+		return new MarketLayout(
+				parentObject.get("exitButtonSlot").getAsInt(),
+				parentObject.get("prevPageButtonSlot").getAsInt(),
+				parentObject.get("nextPageButtonSlot").getAsInt(),
+				parentObject.get("ownerProfileButtonSlot").getAsInt(),
+				parentObject.get("reviewButtonSlot").getAsInt(),
+				parentObject.get("searchButtonSlot").getAsInt(),
+				fillSlots,
+				decoration,
+				SerializeUtil.decodeItem(parentObject.get("backgroundItem").getAsString())
+		);
 	}
 }
