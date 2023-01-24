@@ -19,6 +19,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("at maximum category limit", "&cYou aren't allowed to create more categories.");
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("must be higher than zero", "&cPlease enter a number that is higher than 0");
+	public static TranslationEntry NO_MARKET_FOUND = create("no market found", "&cCould not find any market for&F: &4%player_name%");
 
 
 	// inputs
@@ -247,6 +248,24 @@ public final class Translations extends TranslationManager {
 			"&a&l%left_click% &7to edit banned users"
 	);
 
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_NAME = create("gui.market settings.items.home layout.name", "<GRADIENT:65B1B4>&lHome Layout</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_LORE = create("gui.market settings.items.home layout.lore",
+			"&7The home layout is the main view",
+			"&7of your market, it's where all",
+			"&7of your will be shown",
+			"",
+			"&a&l%left_click% &7to edit home layout"
+	);
+
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_NAME = create("gui.market settings.items.category layout.name", "<GRADIENT:65B1B4>&lCategory Layout</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_LORE = create("gui.market settings.items.category layout.lore",
+			"&7The category layout is where all",
+			"&7the items you add in a category",
+			"&7will be shown to others.",
+			"",
+			"&a&l%left_click% &7to edit category layout"
+	);
+
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_TITLE = create("gui.market banned users.title", "&eMarkets &f- &7Settings &F- &cBans");
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_PLAYER_NAME = create("gui.market banned users.items.player.name", "<GRADIENT:65B1B4>&l%player_name%</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_PLAYER_LORE = create("gui.market banned users.items.player.lore",
@@ -261,7 +280,6 @@ public final class Translations extends TranslationManager {
 			"&7Used to add a new user to the ban list",
 			"&a&l%left_click% &7to ban a player"
 	);
-
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();

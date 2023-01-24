@@ -14,7 +14,6 @@ public final class MarketSettingsGUI extends BaseGUI {
 	private final Player player;
 	private final Market market;
 
-
 	public MarketSettingsGUI(@NonNull final Player player, @NonNull final Market market) {
 		super(new MarketOverviewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
 		this.player = player;
@@ -34,7 +33,10 @@ public final class MarketSettingsGUI extends BaseGUI {
 		// banned users
 		drawBannedUsersButton();
 
-		// layout?
+		// layout
+		drawHomeLayoutButton();
+
+		drawCategoryLayoutButton();
 
 		applyBackExit();
 	}
@@ -55,7 +57,7 @@ public final class MarketSettingsGUI extends BaseGUI {
 	}
 
 	private void drawCloseWhenOutOfStockButton() {
-		setButton(1, 3, QuickItem
+		setButton(1, 4, QuickItem
 				.of(this.market.isCloseWhenOutOfStock() ? Settings.GUI_MARKET_SETTINGS_ITEMS_CLOSE_WHEN_OUT_OF_STOCK_ENABLED_ITEM.getItemStack() : Settings.GUI_MARKET_SETTINGS_ITEMS_CLOSE_WHEN_OUT_OF_STOCK_DISABLED_ITEM.getItemStack())
 				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_TOGGLE_CLOSE_WHEN_OUT_OF_STOCK_NAME))
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_TOGGLE_CLOSE_WHEN_OUT_OF_STOCK_LORE,
@@ -70,12 +72,36 @@ public final class MarketSettingsGUI extends BaseGUI {
 	}
 
 	private void drawBannedUsersButton() {
-		setButton(1, 5, QuickItem
+		setButton(1, 7, QuickItem
 				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_ITEM.getItemStack())
 				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_NAME))
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
 				.make(), click -> click.manager.showGUI(click.player, new MarketBannedUsersGUI(this.player, this.market)));
+	}
+
+	private void drawHomeLayoutButton() {
+		setButton(3, 2, QuickItem
+				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_ITEM.getItemStack())
+				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_NAME))
+				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+				))
+				.make(), click ->  {
+
+		});
+	}
+
+	private void drawCategoryLayoutButton() {
+		setButton(3, 6, QuickItem
+				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_ITEM.getItemStack())
+				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_NAME))
+				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+				))
+				.make(), click ->  {
+
+		});
 	}
 }
