@@ -15,8 +15,8 @@ public final class _8_MarketLayoutMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "markets ADD home_layout TEXT NOT NULL;");
-			statement.execute("ALTER TABLE " + tablePrefix + "markets ADD category_layout TEXT NOT NULL;");
+			statement.execute("ALTER TABLE " + tablePrefix + "markets ADD home_layout TEXT;");
+			statement.execute("ALTER TABLE " + tablePrefix + "markets ADD category_layout TEXT;");
 		}
 	}
 }
