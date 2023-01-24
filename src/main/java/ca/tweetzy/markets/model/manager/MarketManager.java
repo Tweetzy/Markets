@@ -4,7 +4,7 @@ import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.impl.market.PlayerMarket;
+import ca.tweetzy.markets.impl.PlayerMarket;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 

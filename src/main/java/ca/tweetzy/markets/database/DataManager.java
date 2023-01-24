@@ -13,7 +13,7 @@ import ca.tweetzy.markets.api.market.MarketUser;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.impl.MarketCategory;
 import ca.tweetzy.markets.impl.MarketPlayer;
-import ca.tweetzy.markets.impl.market.PlayerMarket;
+import ca.tweetzy.markets.impl.PlayerMarket;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
