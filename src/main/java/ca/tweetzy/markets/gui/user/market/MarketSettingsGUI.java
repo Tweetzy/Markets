@@ -4,6 +4,7 @@ import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.api.market.MarketLayoutType;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -88,9 +89,7 @@ public final class MarketSettingsGUI extends BaseGUI {
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
-				.make(), click ->  {
-
-		});
+				.make(), click -> click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, MarketLayoutType.HOME)));
 	}
 
 	private void drawCategoryLayoutButton() {
@@ -100,8 +99,6 @@ public final class MarketSettingsGUI extends BaseGUI {
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
-				.make(), click ->  {
-
-		});
+				.make(), click -> click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, MarketLayoutType.CATEGORY)));
 	}
 }
