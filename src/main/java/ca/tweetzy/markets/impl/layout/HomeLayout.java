@@ -17,7 +17,7 @@ public final class HomeLayout extends MarketLayout {
 				53,
 				InventoryBorder.getInsideBorders(6),
 				new HashMap<>(),
-				CompMaterial.BLACK_STAINED_GLASS.parseItem()
+				CompMaterial.BLACK_STAINED_GLASS_PANE.parseItem()
 		);
 	}
 }
