@@ -37,7 +37,9 @@ public interface Layout extends Jsonable {
 
 	void setFillSlots(final List<Integer> slots);
 
-	Map<Integer, ItemStack> getDecoration(@NonNull final Map<Integer, ItemStack> decoration);
+	Map<Integer, ItemStack> getDecoration();
+
+	void setDecoration(@NonNull final Map<Integer, ItemStack> decoration);
 
 	ItemStack getBackgroundItem();
 

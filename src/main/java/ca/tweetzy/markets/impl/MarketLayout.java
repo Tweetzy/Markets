@@ -99,8 +99,13 @@ public class MarketLayout implements Layout {
 	}
 
 	@Override
-	public Map<Integer, ItemStack> getDecoration(@NonNull Map<Integer, ItemStack> decoration) {
-		return this.decorations = decoration;
+	public Map<Integer, ItemStack> getDecoration() {
+		return this.decorations;
+	}
+
+	@Override
+	public void setDecoration(@NonNull Map<Integer, ItemStack> decoration) {
+		this.decorations = decoration;
 	}
 
 	@Override
