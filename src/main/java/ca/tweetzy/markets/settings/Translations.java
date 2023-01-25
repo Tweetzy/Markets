@@ -20,6 +20,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("must be higher than zero", "&cPlease enter a number that is higher than 0");
 	public static TranslationEntry NO_MARKET_FOUND = create("no market found", "&cCould not find any market for&F: &4%player_name%");
+	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("one fill slot required", "&cThis layout requires at least one fill slot!");
 
 
 	// inputs
@@ -279,6 +280,44 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN_LORE = create("gui.market banned users.items.new ban.lore",
 			"&7Used to add a new user to the ban list",
 			"&a&l%left_click% &7to ban a player"
+	);
+
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_TITLE = create("gui.layout control picker.title", "&eMarkets &f- &7Select Layout Control");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT_NAME = create("gui.layout control picker.items.exit.name", "<GRADIENT:65B1B4>&lExit Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT_LORE = create("gui.layout control picker.items.exit.lore",
+			"&7Used to exit market menu",
+			"&a&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PROFILE_NAME = create("gui.layout control picker.items.profile.name", "<GRADIENT:65B1B4>&lProfile Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PROFILE_LORE = create("gui.layout control picker.items.profile.lore",
+			"&7Used to open your profile",
+			"&a&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_BACK_NAME = create("gui.layout control picker.items.prev page.name", "<GRADIENT:65B1B4>&lBack Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_BACK_LORE = create("gui.layout control picker.items.prev page.lore",
+			"&7Used to navigate back if theres multiple pages",
+			"&a&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_NAME = create("gui.layout control picker.items.next page.name", "<GRADIENT:65B1B4>&lNext Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_LORE = create("gui.layout control picker.items.next page.lore",
+			"&7Used to navigate forward if theres multiple pages",
+			"&a&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH_NAME = create("gui.layout control picker.items.search.name", "<GRADIENT:65B1B4>&lSearch Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH_LORE = create("gui.layout control picker.items.search.lore",
+			"&7Used to search your market for items",
+			"&a&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW_NAME = create("gui.layout control picker.items.review.name", "<GRADIENT:65B1B4>&lReview Button</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW_LORE = create("gui.layout control picker.items.review.lore",
+			"&7Used to open market review",
+			"&a&l%left_click% &7to select this control"
 	);
 
 	public static void init() {

@@ -45,6 +45,12 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_ITEM = create("gui.market settings.items.category layout.item", CompMaterial.CHEST.name());
 	public static ConfigEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN = create("gui.market banned users.items.new ban", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT = create("gui.layout control picker.items.exit", CompMaterial.BARRIER.name());
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PREV_PAGE = create("gui.layout control picker.items.prev page", CompMaterial.ARROW.name());
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_PAGE = create("gui.layout control picker.items.next page", CompMaterial.ARROW.name());
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH = create("gui.layout control picker.items.search", CompMaterial.DARK_OAK_SIGN.name());
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW = create("gui.layout control picker.items.review", CompMaterial.NETHER_STAR.name());
+
 	public static void init() {
 		Markets.getCoreConfig().init();
 	}
