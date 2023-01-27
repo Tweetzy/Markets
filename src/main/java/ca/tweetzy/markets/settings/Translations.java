@@ -1,5 +1,7 @@
 package ca.tweetzy.markets.settings;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
@@ -100,7 +102,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&f: %category_icon%",
 			"",
-			"&a&l%left_click% &7to use selector",
+			"&e&l%left_click% &7to use selector",
 			"&b&l%right_click% &7while holding the item",
 			"&7you wish to use as the category icon."
 	);
@@ -111,7 +113,7 @@ public final class Translations extends TranslationManager {
 			"&7Currency&f: &e%market_item_currency%",
 			"&7Stock&f: &e%market_item_stock%",
 			"",
-			"&a&l%left_click% &7to edit price",
+			"&e&l%left_click% &7to edit price",
 			"&b&l%right_click% &7to edit settings",
 			"&c&l%drop_button% &7to remove item",
 			"&7----------------------------"
@@ -176,7 +178,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&f: &e%market_item_currency%",
 			"",
-			"&a&l%left_click% &7to edit currency"
+			"&e&l%left_click% &7to edit currency"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME = create("gui.category add item.items.offers.name", "<GRADIENT:65B1B4>&lToggle Offers</GRADIENT:2B6F8A>");
@@ -186,7 +188,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&f: %enabled%",
 			"",
-			"&a&l%left_click% &7to toggle offers"
+			"&e&l%left_click% &7to toggle offers"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME = create("gui.category add item.items.price for all.name", "<GRADIENT:65B1B4>&lToggle 'Wholesale'</GRADIENT:2B6F8A>");
@@ -197,7 +199,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&f: %enabled%",
 			"",
-			"&a&l%left_click% &7to toggle price mode"
+			"&e&l%left_click% &7to toggle price mode"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.category add item.items.custom currency.lore",
@@ -216,7 +218,7 @@ public final class Translations extends TranslationManager {
 			"&7the currency, you can set that here.",
 			"",
 			"&b&l%right_click% &7to open a material picker &eor",
-			"&a&l%left_click% &7with the item you want to use",
+			"&e&l%left_click% &7with the item you want to use",
 			"&7as the currency onto this icon."
 	);
 
@@ -228,7 +230,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&F: %open%",
 			"",
-			"&a&l%left_click% &7to open/close market"
+			"&e&l%left_click% &7to open/close market"
 	);
 
 	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_TOGGLE_CLOSE_WHEN_OUT_OF_STOCK_NAME = create("gui.market settings.items.toggle close when out of stock.name", "<GRADIENT:65B1B4>&lToggle Auto Close</GRADIENT:2B6F8A>");
@@ -238,7 +240,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&7Current&F: %enabled%",
 			"",
-			"&a&l%left_click% &7to toggle auto close"
+			"&e&l%left_click% &7to toggle auto close"
 	);
 
 	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_NAME = create("gui.market settings.items.banned users.name", "<GRADIENT:65B1B4>&lBanned Users</GRADIENT:2B6F8A>");
@@ -246,7 +248,7 @@ public final class Translations extends TranslationManager {
 			"&7Used to add and remove certain users from",
 			"&7your market ban list, banned users cannot buy anything.",
 			"",
-			"&a&l%left_click% &7to edit banned users"
+			"&e&l%left_click% &7to edit banned users"
 	);
 
 	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_NAME = create("gui.market settings.items.home layout.name", "<GRADIENT:65B1B4>&lHome Layout</GRADIENT:2B6F8A>");
@@ -255,7 +257,10 @@ public final class Translations extends TranslationManager {
 			"&7of your market, it's where all",
 			"&7of your will be shown",
 			"",
-			"&a&l%left_click% &7to edit home layout"
+			"&e&l%left_click% &7to edit home layout",
+			"&b&l%right_click% &7to open item for bg",
+			"&d&l%right_click% &7with an item on your cursor",
+			"&7to set this layout's background"
 	);
 
 	public static TranslationEntry GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_NAME = create("gui.market settings.items.category layout.name", "<GRADIENT:65B1B4>&lCategory Layout</GRADIENT:2B6F8A>");
@@ -264,7 +269,10 @@ public final class Translations extends TranslationManager {
 			"&7the items you add in a category",
 			"&7will be shown to others.",
 			"",
-			"&a&l%left_click% &7to edit category layout"
+			"&e&l%left_click% &7to edit category layout",
+			"&b&l%right_click% &7to open item for bg",
+			"&d&l%right_click% &7with an item on your cursor",
+			"&7to set this layout's background"
 	);
 
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_TITLE = create("gui.market banned users.title", "&eMarkets &f- &7Settings &F- &cBans");
@@ -273,13 +281,13 @@ public final class Translations extends TranslationManager {
 			"&7This user is currently banned from",
 			"&7interacting with your market.",
 			"",
-			"&a&l%left_click% &7to unban them"
+			"&e&l%left_click% &7to unban them"
 	);
 
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN_NAME = create("gui.market banned users.items.new ban.name", "<GRADIENT:65B1B4>&lAdd Banned User</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN_LORE = create("gui.market banned users.items.new ban.lore",
 			"&7Used to add a new user to the ban list",
-			"&a&l%left_click% &7to ban a player"
+			"&e&l%left_click% &7to ban a player"
 	);
 
 
@@ -287,37 +295,87 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT_NAME = create("gui.layout control picker.items.exit.name", "<GRADIENT:65B1B4>&lExit Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT_LORE = create("gui.layout control picker.items.exit.lore",
 			"&7Used to exit market menu",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
 	);
 
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PROFILE_NAME = create("gui.layout control picker.items.profile.name", "<GRADIENT:65B1B4>&lProfile Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PROFILE_LORE = create("gui.layout control picker.items.profile.lore",
 			"&7Used to open your profile",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
 	);
 
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_BACK_NAME = create("gui.layout control picker.items.prev page.name", "<GRADIENT:65B1B4>&lBack Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_BACK_LORE = create("gui.layout control picker.items.prev page.lore",
 			"&7Used to navigate back if theres multiple pages",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
 	);
 
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_NAME = create("gui.layout control picker.items.next page.name", "<GRADIENT:65B1B4>&lNext Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_LORE = create("gui.layout control picker.items.next page.lore",
 			"&7Used to navigate forward if theres multiple pages",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
 	);
 
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH_NAME = create("gui.layout control picker.items.search.name", "<GRADIENT:65B1B4>&lSearch Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH_LORE = create("gui.layout control picker.items.search.lore",
 			"&7Used to search your market for items",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
 	);
 
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW_NAME = create("gui.layout control picker.items.review.name", "<GRADIENT:65B1B4>&lReview Button</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW_LORE = create("gui.layout control picker.items.review.lore",
 			"&7Used to open market review",
-			"&a&l%left_click% &7to select this control"
+			"&e&l%left_click% &7to select this control"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_TITLE_HOME = create("gui.layout editor.title.home", "&eMarkets &f- &7Layout &F- &7Home");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_TITLE_CATEGORY = create("gui.layout editor.title.category","&eMarkets &f- &7Layout &F- &7Category");
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_NAME = create("gui.layout editor.items.fill slot.name","<GRADIENT:65B1B4>&lFill Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_LORE = create("gui.layout editor.items.fill slot.lore",
+			"&7This slot will be populated by",
+			"&7your market categories.",
+			"",
+			"&e&l%left_click% &7to disable this slot"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_NAME = create("gui.layout editor.items.decoration slot.name","<GRADIENT:65B1B4>&lDecoration Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_LORE = create("gui.layout editor.items.decoration slot.lore",
+			"&7This is a decoration slot",
+			"",
+			"&e&l%left_click% &7to make empty slot",
+			"&d&l%right_click% &7with an item on your cursor",
+			"&7to change the decoration item."
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME = create("gui.layout editor.items.empty slot.name","<GRADIENT:65B1B4>&lEmpty Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_LORE = create("gui.layout editor.items.empty slot.lore",
+			"&7This is a free slot, you can add",
+			"&7decorations here or assign it as a ",
+			"&7populated slot or even move controls.",
+			"",
+			"&e&l%left_click% &7to set as fill slot",
+			"&b&l%right_click% &7to move a control here",
+			"&d&l%right_click% &7with an item on your cursor",
+			"&7to decorate this slot."
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_PROFILE_NAME = create("gui.layout editor.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_PROFILE_LORE = create("gui.layout editor.items.profile.lore",
+			"&7Used to view the profile of the",
+			"&7current market owner&F: &e%market_owner%"
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW_NAME = create("gui.layout editor.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW_LORE = create("gui.layout editor.items.review.lore",
+			"&7Used to leave a review of the current market",
+			"&7there's a delay between leaving reviews."
+	);
+
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH_NAME = create("gui.layout editor.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH_LORE = create("gui.layout editor.items.search.lore",
+			"&7Used to search for items within",
+			"&7all open categories of this market"
 	);
 
 	public static void init() {

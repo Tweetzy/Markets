@@ -9,6 +9,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Layout;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 	private final MarketLayoutType layoutType;
 
 	public MarketLayoutEditorGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final MarketLayoutType layoutType) {
-		super(new MarketSettingsGUI(player, market), "Market Layout Edit", 6, IntStream.rangeClosed(0, 53).boxed().collect(Collectors.toList()));
+		super(new MarketSettingsGUI(player, market), TranslationManager.string(player, layoutType == MarketLayoutType.HOME ? Translations.GUI_LAYOUT_EDITOR_TITLE_HOME : Translations.GUI_LAYOUT_EDITOR_TITLE_CATEGORY), 6, IntStream.rangeClosed(0, 53).boxed().collect(Collectors.toList()));
 		this.player = player;
 		this.market = market;
 		this.layout = layoutType == MarketLayoutType.HOME ? market.getHomeLayout() : market.getCategoryLayout();
@@ -45,9 +46,24 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 		setItem(this.layout.getExitButtonSlot(), getBackButton());
 		setItem(this.layout.getPrevPageButtonSlot(), getPreviousButton());
 		setItem(this.layout.getNextPageButtonSlot(), getNextButton());
+		setItem(this.layout.getOwnerProfileSlot(), QuickItem
+				.of(this.player)
+				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_PROFILE_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_PROFILE_LORE, "market_owner", this.player.getName()))
+				.make());
 
-		// decorations
-//		this.layout.getDecoration().forEach(this::setItem);
+		setItem(this.layout.getReviewButtonSlot(), QuickItem
+				.of(Settings.GUI_LAYOUT_EDITOR_ITEMS_REVIEW.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_REVIEW_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_REVIEW_LORE))
+				.make());
+
+		setItem(this.layout.getSearchButtonSlot(), QuickItem
+				.of(Settings.GUI_LAYOUT_EDITOR_ITEMS_SEARCH.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_SEARCH_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_SEARCH_LORE))
+				.make());
+
 	}
 
 	@Override
@@ -55,40 +71,28 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 		if (this.layout.getFillSlots().contains(slot))
 			return QuickItem
 					.of(CompMaterial.LIME_STAINED_GLASS_PANE)
-					.name("&eFill Slot")
-					.lore(
-							"&7This slot will be populated by",
-							"&7your market categories.",
-							"",
-							"&e&lLeft Click &7to disable this slot"
-					).make();
+					.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+					.make();
 
-		 if (this.layout.getDecoration().containsKey(slot))
-			 return QuickItem
-					 .of(this.market.getHomeLayout().getDecoration().get(slot))
-					 .name("&eDecoration Slot")
-					 .lore(
-							 "&7This is a decoration slot",
-							 "",
-							 "&e&lLeft Click &7to make empty slot",
-							 "&d&lRight Click &7with an item on your cursor",
-							 "&7to change the decoration item."
-					 )
-					 .make();
+		if (this.layout.getDecoration().containsKey(slot))
+			return QuickItem
+					.of(this.market.getHomeLayout().getDecoration().get(slot))
+					.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_LORE,
+							"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+							"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+					))
+					.make();
 
 		return QuickItem
 				.of(CompMaterial.WHITE_STAINED_GLASS_PANE)
-				.name("&eEmpty Slot")
-				.lore(
-						"&7This is a free slot, you can add",
-						"&7decorations here or assign it as a ",
-						"&7populated slot or even move controls.",
-						"",
-						"&e&lLeft Click &7to set as fill slot",
-						"&b&lRight Click &7to move a control here",
-						"&d&lRight Click &7with an item on your cursor",
-						"&7to decorate this slot."
-				).make();
+				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+				))
+				.make();
 	}
 
 	@Override
@@ -135,6 +139,7 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 						case REVIEW_BUTTON -> this.layout.setReviewButtonSlot(slot);
 					}
 
+					this.layout.getFillSlots().remove(slot);
 					click.manager.showGUI(click.player, new MarketLayoutEditorGUI(this.player, this.market, this.layoutType));
 				}));
 			}

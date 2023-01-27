@@ -1,14 +1,20 @@
 package ca.tweetzy.markets.gui.user.market;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.BaseGUI;
+import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 public final class MarketSettingsGUI extends BaseGUI {
 
@@ -87,9 +93,10 @@ public final class MarketSettingsGUI extends BaseGUI {
 				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_ITEM.getItemStack())
 				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_NAME))
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				))
-				.make(), click -> click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, MarketLayoutType.HOME)));
+				.make(), click -> executeLayoutHandle(click, MarketLayoutType.HOME));
 	}
 
 	private void drawCategoryLayoutButton() {
@@ -97,8 +104,51 @@ public final class MarketSettingsGUI extends BaseGUI {
 				.of(Settings.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_ITEM.getItemStack())
 				.name(TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_NAME))
 				.lore(TranslationManager.list(player, Translations.GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				))
-				.make(), click -> click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, MarketLayoutType.CATEGORY)));
+				.make(), click -> executeLayoutHandle(click, MarketLayoutType.CATEGORY));
+	}
+
+	private void executeLayoutHandle(@NonNull final GuiClickEvent click, @NonNull final MarketLayoutType layoutType) {
+		if (click.clickType == ClickType.LEFT) {
+			click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, layoutType));
+			draw();
+		}
+
+		if (click.clickType == ClickType.RIGHT) {
+
+			final ItemStack cursor = click.cursor;
+			if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				final ItemStack newIcon = cursor.clone();
+				newIcon.setAmount(1);
+
+				if (layoutType == MarketLayoutType.HOME)
+					this.market.getHomeLayout().setBackgroundItem(newIcon);
+				else
+					this.market.getCategoryLayout().setBackgroundItem(newIcon);
+
+				this.market.sync(result -> {
+					if (result == SynchronizeResult.SUCCESS)
+						draw();
+				});
+
+				return;
+			}
+
+			click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
+				if (selected != null)
+					if (layoutType == MarketLayoutType.HOME)
+						this.market.getHomeLayout().setBackgroundItem(selected.parseItem());
+					else
+						this.market.getCategoryLayout().setBackgroundItem(selected.parseItem());
+
+				this.market.sync(result -> {
+					if (result == SynchronizeResult.SUCCESS)
+						click.manager.showGUI(click.player, new MarketSettingsGUI(this.player, this.market));
+				});
+			}));
+		}
+		return;
 	}
 }
