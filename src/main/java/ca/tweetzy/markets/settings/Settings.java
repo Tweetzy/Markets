@@ -60,6 +60,11 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_SEARCH = create("gui.market view.items.search", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_REVIEW = create("gui.market view.items.reviews", CompMaterial.NETHER_STAR.name());
 
+	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_BUY = create("gui.purchase item.items.buy", CompMaterial.LIME_DYE.name());
+	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_INCREMENT = create("gui.purchase item.items.increment", CompMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_DECREMENT = create("gui.purchase item.items.decrement", CompMaterial.RED_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN = create("gui.purchase item.items.price breakdown", CompMaterial.PAPER.name());
+
 	public static void init() {
 		Markets.getCoreConfig().init();
 	}

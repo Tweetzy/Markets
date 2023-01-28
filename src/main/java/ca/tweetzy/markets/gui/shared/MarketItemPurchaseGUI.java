@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.gui.shared;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.ItemUtil;
@@ -56,8 +55,9 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 		}
 
 		setButton(getRows() - 1, 4, QuickItem
-				.of(CompMaterial.LIME_DYE)
-				.name("<GRADIENT:65B1B4>&lPurchase</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_BUY.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_BUY_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_BUY_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> {
 
 			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
@@ -70,35 +70,41 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 
 	private void drawIncrementButtons() {
 		setButton(1, 6, QuickItem
-				.of(CompMaterial.LIME_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l+1</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC1_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC1_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 1));
 
 		setButton(2, 7, QuickItem
-				.of(CompMaterial.LIME_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l+5</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC5_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC5_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 5));
 
 		setButton(3, 6, QuickItem
-				.of(CompMaterial.LIME_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l+10</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC10_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC10_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 10));
 	}
 
 	private void drawDecrementButtons() {
 		setButton(1, 2, QuickItem
-				.of(CompMaterial.RED_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l-1</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC1_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC1_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 1));
 
 		setButton(2, 1, QuickItem
-				.of(CompMaterial.RED_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l-5</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC5_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC5_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 5));
 
 		setButton(3, 2, QuickItem
-				.of(CompMaterial.RED_STAINED_GLASS_PANE)
-				.name("<GRADIENT:65B1B4>&l-10</GRADIENT:2B6F8A>")
+				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC10_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC10_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 10));
 	}
 
@@ -111,7 +117,7 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 	}
 
 	private void drawPriceBreakdown() {
-		final QuickItem quickItem = QuickItem.of(CompMaterial.PAPER);
+		final QuickItem quickItem = QuickItem.of(Settings.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN.getItemStack());
 		quickItem.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_NAME));
 
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_INFO,

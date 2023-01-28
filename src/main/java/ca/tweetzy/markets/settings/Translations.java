@@ -468,6 +468,48 @@ public final class Translations extends TranslationManager {
 			"&7----------------------------"
 	);
 
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC1_NAME = create("gui.purchase item.items.increment one.name", "&a&l+1");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC1_LORE = create("gui.purchase item.items.increment one.lore",
+			"",
+			"&e&l%left_click% &7to increment by &a1"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC5_NAME = create("gui.purchase item.items.increment five.name", "&a&l+5");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC5_LORE = create("gui.purchase item.items.increment five.lore",
+			"",
+			"&e&l%left_click% &7to increment by &a5"
+	);
+	
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC10_NAME = create("gui.purchase item.items.increment ten.name", "&a&l+10");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC10_LORE = create("gui.purchase item.items.increment ten.lore",
+			"",
+			"&e&l%left_click% &7to increment by &a10"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC1_NAME = create("gui.purchase item.items.decrement one.name", "&a&l-1");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC1_LORE = create("gui.purchase item.items.decrement one.lore",
+			"",
+			"&e&l%left_click% &7to decrement by &c1"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC5_NAME = create("gui.purchase item.items.decrement five.name", "&a&l-5");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC5_LORE = create("gui.purchase item.items.decrement five.lore",
+			"",
+			"&e&l%left_click% &7to decrement by &c5"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC10_NAME = create("gui.purchase item.items.decrement ten.name", "&a&l-10");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_DEC10_LORE = create("gui.purchase item.items.decrement ten.lore",
+			"",
+			"&e&l%left_click% &7to decrement by &c10"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_BUY_NAME = create("gui.purchase item.items.buy.name", "<GRADIENT:65B1B4>&lPurchase</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_BUY_LORE = create("gui.purchase item.items.buy.lore",
+			"",
+			"&e&l%left_click% &7to purchase item(s)"
+	);
+
 	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_NAME = create("gui.purchase item.items.price breakdown.name", "<GRADIENT:65B1B4>&lPrice Breakdown</GRADIENT:2B6F8A>");
 
 	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_INFO = create("gui.purchase item.items.price breakdown.lore.info",
