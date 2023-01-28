@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.gui.user.market;
+package ca.tweetzy.markets.gui.user;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
@@ -9,6 +9,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Layout;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
+import ca.tweetzy.markets.gui.user.market.MarketSettingsGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -129,7 +130,7 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 					return;
 				}
 
-				click.manager.showGUI(click.player, new LayoutControlPicker(this, click.player, selectedControl -> {
+				click.manager.showGUI(click.player, new LayoutControlPickerGUI(this, click.player, selectedControl -> {
 					switch (selectedControl) {
 						case EXIT_BACK_BUTTON -> this.layout.setExitButtonSlot(slot);
 						case PROFILE_BUTTON -> this.layout.setOwnerProfileSlot(slot);
