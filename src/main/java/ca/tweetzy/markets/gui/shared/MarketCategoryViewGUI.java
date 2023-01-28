@@ -66,7 +66,7 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 				.of(SkullUtils.getSkull(this.market.getOwnerUUID()))
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
-						"market_owner", this.player.getName(),
+						"market_owner", this.market.getOwnerName(),
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
 				.make());
