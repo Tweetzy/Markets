@@ -378,6 +378,7 @@ public final class Translations extends TranslationManager {
 			"&7all open categories of this market"
 	);
 
+	public static TranslationEntry GUI_MARKET_VIEW_TITLE = create("gui.market view.title","%market_display_name%");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_NAME = create("gui.market view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_LORE = create("gui.market view.items.profile.lore",
 			"&7Used to view the profile of the",
@@ -409,6 +410,8 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to open category"
 	);
 
+
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_TITLE = create("gui.market category view.title","%market_display_name% &7- %category_display_name%");
 
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME = create("gui.market category view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE = create("gui.market category view.items.profile.lore",

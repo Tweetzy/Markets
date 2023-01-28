@@ -20,7 +20,7 @@ public final class MarketViewGUI extends PagedGUI<Category> {
 	private final Market market;
 
 	public MarketViewGUI(@NonNull final Player player, @NonNull final Market market) {
-		super(null, market.getDisplayName(), 6, market.getCategories());
+		super(null, TranslationManager.string(player, Translations.GUI_MARKET_VIEW_TITLE, "market_display_name", market.getDisplayName()), 6, market.getCategories());
 		this.player = player;
 		this.market = market;
 

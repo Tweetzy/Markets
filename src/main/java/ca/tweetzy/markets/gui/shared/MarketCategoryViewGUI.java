@@ -21,7 +21,11 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 	private final Market market;
 
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketViewGUI(player, market), market.getDisplayName() + " - " + category.getDisplayName(), 6, category.getItems());
+		super(new MarketViewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_VIEW_TITLE,
+				"market_display_name", market.getDisplayName(),
+				"category_display_name", category.getDisplayName()
+		), 6, category.getItems());
+
 		this.player = player;
 		this.market = market;
 		setDefaultItem(this.market.getCategoryLayout().getBackgroundItem());
