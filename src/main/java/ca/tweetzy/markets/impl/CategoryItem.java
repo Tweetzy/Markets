@@ -3,13 +3,17 @@ package ca.tweetzy.markets.impl;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
+import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -165,7 +169,7 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	@Override
-	public void performPurchase(@NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
+	public void performPurchase(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
 		if (this.stock == 0) {//todo add check to prevent multiple purchases
 			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
@@ -198,17 +202,31 @@ public final class CategoryItem implements MarketItem {
 				PlayerUtil.giveItem(buyer, updatedItem);
 
 			final int newStock = this.stock - newPurchaseAmount;
+			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
 
 			if (newStock <= 0) {
 				unStore(result -> {
-					// todo let player know their shit is out of stock
+					if (seller.isOnline())
+						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getStackName(this.item)));
 				});
 			} else {
 				setStock(newStock);
 				sync(result -> {
-					// todo tell player someone bought something
+					if (seller.isOnline()) {
+						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+								"purchase_quantity", newPurchaseAmount,
+								"item_name", ItemUtil.getStackName(this.item),
+								"buyer_name", buyer.getName()
+						));
+					}
 				});
 			}
+
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
+					"purchase_quantity", newPurchaseAmount,
+					"item_name", ItemUtil.getStackName(this.item),
+					"seller_name", market.getOwnerName()
+			));
 
 			transactionResult.accept(TransactionResult.SUCCESS);
 			return;

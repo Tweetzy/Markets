@@ -4,6 +4,7 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.ChatUtil;
+import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
@@ -59,7 +60,7 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 				.name("<GRADIENT:65B1B4>&lPurchase</GRADIENT:2B6F8A>")
 				.make(), click -> {
 
-			this.marketItem.performPurchase(click.player, this.purchaseQty, result -> {
+			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
 				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
 			});
 		});
@@ -116,7 +117,7 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_INFO,
 				"purchase_quantity", this.purchaseQty,
 				"market_item_price", String.format("%,.2f", this.marketItem.getPrice()),
-				"market_item_currency", getItemStackName(this.marketItem.getCurrencyItem())
+				"market_item_currency", ItemUtil.getStackName(this.marketItem.getCurrencyItem())
 		));
 
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_SUBTOTAL,
@@ -128,14 +129,6 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 		));
 
 		setItem(4, 4, quickItem.make());
-	}
-
-	private String getItemStackName(ItemStack itemStack) {
-		if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()) {
-			return itemStack.getItemMeta().getDisplayName();
-		} else {
-			return ChatUtil.capitalizeFully(itemStack.getType());
-		}
 	}
 
 	private void adjustPurchaseQty(@NonNull final AdjustmentType adjustmentType, final int amount) {

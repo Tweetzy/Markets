@@ -23,6 +23,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("one fill slot required", "&cThis layout requires at least one fill slot!");
 	public static TranslationEntry ITEM_OUT_OF_STOCK = create("item out of stock", "&cSorry that item is now out of stock");
 
+	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
+	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
+	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
+
 
 	// inputs
 	public static TranslationEntry PROMPT_NEW_CATEGORY_TITLE = create("prompts.new category.title", "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>");

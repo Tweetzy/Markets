@@ -43,7 +43,7 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 
 	void setIsAcceptingOffers(final boolean acceptingOffers);
 
-	void performPurchase(@NonNull final Player buyer, final int quantity, Consumer<TransactionResult> transactionResult);
+	void performPurchase(@NonNull final Market market, @NonNull final Player buyer, final int quantity, Consumer<TransactionResult> transactionResult);
 
 	// todo this is needs to be changed
 	default void addStock(@NonNull final ItemStack item) {
