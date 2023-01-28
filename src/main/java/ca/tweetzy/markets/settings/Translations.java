@@ -436,6 +436,20 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to search category"
 	);
 
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER = create("gui.market category view.items.item.lore.header", "&7----------------------------");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO = create("gui.market category view.items.item.lore.info",
+			"&7Price&f: &a%market_item_price%",
+			"&7Currency&f: &e%market_item_currency%",
+			"&7Stock&f: &e%market_item_stock%",
+			"&7Price for all&f: %true%",
+			""
+	);
+
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_FOOTER = create("gui.market category view.items.item.lore.footer", "&7----------------------------");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_BUY = create("gui.market category view.items.item.lore.buy", "&e&l%left_click% &7to purchase item");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_MAKE_OFFER = create("gui.market category view.items.item.lore.make offer", "&b&l%right_click% &7to make offer");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_VIEW_CURRENCY = create("gui.market category view.items.item.lore.view currency", "&d&l%shift_right_click% &7to view currency");
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}

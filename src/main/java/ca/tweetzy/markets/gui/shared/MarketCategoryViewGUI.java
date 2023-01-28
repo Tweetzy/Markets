@@ -34,9 +34,25 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
-		return QuickItem
-				.of(marketItem.getItem())
-				.make();
+		final QuickItem item = QuickItem.of(marketItem.getItem()).lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER));
+
+		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
+				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
+				"market_item_currency", marketItem.getCurrency().split("/")[2],
+				"market_item_stock", marketItem.getStock(),
+				"true", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
+		));
+
+		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_BUY, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)));
+
+		if (marketItem.isAcceptingOffers())
+			item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_MAKE_OFFER, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)));
+
+		if (marketItem.isCurrencyOfItem())
+			item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_VIEW_CURRENCY, "shift_right_click", TranslationManager.string(this.player, Translations.MOUSE_SHIFT_RIGHT_CLICK)));
+
+		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_FOOTER));
+		return item.make();
 	}
 
 	@Override
