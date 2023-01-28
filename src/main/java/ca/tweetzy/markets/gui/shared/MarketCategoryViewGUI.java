@@ -21,7 +21,7 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 	private final Market market;
 
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketViewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_VIEW_TITLE,
+		super(new MarketViewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
 		), 6, category.getItems());
