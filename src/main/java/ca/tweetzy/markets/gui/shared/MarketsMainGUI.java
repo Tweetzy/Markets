@@ -6,8 +6,8 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.settings.Translations;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 

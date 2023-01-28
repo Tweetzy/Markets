@@ -1,7 +1,5 @@
 package ca.tweetzy.markets.settings;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
@@ -329,9 +327,9 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_LAYOUT_EDITOR_TITLE_HOME = create("gui.layout editor.title.home", "&eMarkets &f- &7Layout &F- &7Home");
-	public static TranslationEntry GUI_LAYOUT_EDITOR_TITLE_CATEGORY = create("gui.layout editor.title.category","&eMarkets &f- &7Layout &F- &7Category");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_TITLE_CATEGORY = create("gui.layout editor.title.category", "&eMarkets &f- &7Layout &F- &7Category");
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_NAME = create("gui.layout editor.items.fill slot.name","<GRADIENT:65B1B4>&lFill Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_NAME = create("gui.layout editor.items.fill slot.name", "<GRADIENT:65B1B4>&lFill Slot</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_LORE = create("gui.layout editor.items.fill slot.lore",
 			"&7This slot will be populated by",
 			"&7your market categories.",
@@ -339,7 +337,7 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to disable this slot"
 	);
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_NAME = create("gui.layout editor.items.decoration slot.name","<GRADIENT:65B1B4>&lDecoration Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_NAME = create("gui.layout editor.items.decoration slot.name", "<GRADIENT:65B1B4>&lDecoration Slot</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_LORE = create("gui.layout editor.items.decoration slot.lore",
 			"&7This is a decoration slot",
 			"",
@@ -348,7 +346,7 @@ public final class Translations extends TranslationManager {
 			"&7to change the decoration item."
 	);
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME = create("gui.layout editor.items.empty slot.name","<GRADIENT:65B1B4>&lEmpty Slot</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME = create("gui.layout editor.items.empty slot.name", "<GRADIENT:65B1B4>&lEmpty Slot</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_LORE = create("gui.layout editor.items.empty slot.lore",
 			"&7This is a free slot, you can add",
 			"&7decorations here or assign it as a ",
@@ -360,26 +358,26 @@ public final class Translations extends TranslationManager {
 			"&7to decorate this slot."
 	);
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_PROFILE_NAME = create("gui.layout editor.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_PROFILE_NAME = create("gui.layout editor.items.profile.name", "<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_PROFILE_LORE = create("gui.layout editor.items.profile.lore",
 			"&7Used to view the profile of the",
 			"&7current market owner&F: &e%market_owner%"
 	);
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW_NAME = create("gui.layout editor.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW_NAME = create("gui.layout editor.items.review.name", "<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW_LORE = create("gui.layout editor.items.review.lore",
 			"&7Used to leave a review of the current market",
 			"&7there's a delay between leaving reviews."
 	);
 
-	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH_NAME = create("gui.layout editor.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH_NAME = create("gui.layout editor.items.search.name", "<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH_LORE = create("gui.layout editor.items.search.lore",
 			"&7Used to search for items within",
 			"&7all open categories of this market"
 	);
 
-	public static TranslationEntry GUI_MARKET_VIEW_TITLE = create("gui.market view.title","%market_display_name%");
-	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_NAME = create("gui.market view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_TITLE = create("gui.market view.title", "%market_display_name%");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_NAME = create("gui.market view.items.profile.name", "<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_LORE = create("gui.market view.items.profile.lore",
 			"&7Used to view the profile of the",
 			"&7current market owner&F: &e%market_owner%",
@@ -387,7 +385,7 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to view owner profile"
 	);
 
-	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_REVIEW_NAME = create("gui.market view.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_REVIEW_NAME = create("gui.market view.items.review.name", "<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_REVIEW_LORE = create("gui.market view.items.review.lore",
 			"&7Used to leave a review of the current market",
 			"&7there's a delay between leaving reviews.",
@@ -396,7 +394,7 @@ public final class Translations extends TranslationManager {
 			"&b&l%right_click% &7to view reviews"
 	);
 
-	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_SEARCH_NAME = create("gui.market view.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_SEARCH_NAME = create("gui.market view.items.search.name", "<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_SEARCH_LORE = create("gui.market view.items.search.lore",
 			"&7Used to search for items within",
 			"&7all open categories of this market",
@@ -404,16 +402,16 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to search market"
 	);
 
-	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_CATEGORY_NAME = create("gui.market view.items.category.name","%category_display_name%");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_CATEGORY_NAME = create("gui.market view.items.category.name", "%category_display_name%");
 	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_CATEGORY_LORE = create("gui.market view.items.category.lore",
 			"",
 			"&e&l%left_click% &7to open category"
 	);
 
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_TITLE = create("gui.market category view.title","%market_display_name% &7- %category_display_name%");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_TITLE = create("gui.market category view.title", "%market_display_name% &7- %category_display_name%");
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME = create("gui.market category view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME = create("gui.market category view.items.profile.name", "<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE = create("gui.market category view.items.profile.lore",
 			"&7Used to view the profile of the",
 			"&7current market owner&F: &e%market_owner%",
@@ -421,7 +419,7 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to view owner profile"
 	);
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME = create("gui.market category view.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME = create("gui.market category view.items.review.name", "<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_LORE = create("gui.market category view.items.review.lore",
 			"&7Used to leave a review of the current market",
 			"&7there's a delay between leaving reviews.",
@@ -430,7 +428,7 @@ public final class Translations extends TranslationManager {
 			"&b&l%right_click% &7to view reviews"
 	);
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME = create("gui.market category view.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME = create("gui.market category view.items.search.name", "<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE = create("gui.market category view.items.search.lore",
 			"&7Used to search for items within",
 			"&7this specific category",

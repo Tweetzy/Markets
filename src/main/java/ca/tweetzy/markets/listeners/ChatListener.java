@@ -8,7 +8,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public final class ChatListener implements Listener {
 
 	@EventHandler
-	public void onChat(AsyncPlayerChatEvent event){
+	public void onChat(AsyncPlayerChatEvent event) {
 		event.setMessage(Common.colorize(event.getMessage()));
 	}
 }
