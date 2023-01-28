@@ -410,6 +410,31 @@ public final class Translations extends TranslationManager {
 	);
 
 
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME = create("gui.market category view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE = create("gui.market category view.items.profile.lore",
+			"&7Used to view the profile of the",
+			"&7current market owner&F: &e%market_owner%",
+			"",
+			"&e&l%left_click% &7to view owner profile"
+	);
+
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME = create("gui.market category view.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_LORE = create("gui.market category view.items.review.lore",
+			"&7Used to leave a review of the current market",
+			"&7there's a delay between leaving reviews.",
+			"",
+			"&e&l%left_click% &7to leave a review",
+			"&b&l%right_click% &7to view reviews"
+	);
+
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME = create("gui.market category view.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE = create("gui.market category view.items.search.lore",
+			"&7Used to search for items within",
+			"&7this specific category",
+			"",
+			"&e&l%left_click% &7to search category"
+	);
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}
