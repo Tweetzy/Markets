@@ -59,6 +59,9 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 				.name("<GRADIENT:65B1B4>&lPurchase</GRADIENT:2B6F8A>")
 				.make(), click -> {
 
+			this.marketItem.performPurchase(click.player, this.purchaseQty, result -> {
+				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+			});
 		});
 
 		applyBackExit();
@@ -103,8 +106,7 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 				.of(this.marketItem.getItem().clone())
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PURCHASE_ITEM_LORE, "market_item_stock", this.marketItem.getStock()))
 				.amount(this.purchaseQty)
-				.make()
-		);
+				.make());
 	}
 
 	private void drawPriceBreakdown() {
