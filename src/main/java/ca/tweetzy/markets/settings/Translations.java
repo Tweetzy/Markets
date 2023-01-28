@@ -483,6 +483,12 @@ public final class Translations extends TranslationManager {
 			""
 	);
 
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TAX = create("gui.purchase item.items.price breakdown.lore.tax",
+			"&b&LTax",
+			"&a%sales_tax%",
+			""
+	);
+
 	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TOTAL = create("gui.purchase item.items.price breakdown.lore.total",
 			"&b&lTotal",
 			"&a%purchase_total%"

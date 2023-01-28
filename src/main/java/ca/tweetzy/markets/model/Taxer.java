@@ -8,7 +8,7 @@ public final class Taxer {
 
 	public double calculateTaxAmount(final double subtotal) {
 		if (!Settings.TAX_ENABLED.getBoolean())
-			return subtotal;
+			return 0;
 
 		return subtotal * Settings.TAX_AMOUNT.getDouble() / 100D;
 	}

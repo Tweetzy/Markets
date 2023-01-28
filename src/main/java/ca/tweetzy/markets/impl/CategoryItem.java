@@ -238,7 +238,6 @@ public final class CategoryItem implements MarketItem {
 				Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
 			}
 
-
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_quantity", newPurchaseAmount,
 					"item_name", ItemUtil.getStackName(this.item),

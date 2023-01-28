@@ -3,16 +3,16 @@ package ca.tweetzy.markets.gui.shared;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.flight.utils.ChatUtil;
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.model.Taxer;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public final class MarketItemPurchaseGUI extends BaseGUI {
 
@@ -124,8 +124,13 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 				"purchase_sub_total", String.format("%,.2f", this.marketItem.getPrice() * this.purchaseQty)
 		));
 
+		if (Settings.TAX_ENABLED.getBoolean())
+			quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TAX,
+					"sales_tax", String.format("%,.2f", Taxer.calculateTaxAmount(this.marketItem.getPrice() * this.purchaseQty))
+			));
+
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TOTAL,
-				"purchase_total", String.format("%,.2f", this.marketItem.getPrice() * this.purchaseQty)
+				"purchase_total", String.format("%,.2f", Taxer.getTaxedTotal(this.marketItem.getPrice() * this.purchaseQty))
 		));
 
 		setItem(4, 4, quickItem.make());
