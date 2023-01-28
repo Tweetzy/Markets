@@ -9,8 +9,9 @@ public final class Settings extends FlightSettings {
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
-	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("defaults.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
-	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("defaults.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
+	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
+	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
+	public static ConfigEntry PURCHASE_REQUIRES_CONFIRMATION = create("settings.confirmations.purchase", true).withComment("If true, markets will ask the player to confirm in a gui before the purchase is made.");
 
 	/*
 	========================= GUI STUFF =========================

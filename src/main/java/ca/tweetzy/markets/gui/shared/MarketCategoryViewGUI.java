@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.gui.shared;
 
+import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
@@ -62,7 +63,7 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 		// set custom shit
 		setItem(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
-				.of(this.player)
+				.of(SkullUtils.getSkull(this.market.getOwnerUUID()))
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.player.getName(),
