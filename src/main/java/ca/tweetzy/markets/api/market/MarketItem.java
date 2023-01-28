@@ -3,10 +3,13 @@ package ca.tweetzy.markets.api.market;
 import ca.tweetzy.markets.api.Identifiable;
 import ca.tweetzy.markets.api.Storeable;
 import ca.tweetzy.markets.api.Synchronize;
+import ca.tweetzy.markets.api.currency.TransactionResult;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketItem> {
 
@@ -40,6 +43,8 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 
 	void setIsAcceptingOffers(final boolean acceptingOffers);
 
+	void performPurchase(@NonNull final Player buyer, final int quantity, Consumer<TransactionResult> transactionResult);
+
 	// todo this is needs to be changed
 	default void addStock(@NonNull final ItemStack item) {
 		if (getItem().equals(item)) {
@@ -51,4 +56,5 @@ public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketI
 		final String[] split = getCurrency().split("/");
 		return split[1].equalsIgnoreCase("item");
 	}
+
 }
