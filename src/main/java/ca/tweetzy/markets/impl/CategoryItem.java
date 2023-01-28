@@ -1,10 +1,16 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
+import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,7 +146,6 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
 		Markets.getDataManager().deleteMarketItem(this, (error, updateStatus) -> {
-
 			if (updateStatus) {
 				Markets.getCategoryManager().getByUUID(this.owningCategory).getItems().removeIf(category -> category.getId().equals(this.id));
 				Markets.getCategoryItemManager().remove(this);
@@ -157,5 +162,58 @@ public final class CategoryItem implements MarketItem {
 			if (syncResult != null)
 				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
 		});
+	}
+
+	@Override
+	public void performPurchase(@NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
+		if (this.stock == 0) {//todo add check to prevent multiple purchases
+			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+			return;
+		}
+
+		final int newPurchaseAmount = Math.min(quantity, stock);
+
+		final double subtotal = this.price * newPurchaseAmount;
+		final double total = subtotal;
+
+		final String currencyPlugin = this.currency.split("/")[0];
+		final String currencyName = this.currency.split("/")[1];
+
+		final boolean hasEnoughMoney = this.isCurrencyOfItem() ? Markets.getCurrencyManager().has(buyer, this.currencyItem, (int) total) : Markets.getCurrencyManager().has(buyer, currencyPlugin, currencyName, total);
+
+		if (!hasEnoughMoney) {
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.NO_MONEY));
+			transactionResult.accept(TransactionResult.FAILED_NO_MONEY);
+			return;
+		}
+
+		final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) total) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, total);
+
+		if (withdrawResult) {
+			final ItemStack updatedItem = this.item.clone();
+			updatedItem.setAmount(1);
+
+			for (int i = 0; i < newPurchaseAmount; i++)
+				PlayerUtil.giveItem(buyer, updatedItem);
+
+			final int newStock = this.stock - newPurchaseAmount;
+
+			if (newStock <= 0) {
+				unStore(result -> {
+					// todo let player know their shit is out of stock
+				});
+			} else {
+				setStock(newStock);
+				sync(result -> {
+					// todo tell player someone bought something
+				});
+			}
+
+			transactionResult.accept(TransactionResult.SUCCESS);
+			return;
+		}
+
+		transactionResult.accept(TransactionResult.ERROR);
 	}
 }
