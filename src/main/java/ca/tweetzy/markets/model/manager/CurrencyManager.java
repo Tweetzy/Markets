@@ -3,12 +3,14 @@ package ca.tweetzy.markets.model.manager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.manager.ListManager;
+import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.impl.currency.VaultCurrency;
 import ca.tweetzy.markets.model.currency.FundsEconomyLoader;
 import ca.tweetzy.markets.model.currency.UltraEconomyLoader;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
 
 public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
@@ -45,11 +47,25 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 		return locateCurrency(owningPlugin, currencyName).deposit(offlinePlayer, amount);
 	}
 
+	public boolean has(@NonNull final OfflinePlayer offlinePlayer, @NonNull final ItemStack itemStack, final int amount) {
+		return ((ItemCurrency) locateCurrency("Markets", "Item")).has(offlinePlayer, amount, itemStack);
+
+	}
+
+	public boolean withdraw(@NonNull final OfflinePlayer offlinePlayer, @NonNull final ItemStack itemStack, final int amount) {
+		return ((ItemCurrency) locateCurrency("Markets", "Item")).withdraw(offlinePlayer, amount, itemStack);
+	}
+
+	public boolean deposit(@NonNull final OfflinePlayer offlinePlayer, @NonNull final ItemStack itemStack, final int amount) {
+		return ((ItemCurrency) locateCurrency("Markets", "Item")).deposit(offlinePlayer, amount, itemStack);
+	}
+
 	@Override
 	public void load() {
 		clear();
 		// add vault by default
 		add(new VaultCurrency());
+		add(new ItemCurrency());
 
 		// load currencies from providers that allow multiple currencies
 		if (Bukkit.getServer().getPluginManager().isPluginEnabled("UltraEconomy"))
