@@ -75,7 +75,7 @@ public final class MarketViewGUI extends PagedGUI<Category> {
 
 	@Override
 	protected void onClick(Category category, GuiClickEvent click) {
-
+		click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, category));
 	}
 
 	@Override
