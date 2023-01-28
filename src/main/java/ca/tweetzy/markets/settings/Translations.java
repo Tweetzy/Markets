@@ -258,7 +258,7 @@ public final class Translations extends TranslationManager {
 			"&7of your will be shown",
 			"",
 			"&e&l%left_click% &7to edit home layout",
-			"&b&l%right_click% &7to open item for bg",
+			"&b&l%right_click% &7to open item picker for bg",
 			"&d&l%right_click% &7with an item on your cursor",
 			"&7to set this layout's background"
 	);
@@ -270,7 +270,7 @@ public final class Translations extends TranslationManager {
 			"&7will be shown to others.",
 			"",
 			"&e&l%left_click% &7to edit category layout",
-			"&b&l%right_click% &7to open item for bg",
+			"&b&l%right_click% &7to open item picker for bg",
 			"&d&l%right_click% &7with an item on your cursor",
 			"&7to set this layout's background"
 	);
@@ -377,6 +377,38 @@ public final class Translations extends TranslationManager {
 			"&7Used to search for items within",
 			"&7all open categories of this market"
 	);
+
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_NAME = create("gui.market view.items.profile.name","<GRADIENT:65B1B4>&lProfile</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_PROFILE_LORE = create("gui.market view.items.profile.lore",
+			"&7Used to view the profile of the",
+			"&7current market owner&F: &e%market_owner%",
+			"",
+			"&e&l%left_click% &7to view owner profile"
+	);
+
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_REVIEW_NAME = create("gui.market view.items.review.name","<GRADIENT:65B1B4>&LReview</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_REVIEW_LORE = create("gui.market view.items.review.lore",
+			"&7Used to leave a review of the current market",
+			"&7there's a delay between leaving reviews.",
+			"",
+			"&e&l%left_click% &7to leave a review",
+			"&b&l%right_click% &7to view reviews"
+	);
+
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_SEARCH_NAME = create("gui.market view.items.search.name","<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_SEARCH_LORE = create("gui.market view.items.search.lore",
+			"&7Used to search for items within",
+			"&7all open categories of this market",
+			"",
+			"&e&l%left_click% &7to search market"
+	);
+
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_CATEGORY_NAME = create("gui.market view.items.category.name","%category_display_name%");
+	public static TranslationEntry GUI_MARKET_VIEW_ITEMS_CATEGORY_LORE = create("gui.market view.items.category.lore",
+			"",
+			"&e&l%left_click% &7to open category"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();

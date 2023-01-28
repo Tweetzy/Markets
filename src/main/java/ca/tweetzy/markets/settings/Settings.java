@@ -54,6 +54,9 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW = create("gui.layout editor.items.review", CompMaterial.NETHER_STAR.name());
 	public static ConfigEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH = create("gui.layout editor.items.search", CompMaterial.DARK_OAK_SIGN.name());
 
+	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_SEARCH = create("gui.market view.items.search", CompMaterial.DARK_OAK_SIGN.name());
+	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_REVIEW = create("gui.market view.items.reviews", CompMaterial.NETHER_STAR.name());
+
 	public static void init() {
 		Markets.getCoreConfig().init();
 	}
