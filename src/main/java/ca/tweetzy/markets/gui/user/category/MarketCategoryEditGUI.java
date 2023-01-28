@@ -164,6 +164,7 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
 		return QuickItem
 				.of(marketItem.getItem())
+				.amount(marketItem.getStock())
 				.lore(Replacer.replaceVariables(
 						TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_MARKET_ITEM_LORE)
 						, "market_item_price", String.format("%,.2f", marketItem.getPrice())
