@@ -10,6 +10,7 @@ import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.model.Taxer;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -184,7 +185,7 @@ public final class CategoryItem implements MarketItem {
 		final String currencyPlugin = this.currency.split("/")[0];
 		final String currencyName = this.currency.split("/")[1];
 
-		final boolean hasEnoughMoney = this.isCurrencyOfItem() ? Markets.getCurrencyManager().has(buyer, this.currencyItem, (int) total) : Markets.getCurrencyManager().has(buyer, currencyPlugin, currencyName, total);
+		final boolean hasEnoughMoney = this.isCurrencyOfItem() ? Markets.getCurrencyManager().has(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().has(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
 
 		if (!hasEnoughMoney) {
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.NO_MONEY));
@@ -192,7 +193,7 @@ public final class CategoryItem implements MarketItem {
 			return;
 		}
 
-		final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) total) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, total);
+		final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
 
 		if (withdrawResult) {
 			final ItemStack updatedItem = this.item.clone();
