@@ -32,7 +32,6 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 		else
 			this.purchaseQty = 1;
 
-
 		draw();
 	}
 

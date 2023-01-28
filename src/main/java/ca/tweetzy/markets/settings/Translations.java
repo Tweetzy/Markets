@@ -479,7 +479,7 @@ public final class Translations extends TranslationManager {
 			"",
 			"&e&l%left_click% &7to increment by &a5"
 	);
-	
+
 	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC10_NAME = create("gui.purchase item.items.increment ten.name", "&a&l+10");
 	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_INC10_LORE = create("gui.purchase item.items.increment ten.lore",
 			"",
