@@ -10,6 +10,7 @@ import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.gui.shared.MarketViewGUI;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,20 +27,25 @@ public final class CommandView extends Command {
 		if (args.length < 1) return ReturnType.INVALID_SYNTAX;
 
 		if (sender instanceof final Player player) {
-			final Player target = Bukkit.getPlayerExact(args[0]);
+			final OfflinePlayer target = Bukkit.getPlayerExact(args[0]);
+			Market market = null;
 
 			if (target == null) {
-				Common.tell(player, TranslationManager.string(player, Translations.PLAYER_OFFLINE, "value", args[0]));
-				return ReturnType.FAIL;
+				market = Markets.getMarketManager().getByOwnerName(args[0]);
+
+				if (market == null) {
+					Common.tell(player, TranslationManager.string(player, Translations.PLAYER_OFFLINE, "value", args[0]));
+					return ReturnType.FAIL;
+				}
 			}
 
-			final Market market = Markets.getMarketManager().getByOwner(target.getUniqueId());
+			if (market == null)
+				market = Markets.getMarketManager().getByOwner(target.getUniqueId());
 
 			if (market == null) {
 				Common.tell(player, TranslationManager.string(player, Translations.NO_MARKET_FOUND, "player_name", args[0]));
 				return ReturnType.FAIL;
 			}
-
 
 			Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
 		}

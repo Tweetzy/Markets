@@ -24,6 +24,10 @@ public final class MarketManager extends ListManager<Market> {
 		return getManagerContent().stream().filter(market -> market.getOwnerUUID().equals(uuid)).findFirst().orElse(null);
 	}
 
+	public Market getByOwnerName(@NonNull final String ownerName) {
+		return getManagerContent().stream().filter(market -> market.getOwnerName().equalsIgnoreCase(ownerName)).findFirst().orElse(null);
+	}
+
 	public Market getByUUID(@NonNull final UUID uuid) {
 		return getManagerContent().stream().filter(market -> market.getId().equals(uuid)).findFirst().orElse(null);
 	}

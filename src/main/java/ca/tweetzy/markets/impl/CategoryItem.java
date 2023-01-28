@@ -206,8 +206,15 @@ public final class CategoryItem implements MarketItem {
 
 			if (newStock <= 0) {
 				unStore(result -> {
-					if (seller.isOnline())
+					if (seller.isOnline()) {
+						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+								"purchase_quantity", newPurchaseAmount,
+								"item_name", ItemUtil.getStackName(this.item),
+								"buyer_name", buyer.getName()
+						));
+
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getStackName(this.item)));
+					}
 				});
 			} else {
 				setStock(newStock);
@@ -221,6 +228,15 @@ public final class CategoryItem implements MarketItem {
 					}
 				});
 			}
+
+			if (isCurrencyOfItem()) {
+				if (seller.isOnline() && seller.getPlayer() != null)
+					for (int i = 0; i < (int) total; i++)
+						PlayerUtil.giveItem(seller.getPlayer(), this.currencyItem);
+			} else {
+				Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
+			}
+
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_quantity", newPurchaseAmount,
