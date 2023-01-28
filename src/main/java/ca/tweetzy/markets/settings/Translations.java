@@ -21,6 +21,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("must be higher than zero", "&cPlease enter a number that is higher than 0");
 	public static TranslationEntry NO_MARKET_FOUND = create("no market found", "&cCould not find any market for&F: &4%player_name%");
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("one fill slot required", "&cThis layout requires at least one fill slot!");
+	public static TranslationEntry ITEM_OUT_OF_STOCK = create("item out of stock", "&cSorry that item is now out of stock");
 
 
 	// inputs
