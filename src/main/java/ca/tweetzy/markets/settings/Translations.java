@@ -450,6 +450,39 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_MAKE_OFFER = create("gui.market category view.items.item.lore.make offer", "&b&l%right_click% &7to make offer");
 	public static TranslationEntry GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_VIEW_CURRENCY = create("gui.market category view.items.item.lore.view currency", "&d&l%shift_right_click% &7to view currency");
 
+	public static TranslationEntry GUI_PURCHASE_ITEM_TITLE = create("gui.purchase item.title", "%market_display_name% &7- &eCheckout");
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.purchase item.items.custom currency.lore",
+			"&7----------------------------",
+			"&eThis item is the required currency",
+			"&7----------------------------"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PURCHASE_ITEM_LORE = create("gui.purchase item.items.purchasing item.lore",
+			"&7----------------------------",
+			"&7Available Stock&F: &e%market_item_stock%",
+			"&7----------------------------"
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_NAME = create("gui.purchase item.items.price breakdown.name", "<GRADIENT:65B1B4>&lPrice Breakdown</GRADIENT:2B6F8A>");
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_INFO = create("gui.purchase item.items.price breakdown.lore.info",
+			"&7Purchase Quantity&f: &E%purchase_quantity%",
+			"&7Cost Per Item&f: &a%market_item_price%",
+			"&7Currency&f: %market_item_currency%",
+			""
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_SUBTOTAL = create("gui.purchase item.items.price breakdown.lore.subtotal",
+			"&b&lSub Total",
+			"&a%purchase_sub_total%",
+			""
+	);
+
+	public static TranslationEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TOTAL = create("gui.purchase item.items.price breakdown.lore.total",
+			"&b&lTotal",
+			"&a%purchase_total%"
+	);
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}

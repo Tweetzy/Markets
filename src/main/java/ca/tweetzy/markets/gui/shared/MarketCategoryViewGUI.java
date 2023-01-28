@@ -12,6 +12,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -89,7 +90,8 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
-
+		if (click.clickType == ClickType.LEFT)
+			click.manager.showGUI(click.player, new MarketItemPurchaseGUI(this.player, this.market, marketItem));
 	}
 
 	@Override
