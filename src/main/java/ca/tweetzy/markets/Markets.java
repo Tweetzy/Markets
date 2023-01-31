@@ -36,6 +36,7 @@ public final class Markets extends FlightPlugin {
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final CategoryItemManager categoryItemManager = new CategoryItemManager();
 	private final CurrencyManager currencyManager = new CurrencyManager();
+	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
 
 	// default vault economy
 	private Economy economy = null;
@@ -61,7 +62,8 @@ public final class Markets extends FlightPlugin {
 				new _5_UserProfilePrefsMigration(),
 				new _6_MarketItemOffersColMigration(),
 				new _7_MarketSettingsInitialMigration(),
-				new _8_MarketLayoutMigration()
+				new _8_MarketLayoutMigration(),
+				new _9_OfflineItemPaymentMigration()
 		);
 
 		// run migrations for tables
@@ -77,6 +79,7 @@ public final class Markets extends FlightPlugin {
 		this.marketManager.load();
 		this.playerManager.load();
 		this.currencyManager.load();
+		this.offlineItemPaymentManager.load();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -129,6 +132,10 @@ public final class Markets extends FlightPlugin {
 
 	public static CurrencyManager getCurrencyManager() {
 		return getInstance().currencyManager;
+	}
+
+	public static OfflineItemPaymentManager getOfflineItemPaymentManager() {
+		return getInstance().offlineItemPaymentManager;
 	}
 
 	public static Economy getEconomy() {

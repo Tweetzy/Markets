@@ -232,8 +232,19 @@ public final class CategoryItem implements MarketItem {
 
 			if (isCurrencyOfItem()) {
 				if (seller.isOnline() && seller.getPlayer() != null)
-					for (int i = 0; i < (int) total; i++)
-						PlayerUtil.giveItem(seller.getPlayer(), this.currencyItem);
+					Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
+				else
+					Markets.getOfflineItemPaymentManager().create(
+							seller.getUniqueId(),
+							this.currencyItem,
+							(int) total,
+							TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+									"purchase_quantity", newPurchaseAmount,
+									"item_name", ItemUtil.getStackName(this.item),
+									"buyer_name", buyer.getName()
+							), created -> {
+								// todo maybe do something here
+							});
 			} else {
 				Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
 			}

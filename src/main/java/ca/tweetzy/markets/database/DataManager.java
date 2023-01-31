@@ -6,6 +6,7 @@ import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
+import ca.tweetzy.markets.api.currency.Payment;
 import ca.tweetzy.markets.api.market.*;
 import ca.tweetzy.markets.impl.*;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
@@ -417,6 +418,72 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createOfflineItemPayment(@NonNull final Payment payment, final Callback<Payment> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "offline_payment (id, payment_for, currency, amount, reason, received_at) VALUES (?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "offline_payment WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, payment.getId().toString());
+
+				preparedStatement.setString(1, payment.getId().toString());
+				preparedStatement.setString(2, payment.getFor().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(payment.getCurrency()));
+				preparedStatement.setDouble(4, payment.getAmount());
+				preparedStatement.setString(5, payment.getReason());
+				preparedStatement.setLong(6, payment.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractOfflineItemPayment(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getOfflineItemPayments(@NonNull final Callback<List<Payment>> callback) {
+		final List<Payment> offlineItemPayments = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "offline_payment")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Payment offlinePayment = extractOfflineItemPayment(resultSet);
+					offlineItemPayments.add(offlinePayment);
+				}
+
+				callback.accept(null, offlineItemPayments);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteOfflineItemPayment(@NonNull final Payment payment, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "offline_payment WHERE id = ?")) {
+				statement.setString(1, payment.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		final ArrayList<UUID> bannedUsers = new ArrayList<>();
 		Layout homeLayout, categoryLayout;
@@ -491,6 +558,17 @@ public final class DataManager extends DataManagerAbstract {
 				resultSet.getString("preferred_language"),
 				resultSet.getString("currency_format_country"),
 				resultSet.getLong("last_seen_at")
+		);
+	}
+
+	private Payment extractOfflineItemPayment(@NonNull final ResultSet resultSet) throws SQLException {
+		return new OfflinePayment(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("payment_for")),
+				SerializeUtil.decodeItem(resultSet.getString("currency")),
+				resultSet.getDouble("amount"),
+				resultSet.getString("reason"),
+				resultSet.getLong("received_at")
 		);
 	}
 

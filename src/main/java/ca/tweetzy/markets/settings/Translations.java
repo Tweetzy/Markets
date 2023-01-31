@@ -55,6 +55,14 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to view market"
 	);
 
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME = create("gui.main view.items.payments.name", "<GRADIENT:65B1B4>&LCollect Payments</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE = create("gui.main view.items.payments.create",
+			"&7Used to collect any payments that were",
+			"&7made to your market while you were offline.",
+			"",
+			"&e&l%left_click% &7to collect payments"
+			);
+
 	public static TranslationEntry GUI_MARKET_OVERVIEW_TITLE = create("gui.market overview.title", "&eMarkets &f- &7Your Market");
 	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME = create("gui.market overview.items.display name.name", "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE = create("gui.market overview.items.display name.lore",
@@ -535,6 +543,21 @@ public final class Translations extends TranslationManager {
 			"&b&lTotal",
 			"&a%purchase_total%"
 	);
+
+	public static TranslationEntry GUI_OFFLINE_PAYMENTS_TITLE = create("gui.offline payments.title", "&eMarkets &f- &7Collect Payments");
+	public static TranslationEntry GUI_OFFLINE_PAYMENTS_ITEMS_PROFILE_LORE = create("gui.offline payments.items.payment.lore",
+			"",
+			"&7Quantity Received&f: &a%payment_total%",
+			"",
+			"&b&lReason",
+			"%payment_reason%",
+			"",
+			"&d&lReceived On",
+			"&e%payment_date%",
+			"",
+			"&e&l%left_click% &7to collect payment"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
