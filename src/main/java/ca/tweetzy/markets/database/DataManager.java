@@ -303,6 +303,21 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void deleteMarketItems(@NonNull final Category category, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category_item WHERE owning_category = ?")) {
+				statement.setString(1, category.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
 	public void getMarketItems(@NonNull final Callback<List<MarketItem>> callback) {
 		final List<MarketItem> marketItems = new ArrayList<>();
 

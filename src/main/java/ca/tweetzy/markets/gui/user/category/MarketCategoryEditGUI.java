@@ -114,11 +114,23 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE))
-				.make(), click -> this.category.unStore(result -> {
+				.make(), click -> {
 
-			if (result == SynchronizeResult.SUCCESS)
-				click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, this.market));
-		}));
+			// remove items first if any
+			if (!this.category.getItems().isEmpty())
+				Markets.getDataManager().deleteMarketItems(this.category, (error, itemResult) -> {
+					if (error == null && itemResult) {
+						this.category.getItems().forEach(item -> {
+							giveBackMarketItem(item);
+							Markets.getCategoryItemManager().remove(item);
+						});
+
+						performCategoryDeletion(click);
+					}
+				});
+			else
+				performCategoryDeletion(click);
+		});
 	}
 
 	private void drawIconButton() {
@@ -209,24 +221,35 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 					return;
 
 				// give user the item or drop
-				final ItemStack item = marketItem.getItem().clone();
-
-				if (marketItem.getStock() <= item.getMaxStackSize())
-					PlayerUtil.giveItem(player, item);
-				else {
-					item.setAmount(1);
-					for (int i = 0; i < marketItem.getStock(); i++)
-						PlayerUtil.giveItem(player, item);
-				}
-
+				giveBackMarketItem(marketItem);
 				reopen(click);
 			});
+		}
+	}
+
+	private void giveBackMarketItem(@NonNull final MarketItem marketItem) {
+		final ItemStack item = marketItem.getItem().clone();
+
+		if (marketItem.getStock() <= item.getMaxStackSize())
+			PlayerUtil.giveItem(this.player, item);
+		else {
+			item.setAmount(1);
+			for (int i = 0; i < marketItem.getStock(); i++)
+				PlayerUtil.giveItem(this.player, item);
 		}
 	}
 
 	private void reopen(@NonNull GuiClickEvent click) {
 		click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));
 
+	}
+
+	private void performCategoryDeletion(@NonNull final GuiClickEvent click) {
+		this.category.unStore(categoryRemoveResult -> {
+			if (categoryRemoveResult == SynchronizeResult.SUCCESS) {
+				click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, this.market));
+			}
+		});
 	}
 
 	@Override
