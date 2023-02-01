@@ -9,6 +9,7 @@ import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.impl.currency.VaultCurrency;
 import ca.tweetzy.markets.model.currency.FundsEconomyLoader;
 import ca.tweetzy.markets.model.currency.UltraEconomyLoader;
+import ca.tweetzy.markets.settings.Settings;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -67,6 +68,12 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 	@Override
 	public void load() {
 		clear();
+
+		if (Settings.CURRENCY_USE_ITEM_ONLY.getBoolean()) {
+			add(new ItemCurrency());
+			return;
+		}
+
 		// add vault by default
 		add(new VaultCurrency());
 		add(new ItemCurrency());
