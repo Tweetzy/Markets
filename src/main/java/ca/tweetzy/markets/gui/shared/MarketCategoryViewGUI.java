@@ -40,7 +40,7 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
-				"market_item_currency", marketItem.getCurrency().split("/")[2],
+				"market_item_currency", marketItem.getCurrencyDisplayName(),
 				"market_item_stock", marketItem.getStock(),
 				"true", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
 		));

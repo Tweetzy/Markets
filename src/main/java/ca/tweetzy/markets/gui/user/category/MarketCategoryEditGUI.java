@@ -180,7 +180,7 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 				.lore(Replacer.replaceVariables(
 						TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_MARKET_ITEM_LORE)
 						, "market_item_price", String.format("%,.2f", marketItem.getPrice())
-						, "market_item_currency", marketItem.getCurrency().split("/")[2]
+						, "market_item_currency", marketItem.getCurrencyDisplayName()
 						, "market_item_stock", marketItem.getStock()
 						, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 						, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)

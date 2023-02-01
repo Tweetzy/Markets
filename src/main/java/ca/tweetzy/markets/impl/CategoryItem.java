@@ -11,6 +11,7 @@ import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.model.Taxer;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
-		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), "Vault/Vault/Vault ($)", CompMaterial.AIR.parseItem(), 1, 0, false, true);
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1, 0, false, true);
 	}
 
 	@Override

@@ -112,29 +112,30 @@ public final class CategoryNewItemGUI extends BaseGUI {
 		drawPriceForAllButton();
 
 		// currency
-		setButton(getRows() - 1, 8, QuickItem
-				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
-				.name(Translations.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
-				.lore(Translations.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
-						"left_click", Translations.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"market_item_currency", this.marketItem.getCurrency().split("/")[1]))
-				.make(), click -> {
+		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
+			setButton(getRows() - 1, 8, QuickItem
+					.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
+					.name(Translations.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))
+					.lore(Translations.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_LORE,
+							"left_click", Translations.string(this.player, Translations.MOUSE_LEFT_CLICK),
+							"market_item_currency", this.marketItem.getCurrencyDisplayName()))
+					.make(), click -> {
 
-			final ItemStack placedItem = getItem(1, 4);
-			if (placedItem != null && placedItem.getType() != CompMaterial.AIR.parseMaterial())
-				this.marketItem.setItem(placedItem);
+				final ItemStack placedItem = getItem(1, 4);
+				if (placedItem != null && placedItem.getType() != CompMaterial.AIR.parseMaterial())
+					this.marketItem.setItem(placedItem);
 
-			click.manager.showGUI(click.player, new CurrencyPickerGUI(this, click.player, (currency, item) -> {
-				click.gui.exit();
+				click.manager.showGUI(click.player, new CurrencyPickerGUI(this, click.player, (currency, item) -> {
+					click.gui.exit();
 
-				this.marketItem.setCurrency(currency.getStoreableName());
+					this.marketItem.setCurrency(currency.getStoreableName());
 
-				if (item != null)
-					this.marketItem.setCurrencyItem(item);
+					if (item != null)
+						this.marketItem.setCurrencyItem(item);
 
-				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
-			}));
-		});
+					click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+				}));
+			});
 
 		// offers
 		drawOffersButton();
