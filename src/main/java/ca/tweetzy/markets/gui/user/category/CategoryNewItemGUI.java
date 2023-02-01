@@ -112,7 +112,7 @@ public final class CategoryNewItemGUI extends BaseGUI {
 		drawPriceForAllButton();
 
 		// currency
-		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
+		if (Settings.CURRENCY_ALLOW_PICK.getBoolean() || Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())
 			setButton(getRows() - 1, 8, QuickItem
 					.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM.getItemStack())
 					.name(Translations.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_NAME))

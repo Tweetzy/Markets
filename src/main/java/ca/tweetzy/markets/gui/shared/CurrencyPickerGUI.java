@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
 import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -29,7 +30,7 @@ public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public CurrencyPickerGUI(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), 6, Markets.getCurrencyManager().getManagerContent());
+		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 4 : 6, Markets.getCurrencyManager().getManagerContent());
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
@@ -39,7 +40,7 @@ public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 	@Override
 	protected void drawAdditional() {
 		// custom item
-		setButton(getRows() - 1, 4, QuickItem
+		setButton(Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 1 : getRows() - 1, 4, QuickItem
 				.of(CompMaterial.HOPPER)
 				.name(TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME))
 				.lore(Replacer.replaceVariables(
