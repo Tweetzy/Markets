@@ -502,7 +502,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createOffer(@NonNull final Offer offer, final Callback<Offer> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "offer (id, sender, sender_name, offer_to, market_item, currency, currency_item, offered_amount, offered_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "offer (id, sender, sender_name, offer_to, market_item, currency, currency_item, offered_amount, offered_at, request_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "offer WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -519,6 +519,7 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(7, SerializeUtil.encodeItem(offer.getCurrencyItem()));
 				preparedStatement.setDouble(8, offer.getOfferedAmount());
 				preparedStatement.setLong(9, offer.getTimeCreated());
+				preparedStatement.setInt(10, offer.getRequestAmount());
 
 				preparedStatement.executeUpdate();
 
@@ -575,6 +576,7 @@ public final class DataManager extends DataManagerAbstract {
 				resultSet.getString("sender_name"),
 				UUID.fromString(resultSet.getString("offer_to")),
 				UUID.fromString(resultSet.getString("market_item")),
+				resultSet.getInt("request_amount"),
 				resultSet.getString("currency"),
 				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
 				resultSet.getDouble("offered_amount"),

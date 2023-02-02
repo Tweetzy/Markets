@@ -20,6 +20,8 @@ public interface Offer extends Identifiable, Trackable, Storeable<Offer> {
 
 	@NonNull UUID getMarketItem();
 
+	int getRequestAmount();
+
 	@NonNull String getCurrency();
 
 	ItemStack getCurrencyItem();

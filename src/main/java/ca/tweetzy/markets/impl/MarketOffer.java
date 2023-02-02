@@ -18,6 +18,7 @@ public final class MarketOffer implements Offer {
 	private final String senderName;
 	private final UUID offerTo;
 	private final UUID marketItem;
+	private final int requestAmount;
 	private final String currency;
 	private final ItemStack currencyItem;
 	private final double offeredAmount;
@@ -47,6 +48,11 @@ public final class MarketOffer implements Offer {
 	@Override
 	public @NonNull UUID getMarketItem() {
 		return this.marketItem;
+	}
+
+	@Override
+	public int getRequestAmount() {
+		return this.requestAmount;
 	}
 
 	@Override
