@@ -499,6 +499,89 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createOffer(@NonNull final Offer offer, final Callback<Offer> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "offer (id, sender, sender_name, offer_to, market_item, currency, currency_item, offered_amount, offered_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "offer WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, offer.getId().toString());
+
+				preparedStatement.setString(1, offer.getId().toString());
+				preparedStatement.setString(2, offer.getOfferSender().toString());
+				preparedStatement.setString(3, offer.getOfferSenderName());
+				preparedStatement.setString(4, offer.getOfferFor().toString());
+				preparedStatement.setString(5, offer.getMarketItem().toString());
+				preparedStatement.setString(6, offer.getCurrency());
+				preparedStatement.setString(7, SerializeUtil.encodeItem(offer.getCurrencyItem()));
+				preparedStatement.setDouble(8, offer.getOfferedAmount());
+				preparedStatement.setLong(9, offer.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractOffer(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getOffers(@NonNull final Callback<List<Offer>> callback) {
+		final List<Offer> offers = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "offer")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Offer offer = extractOffer(resultSet);
+					offers.add(offer);
+				}
+
+				callback.accept(null, offers);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteOffer(@NonNull final Offer offer, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "offer WHERE id = ?")) {
+				statement.setString(1, offer.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	private Offer extractOffer(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketOffer(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("sender")),
+				resultSet.getString("sender_name"),
+				UUID.fromString(resultSet.getString("offer_to")),
+				UUID.fromString(resultSet.getString("market_item")),
+				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
+				resultSet.getDouble("offered_amount"),
+				resultSet.getLong("offered_at")
+		);
+	}
+
 	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
 		final ArrayList<UUID> bannedUsers = new ArrayList<>();
 		Layout homeLayout, categoryLayout;

@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.Offer;
 import lombok.AllArgsConstructor;
@@ -85,6 +86,9 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void store(@NonNull Consumer<Offer> stored) {
-
+		Markets.getDataManager().createOffer(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
 	}
 }
