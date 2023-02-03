@@ -5,10 +5,12 @@ import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.MarketItem;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -25,6 +27,8 @@ public final class MarketCategory implements Category {
 
 	private final long createdAt;
 	private long updatedAt;
+
+	private final List<Player> viewingUsers;
 
 	public MarketCategory(
 			@NonNull final UUID owningMarket,
@@ -46,6 +50,7 @@ public final class MarketCategory implements Category {
 		this.items = items;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.viewingUsers = new ArrayList<>();
 	}
 
 	@Override
@@ -114,6 +119,11 @@ public final class MarketCategory implements Category {
 	@Override
 	public long getLastUpdated() {
 		return this.updatedAt;
+	}
+
+	@Override
+	public List<Player> getViewingPlayers() {
+		return this.viewingUsers;
 	}
 
 	@Override

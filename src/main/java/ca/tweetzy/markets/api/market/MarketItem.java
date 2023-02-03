@@ -5,6 +5,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.Identifiable;
 import ca.tweetzy.markets.api.Storeable;
 import ca.tweetzy.markets.api.Synchronize;
+import ca.tweetzy.markets.api.UserViewable;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.settings.Settings;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public interface MarketItem extends Identifiable, Synchronize, Storeable<MarketItem> {
+public interface MarketItem extends Identifiable, Synchronize, UserViewable, Storeable<MarketItem> {
 
 	@NonNull UUID getOwningCategory();
 

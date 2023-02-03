@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.UUID;
 
-public interface Category extends Identifiable, UserIdentifiable, Displayable, Trackable, Synchronize, Storeable<Category> {
+public interface Category extends Identifiable, UserIdentifiable, Displayable, Trackable, Synchronize, UserViewable, Storeable<Category> {
 
 	@NonNull UUID getOwningMarket();
 

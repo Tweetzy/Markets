@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -34,6 +36,8 @@ public final class CategoryItem implements MarketItem {
 	private int stock;
 	private boolean priceIsForAll;
 	private boolean acceptingOffers;
+
+	private final List<Player> viewingUsers;
 
 	public CategoryItem(
 			@NonNull final UUID id,
@@ -55,6 +59,7 @@ public final class CategoryItem implements MarketItem {
 		this.stock = stock;
 		this.priceIsForAll = priceIsForAll;
 		this.acceptingOffers = acceptingOffers;
+		this.viewingUsers = new ArrayList<>();
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
@@ -139,6 +144,11 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void setIsAcceptingOffers(boolean acceptingOffers) {
 		this.acceptingOffers = acceptingOffers;
+	}
+
+	@Override
+	public List<Player> getViewingPlayers() {
+		return this.viewingUsers;
 	}
 
 	@Override
