@@ -12,20 +12,23 @@ public final class Translations extends TranslationManager {
 		super(plugin);
 	}
 
-	public static TranslationEntry MARKET_NAME_TOO_LONG = create("market name too long", "&cMarket name too long, max is 72 characters.");
-	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("category name too long", "&cCategory name too long, max is 32 characters.");
-	public static TranslationEntry CATEGORY_NAME_USED = create("category name used", "&cYou already have a category named&F: &4%category_name%");
-	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("take out item", "&cPlease remove your item from the menu first!");
-	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("at maximum category limit", "&cYou aren't allowed to create more categories.");
-	public static TranslationEntry PLACE_ITEM_TO_ADD = create("placed item to add", "&cPlease put the item you wish to add into the empty slot");
-	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("must be higher than zero", "&cPlease enter a number that is higher than 0");
-	public static TranslationEntry NO_MARKET_FOUND = create("no market found", "&cCould not find any market for&F: &4%player_name%");
-	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("one fill slot required", "&cThis layout requires at least one fill slot!");
-	public static TranslationEntry ITEM_OUT_OF_STOCK = create("item out of stock", "&cSorry that item is now out of stock");
+	public static TranslationEntry MARKET_NAME_TOO_LONG = create("error.market name too long", "&cMarket name too long, max is 72 characters.");
+	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("error.category name too long", "&cCategory name too long, max is 32 characters.");
+	public static TranslationEntry CATEGORY_NAME_USED = create("error.category name used", "&cYou already have a category named&F: &4%category_name%");
+	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
+	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
+	public static TranslationEntry PLACE_ITEM_TO_ADD = create("error.placed item to add", "&cPlease put the item you wish to add into the empty slot");
+	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("error.must be higher than zero", "&cPlease enter a number that is higher than 0");
+	public static TranslationEntry NO_MARKET_FOUND = create("error.no market found", "&cCould not find any market for&F: &4%player_name%");
+	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("error.one fill slot required", "&cThis layout requires at least one fill slot!");
+	public static TranslationEntry ITEM_OUT_OF_STOCK = create("error.item out of stock", "&cSorry that item is now out of stock");
 
-	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
-	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
-	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
+	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
+	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
+	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
+
+	public static TranslationEntry OFFER_RECEIVED = create("info.offer.received", "&b%sender_name% &ehas sent you an offer on an item!");
+	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name% ");
 
 
 	// inputs

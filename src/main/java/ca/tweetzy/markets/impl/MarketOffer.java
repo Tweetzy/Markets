@@ -126,8 +126,9 @@ public final class MarketOffer implements Offer {
 	@Override
 	public void store(@NonNull Consumer<Offer> stored) {
 		Markets.getDataManager().createOffer(this, (error, created) -> {
-			if (error == null)
+			if (error == null) {
 				stored.accept(created);
+			}
 		});
 	}
 }

@@ -1,12 +1,17 @@
 package ca.tweetzy.markets.model.manager;
 
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
 import ca.tweetzy.markets.impl.MarketOffer;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,6 +42,13 @@ public final class OfferManager extends ListManager<Offer> {
 			if (storedOffer != null) {
 				add(storedOffer);
 				created.accept(true);
+
+				Common.tell(sender, TranslationManager.string(sender, Translations.OFFER_SENT, "owner_name", owningMarket.getOwnerName()));
+				final OfflinePlayer owner = Bukkit.getOfflinePlayer(owningMarket.getOwnerUUID());
+
+				if (owner.isOnline())
+					Common.tell(owner.getPlayer(), TranslationManager.string(owner.getPlayer(), Translations.OFFER_RECEIVED, "sender_name", sender.getName()));
+
 			} else {
 				created.accept(false);
 			}
