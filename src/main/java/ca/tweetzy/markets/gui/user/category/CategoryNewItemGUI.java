@@ -11,7 +11,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
-import ca.tweetzy.markets.gui.shared.CurrencyPickerGUI;
+import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;

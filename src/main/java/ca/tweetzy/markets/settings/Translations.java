@@ -69,6 +69,22 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to collect payments"
 			);
 
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_NAME = create("gui.main view.items.bank.name", "<GRADIENT:65B1B4>&LYour Bank</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_LORE = create("gui.main view.items.bank.create",
+			"&7Used to store any physical (item) currency",
+			"&7that you want to use as payment for offers.",
+			"",
+			"&e&l%left_click% &7to view bank"
+	);
+
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_OFFERS_NAME = create("gui.main view.items.offers.name", "<GRADIENT:65B1B4>&LOffers</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_OFFERS_LORE = create("gui.main view.items.offers.create",
+			"&7Used to view any offers that",
+			"&7other users have sent regarding your items.",
+			"",
+			"&e&l%left_click% &7to view offers"
+	);
+
 	public static TranslationEntry GUI_MARKET_OVERVIEW_TITLE = create("gui.market overview.title", "&eMarkets &f- &7Your Market");
 	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME = create("gui.market overview.items.display name.name", "<GRADIENT:65B1B4>&LMarket Name</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE = create("gui.market overview.items.display name.lore",

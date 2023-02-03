@@ -7,7 +7,7 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.gui.shared.PlayerPickerGUI;
+import ca.tweetzy.markets.gui.shared.selector.PlayerPickerGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;

@@ -11,6 +11,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
+import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -107,7 +108,7 @@ public final class OfferCreateGUI extends BaseGUI {
 				.make(), click -> {
 
 			this.marketItem.getViewingPlayers().remove(this.player);
-			
+
 		});
 
 		if (Settings.CURRENCY_ALLOW_PICK.getBoolean() || Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())

@@ -43,10 +43,28 @@ public final class MarketsMainGUI extends BaseGUI {
 			click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, playerMarket));
 		});
 
+		// global markets
+
+		// requests
+
+		//
+
 		setButton(getRows() - 2, 1, QuickItem
 				.of(CompMaterial.GOLD_INGOT)
 				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
+
+		setButton(getRows() - 2, 4, QuickItem
+				.of(CompMaterial.ENDER_CHEST)
+				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
+
+		setButton(getRows() - 2, 7, QuickItem
+				.of(CompMaterial.CREEPER_BANNER_PATTERN)
+				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
 
 	}
