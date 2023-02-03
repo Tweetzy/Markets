@@ -569,6 +569,102 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createBankEntry(@NonNull final BankEntry bankEntry, final Callback<BankEntry> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "bank_entry (id, owner, item, quantity) VALUES (?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "bank_entry WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, bankEntry.getId().toString());
+
+				preparedStatement.setString(1, bankEntry.getId().toString());
+				preparedStatement.setString(2, bankEntry.getOwner().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(bankEntry.getItem()));
+				preparedStatement.setInt(4, bankEntry.getQuantity());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractBankEntry(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getBankEntries(@NonNull final Callback<List<BankEntry>> callback) {
+		final List<BankEntry> entries = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "bank_entry")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final BankEntry entry = extractBankEntry(resultSet);
+					entries.add(entry);
+				}
+
+				callback.accept(null, entries);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateBankEntry(@NonNull final BankEntry entry, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			//id, owning_market, name, icon, display_name, description, created_at, updated_at
+			final String query = "UPDATE " + this.getTablePrefix() + "bank_entry SET quantity = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setInt(1, entry.getQuantity());
+				preparedStatement.setString(2, entry.getId().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteBankEntry(@NonNull final BankEntry entry, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "bank_entry WHERE id = ?")) {
+				statement.setString(1, entry.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+
+	private BankEntry extractBankEntry(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketBankEntry(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getInt("quantity")
+		);
+	}
+
 	private Offer extractOffer(@NonNull final ResultSet resultSet) throws SQLException {
 		return new MarketOffer(
 				UUID.fromString(resultSet.getString("id")),
