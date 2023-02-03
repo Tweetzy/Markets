@@ -1,9 +1,12 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.BankEntry;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -43,6 +46,29 @@ public final class MarketBankEntry implements BankEntry {
 
 	@Override
 	public void store(@NonNull Consumer<BankEntry> stored) {
+		Markets.getDataManager().createBankEntry(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
+	}
 
+	@Override
+	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().deleteBankEntry(this, (error, updateStatus) -> {
+			if (updateStatus) {
+				Markets.getBankManager().remove(this);
+			}
+
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
+	}
+
+	@Override
+	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().updateBankEntry(this, (error, updateStatus) -> {
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
 	}
 }
