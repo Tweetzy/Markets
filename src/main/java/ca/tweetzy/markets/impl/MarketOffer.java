@@ -2,9 +2,12 @@ package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.TransactionResult;
+import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -19,10 +22,25 @@ public final class MarketOffer implements Offer {
 	private final UUID offerTo;
 	private final UUID marketItem;
 	private final int requestAmount;
-	private final String currency;
-	private final ItemStack currencyItem;
-	private final double offeredAmount;
+	private String currency;
+	private ItemStack currencyItem;
+	private double offeredAmount;
 	private final long offeredAt;
+
+	public MarketOffer(@NonNull final Player sender, @NonNull final Market market, @NonNull final MarketItem marketItem) {
+		this(
+				UUID.randomUUID(),
+				sender.getUniqueId(),
+				sender.getName(),
+				market.getOwnerUUID(),
+				marketItem.getId(),
+				marketItem.getStock(),
+				marketItem.getCurrency(),
+				marketItem.getCurrencyItem(),
+				marketItem.getPrice() * marketItem.getStock(),
+				System.currentTimeMillis()
+		);
+	}
 
 	@Override
 
@@ -68,6 +86,21 @@ public final class MarketOffer implements Offer {
 	@Override
 	public double getOfferedAmount() {
 		return this.offeredAmount;
+	}
+
+	@Override
+	public void setCurrency(@NonNull final String currency) {
+		this.currency = currency;
+	}
+
+	@Override
+	public void setCurrencyItem(@NonNull ItemStack currencyItem) {
+		this.currencyItem = currencyItem;
+	}
+
+	@Override
+	public void setOfferedAmount(double amount) {
+		this.offeredAmount = amount;
 	}
 
 	@Override

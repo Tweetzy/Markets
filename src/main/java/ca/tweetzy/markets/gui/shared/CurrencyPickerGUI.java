@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 
@@ -30,7 +31,7 @@ public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public CurrencyPickerGUI(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 4 : 6, Markets.getCurrencyManager().getManagerContent());
+		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 4 : 6, Markets.getCurrencyManager().getManagerContent().stream().filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("markets")).collect(Collectors.toList()));
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
@@ -80,7 +81,7 @@ public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
 		if (currency instanceof final FundsCurrency fundsCurrency) {
 			quickItem.name(fundsCurrency.getDisplayName());
 		} else {
-			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&e&LDefault" : "&e" + currency.getCurrencyName());
+			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getCurrencyName());
 		}
 
 		quickItem.lore(Replacer.replaceVariables(List.of(

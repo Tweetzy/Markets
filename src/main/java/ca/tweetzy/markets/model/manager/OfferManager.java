@@ -26,6 +26,7 @@ public final class OfferManager extends ListManager<Offer> {
 				sender.getName(),
 				owningMarket.getOwnerUUID(),
 				marketItem.getId(),
+				marketItem.getStock(),
 				currency,
 				currencyItem,
 				offeredAmount,

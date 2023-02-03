@@ -35,6 +35,7 @@ public final class Markets extends FlightPlugin {
 	private final PlayerManager playerManager = new PlayerManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final CategoryItemManager categoryItemManager = new CategoryItemManager();
+	private final OfferManager offerManager = new OfferManager();
 	private final CurrencyManager currencyManager = new CurrencyManager();
 	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
 
@@ -63,7 +64,9 @@ public final class Markets extends FlightPlugin {
 				new _6_MarketItemOffersColMigration(),
 				new _7_MarketSettingsInitialMigration(),
 				new _8_MarketLayoutMigration(),
-				new _9_OfflineItemPaymentMigration()
+				new _9_OfflineItemPaymentMigration(),
+				new _10_MarketOfferMigration(),
+				new _11_OfferRequestAmountMigration()
 		);
 
 		// run migrations for tables
@@ -80,6 +83,7 @@ public final class Markets extends FlightPlugin {
 		this.playerManager.load();
 		this.currencyManager.load();
 		this.offlineItemPaymentManager.load();
+		this.offerManager.load();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -106,6 +110,10 @@ public final class Markets extends FlightPlugin {
 		return (Markets) FlightPlugin.getInstance();
 	}
 
+	public static MarketsAPI getAPI() {
+		return getInstance().API;
+	}
+
 	public static GuiManager getGuiManager() {
 		return getInstance().guiManager;
 	}
@@ -124,6 +132,10 @@ public final class Markets extends FlightPlugin {
 
 	public static CategoryItemManager getCategoryItemManager() {
 		return getInstance().categoryItemManager;
+	}
+
+	public static OfferManager getOfferManager() {
+		return getInstance().offerManager;
 	}
 
 	public static PlayerManager getPlayerManager() {

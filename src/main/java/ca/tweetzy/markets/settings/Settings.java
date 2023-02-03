@@ -69,6 +69,11 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_DECREMENT = create("gui.purchase item.items.decrement", CompMaterial.RED_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN = create("gui.purchase item.items.price breakdown", CompMaterial.PAPER.name());
 
+	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CREATE_OFFER = create("gui.offer creation.items.create offer", CompMaterial.LIME_DYE.name());
+	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN = create("gui.offer creation.items.breakdown", CompMaterial.PAPER.name());
+	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount", CompMaterial.SUNFLOWER.name());
+	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency", CompMaterial.GOLD_INGOT.name());
+
 	public static void init() {
 		Markets.getCoreConfig().init();
 	}

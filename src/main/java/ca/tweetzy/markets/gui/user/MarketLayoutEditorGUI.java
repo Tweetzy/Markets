@@ -47,6 +47,7 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 		setItem(this.layout.getExitButtonSlot(), getBackButton());
 		setItem(this.layout.getPrevPageButtonSlot(), getPreviousButton());
 		setItem(this.layout.getNextPageButtonSlot(), getNextButton());
+
 		setItem(this.layout.getOwnerProfileSlot(), QuickItem
 				.of(this.player)
 				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_PROFILE_NAME))

@@ -8,6 +8,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.impl.MarketOffer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -92,6 +93,10 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
 		if (click.clickType == ClickType.LEFT)
 			click.manager.showGUI(click.player, new MarketItemPurchaseGUI(this.player, this.market, marketItem));
+
+		// todo implement offers
+		if (click.clickType == ClickType.RIGHT && marketItem.isAcceptingOffers())
+			click.manager.showGUI(click.player, new OfferCreateGUI(this, this.player, this.market, marketItem, new MarketOffer(this.player, this.market, marketItem)));
 	}
 
 	@Override

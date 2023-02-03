@@ -41,6 +41,9 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_MARKET_DESC_TITLE = create("prompts.market description.title", "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_MARKET_DESC_SUBTITLE = create("prompts.market description.subtitle", "&fEnter new description into chat");
 
+	public static TranslationEntry PROMPT_OFFER_PRICE_TITLE = create("prompts.offer price.title", "<GRADIENT:65B1B4>&LOffer Price</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_OFFER_PRICE_SUBTITLE = create("prompts.offer price.subtitle", "&fEnter how much you want to offer");
+
 
 	// guis
 	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
@@ -558,6 +561,39 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to collect payment"
 	);
 
+	public static TranslationEntry GUI_OFFER_CREATE_TITLE = create("gui.offer creation.title", "&eMarkets &f- &7Send an Offer");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CREATE_NAME = create("gui.offer creation.items.create offer.name", "<GRADIENT:65B1B4>&LCreate Offer</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CREATE_LORE = create("gui.offer creation.items.create offer.lore",
+			"&e&l%left_click% &7to send the offer"
+	);
+
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN_NAME = create("gui.offer creation.items.breakdown.name", "<GRADIENT:65B1B4>&LOffer Breakdown</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN_LORE = create("gui.offer creation.items.breakdown.lore",
+			"",
+			"&a&lYou &7(&f%sender_name%&7) &eis offering &b&lSeller &7(&f%seller_name%&7)",
+			"&fx&a%offer_amount% &a%offer_currency% &efor &fx&a%requested_amount% &a%market_item_name%",
+			"",
+			"&c&oThis offer will be created assuming stock levels stay the",
+			"&c&osame, if it changes this offer will be automatically voided."
+	);
+
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_AMOUNT_NAME = create("gui.offer creation.items.offered amount.name", "<GRADIENT:65B1B4>&LOffer Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_AMOUNT_LORE = create("gui.offer creation.items.offered amount.lore",
+			"&7Current Offer &f: &a%offer_amount%",
+			"",
+			"&e&l%left_click% &7to change offer amount"
+
+	);
+
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_NAME = create("gui.offer creation.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_LORE = create("gui.offer creation.items.currency.lore",
+			"&7Used to adjust which currency you will",
+			"&7be be offering for this market item.",
+			"",
+			"&7Current&f: &e%offer_currency%",
+			"",
+			"&e&l%left_click% &7to edit currency"
+	);
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
