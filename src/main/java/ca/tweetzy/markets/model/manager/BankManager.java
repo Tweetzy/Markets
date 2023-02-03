@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.model.manager;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.impl.MarketBankEntry;
@@ -38,6 +39,9 @@ public final class BankManager extends ListManager<BankEntry> {
 	public void load() {
 		clear();
 
-
+		Markets.getDataManager().getBankEntries((error, found) -> {
+			if (error != null) return;
+			found.forEach(this::add);
+		});
 	}
 }
