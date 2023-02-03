@@ -8,13 +8,23 @@ import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class BankManager extends ListManager<BankEntry> {
 
 	public BankManager() {
 		super("Bank");
+	}
+
+	public List<BankEntry> getEntriesByPlayer(@NonNull final UUID owner) {
+		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(owner)).collect(Collectors.toList());
+	}
+
+	public BankEntry getEntryByPlayer(@NonNull final UUID owner, @NonNull final ItemStack itemStack) {
+		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(owner) && entry.getItem().isSimilar(itemStack)).findFirst().orElse(null);
 	}
 
 	public void create(@NonNull final Player sender, @NonNull final ItemStack itemStack, final int amount, @NonNull final Consumer<Boolean> created) {
