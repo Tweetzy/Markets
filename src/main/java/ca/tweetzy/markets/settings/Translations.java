@@ -52,7 +52,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
 
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME = create("gui.main view.items.your market.name", "&e&lYour Market");
-	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE = create("gui.main view.items.your market.create",
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE = create("gui.main view.items.your market.lore",
 			"&7You currently don't have a market",
 			"",
 			"&a&lClick &7to create one."
@@ -61,8 +61,16 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to view market"
 	);
 
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME = create("gui.main view.items.global.name", "<GRADIENT:65B1B4>&LAll Markets</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE = create("gui.main view.items.global.lore",
+			"&7Used to view all open markets",
+			"&7that are owned by other players",
+			"",
+			"&e&l%left_click% &7to view open markets"
+	);
+
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME = create("gui.main view.items.payments.name", "<GRADIENT:65B1B4>&LCollect Payments</GRADIENT:2B6F8A>");
-	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE = create("gui.main view.items.payments.create",
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE = create("gui.main view.items.payments.lore",
 			"&7Used to collect any payments that were",
 			"&7made to your market while you were offline.",
 			"",
@@ -70,7 +78,7 @@ public final class Translations extends TranslationManager {
 			);
 
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_NAME = create("gui.main view.items.bank.name", "<GRADIENT:65B1B4>&LYour Bank</GRADIENT:2B6F8A>");
-	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_LORE = create("gui.main view.items.bank.create",
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_LORE = create("gui.main view.items.bank.lore",
 			"&7Used to store any physical (item) currency",
 			"&7that you want to use as payment for offers.",
 			"",
@@ -78,7 +86,7 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_OFFERS_NAME = create("gui.main view.items.offers.name", "<GRADIENT:65B1B4>&LOffers</GRADIENT:2B6F8A>");
-	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_OFFERS_LORE = create("gui.main view.items.offers.create",
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_OFFERS_LORE = create("gui.main view.items.offers.lore",
 			"&7Used to view any offers that",
 			"&7other users have sent regarding your items.",
 			"",

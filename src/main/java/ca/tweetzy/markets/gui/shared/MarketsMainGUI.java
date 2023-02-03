@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.gui.shared;
 
+import ca.tweetzy.flight.comp.NBTEditor;
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.template.BaseGUI;
@@ -44,6 +45,12 @@ public final class MarketsMainGUI extends BaseGUI {
 		});
 
 		// global markets
+		setButton(1, 4, QuickItem
+				.of(NBTEditor.getHead("https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2"))
+				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
+
 
 		// requests
 
