@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.gui.shared;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
@@ -34,6 +33,10 @@ public final class OfferCreateGUI extends BaseGUI {
 		this.market = market;
 		this.marketItem = marketItem;
 		this.offer = offer;
+
+		setOnClose(open -> this.marketItem.getViewingPlayers().add(player));
+		setOnClose(close -> this.marketItem.getViewingPlayers().remove(player));
+
 		draw();
 	}
 
@@ -103,6 +106,8 @@ public final class OfferCreateGUI extends BaseGUI {
 				))
 				.make(), click -> {
 
+			this.marketItem.getViewingPlayers().remove(this.player);
+			
 		});
 
 		if (Settings.CURRENCY_ALLOW_PICK.getBoolean() || Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())
@@ -127,5 +132,9 @@ public final class OfferCreateGUI extends BaseGUI {
 			});
 
 		applyBackExit();
+		setAction(getRows() - 1, 0, click -> {
+			this.marketItem.getViewingPlayers().remove(click.player);
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+		});
 	}
 }

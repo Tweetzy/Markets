@@ -32,6 +32,8 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 		else
 			this.purchaseQty = 1;
 
+		setOnClose(open -> this.marketItem.getViewingPlayers().add(player));
+		setOnClose(close -> this.marketItem.getViewingPlayers().remove(player));
 		draw();
 	}
 
@@ -60,11 +62,16 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 				.make(), click -> {
 
 			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
+				this.marketItem.getViewingPlayers().remove(click.player);
 				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
 			});
 		});
 
 		applyBackExit();
+		setAction(getRows() - 1, 0, click -> {
+			this.marketItem.getViewingPlayers().remove(click.player);
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+		});
 	}
 
 	private void drawIncrementButtons() {

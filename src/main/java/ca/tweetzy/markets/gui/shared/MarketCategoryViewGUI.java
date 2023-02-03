@@ -22,6 +22,7 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 	private final Player player;
 	private final Market market;
+	private final Category category;
 
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
 		super(new MarketViewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
@@ -31,7 +32,13 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 
 		this.player = player;
 		this.market = market;
+		this.category = category;
+
 		setDefaultItem(this.market.getCategoryLayout().getBackgroundItem());
+
+		setOnOpen(open -> this.category.getViewingPlayers().add(player));
+		setOnClose(close -> this.category.getViewingPlayers().remove(player));
+
 		draw();
 	}
 
@@ -87,16 +94,27 @@ public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make());
+
+		setAction(getRows() - 1, 0, click -> {
+			this.category.getViewingPlayers().remove(click.player);
+			click.manager.showGUI(click.player, new MarketViewGUI(this.player, this.market));
+		});
 	}
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
-		if (click.clickType == ClickType.LEFT)
+		if (click.clickType == ClickType.LEFT) {
 			click.manager.showGUI(click.player, new MarketItemPurchaseGUI(this.player, this.market, marketItem));
+			this.category.getViewingPlayers().remove(player);
+			marketItem.getViewingPlayers().add(player);
+		}
 
 		// todo implement offers
-		if (click.clickType == ClickType.RIGHT && marketItem.isAcceptingOffers())
+		if (click.clickType == ClickType.RIGHT && marketItem.isAcceptingOffers()) {
 			click.manager.showGUI(click.player, new OfferCreateGUI(this, this.player, this.market, marketItem, new MarketOffer(this.player, this.market, marketItem)));
+			this.category.getViewingPlayers().remove(player);
+			marketItem.getViewingPlayers().add(player);
+		}
 	}
 
 	@Override

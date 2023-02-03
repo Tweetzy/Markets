@@ -217,6 +217,11 @@ public final class CategoryItem implements MarketItem {
 			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
 
 			if (newStock <= 0) {
+				getViewingPlayers().forEach(viewingUser -> {
+					viewingUser.closeInventory();
+					Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
+				});
+
 				unStore(result -> {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,

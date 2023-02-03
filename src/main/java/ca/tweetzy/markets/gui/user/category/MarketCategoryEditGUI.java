@@ -12,6 +12,8 @@ import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.gui.shared.MarketCategoryViewGUI;
+import ca.tweetzy.markets.gui.shared.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -117,7 +119,9 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 				.make(), click -> {
 
 			// remove items first if any
-			if (!this.category.getItems().isEmpty())
+			if (!this.category.getItems().isEmpty()) {
+				this.category.getItems().forEach(item -> item.getViewingPlayers().clear());
+
 				Markets.getDataManager().deleteMarketItems(this.category, (error, itemResult) -> {
 					if (error == null && itemResult) {
 						this.category.getItems().forEach(item -> {
@@ -128,7 +132,7 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 						performCategoryDeletion(click);
 					}
 				});
-			else
+			} else
 				performCategoryDeletion(click);
 		});
 	}
@@ -220,6 +224,12 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 				if (result != SynchronizeResult.SUCCESS)
 					return;
 
+				// close guis of other users
+				marketItem.getViewingPlayers().forEach(viewingUser -> {
+					click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category));
+					Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
+				});
+
 				// give user the item or drop
 				giveBackMarketItem(marketItem);
 				reopen(click);
@@ -247,6 +257,10 @@ public final class MarketCategoryEditGUI extends PagedGUI<MarketItem> {
 	private void performCategoryDeletion(@NonNull final GuiClickEvent click) {
 		this.category.unStore(categoryRemoveResult -> {
 			if (categoryRemoveResult == SynchronizeResult.SUCCESS) {
+				this.category.getViewingPlayers().forEach(viewingUser -> {
+					click.manager.showGUI(viewingUser, new MarketViewGUI(viewingUser, this.market));
+				});
+
 				click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, this.market));
 			}
 		});
