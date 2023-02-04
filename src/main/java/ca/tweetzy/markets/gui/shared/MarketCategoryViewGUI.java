@@ -2,12 +2,12 @@ package ca.tweetzy.markets.gui.shared;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.impl.MarketOffer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -18,14 +18,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public final class MarketCategoryViewGUI extends PagedGUI<MarketItem> {
+public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 	private final Player player;
 	private final Market market;
 	private final Category category;
 
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketViewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
+		super(new MarketViewGUI(player, market), player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
 		), 6, category.getItems());

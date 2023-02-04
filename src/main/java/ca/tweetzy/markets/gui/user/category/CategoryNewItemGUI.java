@@ -1,7 +1,6 @@
 package ca.tweetzy.markets.gui.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.PlayerUtil;
@@ -11,6 +10,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.settings.Settings;
@@ -21,7 +21,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public final class CategoryNewItemGUI extends BaseGUI {
+public final class CategoryNewItemGUI extends MarketsBaseGUI {
 
 	private final Player player;
 	private final Market market;
@@ -29,7 +29,7 @@ public final class CategoryNewItemGUI extends BaseGUI {
 	private final MarketItem marketItem;
 
 	public CategoryNewItemGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, final MarketItem marketItem) {
-		super(new MarketCategoryEditGUI(player, market, category), TranslationManager.string(Translations.GUI_CATEGORY_ADD_ITEM_TITLE, "category_name", category.getName()), 6);
+		super(new MarketCategoryEditGUI(player, market, category), player, TranslationManager.string(Translations.GUI_CATEGORY_ADD_ITEM_TITLE, "category_name", category.getName()), 6);
 		this.player = player;
 		this.market = market;
 		this.category = category;

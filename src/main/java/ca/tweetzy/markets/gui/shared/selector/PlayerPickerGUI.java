@@ -3,9 +3,9 @@ package ca.tweetzy.markets.gui.shared.selector;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public final class PlayerPickerGUI extends PagedGUI<Player> {
+public final class PlayerPickerGUI extends MarketsPagedGUI<Player> {
 
 	private final Player player;
 	private final Consumer<Player> selectedPlayer;
@@ -25,6 +25,7 @@ public final class PlayerPickerGUI extends PagedGUI<Player> {
 	public PlayerPickerGUI(final Gui parent, @NonNull final Player player, List<UUID> ignoredUsers, @NonNull final Consumer<Player> selectedPlayer) {
 		super(
 				parent,
+				player,
 				TranslationManager.string(player, Translations.GUI_USER_PICKER_TITLE),
 				6,
 				ignoredUsers != null ? Bukkit.getOnlinePlayers().stream().filter(user -> !user.getUniqueId().equals(player.getUniqueId()) && !ignoredUsers.contains(user.getUniqueId())).collect(Collectors.toList()) : Bukkit.getOnlinePlayers().stream().filter(user -> !user.getUniqueId().equals(player.getUniqueId())).collect(Collectors.toList())

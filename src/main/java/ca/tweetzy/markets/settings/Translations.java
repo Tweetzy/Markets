@@ -75,7 +75,7 @@ public final class Translations extends TranslationManager {
 			"&7made to your market while you were offline.",
 			"",
 			"&e&l%left_click% &7to collect payments"
-			);
+	);
 
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_NAME = create("gui.main view.items.bank.name", "<GRADIENT:65B1B4>&LYour Bank</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_LORE = create("gui.main view.items.bank.lore",

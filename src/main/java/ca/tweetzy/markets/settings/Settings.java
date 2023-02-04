@@ -22,6 +22,12 @@ public final class Settings extends FlightSettings {
 	/*
 	========================= GUI STUFF =========================
 	 */
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS = create("gui.main view.items.global", "https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2");
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS = create("gui.main view.items.payments", CompMaterial.GOLD_INGOT.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_BANK = create("gui.main view.items.bank", CompMaterial.ENDER_CHEST.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_OFFERS = create("gui.main view.items.offers", CompMaterial.CREEPER_BANNER_PATTERN.name());
+
+
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM = create("gui.market overview.items.display name.item", CompMaterial.NAME_TAG.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM = create("gui.market overview.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());

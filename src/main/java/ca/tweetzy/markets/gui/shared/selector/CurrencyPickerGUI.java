@@ -5,13 +5,13 @@ import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.settings.Settings;
@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-public final class CurrencyPickerGUI extends PagedGUI<AbstractCurrency> {
+public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 
 	private final Player player;
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public CurrencyPickerGUI(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 4 : 6, Markets.getCurrencyManager().getManagerContent().stream().filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("markets")).collect(Collectors.toList()));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 4 : 6, Markets.getCurrencyManager().getManagerContent().stream().filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("markets")).collect(Collectors.toList()));
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);

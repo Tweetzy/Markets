@@ -1,19 +1,19 @@
 package ca.tweetzy.markets.gui.shared;
 
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.model.Taxer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
-public final class MarketItemPurchaseGUI extends BaseGUI {
+public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 	private final Player player;
 	private final Market market;
@@ -21,7 +21,7 @@ public final class MarketItemPurchaseGUI extends BaseGUI {
 	private int purchaseQty;
 
 	public MarketItemPurchaseGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final MarketItem marketItem) {
-		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())), TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
+		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())), player, TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
 
 		this.player = player;
 		this.market = market;

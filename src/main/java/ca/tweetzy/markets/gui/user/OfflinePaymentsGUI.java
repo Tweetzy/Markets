@@ -3,13 +3,13 @@ package ca.tweetzy.markets.gui.user;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.TimeUtil;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.Payment;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -17,12 +17,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public final class OfflinePaymentsGUI extends PagedGUI<Payment> {
+public final class OfflinePaymentsGUI extends MarketsPagedGUI<Payment> {
 
 	private final Player player;
 
 	public OfflinePaymentsGUI(Gui parent, @NonNull final Player player) {
-		super(parent, TranslationManager.string(player, Translations.GUI_OFFLINE_PAYMENTS_TITLE), 6, Markets.getOfflineItemPaymentManager().getPaymentsFor(player.getUniqueId()));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_OFFLINE_PAYMENTS_TITLE), 6, Markets.getOfflineItemPaymentManager().getPaymentsFor(player.getUniqueId()));
 		this.player = player;
 		draw();
 	}

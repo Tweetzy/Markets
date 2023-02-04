@@ -9,7 +9,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
-import ca.tweetzy.markets.gui.user.MarketLayoutEditorGUI;
+import ca.tweetzy.markets.gui.user.layout.MarketLayoutEditorGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;

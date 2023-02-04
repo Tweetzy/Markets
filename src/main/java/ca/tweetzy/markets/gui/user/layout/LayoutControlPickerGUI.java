@@ -1,12 +1,12 @@
-package ca.tweetzy.markets.gui.user;
+package ca.tweetzy.markets.gui.user.layout;
 
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.LayoutControl;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -17,13 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class LayoutControlPickerGUI extends PagedGUI<LayoutControl> {
+public final class LayoutControlPickerGUI extends MarketsPagedGUI<LayoutControl> {
 
 	private final Player player;
 	private final Consumer<LayoutControl> selectedControl;
 
 	public LayoutControlPickerGUI(@NonNull final Gui parent, @NonNull final Player player, @NonNull final Consumer<LayoutControl> selectedControl) {
-		super(parent, TranslationManager.string(player, Translations.GUI_LAYOUT_CONTROL_PICKER_TITLE), 4, Arrays.asList(LayoutControl.values()));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_LAYOUT_CONTROL_PICKER_TITLE), 4, Arrays.asList(LayoutControl.values()));
 		this.player = player;
 		this.selectedControl = selectedControl;
 		draw();

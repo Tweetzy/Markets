@@ -1,14 +1,14 @@
-package ca.tweetzy.markets.gui.user;
+package ca.tweetzy.markets.gui.user.layout;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Layout;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.user.market.MarketSettingsGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
+public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 
 	private final Player player;
 	private final Market market;
@@ -29,7 +29,7 @@ public final class MarketLayoutEditorGUI extends PagedGUI<Integer> {
 	private final MarketLayoutType layoutType;
 
 	public MarketLayoutEditorGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final MarketLayoutType layoutType) {
-		super(new MarketSettingsGUI(player, market), TranslationManager.string(player, layoutType == MarketLayoutType.HOME ? Translations.GUI_LAYOUT_EDITOR_TITLE_HOME : Translations.GUI_LAYOUT_EDITOR_TITLE_CATEGORY), 6, IntStream.rangeClosed(0, 53).boxed().collect(Collectors.toList()));
+		super(new MarketSettingsGUI(player, market), player, TranslationManager.string(player, layoutType == MarketLayoutType.HOME ? Translations.GUI_LAYOUT_EDITOR_TITLE_HOME : Translations.GUI_LAYOUT_EDITOR_TITLE_CATEGORY), 6, IntStream.rangeClosed(0, 53).boxed().collect(Collectors.toList()));
 		this.player = player;
 		this.market = market;
 		this.layout = layoutType == MarketLayoutType.HOME ? market.getHomeLayout() : market.getCategoryLayout();

@@ -1,7 +1,6 @@
 package ca.tweetzy.markets.gui.shared;
 
 import ca.tweetzy.flight.gui.Gui;
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.ItemUtil;
@@ -11,6 +10,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
+import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public final class OfferCreateGUI extends BaseGUI {
+public final class OfferCreateGUI extends MarketsBaseGUI {
 
 	private final Gui parent;
 	private final Player player;
@@ -28,7 +28,7 @@ public final class OfferCreateGUI extends BaseGUI {
 	private final Offer offer;
 
 	public OfferCreateGUI(final Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final MarketItem marketItem, @NonNull final Offer offer) {
-		super(parent, TranslationManager.string(player, Translations.GUI_OFFER_CREATE_TITLE), 6);
+		super(parent, player, TranslationManager.string(player, Translations.GUI_OFFER_CREATE_TITLE), 6);
 		this.parent = parent;
 		this.player = player;
 		this.market = market;

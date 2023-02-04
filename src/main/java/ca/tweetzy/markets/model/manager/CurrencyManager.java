@@ -1,9 +1,7 @@
 package ca.tweetzy.markets.model.manager;
 
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
-import ca.tweetzy.markets.api.currency.Payment;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.impl.currency.VaultCurrency;
@@ -14,8 +12,6 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
