@@ -9,6 +9,7 @@ import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.commands.CommandAdmin;
+import ca.tweetzy.markets.commands.CommandBank;
 import ca.tweetzy.markets.commands.CommandView;
 import ca.tweetzy.markets.commands.MarketsCommand;
 import ca.tweetzy.markets.database.DataManager;
@@ -94,6 +95,7 @@ public final class Markets extends FlightPlugin {
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
+				new CommandBank(),
 				new CommandView(),
 				new CommandAdmin()
 		);
