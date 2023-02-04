@@ -9,6 +9,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketLayoutType;
+import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.user.layout.MarketLayoutEditorGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -17,13 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-public final class MarketSettingsGUI extends BaseGUI {
+public final class MarketSettingsGUI extends MarketsBaseGUI {
 
 	private final Player player;
 	private final Market market;
 
 	public MarketSettingsGUI(@NonNull final Player player, @NonNull final Market market) {
-		super(new MarketOverviewGUI(player, market), TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
+		super(new MarketOverviewGUI(player, market), player, TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
 		this.player = player;
 		this.market = market;
 		draw();

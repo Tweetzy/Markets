@@ -22,6 +22,15 @@ public final class Settings extends FlightSettings {
 	/*
 	========================= GUI STUFF =========================
 	 */
+	public static ConfigEntry GUI_SHARED_ITEMS_BACK_BUTTON = create("gui.shared buttons.back button", CompMaterial.DARK_OAK_DOOR.name());
+	public static ConfigEntry GUI_SHARED_ITEMS_EXIT_BUTTON = create("gui.shared buttons.exit button", CompMaterial.BARRIER.name());
+	public static ConfigEntry GUI_SHARED_ITEMS_PREVIOUS_BUTTON = create("gui.shared buttons.previous button", CompMaterial.ARROW.name());
+	public static ConfigEntry GUI_SHARED_ITEMS_NEXT_BUTTON = create("gui.shared buttons.next button", CompMaterial.ARROW.name());
+
+
+
+
+
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS = create("gui.main view.items.global", "https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS = create("gui.main view.items.payments", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_BANK = create("gui.main view.items.bank", CompMaterial.ENDER_CHEST.name());

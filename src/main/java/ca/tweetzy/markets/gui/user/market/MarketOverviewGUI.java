@@ -1,7 +1,6 @@
 package ca.tweetzy.markets.gui.user.market;
 
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.PagedGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -10,6 +9,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
 import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import ca.tweetzy.markets.settings.Settings;
@@ -21,13 +21,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public final class MarketOverviewGUI extends PagedGUI<Category> {
+public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 
 	private final Player player;
 	private final Market market;
 
 	public MarketOverviewGUI(@NonNull final Player player, @NonNull final Market market) {
-		super(new MarketsMainGUI(player), TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
+		super(new MarketsMainGUI(player), player, TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
 		this.player = player;
 		this.market = market;
 
