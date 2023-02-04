@@ -5,6 +5,7 @@ import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.impl.MarketBankEntry;
 import lombok.NonNull;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,10 +29,13 @@ public final class BankManager extends ListManager<BankEntry> {
 	}
 
 	public void create(@NonNull final Player sender, @NonNull final ItemStack itemStack, final int amount, @NonNull final Consumer<Boolean> created) {
+		ItemStack toAdd = itemStack.clone();
+		toAdd.setAmount(1);
+
 		final BankEntry entry = new MarketBankEntry(
 				UUID.randomUUID(),
 				sender.getUniqueId(),
-				itemStack,
+				toAdd,
 				amount
 		);
 

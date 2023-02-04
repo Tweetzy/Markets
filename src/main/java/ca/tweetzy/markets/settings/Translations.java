@@ -21,6 +21,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("error.placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("error.must be higher than zero", "&cPlease enter a number that is higher than 0");
+	public static TranslationEntry INSUFFICIENT_ENTRY_AMOUNT = create("error.insufficient bank entry balance", "&cWithdrawal amount exceeds your stored total!");
 	public static TranslationEntry NO_MARKET_FOUND = create("error.no market found", "&cCould not find any market for&F: &4%player_name%");
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("error.one fill slot required", "&cThis layout requires at least one fill slot!");
 	public static TranslationEntry ITEM_OUT_OF_STOCK = create("error.item out of stock", "&cSorry that item is now out of stock");
@@ -48,6 +49,8 @@ public final class Translations extends TranslationManager {
 
 	public static TranslationEntry PROMPT_OFFER_PRICE_TITLE = create("prompts.offer price.title", "<GRADIENT:65B1B4>&LOffer Price</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_OFFER_PRICE_SUBTITLE = create("prompts.offer price.subtitle", "&fEnter how much you want to offer");
+	public static TranslationEntry PROMPT_WITHDRAW_ENTRY_TITLE = create("prompts.withdraw bank entry.title", "<GRADIENT:65B1B4>&LEnter Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_WITHDRAW_ENTRY_SUBTITLE = create("prompts.withdraw bank entry.subtitle", "&fEnter how much you want to withdraw");
 
 
 	// guis
@@ -642,6 +645,19 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: &e%offer_currency%",
 			"",
 			"&e&l%left_click% &7to edit currency"
+	);
+
+	public static TranslationEntry GUI_BANK_TITLE = create("gui.bank.title", "&eMarkets &f- &7Bank");
+	public static TranslationEntry GUI_BANK_ITEMS_ADD_NAME = create("gui.bank.items.add.name", "<GRADIENT:65B1B4>&LDeposit</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_BANK_ITEMS_ADD_LORE = create("gui.bank.items.add.lore",
+			"&eDrop items on here to deposit"
+	);
+
+	public static TranslationEntry GUI_BANK_ITEMS_ENTRY_LORE = create("gui.bank.items.entry.lore",
+			"&7Quantity&f: &E%entry_quantity%",
+			"",
+			"&e&l%left_click% &7to withdraw all",
+			"&b&l%right_click% &7to withdraw qty"
 	);
 
 	public static void init() {

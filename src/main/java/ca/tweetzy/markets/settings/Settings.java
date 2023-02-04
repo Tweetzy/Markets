@@ -3,6 +3,7 @@ package ca.tweetzy.markets.settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.FlightSettings;
+import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.markets.Markets;
 
 public final class Settings extends FlightSettings {
@@ -26,9 +27,6 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_SHARED_ITEMS_EXIT_BUTTON = create("gui.shared buttons.exit button", CompMaterial.BARRIER.name());
 	public static ConfigEntry GUI_SHARED_ITEMS_PREVIOUS_BUTTON = create("gui.shared buttons.previous button", CompMaterial.ARROW.name());
 	public static ConfigEntry GUI_SHARED_ITEMS_NEXT_BUTTON = create("gui.shared buttons.next button", CompMaterial.ARROW.name());
-
-
-
 
 
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS = create("gui.main view.items.global", "https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2");
@@ -88,6 +86,9 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN = create("gui.offer creation.items.breakdown", CompMaterial.PAPER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency", CompMaterial.GOLD_INGOT.name());
+
+	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add", CompMaterial.LIME_DYE.name());
+
 
 	public static void init() {
 		Markets.getCoreConfig().init();
