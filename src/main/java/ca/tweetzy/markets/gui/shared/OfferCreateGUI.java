@@ -107,8 +107,24 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
-			this.marketItem.getViewingPlayers().remove(this.player);
+			// check item availability one last time
+			if (Markets.getCategoryItemManager().getByUUID(this.offer.getMarketItem()) == null) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.ITEM_NO_LONGER_AVAILABLE));
+				return;
+			}
 
+			Markets.getOfferManager().create(
+					click.player,
+					this.market,
+					this.marketItem,
+					this.offer.getCurrency(),
+					this.offer.getCurrencyItem(),
+					this.offer.getOfferedAmount(),
+					created -> {
+						if (!created) return;
+						this.marketItem.getViewingPlayers().remove(this.player);
+						click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, Markets.getCategoryManager().getByUUID(this.marketItem.getOwningCategory())));
+					});
 		});
 
 		if (Settings.CURRENCY_ALLOW_PICK.getBoolean() || Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())
