@@ -2,10 +2,7 @@ package ca.tweetzy.markets.api.manager;
 
 import lombok.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class ListManager<T> extends Manager {
 
@@ -25,6 +22,12 @@ public abstract class ListManager<T> extends Manager {
 		synchronized (this.managerContent) {
 			if (this.managerContent.contains(t)) return;
 			this.managerContent.add(t);
+		}
+	}
+
+	public void addAll(@NonNull final Collection<T> t) {
+		synchronized (this.managerContent) {
+			this.managerContent.addAll(t);
 		}
 	}
 

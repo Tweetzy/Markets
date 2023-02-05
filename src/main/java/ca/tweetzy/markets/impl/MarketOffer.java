@@ -1,16 +1,20 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
+import ca.tweetzy.markets.api.market.OfferRejectReason;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -119,8 +123,17 @@ public final class MarketOffer implements Offer {
 	}
 
 	@Override
-	public void reject(@NonNull Consumer<TransactionResult> result) {
+	public void reject(@NonNull BiConsumer<TransactionResult, OfferRejectReason> result) {
+		final MarketItem locatedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
 
+		unStore(deleteResult -> {
+			if (deleteResult == SynchronizeResult.SUCCESS) {
+				result.accept(
+						TransactionResult.SUCCESS,
+						locatedItem == null ? OfferRejectReason.ITEM_NO_LONGER_AVAILABLE : locatedItem.getStock() < requestAmount ? OfferRejectReason.INSUFFICIENT_STOCK : OfferRejectReason.NOT_ACCEPTED
+				);
+			}
+		});
 	}
 
 	@Override
@@ -129,6 +142,18 @@ public final class MarketOffer implements Offer {
 			if (error == null) {
 				stored.accept(created);
 			}
+		});
+	}
+
+	@Override
+	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().deleteOffer(this, (error, updateStatus) -> {
+			if (updateStatus) {
+				Markets.getOfferManager().remove(this);
+			}
+
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
 		});
 	}
 }

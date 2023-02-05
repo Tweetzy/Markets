@@ -1,7 +1,5 @@
 package ca.tweetzy.markets.settings;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
@@ -32,7 +30,11 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
 
 	public static TranslationEntry OFFER_RECEIVED = create("info.offer.received", "&b%sender_name% &ehas sent you an offer on an item!");
-	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name% ");
+	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name%");
+
+	public static TranslationEntry OFFER_REJECT_NOT_ACCEPTED = create("info.offer.rejected.not accepted", "&b%owner_name% &crejected your offer on &e%market_item_name%!");
+	public static TranslationEntry OFFER_REJECT_NOT_AVAILABLE = create("info.offer.rejected.item not available", "&b%owner_name% &crejected your offer (item no longer available)");
+	public static TranslationEntry OFFER_REJECT_INSUFFICIENT_STOCK = create("info.offer.rejected.insufficient stock", "&b%owner_name% &crejected your offer on &e%market_item_name% &c(insufficient stock)");
 
 
 	// inputs
@@ -660,6 +662,26 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to withdraw all",
 			"&b&l%right_click% &7to withdraw qty"
 	);
+
+	public static TranslationEntry GUI_OFFERS_TITLE = create("gui.offers.title", "&eMarkets &f- &7Offers");
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_INFO = create("gui.offers.items.offer.lore.info",
+			"&b&lOriginal",
+			"&7Price&F: &a%market_item_price%",
+			"&7Currency&f: &a%market_item_currency%",
+			"&7Quantity&f: &a%offer_requested_amount%",
+			"",
+			"&d&lOffered",
+			"&7Price&F: &a%offer_amount%",
+			"&7Currency&F: &a%offer_currency%",
+			""
+	);
+
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_ACCEPT = create("gui.offers.items.offer.lore.accept", "&e&l%left_click% &7To accept this offer");
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_REJECT = create("gui.offers.items.offer.lore.reject", "&d&l%right_click% &7To reject this offer");
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_REJECT_STOCK = create("gui.offers.items.offer.lore.reject stock", "&C&OYou can only reject this item since it is no", "&c&olonger available or the stock count is too low.", "");
+
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_HEADER = create("gui.offers.items.offer.lore.header", "&7----------------------------");
+	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_FOOTER = create("gui.offers.items.offer.lore.footer", "&7----------------------------");
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();

@@ -15,13 +15,19 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class OfferManager extends ListManager<Offer> {
 
 	public OfferManager() {
 		super("Offer");
+	}
+
+	public List<Offer> getOffersSentTo(@NonNull final UUID playerUUID) {
+		return getManagerContent().stream().filter(offer -> offer.getOfferFor().equals(playerUUID)).collect(Collectors.toList());
 	}
 
 	public void create(@NonNull final Player sender, @NonNull final Market owningMarket, @NonNull final MarketItem marketItem, @NonNull final String currency, @NonNull final ItemStack currencyItem, final double offeredAmount, @NonNull final Consumer<Boolean> created) {

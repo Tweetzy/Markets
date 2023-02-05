@@ -12,6 +12,7 @@ import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface Offer extends Identifiable, Trackable, Storeable<Offer> {
@@ -40,7 +41,7 @@ public interface Offer extends Identifiable, Trackable, Storeable<Offer> {
 
 	void accept(@NonNull final Consumer<TransactionResult> result);
 
-	void reject(@NonNull final Consumer<TransactionResult> result);
+	void reject(@NonNull final BiConsumer<TransactionResult, OfferRejectReason> result);
 
 	default boolean isCurrencyOfItem() {
 		final String[] split = getCurrency().split("/");

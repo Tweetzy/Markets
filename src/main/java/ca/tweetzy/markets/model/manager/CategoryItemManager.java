@@ -59,6 +59,7 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 				}
 
 				locatedCategory.getItems().add(marketItem);
+				add(marketItem);
 			});
 		});
 	}

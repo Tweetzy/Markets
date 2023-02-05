@@ -82,6 +82,7 @@ public final class CategoryManager extends ListManager<Category> {
 					if (itemsError != null) return;
 
 					category.getItems().addAll(foundItems);
+					Markets.getCategoryItemManager().addAll(foundItems);
 					locatedMarket.getCategories().add(category);
 					add(category);
 				});
