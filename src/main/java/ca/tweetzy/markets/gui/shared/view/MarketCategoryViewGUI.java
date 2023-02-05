@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.gui.shared;
+package ca.tweetzy.markets.gui.shared.view;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
@@ -8,6 +8,8 @@ import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.gui.shared.checkout.MarketItemPurchaseGUI;
+import ca.tweetzy.markets.gui.shared.checkout.OfferCreateGUI;
 import ca.tweetzy.markets.impl.MarketOffer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;

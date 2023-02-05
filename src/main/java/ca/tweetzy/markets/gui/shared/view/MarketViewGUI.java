@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.gui.shared;
+package ca.tweetzy.markets.gui.shared.view;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;

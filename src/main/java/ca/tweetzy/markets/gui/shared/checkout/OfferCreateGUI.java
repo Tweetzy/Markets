@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.gui.shared;
+package ca.tweetzy.markets.gui.shared.checkout;
 
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.settings.TranslationManager;
@@ -12,6 +12,7 @@ import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.api.market.Offer;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
+import ca.tweetzy.markets.gui.shared.view.MarketCategoryViewGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
