@@ -58,6 +58,11 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_WITHDRAW_ENTRY_TITLE = create("prompts.withdraw bank entry.title", "<GRADIENT:65B1B4>&LEnter Amount</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_WITHDRAW_ENTRY_SUBTITLE = create("prompts.withdraw bank entry.subtitle", "&fEnter how much you want to withdraw");
 
+	public static TranslationEntry PROMPT_CATEGORY_NAME_TITLE = create("prompts.category name.title", "<GRADIENT:65B1B4>&LCategory Name</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_CATEGORY_NAME_SUBTITLE = create("prompts.category name.subtitle", "&fEnter new name for category into chat");
+
+	public static TranslationEntry PROMPT_CATEGORY_DESC_TITLE = create("prompts.category description.title", "<GRADIENT:65B1B4>&LCategory Description</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_CATEGORY_DESC_SUBTITLE = create("prompts.category description.subtitle", "&fEnter new category description");
 
 	// guis
 	public static TranslationEntry GUI_SHARED_ITEMS_BACK_BUTTON_NAME = create("gui.shared buttons.back button.name", "<GRADIENT:65B1B4>&LGo Back</GRADIENT:2B6F8A>");

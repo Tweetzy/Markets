@@ -52,7 +52,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE, "category_display_name", this.category.getDisplayName()))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Name</GRADIENT:2B6F8A>", "&fEnter new name into chat") {
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -76,7 +76,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_LORE, "category_description", this.category.getDescription().get(0)))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, "<GRADIENT:65B1B4>&lCategory Description</GRADIENT:2B6F8A>", "&fEnter new description into chat") {
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -198,27 +198,28 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		final Player player = click.player;
 
 		switch (click.clickType) {
-			case LEFT -> new TitleInput(Markets.getInstance(), click.player, "&eItem Price", "&fEnter item price in chat") {
-				@Override
-				public void onExit(Player player) {
-					click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
-				}
+			case LEFT ->
+					new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
+						@Override
+						public void onExit(Player player) {
+							click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
+						}
 
-				@Override
-				public boolean onResult(String string) {
-					string = ChatColor.stripColor(string);
+						@Override
+						public boolean onResult(String string) {
+							string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isNumber(string)) {
-						Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
-						return false;
-					}
+							if (!NumberUtils.isNumber(string)) {
+								Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
+								return false;
+							}
 
-					final double price = Double.parseDouble(string);
-					marketItem.setPrice(price);
-					marketItem.sync(result -> reopen(click));
-					return true;
-				}
-			};
+							final double price = Double.parseDouble(string);
+							marketItem.setPrice(price);
+							marketItem.sync(result -> reopen(click));
+							return true;
+						}
+					};
 
 			case DROP -> marketItem.unStore(result -> {
 				if (result != SynchronizeResult.SUCCESS)
