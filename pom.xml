@@ -211,7 +211,7 @@
                         <configuration>
                             <tasks>
                                 <delete>
-                                    <fileset dir="C:\Dev\Minecraft\latest\plugins\Markets\locales" includes="*.yml" />
+                                    <fileset dir="C:\Dev\Minecraft\latest\plugins\Markets\locales" includes="*.yml"/>
                                 </delete>
                             </tasks>
                         </configuration>

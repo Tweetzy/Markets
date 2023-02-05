@@ -35,6 +35,9 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry OFFER_REJECT_NOT_ACCEPTED = create("info.offer.rejected.not accepted", "&b%owner_name% &crejected your offer on &e%market_item_name%!");
 	public static TranslationEntry OFFER_REJECT_NOT_AVAILABLE = create("info.offer.rejected.item not available", "&b%owner_name% &crejected your offer (item no longer available)");
 	public static TranslationEntry OFFER_REJECT_INSUFFICIENT_STOCK = create("info.offer.rejected.insufficient stock", "&b%owner_name% &crejected your offer on &e%market_item_name% &c(insufficient stock)");
+	public static TranslationEntry OFFER_REJECT_NO_MONEY = create("info.offer.rejected.no money", "&b%owner_name% &crejected your offer on &e%market_item_name% &c(insufficient balance)");
+	public static TranslationEntry OFFER_ACCEPTED = create("info.offer.accepted", "&b%owner_name% &eaccepted your offer on &e%market_item_name%");
+	public static TranslationEntry OFFER_ACCEPTED_PAYMENT = create("info.offer.accepted payment", "&eThe offer request was accepted");
 
 
 	// inputs

@@ -163,6 +163,9 @@ public final class CategoryItem implements MarketItem {
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
 		Markets.getDataManager().deleteMarketItem(this, (error, updateStatus) -> {
 			if (updateStatus) {
+
+				getViewingPlayers().forEach(viewingUser -> Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK)));
+
 				Markets.getCategoryManager().getByUUID(this.owningCategory).getItems().removeIf(category -> category.getId().equals(this.id));
 				Markets.getCategoryItemManager().remove(this);
 			}

@@ -3,7 +3,6 @@ package ca.tweetzy.markets.settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.FlightSettings;
-import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.markets.Markets;
 
 public final class Settings extends FlightSettings {

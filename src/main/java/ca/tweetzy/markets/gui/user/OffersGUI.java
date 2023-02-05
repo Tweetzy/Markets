@@ -71,9 +71,23 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 		final MarketItem marketItem = Markets.getCategoryItemManager().getByUUID(offer.getMarketItem());
 
 		if (click.clickType == ClickType.LEFT) {
-			if (marketItem == null || marketItem.getStock() < offer.getRequestAmount()) {
-				return;
-			}
+			offer.accept(result -> {
+				final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(offer.getOfferSender());
+
+				if (offerSender.isOnline())
+					switch (result) {
+						case SUCCESS ->
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+						case FAILED_NO_MONEY ->
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NO_MONEY, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+						case FAILED_OUT_OF_STOCK ->
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+						case NO_LONGER_AVAILABLE ->
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_AVAILABLE, "owner_name", click.player.getName()));
+					}
+
+				click.manager.showGUI(click.player, new OffersGUI(this.parent, click.player));
+			});
 		}
 
 		if (click.clickType == ClickType.RIGHT) {

@@ -5,7 +5,6 @@ import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.impl.MarketBankEntry;
 import lombok.NonNull;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,6 +25,13 @@ public final class BankManager extends ListManager<BankEntry> {
 
 	public BankEntry getEntryByPlayer(@NonNull final UUID owner, @NonNull final ItemStack itemStack) {
 		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(owner) && entry.getItem().isSimilar(itemStack)).findFirst().orElse(null);
+	}
+
+	public int getEntryCountByPlayer(@NonNull final UUID owner, @NonNull final ItemStack itemStack) {
+		final BankEntry entry = getEntryByPlayer(owner, itemStack);
+
+		if (entry == null) return 0;
+		return entry.getQuantity();
 	}
 
 	public void create(@NonNull final Player sender, @NonNull final ItemStack itemStack, final int amount, @NonNull final Consumer<Boolean> created) {

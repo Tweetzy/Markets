@@ -1,14 +1,16 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
-import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.api.market.MarketItem;
-import ca.tweetzy.markets.api.market.Offer;
-import ca.tweetzy.markets.api.market.OfferRejectReason;
+import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -119,7 +121,106 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void accept(@NonNull Consumer<TransactionResult> result) {
+		final MarketItem locatedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
 
+		if (locatedItem == null) {
+			unStore(deleteResult -> {
+				if (deleteResult == SynchronizeResult.SUCCESS) {
+					result.accept(TransactionResult.NO_LONGER_AVAILABLE);
+				}
+			});
+			return;
+		}
+
+		if (locatedItem.getStock() < this.requestAmount) {
+			unStore(deleteResult -> {
+				if (deleteResult == SynchronizeResult.SUCCESS) {
+					result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+				}
+			});
+			return;
+		}
+
+		final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(this.sender);
+		final OfflinePlayer itemOwner = Bukkit.getOfflinePlayer(this.offerTo);
+
+		final String currencyPlugin = this.currency.split("/")[0];
+		final String currencyName = this.currency.split("/")[1];
+
+		boolean hasEnoughMoney = isCurrencyOfItem() ?
+				Markets.getBankManager().getEntryCountByPlayer(this.sender, this.currencyItem) >= (int) this.offeredAmount :
+				Markets.getCurrencyManager().has(offerSender, currencyPlugin, currencyName, this.offeredAmount);
+
+		if (!hasEnoughMoney) {
+			unStore(deleteResult -> {
+				if (deleteResult == SynchronizeResult.SUCCESS) {
+					result.accept(TransactionResult.FAILED_NO_MONEY);
+				}
+			});
+			return;
+		}
+
+		if (isCurrencyOfItem()) {
+			final BankEntry entry = Markets.getBankManager().getEntryByPlayer(this.sender, this.currencyItem);
+			final int newTotal = entry.getQuantity() - (int) this.offeredAmount;
+
+			if (newTotal <= 0) {
+				entry.unStore(entryResult -> {
+					if (entryResult == SynchronizeResult.FAILURE) return;
+
+					// give the buyer their items
+					giveItemAndCleanup(locatedItem, result);
+
+					// give seller their items
+					giveSellerItemsOrMakePayment(itemOwner);
+
+				});
+			} else {
+				entry.setQuantity(newTotal);
+				entry.sync(entryResult -> {
+					if (entryResult == SynchronizeResult.FAILURE) return;
+
+					// give the buyer their items
+					giveItemAndCleanup(locatedItem, result);
+
+					// give seller their items
+					giveSellerItemsOrMakePayment(itemOwner);
+				});
+			}
+		} else {
+			Markets.getCurrencyManager().deposit(Bukkit.getOfflinePlayer(this.offerTo), currencyPlugin, currencyName, this.offeredAmount);
+			Markets.getCurrencyManager().withdraw(offerSender, currencyPlugin, currencyName, this.offeredAmount);
+
+			giveItemAndCleanup(locatedItem, result);
+
+		}
+	}
+
+	private void giveItemAndCleanup(@NonNull final MarketItem marketItem, @NonNull Consumer<TransactionResult> transactionResultConsumer) {
+		unStore(result -> {
+			if (result == SynchronizeResult.SUCCESS)
+				transactionResultConsumer.accept(TransactionResult.SUCCESS);
+		});
+
+		// delete the item
+		marketItem.unStore(result -> {
+		});
+
+		Markets.getOfflineItemPaymentManager().create(
+				this.sender,
+				QuickItem.of(marketItem.getItem().clone()).amount(1).make(),
+				(int) this.requestAmount,
+				TranslationManager.string(Translations.OFFER_ACCEPTED_PAYMENT), success -> {
+				});
+	}
+
+	private void giveSellerItemsOrMakePayment(@NonNull final OfflinePlayer itemOwner) {
+		Markets.getOfflineItemPaymentManager().create(
+				itemOwner.getUniqueId(),
+				QuickItem.of(this.currencyItem).amount(1).make(),
+				(int) this.offeredAmount,
+				TranslationManager.string(Translations.OFFER_ACCEPTED_PAYMENT), success -> {
+				});
 	}
 
 	@Override
