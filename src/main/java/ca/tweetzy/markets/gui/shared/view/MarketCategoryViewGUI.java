@@ -3,7 +3,9 @@ package ca.tweetzy.markets.gui.shared.view;
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
@@ -105,6 +107,12 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
+		if (Markets.getCategoryItemManager().getByUUID(marketItem.getId()) == null) {
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, this.category));
+			Common.tell(click.player, TranslationManager.string(click.player, Translations.ITEM_NO_LONGER_AVAILABLE));
+			return;
+		}
+
 		if (click.clickType == ClickType.LEFT) {
 			click.manager.showGUI(click.player, new MarketItemPurchaseGUI(this.player, this.market, marketItem));
 			this.category.getViewingPlayers().remove(player);
