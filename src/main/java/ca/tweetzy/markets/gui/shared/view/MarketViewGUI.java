@@ -5,6 +5,8 @@ import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.input.TitleInput;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
@@ -13,6 +15,7 @@ import ca.tweetzy.markets.gui.shared.view.ratings.NewMarketRatingGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -45,14 +48,14 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 		this.market.getHomeLayout().getDecoration().forEach(this::setItem);
 
 		// set custom shit
-		setItem(this.market.getHomeLayout().getOwnerProfileSlot(), QuickItem
+		setButton(this.market.getHomeLayout().getOwnerProfileSlot(), QuickItem
 				.of(SkullUtils.getSkull(this.market.getOwnerUUID()))
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
-				.make());
+				.make(), click -> click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))));
 
 		setButton(this.market.getHomeLayout().getReviewButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
@@ -71,11 +74,23 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 
 		});
 
-		setItem(this.market.getHomeLayout().getSearchButtonSlot(), QuickItem
+		setButton(this.market.getHomeLayout().getSearchButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_VIEW_ITEMS_SEARCH_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make());
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+
+			@Override
+			public void onExit(Player player) {
+				click.manager.showGUI(click.player, MarketViewGUI.this);
+			}
+
+			@Override
+			public boolean onResult(String string) {
+				click.manager.showGUI(click.player, new MarketSearchGUI(MarketViewGUI.this, click.player, MarketViewGUI.this.market, string));
+				return true;
+			}
+		});
 
 	}
 
@@ -93,7 +108,7 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 
 	@Override
 	protected void onClick(Category category, GuiClickEvent click) {
-		click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, category));
+		click.manager.showGUI(click.player, new MarketCategoryViewGUI(this, click.player, this.market, category));
 	}
 
 	@Override

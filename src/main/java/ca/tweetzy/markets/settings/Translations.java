@@ -44,6 +44,10 @@ public final class Translations extends TranslationManager {
 
 
 	// inputs
+	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_SEARCH_SUBTITLE = create("prompts.search.subtitle", "&fEnter search keywords into chat");
+
+
 	public static TranslationEntry PROMPT_NEW_REVIEW_TITLE = create("prompts.new review.title", "<GRADIENT:65B1B4>&LReview Message</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_NEW_REVIEW_SUBTITLE = create("prompts.new review.subtitle", "&fEnter your feedback into chat");
 
@@ -707,6 +711,14 @@ public final class Translations extends TranslationManager {
 			"&e&L%left_click% &7To enter market"
 	);
 
+	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_SEARCH_NAME = create("gui.all markets.items.search.name", "<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_SEARCH_LORE = create("gui.all markets.items.search.lore",
+			"&7Used to search for items in",
+			"&7every market that is open currently.",
+			"",
+			"&e&l%left_click% &7to search markets."
+	);
+
 	public static TranslationEntry GUI_EDIT_ITEM_TITLE = create("gui.edit market item.title", "&eMarkets &f- &7Item Settings");
 	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_OFFERS_NAME = create("gui.edit market item.items.offers.name", "<GRADIENT:65B1B4>&LOffers</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_OFFERS_LORE = create("gui.edit market item.items.offers.lore",
@@ -802,6 +814,9 @@ public final class Translations extends TranslationManager {
 			"",
 			"&e%rating_date%"
 	);
+
+	public static TranslationEntry GUI_SEARCH_TITLE = create("gui.search.title", "&eMarkets &f- &7Search &f- &7%search_keywords%");
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();

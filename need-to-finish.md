@@ -1,0 +1,7 @@
+- [X] Global Markets
+- [x] Searching
+- [X] Market Rating
+- [X] Market Profile
+- [ ] Request System
+- [ ] Market Upkeep
+- [ ] Market Feature

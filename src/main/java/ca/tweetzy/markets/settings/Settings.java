@@ -100,6 +100,8 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_STAR_ITEM = create("gui.new rating.star.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_MSG_ITEM = create("gui.new rating.message.item", CompMaterial.DARK_OAK_SIGN.name());
 
+	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM = create("gui.all markets.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
+
 
 	public static void init() {
 		Markets.getCoreConfig().init();

@@ -7,10 +7,12 @@ import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.Rating;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,27 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 						"market_ratings_stars", StringUtils.repeat("★", (int) market.getRatings().stream().mapToInt(Rating::getStars).average().orElse(0))
 				))
 				.make();
+	}
+
+	@Override
+	protected void drawAdditional() {
+		setButton(getRows() - 1, 4, QuickItem
+				.of(Settings.GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_ALL_MARKETS_ITEMS_SEARCH_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_ALL_MARKETS_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+
+			@Override
+			public void onExit(Player player) {
+				click.manager.showGUI(click.player, AllMarketsViewGUI.this);
+			}
+
+			@Override
+			public boolean onResult(String string) {
+				click.manager.showGUI(click.player, new MarketSearchGUI(AllMarketsViewGUI.this, click.player, string));
+				return true;
+			}
+		});
 	}
 
 	@Override

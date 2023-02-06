@@ -1,9 +1,12 @@
 package ca.tweetzy.markets.model.manager;
 
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.Filterer;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
+import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.impl.PlayerMarket;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
 import lombok.NonNull;
@@ -20,6 +23,26 @@ public final class MarketManager extends ListManager<Market> {
 
 	public MarketManager() {
 		super("Market");
+	}
+
+	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final String keywords) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+		final List<Market> possibleSearchMarkets = getOpenMarketsExclusive(searcher).stream().filter(market -> !market.getBannedUsers().contains(searcher.getUniqueId())).toList();
+
+
+		// populate items into search list
+		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getItems())));
+		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
+	}
+
+	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final Market market, @NonNull final String keywords) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+		market.getCategories().forEach(category -> marketItems.addAll(category.getItems()));
+		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
+	}
+
+	public List<MarketItem> getSearchResults(@NonNull final Category category, @NonNull final String keywords) {
+		return category.getItems().stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<Market> getOpenMarketsExclusive(@NonNull final OfflinePlayer ignoredUser) {

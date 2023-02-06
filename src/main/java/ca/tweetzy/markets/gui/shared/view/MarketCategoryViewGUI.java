@@ -1,10 +1,12 @@
 package ca.tweetzy.markets.gui.shared.view;
 
 import ca.tweetzy.flight.comp.SkullUtils;
+import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
@@ -18,6 +20,7 @@ import ca.tweetzy.markets.impl.MarketOffer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -30,8 +33,8 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 	private final Market market;
 	private final Category category;
 
-	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		super(new MarketViewGUI(player, market), player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
+	public MarketCategoryViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
+		super(parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
 		), 6, category.getItems());
@@ -46,6 +49,10 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		setOnClose(close -> this.category.getViewingPlayers().remove(player));
 
 		draw();
+	}
+
+	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
+		this(new MarketViewGUI(player, market), player, market, category);
 	}
 
 	@Override
@@ -77,14 +84,14 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		this.market.getCategoryLayout().getDecoration().forEach(this::setItem);
 
 		// set custom shit
-		setItem(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
+		setButton(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
 				.of(SkullUtils.getSkull(this.market.getOwnerUUID()))
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
-				.make());
+				.make(), click -> click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))));
 
 		setButton(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
@@ -102,11 +109,23 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
 		});
 
-		setItem(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem
+		setButton(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make());
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+
+			@Override
+			public void onExit(Player player) {
+				click.manager.showGUI(click.player, MarketCategoryViewGUI.this);
+			}
+
+			@Override
+			public boolean onResult(String string) {
+				click.manager.showGUI(click.player, new MarketSearchGUI(MarketCategoryViewGUI.this, click.player, MarketCategoryViewGUI.this.category, string));
+				return true;
+			}
+		});
 
 		setAction(getRows() - 1, 0, click -> {
 			this.category.getViewingPlayers().remove(click.player);
@@ -128,7 +147,6 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 			marketItem.getViewingPlayers().add(player);
 		}
 
-		// todo implement offers
 		if (click.clickType == ClickType.RIGHT && marketItem.isAcceptingOffers()) {
 			click.manager.showGUI(click.player, new OfferCreateGUI(this, this.player, this.market, marketItem, new MarketOffer(this.player, this.market, marketItem)));
 			this.category.getViewingPlayers().remove(player);
