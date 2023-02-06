@@ -54,7 +54,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
 				"market_item_currency", marketItem.getCurrencyDisplayName(),
 				"market_item_stock", marketItem.getStock(),
-				"true", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
+				"market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
 		));
 
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_BUY, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)));

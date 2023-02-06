@@ -189,6 +189,8 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 						, "market_item_price", String.format("%,.2f", marketItem.getPrice())
 						, "market_item_currency", marketItem.getCurrencyDisplayName()
 						, "market_item_stock", marketItem.getStock()
+						, "market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
+						, "market_item_accepting_offers", TranslationManager.string(this.player, marketItem.isAcceptingOffers() ? Translations.TRUE : Translations.FALSE)
 						, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 						, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 						, "drop_button", TranslationManager.string(this.player, Translations.DROP_KEY)

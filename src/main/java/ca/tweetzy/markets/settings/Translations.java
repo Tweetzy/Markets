@@ -24,6 +24,8 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("error.one fill slot required", "&cThis layout requires at least one fill slot!");
 	public static TranslationEntry ITEM_OUT_OF_STOCK = create("error.item out of stock", "&cSorry that item is now out of stock");
 	public static TranslationEntry ITEM_NO_LONGER_AVAILABLE = create("error.item no longer available", "&cSorry that item is no longer available");
+	public static TranslationEntry BANNED_FROM_MARKET = create("error.banned from market", "&4%market_owner% &chas banned you from viewing their market!");
+	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
 
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
@@ -189,6 +191,8 @@ public final class Translations extends TranslationManager {
 			"&7Price&f: &a%market_item_price%",
 			"&7Currency&f: &e%market_item_currency%",
 			"&7Stock&f: &e%market_item_stock%",
+			"&7Wholesale&f: &e%market_item_wholesale%",
+			"&7Accept Offers&f: &e%market_item_accepting_offers%",
 			"",
 			"&e&l%left_click% &7to edit price",
 			"&b&l%right_click% &7to edit settings",
@@ -520,7 +524,7 @@ public final class Translations extends TranslationManager {
 			"&7Price&f: &a%market_item_price%",
 			"&7Currency&f: &e%market_item_currency%",
 			"&7Stock&f: &e%market_item_stock%",
-			"&7Price for all&f: %true%",
+			"&7Wholesale&f: %market_item_wholesale%",
 			""
 	);
 
@@ -690,6 +694,15 @@ public final class Translations extends TranslationManager {
 
 	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_HEADER = create("gui.offers.items.offer.lore.header", "&7----------------------------");
 	public static TranslationEntry GUI_OFFERS_ITEMS_OFFER_LORE_FOOTER = create("gui.offers.items.offer.lore.footer", "&7----------------------------");
+
+	public static TranslationEntry GUI_ALL_MARKETS_TITLE = create("gui.all markets.title", "&eMarkets &f- &7Open Markets");
+	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_MARKET_LORE = create("gui.all markets.items.market.lore",
+			"",
+			"&7Ratings&f: &6%market_ratings_stars% &f(&7%market_ratings_total%&f)",
+			"",
+			"&e&L%left_click% &7To enter market"
+	);
+
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
