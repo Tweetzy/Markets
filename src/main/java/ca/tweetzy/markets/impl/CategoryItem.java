@@ -193,7 +193,7 @@ public final class CategoryItem implements MarketItem {
 
 		final int newPurchaseAmount = Math.min(quantity, stock);
 
-		final double subtotal = this.price * newPurchaseAmount;
+		final double subtotal = this.priceIsForAll ? this.price : this.price * newPurchaseAmount;
 		final double total = subtotal;
 
 		final String currencyPlugin = this.currency.split("/")[0];

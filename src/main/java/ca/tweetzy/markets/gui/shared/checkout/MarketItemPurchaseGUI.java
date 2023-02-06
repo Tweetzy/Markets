@@ -134,16 +134,16 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 		));
 
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_SUBTOTAL,
-				"purchase_sub_total", String.format("%,.2f", this.marketItem.getPrice() * this.purchaseQty)
+				"purchase_sub_total", String.format("%,.2f", this.marketItem.isPriceForAll() ? this.marketItem.getPrice() : this.marketItem.getPrice() * this.purchaseQty)
 		));
 
 		if (Settings.TAX_ENABLED.getBoolean())
 			quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TAX,
-					"sales_tax", String.format("%,.2f", Taxer.calculateTaxAmount(this.marketItem.getPrice() * this.purchaseQty))
+					"sales_tax", String.format("%,.2f", Taxer.calculateTaxAmount(this.marketItem.isPriceForAll() ? this.marketItem.getPrice() : this.marketItem.getPrice() * this.purchaseQty))
 			));
 
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_TOTAL,
-				"purchase_total", String.format("%,.2f", Taxer.getTaxedTotal(this.marketItem.getPrice() * this.purchaseQty))
+				"purchase_total", String.format("%,.2f", Taxer.getTaxedTotal(this.marketItem.isPriceForAll() ? this.marketItem.getPrice() : this.marketItem.getPrice() * this.purchaseQty))
 		));
 
 		setItem(4, 4, quickItem.make());
