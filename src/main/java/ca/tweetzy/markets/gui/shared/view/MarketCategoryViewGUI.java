@@ -12,6 +12,7 @@ import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.checkout.MarketItemPurchaseGUI;
 import ca.tweetzy.markets.gui.shared.checkout.OfferCreateGUI;
+import ca.tweetzy.markets.gui.shared.view.ratings.NewMarketRatingGUI;
 import ca.tweetzy.markets.impl.MarketOffer;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -84,14 +85,18 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				))
 				.make());
 
-		setItem(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
+		setButton(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				))
-				.make());
+				.make(), click -> {
+
+			if (click.clickType == ClickType.LEFT)
+				click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
+		});
 
 		setItem(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem
 				.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())

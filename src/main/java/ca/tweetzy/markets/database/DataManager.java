@@ -658,7 +658,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketRating(@NonNull final Rating rating, final Callback<Rating> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "review (id, market, rater, rater_name, feedback, stars, posted_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "review (id, market, rater, rater_name, feedback, stars, posted_on) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "review WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -669,9 +669,10 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(1, rating.getId().toString());
 				preparedStatement.setString(2, rating.getMarketID().toString());
 				preparedStatement.setString(3, rating.getRaterUUID().toString());
-				preparedStatement.setString(4, rating.getFeedback());
-				preparedStatement.setInt(5, rating.getStars());
-				preparedStatement.setLong(6, rating.getTimeCreated());
+				preparedStatement.setString(4, rating.getRaterName());
+				preparedStatement.setString(5, rating.getFeedback());
+				preparedStatement.setInt(6, rating.getStars());
+				preparedStatement.setLong(7, rating.getTimeCreated());
 
 				preparedStatement.executeUpdate();
 

@@ -6,6 +6,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
+import ca.tweetzy.markets.gui.shared.view.AllMarketsViewGUI;
 import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.gui.user.OffersGUI;
 import ca.tweetzy.markets.gui.user.OfflinePaymentsGUI;
@@ -34,7 +35,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 				.of(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
+				.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(this, click.player)));
 
 		// your market
 		setButton(2, 2, QuickItem

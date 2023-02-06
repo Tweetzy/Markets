@@ -98,14 +98,14 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		});
 
 		// settings button
-		setButton(getRows() - 1, 2, QuickItem
-				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_LORE))
-				.make(), click -> {
-
-
-		});
+//		setButton(getRows() - 1, 2, QuickItem
+//				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_ITEM.getItemStack())
+//				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_NAME))
+//				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_LORE))
+//				.make(), click -> {
+//
+//
+//		});
 
 		// new item button
 		setButton(getRows() - 1, 4, QuickItem

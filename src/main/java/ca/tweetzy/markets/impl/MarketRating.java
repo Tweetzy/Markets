@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.Rating;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,9 @@ public final class MarketRating implements Rating {
 
 	@Override
 	public void store(@NonNull Consumer<Rating> stored) {
-
+		Markets.getDataManager().createMarketRating(this, (error, created) -> {
+			if (error == null)
+				stored.accept(created);
+		});
 	}
 }

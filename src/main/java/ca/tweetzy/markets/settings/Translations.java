@@ -14,6 +14,7 @@ public final class Translations extends TranslationManager {
 
 	public static TranslationEntry MARKET_NAME_TOO_LONG = create("error.market name too long", "&cMarket name too long, max is 72 characters.");
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("error.category name too long", "&cCategory name too long, max is 32 characters.");
+	public static TranslationEntry REVIEW_TOO_LONG = create("error.review feedback too long", "&cReview too long, max is 128 characters.");
 	public static TranslationEntry CATEGORY_NAME_USED = create("error.category name used", "&cYou already have a category named&F: &4%category_name%");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
@@ -43,6 +44,9 @@ public final class Translations extends TranslationManager {
 
 
 	// inputs
+	public static TranslationEntry PROMPT_NEW_REVIEW_TITLE = create("prompts.new review.title", "<GRADIENT:65B1B4>&LReview Message</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_NEW_REVIEW_SUBTITLE = create("prompts.new review.subtitle", "&fEnter your feedback into chat");
+
 	public static TranslationEntry PROMPT_NEW_CATEGORY_TITLE = create("prompts.new category.title", "<GRADIENT:65B1B4>&LNew Category</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_NEW_CATEGORY_SUBTITLE = create("prompts.new category.subtitle", "&fEnter new category id into chat");
 
@@ -740,6 +744,31 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: &e%market_item_currency%",
 			"",
 			"&e&l%left_click% &7to edit currency"
+	);
+
+	public static TranslationEntry GUI_NEW_RATING_TITLE = create("gui.new rating.title", "%market_display_name% &f- &7Review");
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_CREATE_NAME = create("gui.new rating.items.create.name", "<GRADIENT:65B1B4>&lLeave Review</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_CREATE_LORE = create("gui.new rating.items.create.lore",
+			"&7If you are happy with your review",
+			"&7then you can use this to confirm it.",
+			"",
+			"&e&l%left_click% &7to leave market review."
+	);
+
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_MSG_NAME = create("gui.new rating.items.message.name", "<GRADIENT:65B1B4>&lReview Message</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_MSG_LORE = create("gui.new rating.items.message.lore",
+			"&7The message content of the review,",
+			"&7a brief statement why you gave the rating.",
+			"",
+			"&7Current Message&f:",
+			"&e%review_message%",
+			"",
+			"&e&l%left_click% &7to edit message"
+	);
+
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_STAR_NAME = create("gui.new rating.items.star.name", "<GRADIENT:65B1B4>&l%star_level% Star</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_NEW_RATING_ITEMS_STAR_LORE = create("gui.new rating.items.star.lore",
+			"&e&l%left_click% &7to rate &e%star_level% &7star"
 	);
 
 	public static void init() {
