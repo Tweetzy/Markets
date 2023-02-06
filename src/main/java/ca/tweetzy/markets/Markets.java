@@ -12,7 +12,6 @@ import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
-import ca.tweetzy.markets.listeners.ChatListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.*;
 import ca.tweetzy.markets.settings.Settings;
@@ -68,7 +67,8 @@ public final class Markets extends FlightPlugin {
 				new _10_MarketOfferMigration(),
 				new _11_OfferRequestAmountMigration(),
 				new _12_BankEntryMigration(),
-				new _13_MarketReviewMigration()
+				new _13_MarketReviewMigration(),
+				new _14_MarketRequestMigration()
 		);
 
 		// run migrations for tables
@@ -90,7 +90,6 @@ public final class Markets extends FlightPlugin {
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
-		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
