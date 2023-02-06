@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.layout;
 
 import ca.tweetzy.markets.api.Jsonable;
 import lombok.NonNull;

@@ -2,8 +2,8 @@ package ca.tweetzy.markets.model.manager;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
-import ca.tweetzy.markets.api.market.Category;
-import ca.tweetzy.markets.api.market.MarketItem;
+import ca.tweetzy.markets.api.market.core.Category;
+import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.impl.CategoryItem;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;

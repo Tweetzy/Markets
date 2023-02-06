@@ -4,8 +4,8 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
-import ca.tweetzy.markets.api.market.Category;
-import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.api.market.core.Category;
+import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.impl.MarketCategory;
 import lombok.NonNull;
 

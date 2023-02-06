@@ -2,7 +2,8 @@ package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
-import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.api.market.core.*;
+import ca.tweetzy.markets.api.market.layout.Layout;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 

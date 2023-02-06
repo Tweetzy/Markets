@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api;
+package ca.tweetzy.markets.api.market.core;
 
 import org.bukkit.entity.Player;
 

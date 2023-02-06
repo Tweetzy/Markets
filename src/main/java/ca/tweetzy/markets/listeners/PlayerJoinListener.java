@@ -3,7 +3,7 @@ package ca.tweetzy.markets.listeners;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
-import ca.tweetzy.markets.api.market.MarketUser;
+import ca.tweetzy.markets.api.market.core.MarketUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

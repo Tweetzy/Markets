@@ -1,7 +1,7 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.flight.utils.SerializeUtil;
-import ca.tweetzy.markets.api.market.Layout;
+import ca.tweetzy.markets.api.market.layout.Layout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

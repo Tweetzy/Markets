@@ -1,8 +1,8 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.market.Market;
-import ca.tweetzy.markets.api.market.Rating;
+import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.api.market.core.Rating;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;

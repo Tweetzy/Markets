@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.layout;
 
 public enum MarketLayoutType {
 

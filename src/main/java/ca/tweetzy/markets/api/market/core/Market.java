@@ -1,6 +1,7 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.core;
 
 import ca.tweetzy.markets.api.*;
+import ca.tweetzy.markets.api.market.layout.Layout;
 import lombok.NonNull;
 
 import java.util.List;

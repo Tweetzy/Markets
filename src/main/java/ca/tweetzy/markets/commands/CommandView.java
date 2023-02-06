@@ -6,7 +6,7 @@ import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.market.Market;
+import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;

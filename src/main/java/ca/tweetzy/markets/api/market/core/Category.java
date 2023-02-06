@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.core;
 
 import ca.tweetzy.markets.api.*;
 import lombok.NonNull;

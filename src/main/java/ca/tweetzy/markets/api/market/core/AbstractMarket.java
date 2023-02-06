@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

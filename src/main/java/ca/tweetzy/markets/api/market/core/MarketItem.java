@@ -1,4 +1,4 @@
-package ca.tweetzy.markets.api.market;
+package ca.tweetzy.markets.api.market.core;
 
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.markets.Markets;

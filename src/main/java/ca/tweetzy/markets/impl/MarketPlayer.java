@@ -2,7 +2,7 @@ package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
-import ca.tweetzy.markets.api.market.MarketUser;
+import ca.tweetzy.markets.api.market.core.MarketUser;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
