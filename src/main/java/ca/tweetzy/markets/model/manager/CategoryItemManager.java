@@ -21,7 +21,7 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 		return getManagerContent().stream().filter(marketItem -> marketItem.getId().equals(id)).findFirst().orElse(null);
 	}
 
-	public void create(@NonNull final Category category, @NonNull final ItemStack item, @NonNull final String currency, @NonNull final ItemStack currencyItem, final double price, final boolean priceIsForAll, @NonNull final Consumer<Boolean> created) {
+	public void create(@NonNull final Category category, @NonNull final ItemStack item, @NonNull final String currency, @NonNull final ItemStack currencyItem, final double price, final boolean priceIsForAll, final boolean acceptingOffers, @NonNull final Consumer<Boolean> created) {
 		final MarketItem marketItem = new CategoryItem(
 				UUID.randomUUID(),
 				category.getId(),
@@ -31,7 +31,7 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 				price,
 				item.getAmount(),
 				priceIsForAll,
-				true
+				acceptingOffers
 		);
 
 		marketItem.store(storedItem -> {
