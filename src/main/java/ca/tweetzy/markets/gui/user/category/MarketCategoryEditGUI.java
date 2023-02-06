@@ -61,7 +61,10 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 			@Override
 			public boolean onResult(String string) {
-				if (string.length() > 72) return false; // TODO tell them it's too long
+				if (string.length() > 72) {
+					Common.tell(click.player, TranslationManager.string(Translations.CATEGORY_NAME_TOO_LONG));
+					return false;
+				}
 				MarketCategoryEditGUI.this.category.setDisplayName(string);
 				MarketCategoryEditGUI.this.category.sync(result -> {
 					if (result == SynchronizeResult.SUCCESS)
