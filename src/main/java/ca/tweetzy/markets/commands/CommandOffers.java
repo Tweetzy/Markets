@@ -4,7 +4,6 @@ import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.gui.user.OffersGUI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

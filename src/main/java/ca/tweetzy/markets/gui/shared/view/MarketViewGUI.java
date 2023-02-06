@@ -38,7 +38,7 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 	}
 
 
-		@Override
+	@Override
 	protected void drawAdditional() {
 		// decorations
 		this.market.getHomeLayout().getDecoration().forEach(this::setItem);
@@ -60,7 +60,7 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 				))
-				.make() , click -> {
+				.make(), click -> {
 
 			if (click.clickType == ClickType.LEFT)
 				click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
