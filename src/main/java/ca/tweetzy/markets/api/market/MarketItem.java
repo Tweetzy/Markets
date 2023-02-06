@@ -2,10 +2,7 @@ package ca.tweetzy.markets.api.market;
 
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.Identifiable;
-import ca.tweetzy.markets.api.Storeable;
-import ca.tweetzy.markets.api.Synchronize;
-import ca.tweetzy.markets.api.UserViewable;
+import ca.tweetzy.markets.api.*;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.settings.Settings;
@@ -51,9 +48,10 @@ public interface MarketItem extends Identifiable, Synchronize, UserViewable, Sto
 	void performPurchase(@NonNull final Market market, @NonNull final Player buyer, final int quantity, Consumer<TransactionResult> transactionResult);
 
 	// todo this is needs to be changed
-	default void addStock(@NonNull final ItemStack item) {
-		if (getItem().equals(item)) {
+	default void addStock(@NonNull final ItemStack item, @NonNull final Consumer<SynchronizeResult> resultConsumer) {
+		if (getItem().isSimilar(item)) {
 			setStock(getStock() + item.getAmount());
+			sync(resultConsumer);
 		}
 	}
 

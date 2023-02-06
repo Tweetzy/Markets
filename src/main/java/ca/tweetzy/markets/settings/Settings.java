@@ -85,9 +85,15 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN = create("gui.offer creation.items.breakdown", CompMaterial.PAPER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency", CompMaterial.GOLD_INGOT.name());
-
 	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM = create("gui.edit market item.items.accepting offers.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_REJECTING_OFFERS_ITEM = create("gui.edit market item.items.rejecting offers.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
+
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_IS_WHOLESALE_ITEM = create("gui.edit market item.items.wholesale enabled.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_NOT_WHOLESALE_ITEM = create("gui.edit market item.items.wholesale disabled.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_STOCK_ITEM = create("gui.edit market item.items.stock.item", CompMaterial.HOPPER.name());
+	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_CURRENCY_ITEM = create("gui.edit market item.items.currency.item", CompMaterial.GOLD_INGOT.name());
 
 	public static void init() {
 		Markets.getCoreConfig().init();

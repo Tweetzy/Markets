@@ -226,6 +226,8 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 						}
 					};
 
+			case RIGHT ->  click.manager.showGUI(click.player, new MarketItemEditGUI(this.player, this.market, this.category, marketItem));
+
 			case DROP -> marketItem.unStore(result -> {
 				if (result != SynchronizeResult.SUCCESS)
 					return;

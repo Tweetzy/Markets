@@ -703,6 +703,44 @@ public final class Translations extends TranslationManager {
 			"&e&L%left_click% &7To enter market"
 	);
 
+	public static TranslationEntry GUI_EDIT_ITEM_TITLE = create("gui.edit market item.title", "&eMarkets &f- &7Item Settings");
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_OFFERS_NAME = create("gui.edit market item.items.offers.name", "<GRADIENT:65B1B4>&LOffers</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_OFFERS_LORE = create("gui.edit market item.items.offers.lore",
+			"If enabled, other players will be",
+			"&7able to send you offers om this item",
+			"",
+			"&7Current&F: %enabled%",
+			"",
+			"&e&l%left_click% &7to toggle offers"
+	);
+
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_WHOLESALE_NAME = create("gui.edit market item.items.wholesale.name", "<GRADIENT:65B1B4>&LWholesale</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_WHOLESALE_LORE = create("gui.edit market item.items.wholesale.lore",
+			"If enabled, the price will be for",
+			"&7the entire stack/stock that is available.",
+			"",
+			"&7Current&F: %enabled%",
+			"",
+			"&e&l%left_click% &7to toggle wholesale"
+	);
+
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_STOCK_NAME = create("gui.edit market item.items.stock.name", "<GRADIENT:65B1B4>&lStock</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_STOCK_LORE = create("gui.edit market item.items.stock.lore",
+			"&7If you have any of this item in your",
+			"&7inventory you can &edrop &7it here to add to stock.",
+			"",
+			"&7Current Stock&F: &e%market_item_stock%"
+	);
+
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_CURRENCY_NAME = create("gui.edit market item.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_CURRENCY_LORE = create("gui.edit market item.items.currency.lore",
+			"&7Used to adjust which currency you will",
+			"&7be accepting for this particular item.",
+			"",
+			"&7Current&f: &e%market_item_currency%",
+			"",
+			"&e&l%left_click% &7to edit currency"
+	);
 
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
