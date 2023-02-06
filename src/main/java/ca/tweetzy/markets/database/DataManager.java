@@ -750,6 +750,40 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void getRequests(@NonNull final Callback<List<Request>> callback) {
+		final List<Request> requests = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "request")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Request request = extractRequest(resultSet);
+					requests.add(request);
+				}
+
+				callback.accept(null, requests);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteRequest(@NonNull final Request request, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "request WHERE id = ?")) {
+				statement.setString(1, request.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+
 	private Request extractRequest(@NonNull final ResultSet resultSet) throws SQLException {
 		return new MarketRequest(
 				UUID.fromString(resultSet.getString("id")),
