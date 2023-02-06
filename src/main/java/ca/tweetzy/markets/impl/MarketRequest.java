@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Request;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -95,6 +96,10 @@ public final class MarketRequest implements Request {
 
 	@Override
 	public void store(@NonNull Consumer<Request> stored) {
-
+		Markets.getDataManager().createRequest(this, (error, created) -> {
+			if (error == null) {
+				stored.accept(created);
+			}
+		});
 	}
 }

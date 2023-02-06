@@ -7,7 +7,8 @@ import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.api.currency.Payment;
-import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.api.market.BankEntry;
+import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.api.market.core.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.api.market.offer.Offer;
@@ -711,6 +712,56 @@ public final class DataManager extends DataManagerAbstract {
 				resolveCallback(callback, e);
 			}
 		}));
+	}
+
+	public void createRequest(@NonNull final Request request, final Callback<Request> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "request (id, owner, owner_name, requested_item, currency, currency_item, price, requested_amount, requested_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "request WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, request.getId().toString());
+
+				preparedStatement.setString(1, request.getId().toString());
+				preparedStatement.setString(2, request.getOwner().toString());
+				preparedStatement.setString(3, request.getOwnerName());
+				preparedStatement.setString(4, SerializeUtil.encodeItem(request.getRequestItem()));
+				preparedStatement.setString(5, request.getCurrency());
+				preparedStatement.setString(6, SerializeUtil.encodeItem(request.getCurrencyItem()));
+				preparedStatement.setDouble(7, request.getPrice());
+				preparedStatement.setInt(8, request.getRequestedAmount());
+				preparedStatement.setLong(9, request.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractRequest(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	private Request extractRequest(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketRequest(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				resultSet.getString("owner_name"),
+				SerializeUtil.decodeItem(resultSet.getString("requested_item")),
+				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
+				resultSet.getDouble("price"),
+				resultSet.getInt("requested_amount"),
+				resultSet.getLong("requested_at")
+		);
 	}
 
 	private Rating extractMarketRating(@NonNull final ResultSet resultSet) throws SQLException {
