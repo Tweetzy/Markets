@@ -128,6 +128,15 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to collect payments"
 	);
 
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_REQUESTS_NAME = create("gui.main view.items.requests.name", "<GRADIENT:65B1B4>&LRequests</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_REQUESTS_LORE = create("gui.main view.items.requests.lore",
+			"&7Used to view all open player",
+			"&7requests or to create your own.",
+			"",
+			"&e&l%left_click% &7to view requests"
+	);
+
+
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_NAME = create("gui.main view.items.bank.name", "<GRADIENT:65B1B4>&LYour Bank</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_BANK_LORE = create("gui.main view.items.bank.lore",
 			"&7Used to store any physical (item) currency",

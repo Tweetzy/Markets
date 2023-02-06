@@ -63,6 +63,11 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		});
 
 		// requests
+		setButton(2, 6, QuickItem
+				.of(Settings.GUI_MAIN_VIEW_ITEMS_REQUESTS.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
 
 		// payments
 		setButton(getRows() - 2, 1, QuickItem
