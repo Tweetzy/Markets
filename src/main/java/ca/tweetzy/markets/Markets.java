@@ -66,7 +66,8 @@ public final class Markets extends FlightPlugin {
 				new _9_OfflineItemPaymentMigration(),
 				new _10_MarketOfferMigration(),
 				new _11_OfferRequestAmountMigration(),
-				new _12_BankEntryMigration()
+				new _12_BankEntryMigration(),
+				new _13_MarketReviewMigration()
 		);
 
 		// run migrations for tables
