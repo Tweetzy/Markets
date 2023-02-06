@@ -2,6 +2,7 @@ package ca.tweetzy.markets.gui.shared;
 
 import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.Market;
@@ -45,7 +46,15 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 				.make(), click -> {
 
 			if (playerMarket == null) {
-				Markets.getMarketManager().create(this.player, created -> click.manager.showGUI(click.player, new MarketsMainGUI(click.player)));
+				if (!Settings.ALLOW_ANYONE_TO_CREATE_MARKET.getBoolean() && !click.player.hasPermission("markets.createmarket")) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_ALLOWED_TO_CREATE));
+					return;
+				}
+
+				Markets.getMarketManager().create(this.player, created -> {
+					if (created)
+						click.manager.showGUI(click.player, new MarketsMainGUI(click.player));
+				});
 				return;
 			}
 

@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.model.manager;
 
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.Filterer;
 import ca.tweetzy.markets.Markets;
@@ -9,6 +10,8 @@ import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.api.market.MarketItem;
 import ca.tweetzy.markets.impl.PlayerMarket;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
+import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -73,7 +76,18 @@ public final class MarketManager extends ListManager<Market> {
 		return isBannedFrom(market, user.getUniqueId());
 	}
 
-	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {//todo add layout
+	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
+		if (Settings.CREATION_COST_ENABLED.getBoolean()) {
+			if (!Markets.getEconomy().has(player, Settings.CREATION_COST_COST.getDouble())) {
+				Common.tell(player, TranslationManager.string(player, Translations.CANNOT_PAY_CREATION_FEE));
+				created.accept(false);
+				return;
+			}
+
+			// withdraw the creation cost
+			Markets.getEconomy().withdrawPlayer(player, Settings.CREATION_COST_COST.getDouble());
+		}
+
 		final Market market = new PlayerMarket(
 				UUID.randomUUID(),
 				player.getUniqueId(),

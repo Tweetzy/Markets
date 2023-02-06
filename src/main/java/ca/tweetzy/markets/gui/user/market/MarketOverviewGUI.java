@@ -136,13 +136,13 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 		});
 
 		// unStore button
-		setButton(getRows() - 1, 8, QuickItem
-				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
-				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
-				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
-				.make(), click -> {
-
-		});
+//		setButton(getRows() - 1, 8, QuickItem
+//				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
+//				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
+//				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
+//				.make(), click -> {
+//
+//		});
 	}
 
 	@Override

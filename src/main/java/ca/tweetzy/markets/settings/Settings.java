@@ -14,6 +14,9 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry PURCHASE_REQUIRES_CONFIRMATION = create("settings.confirmations.purchase", true).withComment("If true, markets will ask the player to confirm in a gui before the purchase is made.");
 	public static ConfigEntry TAX_ENABLED = create("settings.tax.enabled", false).withComment("If true, will apply sales tax to the total when a user is buying an item");
 	public static ConfigEntry TAX_AMOUNT = create("settings.tax.percentage", 13.0).withComment("The tax percentage. By default it's 13%");
+	public static ConfigEntry CREATION_COST_ENABLED = create("settings.creation cost.enabled", true).withComment("If enabled, players will be charged to create their market");
+	public static ConfigEntry CREATION_COST_COST = create("settings.creation cost.cost", 1000).withComment("How much should market's charge the player to create their market");
+	public static ConfigEntry ALLOW_ANYONE_TO_CREATE_MARKET = create("settings.allow anyone to create market", true).withComment("If true, anyone can create a market. Otherwise they will need the permission: markets.createmarket");
 	public static ConfigEntry CURRENCY_ALLOW_PICK = create("settings.currency.allow user to pick", true).withComment("If true, players will be able to select which currency they want to use.");
 	public static ConfigEntry CURRENCY_DEFAULT_SELECTED = create("settings.currency.default selection", "Vault/Vault").withComment("The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault");
 	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
