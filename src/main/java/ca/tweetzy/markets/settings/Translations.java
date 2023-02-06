@@ -17,6 +17,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("error.category name too long", "&cCategory name too long, max is 32 characters.");
 	public static TranslationEntry CANNOT_PAY_CREATION_FEE = create("error.cannot pay creation fee", "&cInsufficient funds to pay the creation fee");
 	public static TranslationEntry NOT_ALLOWED_TO_CREATE = create("error.not allowed to create", "&cYou are not allowed to create a market");
+	public static TranslationEntry NOT_ALLOWED_TO_REVIEW = create("error.not allowed to review", "&cYou need to wait longer to review again.");
 	public static TranslationEntry REVIEW_TOO_LONG = create("error.review feedback too long", "&cReview too long, max is 128 characters.");
 	public static TranslationEntry CATEGORY_NAME_USED = create("error.category name used", "&cYou already have a category named&F: &4%category_name%");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
