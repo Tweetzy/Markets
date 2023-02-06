@@ -112,7 +112,15 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE))
-				.make(), click -> click.manager.showGUI(click.player, new CategoryNewItemGUI(this.player, this.market, this.category)));
+				.make(), click -> {
+
+			if (Markets.getPlayerManager().isAtMarketItemLimit(click.player)) {
+				Common.tell(click.player, TranslationManager.string(Translations.AT_MAX_ITEM_LIMIT));
+				return;
+			}
+
+			click.manager.showGUI(click.player, new CategoryNewItemGUI(this.player, this.market, this.category));
+		});
 
 		// delete button
 		setButton(getRows() - 1, 8, QuickItem

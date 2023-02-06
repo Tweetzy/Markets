@@ -10,6 +10,7 @@ public final class Translations extends TranslationManager {
 
 	public Translations(@NonNull JavaPlugin plugin) {
 		super(plugin);
+		this.mainLanguage = Settings.LANGUAGE.getString();
 	}
 
 	public static TranslationEntry MARKET_NAME_TOO_LONG = create("error.market name too long", "&cMarket name too long, max is 72 characters.");
@@ -18,6 +19,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry CATEGORY_NAME_USED = create("error.category name used", "&cYou already have a category named&F: &4%category_name%");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
+	public static TranslationEntry AT_MAX_ITEM_LIMIT = create("error.at maximum item limit", "&cYou aren't allowed to add more items!");
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("error.placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("error.must be higher than zero", "&cPlease enter a number that is higher than 0");
 	public static TranslationEntry INSUFFICIENT_ENTRY_AMOUNT = create("error.insufficient bank entry balance", "&cWithdrawal amount exceeds your stored total!");
