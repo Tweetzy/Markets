@@ -8,6 +8,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.market.Category;
 import ca.tweetzy.markets.api.market.Market;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.gui.shared.view.ratings.MarketRatingsViewGUI;
 import ca.tweetzy.markets.gui.shared.view.ratings.NewMarketRatingGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -64,6 +65,10 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 
 			if (click.clickType == ClickType.LEFT)
 				click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
+
+			if (click.clickType == ClickType.RIGHT)
+				click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
+
 		});
 
 		setItem(this.market.getHomeLayout().getSearchButtonSlot(), QuickItem

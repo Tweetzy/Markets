@@ -771,6 +771,18 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to rate &e%star_level% &7star"
 	);
 
+	public static TranslationEntry GUI_RATINGS_TITLE = create("gui.ratings.title", "%market_display_name% &f- &7Ratings");
+	public static TranslationEntry GUI_RATINGS_ITEMS_RATING_NAME = create("gui.ratings.items.rating.name", "<GRADIENT:65B1B4>&l%rater_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_RATINGS_ITEMS_RATING_LORE = create("gui.ratings.items.rating.lore",
+			"",
+			"&e&lFeedback",
+			"&7%rating_feedback%",
+			"",
+			"&7Stars&f: &6%rating_stars%",
+			"",
+			"&e%rating_date%"
+	);
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}
