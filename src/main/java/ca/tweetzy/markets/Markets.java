@@ -94,6 +94,7 @@ public final class Markets extends FlightPlugin {
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
 				new CommandBank(),
 				new CommandPayments(),
+				new CommandOffers(),
 				new CommandView(),
 				new CommandAdmin()
 		);
