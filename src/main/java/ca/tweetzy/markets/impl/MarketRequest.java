@@ -1,10 +1,12 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Request;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -100,6 +102,18 @@ public final class MarketRequest implements Request {
 			if (error == null) {
 				stored.accept(created);
 			}
+		});
+	}
+
+	@Override
+	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().deleteRequest(this, (error, updateStatus) -> {
+			if (updateStatus) {
+				Markets.getRequestManager().remove(this);
+			}
+
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
 		});
 	}
 }

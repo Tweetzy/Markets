@@ -8,6 +8,7 @@ import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
+import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
@@ -36,6 +37,7 @@ public final class Markets extends FlightPlugin {
 	private final CurrencyManager currencyManager = new CurrencyManager();
 	private final BankManager bankManager = new BankManager();
 	private final RatingManager ratingManager = new RatingManager();
+	private final RequestManager requestManager = new RequestManager();
 	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
 
 	// default vault economy
@@ -87,6 +89,7 @@ public final class Markets extends FlightPlugin {
 		this.offlineItemPaymentManager.load();
 		this.bankManager.load();
 		this.offerManager.load();
+		this.requestManager.load();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -162,6 +165,10 @@ public final class Markets extends FlightPlugin {
 
 	public static RatingManager getRatingManager() {
 		return getInstance().ratingManager;
+	}
+
+	public static RequestManager getRequestManager() {
+		return getInstance().requestManager;
 	}
 
 	public static Economy getEconomy() {
