@@ -18,4 +18,8 @@ public interface Rating extends Identifiable, Trackable, Storeable<Rating> {
 	@NonNull String getFeedback();
 
 	int getStars();
+
+	void setStars(int stars);
+
+	void setFeedback(@NonNull final String feedback);
 }

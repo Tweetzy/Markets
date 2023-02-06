@@ -655,6 +655,71 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createMarketRating(@NonNull final Rating rating, final Callback<Rating> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "review (id, market, rater, rater_name, feedback, stars, posted_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "review WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, rating.getId().toString());
+
+				preparedStatement.setString(1, rating.getId().toString());
+				preparedStatement.setString(2, rating.getMarketID().toString());
+				preparedStatement.setString(3, rating.getRaterUUID().toString());
+				preparedStatement.setString(4, rating.getFeedback());
+				preparedStatement.setInt(5, rating.getStars());
+				preparedStatement.setLong(6, rating.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketRating(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getRatingsByMarket(@NonNull final UUID market, @NonNull final Callback<List<Rating>> callback) {
+		final List<Rating> ratings = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "review WHERE market = ?")) {
+				statement.setString(1, market.toString());
+
+				final ResultSet resultSet = statement.executeQuery();
+
+				while (resultSet.next()) {
+					final Rating rating = extractMarketRating(resultSet);
+					ratings.add(rating);
+				}
+
+				callback.accept(null, ratings);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	private Rating extractMarketRating(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketRating(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("market")),
+				UUID.fromString(resultSet.getString("rater")),
+				resultSet.getString("rater_name"),
+				resultSet.getString("feedback"),
+				resultSet.getInt("stars"),
+				resultSet.getLong("posted_on")
+		);
+	}
 
 	private BankEntry extractBankEntry(@NonNull final ResultSet resultSet) throws SQLException {
 		return new MarketBankEntry(

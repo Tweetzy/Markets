@@ -16,8 +16,8 @@ public final class MarketRating implements Rating {
 	private final UUID market;
 	private final UUID raterUUID;
 	private final String raterName;
-	private final String feedback;
-	private final int stars;
+	private String feedback;
+	private int stars;
 	private final long createdAt;
 
 	public MarketRating(@NonNull final Market market, @NonNull final Player rater, final int stars, @NonNull final String feedback) {
@@ -52,6 +52,16 @@ public final class MarketRating implements Rating {
 	@Override
 	public int getStars() {
 		return this.stars;
+	}
+
+	@Override
+	public void setStars(int stars) {
+		this.stars = stars;
+	}
+
+	@Override
+	public void setFeedback(@NonNull String feedback) {
+		this.feedback = feedback;
 	}
 
 	@Override
