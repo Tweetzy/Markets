@@ -783,6 +783,26 @@ public final class Translations extends TranslationManager {
 			"&e%rating_date%"
 	);
 
+	public static TranslationEntry GUI_USER_PROFILE_TITLE = create("gui.user profile.title", "&e%player_name%&f'&7s Profile");
+	public static TranslationEntry GUI_USER_PROFILE_ITEMS_USER_NAME = create("gui.user profile.items.user.name", "<GRADIENT:65B1B4>&l%player_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_USER_PROFILE_ITEMS_USER_LORE = create("gui.user profile.items.user.lore",
+			"&7Last Login&F: ",
+			"&e%user_last_seen%",
+			"",
+			"&7Online&F: %true%"
+	);
+
+	public static TranslationEntry GUI_USER_PROFILE_ITEMS_RATING_NAME = create("gui.user profile.items.rating.name", "<GRADIENT:65B1B4>&l%rater_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_USER_PROFILE_ITEMS_RATING_LORE = create("gui.user profile.items.rating.lore",
+			"",
+			"&e&lFeedback",
+			"&7%rating_feedback%",
+			"",
+			"&7Stars&f: &6%rating_stars%",
+			"",
+			"&e%rating_date%"
+	);
+
 	public static void init() {
 		new Translations(Markets.getInstance()).setup();
 	}
