@@ -60,7 +60,10 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 				.make(), click -> {
 
 			this.market.setOpen(!this.market.isOpen());
-			drawOpenButton();
+			this.market.sync(result -> {
+				if (result == SynchronizeResult.FAILURE) return;
+				drawOpenButton();
+			});
 		});
 	}
 
@@ -75,7 +78,10 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 				.make(), click -> {
 
 			this.market.setCloseWhenOutOfStock(!this.market.isCloseWhenOutOfStock());
-			drawCloseWhenOutOfStockButton();
+			this.market.sync(result -> {
+				if (result == SynchronizeResult.FAILURE) return;
+				drawCloseWhenOutOfStockButton();
+			});
 		});
 	}
 
