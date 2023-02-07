@@ -57,6 +57,31 @@ public class RequestManager {
 		}).execute();
 	}
 
+	public void export() {
+		Markets.getInstance().getExport().set("open requests", null);
+		for (Request request : this.requests) {
+			exportRequest(request);
+		}
+
+		Markets.getInstance().getExport().save();
+	}
+
+	public void exportRequest(Request request) {
+		Objects.requireNonNull(request, "Cannot save a null request");
+		String node = "open requests." + request.getId().toString();
+		Markets.getInstance().getExport().set(node + ".requester", request.getRequester().toString());
+		Markets.getInstance().getExport().set(node + ".date", request.getDate());
+		request.getRequestedItems().forEach(requestItem -> {
+			String tempId = UUID.randomUUID().toString();
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".item", requestItem.getItem());
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".currency", requestItem.getCurrency());
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".amount", requestItem.getAmount());
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".price", requestItem.getPrice());
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".use custom currency", requestItem.isUseCustomCurrency());
+			Markets.getInstance().getExport().set(node + ".items." + tempId + ".fulfilled", requestItem.isFulfilled());
+		});
+	}
+
 	public void saveRequest(Request request) {
 		Objects.requireNonNull(request, "Cannot save a null request");
 		String node = "open requests." + request.getId().toString();

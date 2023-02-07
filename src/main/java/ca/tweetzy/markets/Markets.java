@@ -66,6 +66,9 @@ public class Markets extends TweetyPlugin {
 	private final Config data = new Config(this, "data.yml");
 
 	@Getter
+	private final Config export = new Config(this, "markets-export.yml");
+
+	@Getter
 	private GuiManager guiManager;
 
 	@Getter
@@ -160,6 +163,8 @@ public class Markets extends TweetyPlugin {
 		// Load the data file
 		this.data.load();
 
+		this.export.load();
+
 		// Setup the database if enabled
 		if (Settings.DATABASE_USE.getBoolean()) {
 			this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString());
@@ -225,7 +230,8 @@ public class Markets extends TweetyPlugin {
 				new CommandReload(),
 				new CommandsBlockItem(),
 				new CommandForceSave(),
-				new CommandInternal()
+				new CommandInternal(),
+				new CommandExport()
 		);
 
 		MarketCheckTask.startTask();
@@ -324,5 +330,9 @@ public class Markets extends TweetyPlugin {
 
 	public static <T> TaskChain<T> newChain() {
 		return taskChainFactory.newChain();
+	}
+
+	public static <T> TaskChain<T> newSharedChain(String name) {
+		return taskChainFactory.newSharedChain(name);
 	}
 }

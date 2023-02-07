@@ -78,6 +78,18 @@ public class CurrencyBank {
 		});
 	}
 
+	public void export() {
+		Markets.getInstance().getExport().set("player banks", null);
+		this.bank.keySet().forEach(key -> {
+			String node = "player banks." + key.toString() + ".";
+			this.bank.get(key).forEach(currency -> {
+				String id = UUID.randomUUID().toString();
+				Markets.getInstance().getExport().set(node + "currencies." + id + ".item", currency.getItem());
+				Markets.getInstance().getExport().set(node + "currencies." + id + ".total", currency.getAmount());
+			});
+		});
+	}
+
 	public void saveBank() {
 		Markets.newChain().sync(() -> {
 			Markets.getInstance().getData().set("player banks", null);

@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.market;
 
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.market.contents.BlockedItem;
 import ca.tweetzy.markets.market.contents.MarketCategory;
@@ -172,6 +173,14 @@ public class MarketManager {
 		}
 	}
 
+	public void export() {
+		for (Market market : this.markets) {
+			exportMarket(market);
+		}
+
+		Markets.getInstance().getExport().save();
+	}
+
 	public void saveMarkets(Market... markets) {
 		Markets.newChain().sync(() -> {
 			for (Market market : markets) {
@@ -179,6 +188,56 @@ public class MarketManager {
 			}
 			Markets.getInstance().getData().save();
 		}).execute();
+	}
+
+	public void exportMarket(Market market) {
+		Objects.requireNonNull(market, "Cannot save a null market");
+		String node = "markets." + market.getId().toString();
+		Markets.getInstance().getExport().set(node + ".owner", market.getOwner().toString());
+		Markets.getInstance().getExport().set(node + ".owner name", market.getOwnerName());
+		Markets.getInstance().getExport().set(node + ".name", market.getName());
+		Markets.getInstance().getExport().set(node + ".description", market.getDescription());
+		Markets.getInstance().getExport().set(node + ".type", market.getMarketType().name());
+		Markets.getInstance().getExport().set(node + ".open", market.isOpen());
+		Markets.getInstance().getExport().set(node + ".unpaid", market.isUnpaid());
+		Markets.getInstance().getExport().set(node + ".created at", Markets.getInstance().getExport().isSet(node + ".created at") ? Markets.getInstance().getExport().get(node + ".created at") : System.currentTimeMillis());
+		Markets.getInstance().getExport().set(node + ".updated at", Markets.getInstance().getExport().isSet(node + ".updated at") ? Markets.getInstance().getExport().get(node + ".updated at") : System.currentTimeMillis());
+
+		Markets.getInstance().getExport().set(node + ".categories", null);
+		Markets.getInstance().getExport().set(node + ".items", null);
+
+		if (!market.getRatings().isEmpty()) {
+			market.getRatings().forEach(rating -> {
+				Markets.getInstance().getExport().set(node + ".ratings." + rating.getId().toString() + ".rater", rating.getRater().toString());
+				Markets.getInstance().getExport().set(node + ".ratings." + rating.getId().toString() + ".stars", rating.getStars());
+				Markets.getInstance().getExport().set(node + ".ratings." + rating.getId().toString() + ".message", rating.getMessage());
+				Markets.getInstance().getExport().set(node + ".ratings." + rating.getId().toString() + ".time", rating.getTime());
+			});
+		}
+
+		if (!market.getCategories().isEmpty()) {
+			market.getCategories().forEach(category -> {
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".name", category.getName());
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".display name", category.getDisplayName());
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".description", category.getDescription());
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".icon", category.getIcon().name());
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".sale.active", category.isSaleActive());
+				Markets.getInstance().getExport().set(node + ".categories." + category.getId().toString() + ".sale.amount", category.getSaleDiscount());
+
+				category.getItems().forEach(item -> {
+					if (item != null) {
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".category", category.getId().toString());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".item", item.getItemStack());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".price", item.getPrice());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".price for stack", item.isPriceForStack());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".currency item", item.getCurrencyItem());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".use item currency", item.isUseItemCurrency());
+						Markets.getInstance().getExport().set(node + ".items." + item.getId().toString() + ".infinite", item.isInfinite());
+					}
+				});
+
+			});
+		}
 	}
 
 	public void saveMarket(Market market) {

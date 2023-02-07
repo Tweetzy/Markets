@@ -49,6 +49,27 @@ public class TransactionManger {
 		return Collections.unmodifiableList(this.transactions);
 	}
 
+	public void export() {
+		Markets.getInstance().getExport().set("payment collection", null);
+		for (Payment payment : this.payments) {
+			exportPayment(payment);
+		}
+
+		for (Transaction transaction : transactions) {
+			if (Markets.getInstance().getExport().contains("transactions." + transaction.getId().toString()))
+				continue;
+			exportTransaction(transaction);
+		}
+
+		Markets.getInstance().getExport().save();
+	}
+
+	public void exportPayment(Payment payment) {
+		Objects.requireNonNull(payment, "Cannot save a null payment");
+		String node = "payment collection." + UUID.randomUUID().toString();
+		Markets.getInstance().getExport().set(node, MarketsAPI.getInstance().convertToBase64(payment));
+	}
+
 	public void savePayment(Payment payment) {
 		Objects.requireNonNull(payment, "Cannot save a null payment");
 		String node = "payment collection." + UUID.randomUUID().toString();
@@ -103,6 +124,18 @@ public class TransactionManger {
 			}
 			Markets.getInstance().getData().save();
 		}).execute();
+	}
+
+
+	public void exportTransaction(Transaction transaction) {
+		Objects.requireNonNull(transaction, "Cannot save a null transaction");
+		String node = "transactions." + transaction.getId().toString();
+		Markets.getInstance().getExport().set(node + ".market id", transaction.getMarketId().toString());
+		Markets.getInstance().getExport().set(node + ".purchaser", transaction.getPurchaser().toString());
+		Markets.getInstance().getExport().set(node + ".purchase quantity", transaction.getPurchaseQty());
+		Markets.getInstance().getExport().set(node + ".price", transaction.getFinalPrice());
+		Markets.getInstance().getExport().set(node + ".time", transaction.getTime());
+		Markets.getInstance().getExport().set(node + ".item", transaction.getItemStack());
 	}
 
 	public void saveTransaction(Transaction transaction) {
