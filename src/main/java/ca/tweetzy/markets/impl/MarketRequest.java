@@ -1,10 +1,13 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Request;
+import ca.tweetzy.markets.settings.Settings;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +28,10 @@ public final class MarketRequest implements Request {
 	private double price;
 	private int requestedAmount;
 	private final long requestedAt;
+
+	public MarketRequest(@NonNull final Player requester) {
+		this(UUID.randomUUID(), requester.getUniqueId(), requester.getName(), CompMaterial.AIR.parseItem(), Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1.0, 1, System.currentTimeMillis());
+	}
 
 	@Override
 	public @NonNull UUID getId() {
@@ -64,6 +71,11 @@ public final class MarketRequest implements Request {
 	@Override
 	public ItemStack getCurrencyItem() {
 		return this.currencyItem;
+	}
+
+	@Override
+	public void setRequestedItem(@NonNull ItemStack item) {
+		this.requestedItem = item;
 	}
 
 	@Override

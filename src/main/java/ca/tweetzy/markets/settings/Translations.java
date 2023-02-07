@@ -20,9 +20,12 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry NOT_ALLOWED_TO_REVIEW = create("error.not allowed to review", "&cYou need to wait longer to review again.");
 	public static TranslationEntry REVIEW_TOO_LONG = create("error.review feedback too long", "&cReview too long, max is 128 characters.");
 	public static TranslationEntry CATEGORY_NAME_USED = create("error.category name used", "&cYou already have a category named&F: &4%category_name%");
+	public static TranslationEntry REQUESTER_CANT_PAY = create("error.requester cannot pay", "&4%requester_name% &cdoes not have enough money to for you!");
+	public static TranslationEntry NOT_ENOUGH_ITEMS = create("error.not enough items", "&cYou do not have enough items to fulfill that request");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
 	public static TranslationEntry AT_MAX_ITEM_LIMIT = create("error.at maximum item limit", "&cYou aren't allowed to add more items!");
+	public static TranslationEntry AT_MAX_REQUEST_LIMIT = create("error.at maximum request limit", "&cYou aren't allowed to create more requests!");
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("error.placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("error.must be higher than zero", "&cPlease enter a number that is higher than 0");
 	public static TranslationEntry INSUFFICIENT_ENTRY_AMOUNT = create("error.insufficient bank entry balance", "&cWithdrawal amount exceeds your stored total!");
@@ -32,6 +35,8 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry ITEM_NO_LONGER_AVAILABLE = create("error.item no longer available", "&cSorry that item is no longer available");
 	public static TranslationEntry BANNED_FROM_MARKET = create("error.banned from market", "&4%market_owner% &chas banned you from viewing their market!");
 	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
+	public static TranslationEntry PROVIDE_REQUESTED_ITEM = create("error.provide requested item", "&cYou need to place/select a requested item first");
+	public static TranslationEntry MAX_STACK_SIZE = create("error.max stack size", "&cCannot request that many, max stack size is &4%max_stack_size%");
 
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
@@ -46,12 +51,18 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry OFFER_REJECT_NO_MONEY = create("info.offer.rejected.no money", "&b%owner_name% &crejected your offer on &e%market_item_name% &c(insufficient balance)");
 	public static TranslationEntry OFFER_ACCEPTED = create("info.offer.accepted", "&b%owner_name% &eaccepted your offer on &e%market_item_name%");
 	public static TranslationEntry OFFER_ACCEPTED_PAYMENT = create("info.offer.accepted payment", "&eThe offer request was accepted");
+	public static TranslationEntry REQUEST_PAYMENT = create("info.request.payment", "&eA request was completed");
+	public static TranslationEntry REQUEST_FULFILLED = create("info.request.fulfilled", "&b%fulfill_name% &efulfilled your request for &e%request_item_name%");
 
 
 	// inputs
 	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_SEARCH_SUBTITLE = create("prompts.search.subtitle", "&fEnter search keywords into chat");
 
+	public static TranslationEntry PROMPT_REQUEST_AMOUNT_TITLE = create("prompts.request amount.title", "<GRADIENT:65B1B4>&lRequest Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_REQUEST_AMOUNT_SUBTITLE = create("prompts.request amount.subtitle", "&fEnter how many of that item you want");
+	public static TranslationEntry PROMPT_REQUEST_PRICE_TITLE = create("prompts.price.title", "<GRADIENT:65B1B4>&lRequest Price</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_REQUEST_PRICE_SUBTITLE = create("prompts.price.subtitle", "&fEnter how much you'll pay for the request");
 
 	public static TranslationEntry PROMPT_NEW_REVIEW_TITLE = create("prompts.new review.title", "<GRADIENT:65B1B4>&LReview Message</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_NEW_REVIEW_SUBTITLE = create("prompts.new review.subtitle", "&fEnter your feedback into chat");
@@ -677,7 +688,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_NAME = create("gui.offer creation.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_LORE = create("gui.offer creation.items.currency.lore",
 			"&7Used to adjust which currency you will",
-			"&7be be offering for this market item.",
+			"&7be offering for this market item.",
 			"",
 			"&7Current&f: &e%offer_currency%",
 			"",
@@ -830,6 +841,81 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_SEARCH_TITLE = create("gui.search.title", "&eMarkets &f- &7Search &f- &7%search_keywords%");
+	public static TranslationEntry GUI_REQUEST_TITLE_ALL = create("gui.request.title.all", "&eMarkets &f- &7All Requests");
+	public static TranslationEntry GUI_REQUEST_TITLE_YOURS = create("gui.request.title.yours", "&eMarkets &f- &7Your Requests");
+
+	public static TranslationEntry GUI_REQUEST_ITEMS_TOGGLE_NAME = create("gui.request.items.toggle.name", "<GRADIENT:65B1B4>&lSwitch View</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_REQUEST_ITEMS_TOGGLE_LORE = create("gui.request.items.toggle.lore",
+			"&7Used to toggle between viewing all open",
+			"&7requests and just requests you've made",
+			"",
+			"&e&l%left_click% &7to toggle view"
+	);
+
+	public static TranslationEntry GUI_REQUEST_ITEMS_REQUEST_LORE_OTHER = create("gui.request.items.request.lore.others",
+			"&7Price&F: &a%request_price%",
+			"&7Currency&f: &a%request_currency%",
+			"&7Quantity&f: &a%request_amount%",
+			"",
+			"&e&l%left_click% &7to fulfill request"
+	);
+
+	public static TranslationEntry GUI_REQUEST_ITEMS_REQUEST_LORE_SELF = create("gui.request.items.request.lore.self",
+			"&7Price&F: &a%request_price%",
+			"&7Currency&f: &a%request_currency%",
+			"&7Quantity&f: &a%request_amount%",
+			"",
+			"&e&l%left_click% &7to cancel request"
+	);
+
+	public static TranslationEntry GUI_REQUEST_ITEMS_CREATE_NAME = create("gui.request.items.create.name", "<GRADIENT:65B1B4>&lCreate Request</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_REQUEST_ITEMS_CREATE_LORE = create("gui.request.items.create.lore",
+			"&7Used to create a new request for a",
+			"&7particular item you are looking for.",
+			"",
+			"&e&l%left_click% &7to make a request"
+	);
+
+
+	public static TranslationEntry GUI_CREATE_REQUEST_TITLE = create("gui.create request.title", "&eMarkets &f- &7New Request");
+
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_CURRENCY_NAME = create("gui.create request.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_CURRENCY_LORE = create("gui.create request.items.currency.lore",
+			"&7Used to adjust which currency you will",
+			"&7be offering for the requested item(s).",
+			"",
+			"&7Current&f: &e%request_currency%",
+			"",
+			"&e&l%left_click% &7to edit currency"
+	);
+
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_REQUESTED_ITEM_NAME = create("gui.create request.items.requested item.name", "<GRADIENT:65B1B4>&lNo Item Selected</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_REQUESTED_ITEM_LORE = create("gui.create request.items.requested item.lore",
+			"&7----------------------------",
+			"&e&l%left_click% &7to open a material picker &eor",
+			"&b&l%right_click% &7with the item you want",
+			"&7to request more of.",
+			"&7----------------------------"
+	);
+
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_AMOUNT_NAME = create("gui.create request.items.amount.name", "<GRADIENT:65B1B4>&lRequest Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_AMOUNT_LORE = create("gui.create request.items.amount.lore",
+			"&7Current&f: &a%request_amount%",
+			"",
+			"&e&l%left_click% &7to change request amount"
+	);
+
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_CREATE_NAME = create("gui.create request.items.create.name", "<GRADIENT:65B1B4>&lCreate Request</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_CREATE_LORE = create("gui.create request.items.create.lore",
+			"&e&l%left_click% &7to make request"
+	);
+
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_PRICE_NAME = create("gui.create request.items.price.name", "<GRADIENT:65B1B4>&lOffered Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CREATE_REQUEST_ITEMS_PRICE_LORE = create("gui.create request.items.price.lore",
+			"&7Current&f: &a%request_price%",
+			"",
+			"&e&l%left_click% &7to change request pay"
+	);
 
 
 	public static void init() {

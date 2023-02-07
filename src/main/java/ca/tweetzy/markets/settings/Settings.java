@@ -11,6 +11,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
+	public static ConfigEntry DEFAULT_MAX_ALLOWED_REQUESTS = create("settings.max allowed requests", 64).withComment("The maximum # of requests a player can make without further permission");
 	public static ConfigEntry PURCHASE_REQUIRES_CONFIRMATION = create("settings.confirmations.purchase", true).withComment("If true, markets will ask the player to confirm in a gui before the purchase is made.");
 	public static ConfigEntry TAX_ENABLED = create("settings.tax.enabled", false).withComment("If true, will apply sales tax to the total when a user is buying an item");
 	public static ConfigEntry TAX_AMOUNT = create("settings.tax.percentage", 13.0).withComment("The tax percentage. By default it's 13%");
@@ -105,6 +106,13 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_MSG_ITEM = create("gui.new rating.message.item", CompMaterial.DARK_OAK_SIGN.name());
 
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM = create("gui.all markets.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
+	public static ConfigEntry GUI_REQUEST_ITEMS_TOGGLE_ITEM = create("gui.request.items.toggle.item", CompMaterial.LEVER.name());
+	public static ConfigEntry GUI_REQUEST_ITEMS_CREATE_ITEM = create("gui.request.items.create.item", CompMaterial.LIME_DYE.name());
+
+	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_CURRENCY_ITEM = create("gui.create request.items.currency.item", CompMaterial.GOLD_INGOT.name());
+	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_AMOUNT_ITEM = create("gui.create request.items.amount.item", CompMaterial.SUNFLOWER.name());
+	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_PRICE_ITEM = create("gui.create request.items.price.item", CompMaterial.SUNFLOWER.name());
+	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_CREATE_ITEM = create("gui.create request.items.create.item", CompMaterial.LIME_DYE.name());
 
 
 	public static void init() {

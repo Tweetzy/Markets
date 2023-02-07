@@ -21,10 +21,12 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 
 	private final Pattern maximumAllowedItemsPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
 	private final Pattern maximumAllowedCategoriesPattern = Pattern.compile("markets\\.maxllowedcategories\\.(\\d+)");
+	private final Pattern maximumAllowedRequestsPattern = Pattern.compile("markets\\.maxllowedrequests\\.(\\d+)");
 
 	public enum MarketLimitPermission {
 		ITEMS,
-		CATEGORIES
+		CATEGORIES,
+		REQUESTS
 	}
 
 	public PlayerManager() {
@@ -35,6 +37,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		return switch (limitPermission) {
 			case ITEMS -> getMaxAllowedMarketItems(player);
 			case CATEGORIES -> getMaxAllowedMarketCategories(player);
+			case REQUESTS -> getMaxAllowedRequests(player);
 		};
 	}
 
@@ -42,6 +45,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		return switch (limitPermission) {
 			case ITEMS -> isAtMarketItemLimit(player);
 			case CATEGORIES -> isAtMarketCategoryLimit(player);
+			case REQUESTS -> isAtRequestLimit(player);
 		};
 	}
 
@@ -105,6 +109,32 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			return false;
 
 		return playerMarket.getCategories().size() > maxAllowedCategories;
+	}
+
+	public int getMaxAllowedRequests(@NonNull final Player player) {
+		int maxAllowedRequests = Settings.DEFAULT_MAX_ALLOWED_REQUESTS.getIntOr(64);
+		int max = player.getEffectivePermissions().stream().map(i -> {
+			final Matcher matcher = maximumAllowedRequestsPattern.matcher(i.getPermission());
+			if (matcher.matches()) {
+				return Integer.parseInt(matcher.group(1));
+			}
+			return 0;
+		}).max(Integer::compareTo).orElse(0);
+
+		if (player.hasPermission("markets.maxllowedrequests.*")) {
+			maxAllowedRequests = Integer.MAX_VALUE;
+		}
+
+		if (max > maxAllowedRequests) {
+			maxAllowedRequests = max;
+		}
+
+		return maxAllowedRequests;
+	}
+
+	public boolean isAtRequestLimit(@NonNull final Player player) {
+		final int maxAllowedRequests = getMaxAllowedRequests(player);
+		return Markets.getRequestManager().getRequestsBy(player.getUniqueId()).size() > maxAllowedRequests;
 	}
 
 
