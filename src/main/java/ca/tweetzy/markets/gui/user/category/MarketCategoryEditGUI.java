@@ -210,6 +210,12 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
 		final Player player = click.player;
 
+		final MarketItem locate = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
+		if(locate == null) {
+			reopen(click);
+			return;
+		}
+
 		switch (click.clickType) {
 			case LEFT ->
 					new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
