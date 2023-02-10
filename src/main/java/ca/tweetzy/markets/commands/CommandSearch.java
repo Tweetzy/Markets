@@ -1,91 +1,56 @@
 package ca.tweetzy.markets.commands;
 
-import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.Inflector;
-import ca.tweetzy.markets.api.MarketsAPI;
-import ca.tweetzy.markets.guis.items.GUIItemSearch;
-import ca.tweetzy.markets.market.Market;
-import ca.tweetzy.markets.market.contents.MarketItem;
-import ca.tweetzy.markets.structures.Pair;
-import ca.tweetzy.markets.utils.Common;
+import ca.tweetzy.markets.gui.shared.view.content.MarketSearchGUI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * The current file has been created by Kiran Hart
- * Date Created: July 27 2021
- * Time Created: 12:46 p.m.
- * Usage of any code found within this class is prohibited unless given explicit permission otherwise
- */
-public class CommandSearch extends AbstractCommand {
+public final class CommandSearch extends Command {
 
 	public CommandSearch() {
-		super(CommandType.PLAYER_ONLY, "search");
+		super(AllowedExecutor.PLAYER, "search");
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
-
-		Player player = (Player) sender;
-
-		StringBuilder builder = new StringBuilder();
-
-		final ItemStack hand = Common.getItemInHand(player);
-
-		if (args.length == 0 && hand != null && hand.getType() != XMaterial.AIR.parseMaterial()) {
-			builder.append(Common.getItemName(Common.getItemInHand(player)));
-		} else {
-			for (String arg : args) {
-				builder.append(arg).append(" ");
-			}
-
-			if (builder.toString().trim().length() == 0) {
-				Markets.getInstance().getLocale().getMessage("search_phrase_empty").sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (args.length < 1) {
+			return ReturnType.FAIL;
 		}
 
-		String phrase = builder.toString().trim();
+		if (sender instanceof final Player player) {
+			final StringBuilder builder = new StringBuilder();
 
-		Markets.newChain().asyncFirst(() -> {
-			List<Pair<Market, MarketItem>> items = new ArrayList<>();
-			Markets.getInstance().getMarketManager().getMarkets().stream().filter(market -> market.isOpen() && !market.isUnpaid() && !market.getOwner().equals(player.getUniqueId())).collect(Collectors.toList()).forEach(market -> {
-				market.getCategories().forEach(category -> category.getItems().forEach(item -> items.add(new Pair<>(market, item))));
-			});
+			for (int i = 0; i < args.length; i++) {
+				builder.append(args[i]).append(" ");
+			}
 
-			return items.stream().filter(marketItem -> MarketsAPI.getInstance().checkSearchCriteria(phrase, marketItem.getSecond().getItemStack())).collect(Collectors.toList());
-		}).syncLast(data -> Markets.getInstance().getGuiManager().showGUI(player, new GUIItemSearch(data))).execute();
-
+			Markets.getGuiManager().showGUI(player, new MarketSearchGUI(null, player, builder.toString().trim()));
+		}
 		return ReturnType.SUCCESS;
 	}
 
 	@Override
+	protected List<String> tab(CommandSender sender, String... args) {
+		return null;
+	}
+
+	@Override
 	public String getPermissionNode() {
-		return "markets.cmd.search";
+		return "markets.command.search";
 	}
 
 	@Override
 	public String getSyntax() {
-		return Markets.getInstance().getLocale().getMessage("command_syntax.search").getMessage();
+		return "search <keywords>";
 	}
 
 	@Override
 	public String getDescription() {
-		return Markets.getInstance().getLocale().getMessage("command_description.search").getMessage();
+		return "Search all open markets for items";
 	}
-
-	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
-		return null;
-	}
-
 }

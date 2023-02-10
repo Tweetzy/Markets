@@ -1,75 +1,75 @@
 package ca.tweetzy.markets.commands;
 
-import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.guis.market.GUIMarketView;
-import ca.tweetzy.markets.market.Market;
+import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
+import ca.tweetzy.markets.settings.Translations;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * The current file has been created by Kiran Hart
- * Date Created: May 01 2021
- * Time Created: 6:16 p.m.
- * Usage of any code found within this class is prohibited unless given explicit permission otherwise
- */
-public class CommandView extends AbstractCommand {
+public final class CommandView extends Command {
 
 	public CommandView() {
-		super(CommandType.PLAYER_ONLY, "view");
+		super(AllowedExecutor.PLAYER, "view");
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (!CommandMiddleware.handle()) return ReturnType.FAILURE;
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (args.length < 1) return ReturnType.INVALID_SYNTAX;
 
-		if (args.length < 1) return ReturnType.SYNTAX_ERROR;
+		if (sender instanceof final Player player) {
+			final OfflinePlayer target = Bukkit.getPlayerExact(args[0]);
+			Market market = null;
 
-		Player player = (Player) sender;
-		Market market = Markets.getInstance().getMarketManager().getMarketByPlayerName(args[0]);
-		if (market == null) {
-			Markets.getInstance().getLocale().getMessage("market_not_found").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
+			if (target == null) {
+				market = Markets.getMarketManager().getByOwnerName(args[0]);
 
-		if (market.isUnpaid() && market.getOwner().equals(player.getUniqueId())) {
-			Markets.getInstance().getLocale().getMessage("upkeep_fee_not_paid").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
-
-		if (!market.isOpen()) {
-			if (!market.getOwner().equals(player.getUniqueId())) {
-				Markets.getInstance().getLocale().getMessage("market_closed").sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
+				if (market == null) {
+					Common.tell(player, TranslationManager.string(player, Translations.PLAYER_OFFLINE, "value", args[0]));
+					return ReturnType.FAIL;
+				}
 			}
+
+			if (market == null)
+				market = Markets.getMarketManager().getByOwner(target.getUniqueId());
+
+			if (market == null) {
+				Common.tell(player, TranslationManager.string(player, Translations.NO_MARKET_FOUND, "player_name", args[0]));
+				return ReturnType.FAIL;
+			}
+
+			Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
 		}
 
-		Markets.getInstance().getGuiManager().showGUI(player, new GUIMarketView(market));
 		return ReturnType.SUCCESS;
 	}
 
 	@Override
+	protected List<String> tab(CommandSender sender, String... args) {
+		return null;
+	}
+
+	@Override
 	public String getPermissionNode() {
-		return "markets.cmd.view";
+		return "markets.command.view";
 	}
 
 	@Override
 	public String getSyntax() {
-		return Markets.getInstance().getLocale().getMessage("command_syntax.view").getMessage();
+		return "view <player>";
 	}
 
 	@Override
 	public String getDescription() {
-		return Markets.getInstance().getLocale().getMessage("command_description.view").getMessage();
-	}
-
-	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1 && Markets.getInstance().getMarketManager().getMarkets().size() != 0)
-			return Markets.getInstance().getMarketManager().getMarkets().stream().map(Market::getOwnerName).collect(Collectors.toList());
-		return null;
+		return "Used to open another player's market";
 	}
 }

@@ -1,772 +1,1000 @@
 package ca.tweetzy.markets.database;
 
-import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.database.DataManagerAbstract;
-import ca.tweetzy.core.database.DatabaseConnector;
-import ca.tweetzy.markets.Markets;
-import ca.tweetzy.markets.api.MarketsAPI;
-import ca.tweetzy.markets.economy.Currency;
-import ca.tweetzy.markets.market.Market;
-import ca.tweetzy.markets.market.MarketRating;
-import ca.tweetzy.markets.market.MarketType;
-import ca.tweetzy.markets.market.contents.BlockedItem;
-import ca.tweetzy.markets.market.contents.MarketCategory;
-import ca.tweetzy.markets.market.contents.MarketItem;
-import ca.tweetzy.markets.request.Request;
-import ca.tweetzy.markets.request.RequestItem;
-import ca.tweetzy.markets.structures.Triple;
-import ca.tweetzy.markets.transaction.Payment;
-import ca.tweetzy.markets.transaction.Transaction;
-import org.bukkit.inventory.ItemStack;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.database.Callback;
+import ca.tweetzy.flight.database.DataManagerAbstract;
+import ca.tweetzy.flight.database.DatabaseConnector;
+import ca.tweetzy.flight.database.UpdateCallback;
+import ca.tweetzy.flight.utils.SerializeUtil;
+import ca.tweetzy.markets.api.currency.Payment;
+import ca.tweetzy.markets.api.market.BankEntry;
+import ca.tweetzy.markets.api.market.Request;
+import ca.tweetzy.markets.api.market.Transaction;
+import ca.tweetzy.markets.api.market.TransactionType;
+import ca.tweetzy.markets.api.market.core.*;
+import ca.tweetzy.markets.api.market.layout.Layout;
+import ca.tweetzy.markets.api.market.offer.Offer;
+import ca.tweetzy.markets.impl.*;
+import ca.tweetzy.markets.impl.layout.HomeLayout;
+import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.sql.*;
-import java.util.*;
-import java.util.function.Consumer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-/**
- * The current file has been created by Kiran Hart
- * Date Created: July 12 2021
- * Time Created: 10:02 p.m.
- * Usage of any code found within this class is prohibited unless given explicit permission otherwise
- */
-public class DataManager extends DataManagerAbstract {
+public final class DataManager extends DataManagerAbstract {
 
 	public DataManager(DatabaseConnector databaseConnector, Plugin plugin) {
 		super(databaseConnector, plugin);
 	}
 
-	private void saveMarket(List<Market> markets, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "market SET market_id = ?, owner = ?, owner_name = ?, name = ?, description = ?, type = ?, open = ?, created_at = ?, updated_at = ?, unpaid = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "market";
+	public void createMarket(@NonNull final AbstractMarket market, final Callback<AbstractMarket> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
+			final String query = "INSERT INTO " + this.getTablePrefix() + "markets (id, type, display_name, description, owner, owner_name, created_at, updated_at, banned_users, open, close_when_out_of_stock, home_layout, category_layout) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "markets WHERE id = ?";
 
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		markets.forEach(market -> {
-			try {
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, market.getId().toString());
+
+				preparedStatement.setString(1, market.getId().toString());
+				preparedStatement.setString(2, market.getMarketType().name());
+				preparedStatement.setString(3, market.getDisplayName());
+				preparedStatement.setString(4, String.join(";;;", market.getDescription()));
+				preparedStatement.setString(5, market.getOwnerUUID().toString());
+				preparedStatement.setString(6, market.getOwnerName());
+				preparedStatement.setLong(7, market.getTimeCreated());
+				preparedStatement.setLong(8, market.getLastUpdated());
+				preparedStatement.setString(9, market.getBannedUsers().stream().map(UUID::toString).collect(Collectors.joining(",")));
+				preparedStatement.setBoolean(10, market.isOpen());
+				preparedStatement.setBoolean(11, market.isCloseWhenOutOfStock());
+				preparedStatement.setString(12, market.getHomeLayout().getJSONString());
+				preparedStatement.setString(13, market.getCategoryLayout().getJSONString());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarket(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateMarket(@NonNull final AbstractMarket market, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "markets SET display_name = ?, description = ?, owner_name = ?, updated_at = ?, banned_users = ?, open = ?, close_when_out_of_stock = ?, home_layout = ?, category_layout = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, market.getDisplayName());
+				preparedStatement.setString(2, String.join(";;;", market.getDescription()));
+				preparedStatement.setString(3, market.getOwnerName());
+				preparedStatement.setLong(4, market.getLastUpdated());
+
+				preparedStatement.setString(5, market.getBannedUsers().stream().map(UUID::toString).collect(Collectors.joining(",")));
+				preparedStatement.setBoolean(6, market.isOpen());
+				preparedStatement.setBoolean(7, market.isCloseWhenOutOfStock());
+
+				preparedStatement.setString(8, market.getHomeLayout().getJSONString());
+				preparedStatement.setString(9, market.getCategoryLayout().getJSONString());
+				preparedStatement.setString(10, market.getId().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteMarket(@NonNull final AbstractMarket market, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "markets WHERE id = ?")) {
 				statement.setString(1, market.getId().toString());
-				statement.setString(2, market.getOwner().toString());
-				statement.setString(3, market.getOwnerName());
-				statement.setString(4, market.getName());
-				statement.setString(5, market.getDescription());
-				statement.setString(6, market.getMarketType().name());
-				statement.setBoolean(7, market.isOpen());
-				statement.setLong(8, market.getCreatedAt());
-				statement.setLong(9, market.getUpdatedAt());
-				statement.setBoolean(10, market.isUnpaid());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
 
-	private void saveBlockedItem(List<BlockedItem> items, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "blocked_items SET blocked_id = ?, item = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "blocked_items";
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
 
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		items.forEach(item -> {
-			try {
-				statement.setString(1, item.getId().toString());
-				statement.setString(2, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(item.getItem())));
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	public void saveBank(HashMap<UUID, ArrayList<Currency>> banks, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "bank SET owner_id = ?, item = ?, total = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "bank";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		banks.entrySet().forEach(entry -> entry.getValue().forEach(currency -> {
-			try {
-				statement.setString(1, entry.getKey().toString());
-				statement.setString(2, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(currency.getItem())));
-				statement.setInt(3, currency.getAmount());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				resolveCallback(callback, e);
 			}
 		}));
-
-		statement.executeBatch();
 	}
 
-	private void saveRating(List<MarketRating> ratings, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "ratings SET market_id = ?, rating_id = ?, rater = ?, stars = ?, message = ?, time = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "ratings";
+	public void getMarkets(@NonNull final Callback<List<AbstractMarket>> callback) {
+		final List<AbstractMarket> markets = new ArrayList<>();
 
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		ratings.forEach(rating -> {
-			try {
-				statement.setString(1, rating.getMarketId().toString());
-				statement.setString(2, rating.getId().toString());
-				statement.setString(3, rating.getRater().toString());
-				statement.setInt(4, rating.getStars());
-				statement.setString(5, rating.getMessage());
-				statement.setLong(6, rating.getTime());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveUpkeepDate(long lastPaid, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "upkeep SET last_paid = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "upkeep";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		try {
-			statement.setLong(1, lastPaid);
-			statement.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveCategory(List<MarketCategory> categories, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "categories SET market_id = ?, category_id = ?, name = ?, display_name = ?, description = ?, icon = ?, sale_active = ?, sale_discount = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "categories";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		categories.forEach(category -> {
-			try {
-				statement.setString(1, category.getMarketId().toString());
-				statement.setString(2, category.getId().toString());
-				statement.setString(3, category.getName());
-				statement.setString(4, category.getDisplayName());
-				statement.setString(5, category.getDescription());
-				statement.setString(6, category.getIcon().name());
-				statement.setBoolean(7, category.isSaleActive());
-				statement.setDouble(8, category.getSaleDiscount());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveRequest(List<Request> requests, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "requests SET request_id = ?, requester = ?, date = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "requests";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		requests.forEach(request -> {
-			try {
-				statement.setString(1, request.getId().toString());
-				statement.setString(2, request.getRequester().toString());
-				statement.setLong(3, request.getDate());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveRequestItem(List<RequestItem> requestItems, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "request_item SET request_id = ?, item = ?, currency = ?, amount = ?, price = ?, fulfilled = ?, use_custom_currency = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "request_item";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		requestItems.forEach(requestItem -> {
-			try {
-				statement.setString(1, requestItem.getRequestId().toString());
-				statement.setString(2, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(requestItem.getItem())));
-				statement.setString(3, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(requestItem.getCurrency())));
-				statement.setInt(4, requestItem.getAmount());
-				statement.setDouble(5, requestItem.getPrice());
-				statement.setBoolean(6, requestItem.isFulfilled());
-				statement.setBoolean(7, requestItem.isUseCustomCurrency());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void savePayment(List<Payment> payments, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "payments SET is_for = ?, item = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "payments";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		payments.forEach(payment -> {
-			try {
-				statement.setString(1, payment.getTo().toString());
-				statement.setString(2, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(payment.getItem())));
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveFeaturedMarket(Map<UUID, Long> featuredMarkets, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "featured_markets SET id = ?, expires_at = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "featured_markets";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		featuredMarkets.forEach((marketId, expiresAt) -> {
-			try {
-				statement.setString(1, marketId.toString());
-				statement.setLong(2, expiresAt);
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveItem(List<MarketItem> items, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "items SET item_id = ?, category_id = ?, item = ?, currency_item = ?, use_item_currency = ?, price = ?, price_for_stack = ?, infinite = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "items";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		items.forEach(item -> {
-			try {
-				statement.setString(1, item.getId().toString());
-				statement.setString(2, item.getCategoryId().toString());
-				statement.setString(3, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(item.getItemStack())));
-				statement.setString(4, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(item.getCurrencyItem())));
-				statement.setBoolean(5, item.isUseItemCurrency());
-				statement.setDouble(6, item.getPrice());
-				statement.setBoolean(7, item.isPriceForStack());
-				statement.setBoolean(8, item.isInfinite());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	private void saveTransaction(List<Transaction> transactions, Connection connection) throws SQLException {
-		String saveMarket = "INSERT IGNORE INTO " + this.getTablePrefix() + "transactions SET transaction_id = ?, market_id = ?, purchaser = ?, item = ?, quantity = ?, price = ?, time = ?";
-		String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "transactions";
-
-		try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-			statement.execute();
-		}
-
-		PreparedStatement statement = connection.prepareStatement(saveMarket);
-		transactions.forEach(transaction -> {
-			try {
-				statement.setString(1, transaction.getId().toString());
-				statement.setString(2, transaction.getMarketId().toString());
-				statement.setString(3, transaction.getPurchaser().toString());
-				statement.setString(4, MarketsAPI.getInstance().convertToBase64(new DatabaseItem(transaction.getItemStack())));
-				statement.setInt(5, transaction.getPurchaseQty());
-				statement.setDouble(6, transaction.getFinalPrice());
-				statement.setLong(7, transaction.getTime());
-				statement.addBatch();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
-		statement.executeBatch();
-	}
-
-	public void saveBanks(HashMap<UUID, ArrayList<Currency>> banks, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveBank(banks, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveBank(banks, connection);
-			}
-		});
-	}
-
-	public void getBanks(Consumer<List<Triple<UUID, ItemStack, Integer>>> callback) {
-		List<Triple<UUID, ItemStack, Integer>> banks = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "bank";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					banks.add(new Triple<>(
-							UUID.fromString(result.getString("owner_id")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(result.getString("item"))).getItem(),
-							result.getInt("total")
-					));
-				}
-			}
-
-			this.sync(() -> callback.accept(banks));
-		}));
-	}
-
-	public void saveBlockedItems(List<BlockedItem> items, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveBlockedItem(items, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveBlockedItem(items, connection);
-			}
-		});
-	}
-
-	public void getBlockedItems(Consumer<List<BlockedItem>> callback) {
-		List<BlockedItem> blockedItems = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "blocked_items";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					blockedItems.add(new BlockedItem(
-							UUID.fromString(result.getString("blocked_id")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(result.getString("item"))).getItem()
-					));
-				}
-			}
-
-			this.sync(() -> callback.accept(blockedItems));
-		}));
-	}
-
-	public void saveMarkets(List<Market> markets, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveMarket(markets, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveMarket(markets, connection);
-			}
-		});
-	}
-
-	public void getMarkets(Consumer<List<Market>> callback) {
-		List<Market> markets = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "market";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					Market market = new Market(
-							UUID.fromString(result.getString("market_id")),
-							UUID.fromString(result.getString("owner")),
-							result.getString("owner_name"),
-							result.getString("name"),
-							MarketType.valueOf(result.getString("type"))
-					);
-
-					market.setDescription(result.getString("description"));
-					market.setCreatedAt(result.getLong("created_at"));
-					market.setUpdatedAt(result.getLong("updated_at"));
-					market.setOpen(result.getBoolean("open"));
-					market.setUnpaid(result.getBoolean("unpaid"));
-
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "markets")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final AbstractMarket market = extractMarket(resultSet);
 					markets.add(market);
 				}
-			}
 
-			this.sync(() -> callback.accept(markets));
+				callback.accept(null, markets);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
 		}));
 	}
 
-	public void saveFeaturedMarkets(Map<UUID, Long> featuredMarkets, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveFeaturedMarket(featuredMarkets, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveFeaturedMarket(featuredMarkets, connection);
-			}
-		});
-	}
+	public void createCategory(@NonNull final Category category, final Callback<Category> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-	public void getFeaturedMarkets(Consumer<Map<UUID, Long>> callback) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			HashMap<UUID, Long> map = new HashMap();
-			String select = "SELECT * FROM " + this.getTablePrefix() + "featured_markets";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category (id, owning_market, name, icon, display_name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category WHERE id = ?";
 
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					map.put(UUID.fromString(result.getString("id")), result.getLong("expires_at"));
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, category.getId().toString());
+
+				preparedStatement.setString(1, category.getId().toString());
+				preparedStatement.setString(2, category.getOwningMarket().toString());
+				preparedStatement.setString(3, category.getName().toLowerCase());
+				preparedStatement.setString(4, category.getIcon().getType().name());
+				preparedStatement.setString(5, category.getDisplayName());
+				preparedStatement.setString(6, String.join(";;;", category.getDescription()));
+				preparedStatement.setLong(7, category.getTimeCreated());
+				preparedStatement.setLong(8, category.getLastUpdated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractCategory(res));
 				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
 			}
-			this.sync(() -> callback.accept(map));
 		}));
 	}
 
-	public void saveUpKeeps(long lastPaid, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveUpkeepDate(lastPaid, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveUpkeepDate(lastPaid, connection);
+	public void updateCategory(@NonNull final Category category, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			//id, owning_market, name, icon, display_name, description, created_at, updated_at
+			final String query = "UPDATE " + this.getTablePrefix() + "category SET icon = ?, display_name = ?, description = ?, updated_at = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, category.getIcon().getType().toString());
+				preparedStatement.setString(2, category.getDisplayName());
+				preparedStatement.setString(3, String.join(";;;", category.getDescription()));
+				preparedStatement.setLong(4, category.getLastUpdated());
+				preparedStatement.setString(5, category.getId().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
 			}
-		});
+		}));
 	}
 
-	public void getUpKeepPaidDate(Consumer<Long> callback) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			Long date = null;
-			String select = "SELECT * FROM " + this.getTablePrefix() + "upkeep";
+	public void deleteCategory(@NonNull final Category category, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category WHERE id = ?")) {
+				statement.setString(1, category.getId().toString());
 
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					if (hasColumn(result, "last_paid"))
-						date = result.getLong("last_paid");
-					else date = -1L;
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getCategories(@NonNull final Callback<List<Category>> callback) {
+		final List<Category> categories = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "category")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Category category = extractCategory(resultSet);
+					categories.add(category);
 				}
+
+				callback.accept(null, categories);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
 			}
-			Long finalDate = date;
-			this.sync(() -> callback.accept(finalDate));
 		}));
 	}
 
-	public void saveRatings(List<MarketRating> ratings, boolean async) {
-		if (async) {
-			this.async(() -> this.databaseConnector.connect(connection -> saveRating(ratings, connection)));
-		} else {
-			this.databaseConnector.connect(connection -> saveRating(ratings, connection));
-		}
+	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "category_item (id, owning_category, item, currency, currency_item, price, stock, price_is_for_all, accepting_offers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "category_item WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, marketItem.getId().toString());
+
+				preparedStatement.setString(1, marketItem.getId().toString());
+				preparedStatement.setString(2, marketItem.getOwningCategory().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(marketItem.getItem()));
+				preparedStatement.setString(4, marketItem.getCurrency());
+				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
+				preparedStatement.setDouble(6, marketItem.getPrice());
+				preparedStatement.setInt(7, marketItem.getStock());
+				preparedStatement.setBoolean(8, marketItem.isPriceForAll());
+				preparedStatement.setBoolean(9, marketItem.isAcceptingOffers());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketItem(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
 	}
 
-	public void getRatings(Consumer<List<MarketRating>> callback) {
-		List<MarketRating> ratings = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "ratings";
+	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "category_item SET currency = ?, price = ?, stock = ?, price_is_for_all = ?, currency_item = ?, accepting_offers = ? WHERE id = ?";
 
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					MarketRating rating = new MarketRating(
-							UUID.fromString(result.getString("rating_id")),
-							UUID.fromString(result.getString("rater")),
-							result.getInt("stars"),
-							result.getString("message"),
-							result.getLong("time")
-					);
-					rating.setMarketId(UUID.fromString(result.getString("market_id")));
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, marketItem.getCurrency());
+				preparedStatement.setDouble(2, marketItem.getPrice());
+				preparedStatement.setInt(3, marketItem.getStock());
+				preparedStatement.setBoolean(4, marketItem.isPriceForAll());
+				preparedStatement.setString(5, SerializeUtil.encodeItem(marketItem.getCurrencyItem()));
+				preparedStatement.setBoolean(6, marketItem.isAcceptingOffers());
+				preparedStatement.setString(7, marketItem.getId().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteMarketItem(@NonNull final MarketItem marketItem, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category_item WHERE id = ?")) {
+				statement.setString(1, marketItem.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void deleteMarketItems(@NonNull final Category category, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "category_item WHERE owning_category = ?")) {
+				statement.setString(1, category.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void getMarketItems(@NonNull final Callback<List<MarketItem>> callback) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "category_item")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final MarketItem marketItem = extractMarketItem(resultSet);
+					marketItems.add(marketItem);
+				}
+
+				callback.accept(null, marketItems);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getMarketItemsByCategory(@NonNull final UUID categoryId, @NonNull final Callback<List<MarketItem>> callback) {
+		final List<MarketItem> marketItems = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "category_item WHERE owning_category = ?")) {
+				statement.setString(1, categoryId.toString());
+
+				final ResultSet resultSet = statement.executeQuery();
+
+				while (resultSet.next()) {
+					final MarketItem marketItem = extractMarketItem(resultSet);
+					marketItems.add(marketItem);
+				}
+
+				callback.accept(null, marketItems);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void createMarketUser(@NonNull final MarketUser marketUser, final Callback<MarketUser> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "user (id, last_known_name, bio, preferred_language, currency_format_country, last_seen_at) VALUES (?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "user WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, marketUser.getUUID().toString());
+
+				preparedStatement.setString(1, marketUser.getUUID().toString());
+				preparedStatement.setString(2, marketUser.getLastKnownName());
+				preparedStatement.setString(3, String.join(";;;", marketUser.getBio()));
+				preparedStatement.setString(4, marketUser.getPreferredLanguage());
+				preparedStatement.setString(5, marketUser.getCurrencyFormatCountry());
+				preparedStatement.setLong(6, marketUser.getLastSeenAt());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketUser(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateMarketUser(@NonNull final MarketUser marketUser, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "UPDATE " + this.getTablePrefix() + "user SET last_known_name = ?, bio = ?, preferred_language = ?, currency_format_country = ?, last_seen_at = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setString(1, marketUser.getLastKnownName());
+				preparedStatement.setString(2, String.join(";;;", marketUser.getBio()));
+				preparedStatement.setString(3, marketUser.getPreferredLanguage());
+				preparedStatement.setString(4, marketUser.getCurrencyFormatCountry());
+				preparedStatement.setLong(5, marketUser.getLastSeenAt());
+				preparedStatement.setString(6, marketUser.getUUID().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getMarketUsers(@NonNull final Callback<List<MarketUser>> callback) {
+		final List<MarketUser> marketUsers = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "user")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final MarketUser marketUser = extractMarketUser(resultSet);
+					marketUsers.add(marketUser);
+				}
+
+				callback.accept(null, marketUsers);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void createOfflineItemPayment(@NonNull final Payment payment, final Callback<Payment> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "offline_payment (id, payment_for, currency, amount, reason, received_at) VALUES (?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "offline_payment WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, payment.getId().toString());
+
+				preparedStatement.setString(1, payment.getId().toString());
+				preparedStatement.setString(2, payment.getFor().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(payment.getCurrency()));
+				preparedStatement.setDouble(4, payment.getAmount());
+				preparedStatement.setString(5, payment.getReason());
+				preparedStatement.setLong(6, payment.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractOfflineItemPayment(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getOfflineItemPayments(@NonNull final Callback<List<Payment>> callback) {
+		final List<Payment> offlineItemPayments = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "offline_payment")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Payment offlinePayment = extractOfflineItemPayment(resultSet);
+					offlineItemPayments.add(offlinePayment);
+				}
+
+				callback.accept(null, offlineItemPayments);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteOfflineItemPayment(@NonNull final Payment payment, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "offline_payment WHERE id = ?")) {
+				statement.setString(1, payment.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void createOffer(@NonNull final Offer offer, final Callback<Offer> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "offer (id, sender, sender_name, offer_to, market_item, currency, currency_item, offered_amount, offered_at, request_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "offer WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, offer.getId().toString());
+
+				preparedStatement.setString(1, offer.getId().toString());
+				preparedStatement.setString(2, offer.getOfferSender().toString());
+				preparedStatement.setString(3, offer.getOfferSenderName());
+				preparedStatement.setString(4, offer.getOfferFor().toString());
+				preparedStatement.setString(5, offer.getMarketItem().toString());
+				preparedStatement.setString(6, offer.getCurrency());
+				preparedStatement.setString(7, SerializeUtil.encodeItem(offer.getCurrencyItem()));
+				preparedStatement.setDouble(8, offer.getOfferedAmount());
+				preparedStatement.setLong(9, offer.getTimeCreated());
+				preparedStatement.setInt(10, offer.getRequestAmount());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractOffer(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getOffers(@NonNull final Callback<List<Offer>> callback) {
+		final List<Offer> offers = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "offer")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Offer offer = extractOffer(resultSet);
+					offers.add(offer);
+				}
+
+				callback.accept(null, offers);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteOffer(@NonNull final Offer offer, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "offer WHERE id = ?")) {
+				statement.setString(1, offer.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void createBankEntry(@NonNull final BankEntry bankEntry, final Callback<BankEntry> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "bank_entry (id, owner, item, quantity) VALUES (?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "bank_entry WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, bankEntry.getId().toString());
+
+				preparedStatement.setString(1, bankEntry.getId().toString());
+				preparedStatement.setString(2, bankEntry.getOwner().toString());
+				preparedStatement.setString(3, SerializeUtil.encodeItem(bankEntry.getItem()));
+				preparedStatement.setInt(4, bankEntry.getQuantity());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractBankEntry(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getBankEntries(@NonNull final Callback<List<BankEntry>> callback) {
+		final List<BankEntry> entries = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "bank_entry")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final BankEntry entry = extractBankEntry(resultSet);
+					entries.add(entry);
+				}
+
+				callback.accept(null, entries);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateBankEntry(@NonNull final BankEntry entry, final Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			//id, owning_market, name, icon, display_name, description, created_at, updated_at
+			final String query = "UPDATE " + this.getTablePrefix() + "bank_entry SET quantity = ? WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+				preparedStatement.setInt(1, entry.getQuantity());
+				preparedStatement.setString(2, entry.getId().toString());
+
+				int result = preparedStatement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteBankEntry(@NonNull final BankEntry entry, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "bank_entry WHERE id = ?")) {
+				statement.setString(1, entry.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void createMarketRating(@NonNull final Rating rating, final Callback<Rating> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "review (id, market, rater, rater_name, feedback, stars, posted_on) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "review WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, rating.getId().toString());
+
+				preparedStatement.setString(1, rating.getId().toString());
+				preparedStatement.setString(2, rating.getMarketID().toString());
+				preparedStatement.setString(3, rating.getRaterUUID().toString());
+				preparedStatement.setString(4, rating.getRaterName());
+				preparedStatement.setString(5, rating.getFeedback());
+				preparedStatement.setInt(6, rating.getStars());
+				preparedStatement.setLong(7, rating.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMarketRating(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getRatingsByMarket(@NonNull final UUID market, @NonNull final Callback<List<Rating>> callback) {
+		final List<Rating> ratings = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "review WHERE market = ?")) {
+				statement.setString(1, market.toString());
+
+				final ResultSet resultSet = statement.executeQuery();
+
+				while (resultSet.next()) {
+					final Rating rating = extractMarketRating(resultSet);
 					ratings.add(rating);
 				}
-			}
 
-			this.sync(() -> callback.accept(ratings));
+				callback.accept(null, ratings);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
 		}));
 	}
 
-	public void saveCategories(List<MarketCategory> categories, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveCategory(categories, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveCategory(categories, connection);
-			}
-		});
-	}
+	public void createRequest(@NonNull final Request request, final Callback<Request> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-	public void getCategories(Consumer<List<MarketCategory>> callback) {
-		List<MarketCategory> categories = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "categories";
-			String selectItems = "SELECT * FROM " + this.getTablePrefix() + "items";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "request (id, owner, owner_name, requested_item, currency, currency_item, price, requested_amount, requested_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "request WHERE id = ?";
 
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					MarketCategory marketCategory = new MarketCategory(
-							UUID.fromString(result.getString("category_id")),
-							result.getString("name"),
-							result.getString("display_name"),
-							result.getString("description"),
-							Objects.requireNonNull(XMaterial.matchXMaterial(result.getString("icon")).orElse(XMaterial.CHEST).parseItem()),
-							new ArrayList<>(),
-							result.getBoolean("sale_active"),
-							result.getDouble("sale_discount")
-					);
-					marketCategory.setMarketId(UUID.fromString(result.getString("market_id")));
-					categories.add(marketCategory);
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, request.getId().toString());
+
+				preparedStatement.setString(1, request.getId().toString());
+				preparedStatement.setString(2, request.getOwner().toString());
+				preparedStatement.setString(3, request.getOwnerName());
+				preparedStatement.setString(4, SerializeUtil.encodeItem(request.getRequestItem()));
+				preparedStatement.setString(5, request.getCurrency());
+				preparedStatement.setString(6, SerializeUtil.encodeItem(request.getCurrencyItem()));
+				preparedStatement.setDouble(7, request.getPrice());
+				preparedStatement.setInt(8, request.getRequestedAmount());
+				preparedStatement.setLong(9, request.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractRequest(res));
 				}
 
-				ResultSet itemResult = statement.executeQuery(selectItems);
-				while (itemResult.next()) {
-					MarketItem marketItem = new MarketItem(
-							UUID.fromString(itemResult.getString("item_id")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(itemResult.getString("item"))).getItem(),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(itemResult.getString("currency_item"))).getItem(),
-							itemResult.getDouble("price"),
-							itemResult.getBoolean("use_item_currency"),
-							itemResult.getBoolean("price_for_stack"),
-							UUID.fromString(itemResult.getString("category_id"))
-					);
-
-					if (hasColumn(itemResult, "infinite"))
-						marketItem.setInfinite(itemResult.getBoolean("infinite"));
-
-					categories.stream().filter(category -> category.getId().equals(marketItem.getCategoryId())).findFirst().get().getItems().add(marketItem);
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
 			}
-
-			this.sync(() -> callback.accept(categories));
 		}));
 	}
 
-	public void saveRequests(List<Request> requests, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveRequest(requests, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveRequest(requests, connection);
-			}
-		});
-	}
+	public void getRequests(@NonNull final Callback<List<Request>> callback) {
+		final List<Request> requests = new ArrayList<>();
 
-	public void saveRequestItems(List<RequestItem> requestItems, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveRequestItem(requestItems, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveRequestItem(requestItems, connection);
-			}
-		});
-	}
-
-	public void getRequests(Consumer<List<Request>> callback) {
-		List<Request> requests = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "requests";
-			String selectItems = "SELECT * FROM " + this.getTablePrefix() + "request_item";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					requests.add(new Request(
-							UUID.fromString(result.getString("request_id")),
-							UUID.fromString(result.getString("requester")),
-							result.getLong("date"),
-							new ArrayList<>()
-					));
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "request")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Request request = extractRequest(resultSet);
+					requests.add(request);
 				}
 
-				ResultSet itemResult = statement.executeQuery(selectItems);
-				while (itemResult.next()) {
-					RequestItem requestItem = new RequestItem(
-							UUID.fromString(itemResult.getString("request_id")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(itemResult.getString("item"))).getItem(),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(itemResult.getString("currency"))).getItem(),
-							itemResult.getInt("amount"),
-							itemResult.getDouble("price"),
-							itemResult.getBoolean("fulfilled"),
-							itemResult.getBoolean("use_custom_currency")
-					);
-
-					requests.stream().filter(request -> request.getId().equals(requestItem.getRequestId())).findFirst().get().getRequestedItems().add(requestItem);
-				}
+				callback.accept(null, requests);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
 			}
-
-			this.sync(() -> callback.accept(requests));
 		}));
 	}
 
-	public void savePayments(List<Payment> payments, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						savePayment(payments, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				savePayment(payments, connection);
+	public void deleteRequest(@NonNull final Request request, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "request WHERE id = ?")) {
+				statement.setString(1, request.getId().toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
 			}
-		});
-	}
-
-	public void getPayments(Consumer<List<Payment>> callback) {
-		List<Payment> payments = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "payments";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					payments.add(new Payment(
-							UUID.fromString(result.getString("is_for")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(result.getString("item"))).getItem()
-					));
-				}
-			}
-
-			this.sync(() -> callback.accept(payments));
 		}));
 	}
 
-	public void saveTransactions(List<Transaction> transactions, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveTransaction(transactions, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveTransaction(transactions, connection);
-			}
-		});
-	}
+	public void createTransaction(@NonNull final Transaction transaction, final Callback<Transaction> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-	public void getTransactions(Consumer<List<Transaction>> callback) {
-		List<Transaction> transactions = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "transactions";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "transaction (id, buyer, buyer_name, seller, seller_name, type, item, currency, quantity, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "transaction WHERE id = ?";
 
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					Transaction transaction = new Transaction(
-							UUID.fromString(result.getString("transaction_id")),
-							UUID.fromString(result.getString("market_id")),
-							UUID.fromString(result.getString("purchaser")),
-							((DatabaseItem) MarketsAPI.getInstance().convertBase64ToObject(result.getString("item"))).getItem(),
-							result.getInt("quantity"),
-							result.getDouble("price")
-					);
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
 
-					transaction.setTime(result.getLong("time"));
-					transactions.add(transaction);
+				fetch.setString(1, transaction.getId().toString());
+
+				preparedStatement.setString(1, transaction.getId().toString());
+
+				preparedStatement.setString(2, transaction.getBuyer().toString());
+				preparedStatement.setString(3, transaction.getBuyerName());
+
+				preparedStatement.setString(4, transaction.getSeller().toString());
+				preparedStatement.setString(5, transaction.getSellerName());
+
+				preparedStatement.setString(6, transaction.getType().name());
+				preparedStatement.setString(7, SerializeUtil.encodeItem(transaction.getItem()));
+
+				preparedStatement.setString(8, transaction.getCurrency());
+				preparedStatement.setInt(9, transaction.getQuantity());
+				preparedStatement.setDouble(10, transaction.getPrice());
+				preparedStatement.setLong(11, transaction.getTimeCreated());
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractTransaction(res));
 				}
-			}
 
-			this.sync(() -> callback.accept(transactions));
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
 		}));
 	}
 
-	public void saveItems(List<MarketItem> items, boolean async) {
-		this.databaseConnector.connect(connection -> {
-			if (async) {
-				Markets.newChain().async(() -> {
-					try {
-						saveItem(items, connection);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}).execute();
-			} else {
-				saveItem(items, connection);
-			}
-		});
+	private Transaction extractTransaction(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketTransaction(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("buyer")),
+				resultSet.getString("buyer_name"),
+				UUID.fromString(resultSet.getString("seller")),
+				resultSet.getString("seller_name"),
+				TransactionType.valueOf(resultSet.getString("type")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getString("currency"),
+				resultSet.getInt("quantity"),
+				resultSet.getDouble("price"),
+				resultSet.getLong("created_at")
+		);
 	}
 
-	private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int columns = rsmd.getColumnCount();
-		for (int x = 1; x <= columns; x++) {
-			if (columnName.equals(rsmd.getColumnName(x))) {
-				return true;
+	private Request extractRequest(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketRequest(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				resultSet.getString("owner_name"),
+				SerializeUtil.decodeItem(resultSet.getString("requested_item")),
+				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
+				resultSet.getDouble("price"),
+				resultSet.getInt("requested_amount"),
+				resultSet.getLong("requested_at")
+		);
+	}
+
+	private Rating extractMarketRating(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketRating(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("market")),
+				UUID.fromString(resultSet.getString("rater")),
+				resultSet.getString("rater_name"),
+				resultSet.getString("feedback"),
+				resultSet.getInt("stars"),
+				resultSet.getLong("posted_on")
+		);
+	}
+
+	private BankEntry extractBankEntry(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketBankEntry(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getInt("quantity")
+		);
+	}
+
+	private Offer extractOffer(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketOffer(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("sender")),
+				resultSet.getString("sender_name"),
+				UUID.fromString(resultSet.getString("offer_to")),
+				UUID.fromString(resultSet.getString("market_item")),
+				resultSet.getInt("request_amount"),
+				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
+				resultSet.getDouble("offered_amount"),
+				resultSet.getLong("offered_at")
+		);
+	}
+
+	private AbstractMarket extractMarket(@NonNull final ResultSet resultSet) throws SQLException {
+		final ArrayList<UUID> bannedUsers = new ArrayList<>();
+		Layout homeLayout, categoryLayout;
+
+		if (resultSet.getString("banned_users") != null) {
+			final List<String> possibleUUIDS = Arrays.stream(resultSet.getString("banned_users").split(",")).toList();
+
+			for (String id : possibleUUIDS) {
+				try {
+					bannedUsers.add(UUID.fromString(id));
+				} catch (IllegalArgumentException ignored) {
+					continue;
+				}
 			}
 		}
-		return false;
+
+		homeLayout = resultSet.getString("home_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("home_layout")) : new HomeLayout();
+		categoryLayout = resultSet.getString("category_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("category_layout")) : new HomeLayout();
+
+		return new PlayerMarket(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				resultSet.getString("owner_name"),
+				resultSet.getString("display_name"),
+				new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
+				new ArrayList<>(),
+				new ArrayList<>(),
+				bannedUsers,
+				resultSet.getBoolean("open"),
+				resultSet.getBoolean("close_when_out_of_stock"),
+				homeLayout,
+				categoryLayout,
+				resultSet.getLong("created_at"),
+				resultSet.getLong("updated_at")
+		);
+	}
+
+	private Category extractCategory(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketCategory(
+				UUID.fromString(resultSet.getString("owning_market")),
+				UUID.fromString(resultSet.getString("id")),
+				CompMaterial.matchCompMaterial(resultSet.getString("icon")).orElse(CompMaterial.CHEST).parseItem(),
+				resultSet.getString("name"),
+				resultSet.getString("display_name"),
+				new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
+				new ArrayList<>(),
+				resultSet.getLong("created_at"),
+				resultSet.getLong("updated_at")
+		);
+	}
+
+	private MarketItem extractMarketItem(@NonNull final ResultSet resultSet) throws SQLException {
+		return new CategoryItem(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owning_category")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getString("currency"),
+				SerializeUtil.decodeItem(resultSet.getString("currency_item")),
+				resultSet.getDouble("price"),
+				resultSet.getInt("stock"),
+				resultSet.getBoolean("price_is_for_all"),
+				resultSet.getBoolean("accepting_offers")
+		);
+	}
+
+	private MarketUser extractMarketUser(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketPlayer(
+				UUID.fromString(resultSet.getString("id")),
+				null,
+				resultSet.getString("last_known_name"),
+				new ArrayList<>(List.of(resultSet.getString("bio").split(";;;"))),
+				resultSet.getString("preferred_language"),
+				resultSet.getString("currency_format_country"),
+				resultSet.getLong("last_seen_at")
+		);
+	}
+
+	private Payment extractOfflineItemPayment(@NonNull final ResultSet resultSet) throws SQLException {
+		return new OfflinePayment(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("payment_for")),
+				SerializeUtil.decodeItem(resultSet.getString("currency")),
+				resultSet.getDouble("amount"),
+				resultSet.getString("reason"),
+				resultSet.getLong("received_at")
+		);
+	}
+
+//	final String query = "INSERT INTO " + this.getTablePrefix() + "user (id, last_known_name, bio, preferred_language, currency_format_country, last_seen_at) VALUES (?, ?, ?, ?, ?, ?)";
+
+	private void resolveUpdateCallback(@Nullable UpdateCallback callback, @Nullable Exception ex) {
+		if (callback != null) {
+			callback.accept(ex);
+		} else if (ex != null) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void resolveCallback(@Nullable Callback<?> callback, @NotNull Exception ex) {
+		if (callback != null) {
+			callback.accept(ex, null);
+		} else {
+			ex.printStackTrace();
+		}
 	}
 }

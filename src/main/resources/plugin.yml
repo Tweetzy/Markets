@@ -1,81 +1,10 @@
-name: Markets
-main: ca.tweetzy.markets.Markets
-version: maven-version-number
-api-version: 1.13
-description: The ultimate player shop plugin
-authors: [ Kiran Hart ]
-website: https://tweetzy.ca
-softdepend: [ Vault, PlayerPoints, Reserve, HeadDatabase, Skulls ]
+name: ${project.name}
+version: ${project.version}
+build: ${buildNumber}
+main: ${main.class}
+author: ${author}
+api-version: 1.16
 
-commands:
-  markets:
-    description: Main command for the market plugin
-    aliases: [ market, playermarket, playermarkets ]
-    usage: /markets
-
-permissions:
-  markets.*:
-    markets.cmd: true
-    markets.cmd.addcategory: true
-    markets.cmd.additem: true
-    markets.cmd.create: true
-    markets.cmd.list: true
-    markets.cmd.request: true
-    markets.cmd.set: true
-    markets.cmd.view: true
-    markets.cmd.settings: true
-    markets.cmd.help: true
-    markets.cmd.reload: true
-    markets.cmd.remove: true
-    markets.cmd.confiscate: true
-    markets.cmd.forcesave: true
-    markets.cmd.payupkeep: true
-    markets.cmd.search: true
-  markets.cmd:
-    description: Allows the user to open the main market menu
-    default: op
-  markets.cmd.addcategory:
-    description: Allows the user to add a category to their market
-    default: op
-  markets.cmd.additem:
-    description: Allows the user to add an item to their market
-    default: op
-  markets.cmd.create:
-    description: Allows the user to create a market
-    default: op
-  markets.cmd.list:
-    description: Allows the user to list all open markets
-    default: op
-  markets.cmd.request:
-    description: Allows the user to create a new item request
-    default: op
-  markets.cmd.set:
-    description: Allows the user to change their market settings
-    default: op
-  markets.cmd.view:
-    description: Allows the user to directly open a player market
-    default: op
-  markets.cmd.settings:
-    description: Allows the user to open in game config editor
-    default: op
-  markets.cmd.reload:
-    description: Allows the user to reload the plugin config files
-    default: op
-  markets.cmd.help:
-    description: Allows the user to view the help page
-    default: op
-  markets.cmd.remove:
-    description: Allows the user to remove their market using the command
-    default: op
-  markets.cmd.confiscate:
-    description: Allows the user to confiscate a market's items
-    default: op
-  markets.cmd.forcesave:
-    description: Allows the user to run the force save command
-    default: op
-  markets.cmd.payupkeep:
-    description: Allows the user to pay their outstanding upkeep fees
-    default: op
-  markets.cmd.search:
-    description: Allows the user to search all markets for a specific item
-    default: op
+softdepend:
+  - PlaceholderAPI
+  - Vault
