@@ -72,7 +72,6 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
-			// todo check max allowed requests
 			if (Markets.getPlayerManager().isAtRequestLimit(click.player)) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.AT_MAX_REQUEST_LIMIT));
 				return;

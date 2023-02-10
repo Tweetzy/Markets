@@ -130,7 +130,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_INFO,
 				"purchase_quantity", this.purchaseQty,
 				"market_item_price", String.format("%,.2f", this.marketItem.getPrice()),
-				"market_item_currency", ItemUtil.getStackName(this.marketItem.getCurrencyItem()) // todo use a general currency symbol assuming it's a non-item currency
+				"market_item_currency", this.marketItem.getCurrencyDisplayName()
 		));
 
 		quickItem.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN_LORE_SUBTOTAL,

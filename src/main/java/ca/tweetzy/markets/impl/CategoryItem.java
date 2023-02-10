@@ -5,7 +5,6 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.PlayerUtil;
-import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
@@ -66,7 +65,10 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
-		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1, 0, false, true);
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? "Markets/Item" : Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1, 0, false, true);
+
+		if (Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())
+			this.currencyItem = Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack();
 	}
 
 	@Override
