@@ -77,6 +77,11 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
+			if (!Markets.getRatingManager().canUserRateMarket(this.market, click.player)) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_ALLOWED_TO_REVIEW));
+				return;
+			}
+
 			Markets.getRatingManager().create(this.market, this.rating, created -> {
 				if (created)
 					click.manager.showGUI(click.player, this.parent);

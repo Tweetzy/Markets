@@ -10,8 +10,10 @@ import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
+import ca.tweetzy.markets.api.event.MarketTransactionEvent;
 import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.api.market.Request;
+import ca.tweetzy.markets.api.market.TransactionType;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.impl.MarketRequest;
 import ca.tweetzy.markets.settings.Settings;
@@ -139,6 +141,17 @@ public final class RequestsGUI extends MarketsPagedGUI<Request> {
 		if (requestedOwner.isOnline()) {
 			Common.tell(requestedOwner.getPlayer(), TranslationManager.string(requestedOwner.getPlayer(), Translations.REQUEST_FULFILLED, "fulfill_name", fulfiller.getName(), "request_item_name", ItemUtil.getStackName(request.getRequestItem())));
 		}
+
+		// call transaction event
+		Bukkit.getServer().getPluginManager().callEvent(new MarketTransactionEvent(
+				fulfiller,
+				requestedOwner,
+				TransactionType.REQUEST_FULFILLMENT,
+				QuickItem.of(request.getCurrencyItem()).amount(1).make(),
+				request.getCurrencyDisplayName(),
+				request.getRequestedAmount(),
+				request.isCurrencyOfItem() ? request.getPrice() : (int) request.getPrice()
+		));
 
 		request.unStore(result -> {
 			if (result == SynchronizeResult.FAILURE) return;

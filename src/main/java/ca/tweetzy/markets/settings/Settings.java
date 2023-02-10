@@ -12,7 +12,6 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_REQUESTS = create("settings.max allowed requests", 64).withComment("The maximum # of requests a player can make without further permission");
-	public static ConfigEntry PURCHASE_REQUIRES_CONFIRMATION = create("settings.confirmations.purchase", true).withComment("If true, markets will ask the player to confirm in a gui before the purchase is made.");
 	public static ConfigEntry TAX_ENABLED = create("settings.tax.enabled", false).withComment("If true, will apply sales tax to the total when a user is buying an item");
 	public static ConfigEntry TAX_AMOUNT = create("settings.tax.percentage", 13.0).withComment("The tax percentage. By default it's 13%");
 	public static ConfigEntry CREATION_COST_ENABLED = create("settings.creation cost.enabled", true).withComment("If enabled, players will be charged to create their market");
@@ -22,7 +21,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CURRENCY_DEFAULT_SELECTED = create("settings.currency.default selection", "Vault/Vault").withComment("The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault");
 	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
 	public static ConfigEntry CURRENCY_USE_ITEM_ONLY = create("settings.currency.use item only", false).withComment("If true, Markets will only allow the usage of another item for currency.");
-	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 5).withComment("How many seconds must a player wait before they can rate the same market?");
+	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 
 	/*
 	========================= GUI STUFF =========================

@@ -8,11 +8,11 @@ import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.api.MarketsAPI;
-import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
+import ca.tweetzy.markets.listeners.MarketTransactionListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.*;
 import ca.tweetzy.markets.settings.Settings;
@@ -70,7 +70,8 @@ public final class Markets extends FlightPlugin {
 				new _11_OfferRequestAmountMigration(),
 				new _12_BankEntryMigration(),
 				new _13_MarketReviewMigration(),
-				new _14_MarketRequestMigration()
+				new _14_MarketRequestMigration(),
+				new _15_TransactionsMigration()
 		);
 
 		// run migrations for tables
@@ -93,6 +94,7 @@ public final class Markets extends FlightPlugin {
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new MarketTransactionListener(), this);
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
@@ -100,8 +102,7 @@ public final class Markets extends FlightPlugin {
 				new CommandPayments(),
 				new CommandOffers(),
 				new CommandView(),
-				new CommandSearch(),
-				new CommandAdmin()
+				new CommandSearch()
 		);
 	}
 

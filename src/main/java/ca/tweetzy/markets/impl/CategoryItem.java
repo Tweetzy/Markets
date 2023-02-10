@@ -5,9 +5,12 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.PlayerUtil;
+import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
+import ca.tweetzy.markets.api.event.MarketTransactionEvent;
+import ca.tweetzy.markets.api.market.TransactionType;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.model.Taxer;
@@ -272,6 +275,17 @@ public final class CategoryItem implements MarketItem {
 					"purchase_quantity", newPurchaseAmount,
 					"item_name", ItemUtil.getStackName(this.item),
 					"seller_name", market.getOwnerName()
+			));
+
+			// call transaction event
+			Bukkit.getServer().getPluginManager().callEvent(new MarketTransactionEvent(
+					buyer,
+					seller,
+					TransactionType.ITEM_PURCHASE,
+					this.item,
+					getCurrencyDisplayName(),
+					newPurchaseAmount,
+					isCurrencyOfItem() ? total : (int) total
 			));
 
 			transactionResult.accept(TransactionResult.SUCCESS);

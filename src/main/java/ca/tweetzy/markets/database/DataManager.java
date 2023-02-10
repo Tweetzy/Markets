@@ -9,6 +9,8 @@ import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.api.currency.Payment;
 import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.api.market.Request;
+import ca.tweetzy.markets.api.market.Transaction;
+import ca.tweetzy.markets.api.market.TransactionType;
 import ca.tweetzy.markets.api.market.core.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.api.market.offer.Offer;
@@ -783,6 +785,62 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void createTransaction(@NonNull final Transaction transaction, final Callback<Transaction> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+
+			final String query = "INSERT INTO " + this.getTablePrefix() + "transaction (id, buyer, buyer_name, seller, seller_name, type, item, currency, quantity, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "transaction WHERE id = ?";
+
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, transaction.getId().toString());
+
+				preparedStatement.setString(1, transaction.getId().toString());
+
+				preparedStatement.setString(2, transaction.getBuyer().toString());
+				preparedStatement.setString(3, transaction.getBuyerName());
+
+				preparedStatement.setString(4, transaction.getSeller().toString());
+				preparedStatement.setString(5, transaction.getSellerName());
+
+				preparedStatement.setString(6, transaction.getType().name());
+				preparedStatement.setString(7, SerializeUtil.encodeItem(transaction.getItem()));
+
+				preparedStatement.setString(8, transaction.getCurrency());
+				preparedStatement.setInt(9, transaction.getQuantity());
+				preparedStatement.setDouble(10, transaction.getPrice());
+				preparedStatement.setLong(11, transaction.getTimeCreated());
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractTransaction(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	private Transaction extractTransaction(@NonNull final ResultSet resultSet) throws SQLException {
+		return new MarketTransaction(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("buyer")),
+				resultSet.getString("buyer_name"),
+				UUID.fromString(resultSet.getString("seller")),
+				resultSet.getString("seller_name"),
+				TransactionType.valueOf(resultSet.getString("type")),
+				SerializeUtil.decodeItem(resultSet.getString("item")),
+				resultSet.getString("currency"),
+				resultSet.getInt("quantity"),
+				resultSet.getDouble("price"),
+				resultSet.getLong("created_at")
+		);
+	}
 
 	private Request extractRequest(@NonNull final ResultSet resultSet) throws SQLException {
 		return new MarketRequest(
