@@ -25,6 +25,12 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 
 	/*
+	========================= CLICKS =========================
+	 */
+	public static ConfigEntry CLICK_LAYOUT_BG_APPLY = create("settings.clicks.layout change background", "RIGHT").withComment("https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/inventory/ClickType.html");
+
+
+	/*
 	========================= INTERNAL TIMINGS =========================
 	 */
 	public static ConfigEntry INTERNAL_ADD_ITEM_DELAY = create("settings.internal.add item delay", 3).withComment("In ticks, how long should markets wait before calling the method to create an item after the button is clicked.");
