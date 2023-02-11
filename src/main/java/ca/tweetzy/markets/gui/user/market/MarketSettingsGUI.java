@@ -26,6 +26,7 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 		super(new MarketOverviewGUI(player, market), player, TranslationManager.string(player, Translations.GUI_MARKET_SETTINGS_TITLE), 6);
 		this.player = player;
 		this.market = market;
+		setAcceptsItems(true);
 		draw();
 	}
 
@@ -118,6 +119,24 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 	}
 
 	private void executeLayoutHandle(@NonNull final GuiClickEvent click, @NonNull final MarketLayoutType layoutType) {
+		final ItemStack cursor = click.cursor;
+
+		if (click.clickType == ClickType.valueOf(Settings.CLICK_LAYOUT_BG_APPLY.getString().toUpperCase()) && cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+			final ItemStack newIcon = cursor.clone();
+			newIcon.setAmount(1);
+
+			if (layoutType == MarketLayoutType.HOME)
+				this.market.getHomeLayout().setBackgroundItem(newIcon);
+			else
+				this.market.getCategoryLayout().setBackgroundItem(newIcon);
+
+			this.market.sync(result -> {
+				if (result == SynchronizeResult.SUCCESS)
+					draw();
+			});
+			return;
+		}
+
 		if (click.clickType == ClickType.LEFT) {
 			click.manager.showGUI(click.player, new MarketLayoutEditorGUI(click.player, this.market, layoutType));
 			draw();
@@ -125,23 +144,23 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 
 		if (click.clickType == ClickType.RIGHT) {
 
-			final ItemStack cursor = click.cursor;
-			if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
-				final ItemStack newIcon = cursor.clone();
-				newIcon.setAmount(1);
-
-				if (layoutType == MarketLayoutType.HOME)
-					this.market.getHomeLayout().setBackgroundItem(newIcon);
-				else
-					this.market.getCategoryLayout().setBackgroundItem(newIcon);
-
-				this.market.sync(result -> {
-					if (result == SynchronizeResult.SUCCESS)
-						draw();
-				});
-
-				return;
-			}
+//			final ItemStack cursor = click.cursor;
+//			if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+//				final ItemStack newIcon = cursor.clone();
+//				newIcon.setAmount(1);
+//
+//				if (layoutType == MarketLayoutType.HOME)
+//					this.market.getHomeLayout().setBackgroundItem(newIcon);
+//				else
+//					this.market.getCategoryLayout().setBackgroundItem(newIcon);
+//
+//				this.market.sync(result -> {
+//					if (result == SynchronizeResult.SUCCESS)
+//						draw();
+//				});
+//
+//				return;
+//			}
 
 			click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
 				if (selected != null)
@@ -158,4 +177,5 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 		}
 		return;
 	}
+
 }
