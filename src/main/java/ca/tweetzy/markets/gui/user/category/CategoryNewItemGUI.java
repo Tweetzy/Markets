@@ -17,6 +17,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -153,12 +154,20 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 			if (this.marketItem.getPrice() <= 0) return;
 
 			// create the item
-			Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(), created -> {
-				if (created) {
-					setItem(1, 4, CompMaterial.AIR.parseItem());
-					click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
+			Bukkit.getScheduler().runTaskLaterAsynchronously(Markets.getInstance(), () -> {
+				if (!click.gui.isOpen()) {
+					Common.log(String.format("&7Strange activity detected from %s, closing inv & pressing add item btn simultaneously. This could just be lag.", click.player.getName()));
+					return;
 				}
-			});
+
+				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(), created -> {
+					if (created) {
+						setItem(1, 4, CompMaterial.AIR.parseItem());
+						click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
+					}
+				});
+			}, Settings.INTERNAL_ADD_ITEM_DELAY.getInt());
+
 		});
 
 

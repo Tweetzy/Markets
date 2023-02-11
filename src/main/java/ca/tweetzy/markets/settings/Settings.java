@@ -25,6 +25,13 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 
 	/*
+	========================= INTERNAL TIMINGS =========================
+	 */
+	public static ConfigEntry INTERNAL_ADD_ITEM_DELAY = create("settings.internal.add item delay", 3).withComment("In ticks, how long should markets wait before calling the method to create an item after the button is clicked.");
+
+
+
+	/*
 	========================= GUI STUFF =========================
 	 */
 	public static ConfigEntry GUI_SHARED_ITEMS_BACK_BUTTON = create("gui.shared buttons.back button.item", CompMaterial.DARK_OAK_DOOR.name());
