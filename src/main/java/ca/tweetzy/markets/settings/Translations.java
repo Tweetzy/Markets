@@ -13,6 +13,9 @@ public final class Translations extends TranslationManager {
 		this.mainLanguage = Settings.LANGUAGE.getString();
 	}
 
+	public static TranslationEntry ITEM_IS_AIR = create("error.item is air", "&cYou cannot add air to your market...");
+	public static TranslationEntry NO_CATEGORIES = create("error.no categories", "&cYou need to create at least 1 category first.");
+	public static TranslationEntry INVALID_CATEGORY = create("error.invalid category", "&cCould not find a category with id&f: &4%category_id%");
 	public static TranslationEntry MARKET_NAME_TOO_LONG = create("error.market name too long", "&cMarket name too long, max is 72 characters.");
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("error.category name too long", "&cCategory name too long, max is 32 characters.");
 	public static TranslationEntry CANNOT_PAY_CREATION_FEE = create("error.cannot pay creation fee", "&cInsufficient funds to pay the creation fee");
@@ -41,6 +44,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
 	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
+	public static TranslationEntry MARKET_ITEM_ADDED_TO_CATEGORY = create("info.added item to category", "&fx&a%item_quantity% &f%item_name% &ewas added to &b%category_display_name%");
 
 	public static TranslationEntry OFFER_RECEIVED = create("info.offer.received", "&b%sender_name% &ehas sent you an offer on an item!");
 	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name%");

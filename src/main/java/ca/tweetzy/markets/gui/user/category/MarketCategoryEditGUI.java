@@ -115,7 +115,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.make(), click -> {
 
 			if (Markets.getPlayerManager().isAtMarketItemLimit(click.player)) {
-				Common.tell(click.player, TranslationManager.string(Translations.AT_MAX_ITEM_LIMIT));
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.AT_MAX_ITEM_LIMIT));
 				return;
 			}
 

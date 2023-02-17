@@ -98,6 +98,7 @@ public final class Markets extends FlightPlugin {
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
+				new CommandAdd(),
 				new CommandBank(),
 				new CommandPayments(),
 				new CommandOffers(),
