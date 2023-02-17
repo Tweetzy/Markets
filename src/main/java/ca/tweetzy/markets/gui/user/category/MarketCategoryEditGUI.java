@@ -15,6 +15,7 @@ import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
+import ca.tweetzy.markets.model.FloodGateCheck;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -110,9 +111,12 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		// new item button
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE))
+				.name(TranslationManager.string(this.player, FloodGateCheck.isMobileUser(this.player) ? Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME_MOBILE : Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME))
+				.lore(TranslationManager.list(this.player, FloodGateCheck.isMobileUser(this.player) ? Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE_MOBILE : Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE, "category_id", this.category.getName()))
 				.make(), click -> {
+
+			if (FloodGateCheck.isMobileUser(click.player))
+				return;
 
 			if (Markets.getPlayerManager().isAtMarketItemLimit(click.player)) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.AT_MAX_ITEM_LIMIT));
@@ -211,7 +215,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		final Player player = click.player;
 
 		final MarketItem locate = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
-		if(locate == null) {
+		if (locate == null) {
 			reopen(click);
 			return;
 		}

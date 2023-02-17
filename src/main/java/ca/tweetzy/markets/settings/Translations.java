@@ -271,6 +271,21 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to add item to category"
 	);
 
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME_MOBILE = create("gui.market overview.items.new item mobile.name", "<GRADIENT:65B1B4>&LNew Item</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE_MOBILE = create("gui.market overview.items.new item mobile.lore",
+			"&7To create a new item on mobile.",
+			"",
+			"&f/&emarkets add &b%category_id% &a<price>",
+			"&7Additionally, you can add &e-nooffers &7and/or &e-wholesale &7after price",
+			"",
+			"&7Example&f: &e/markets add %category_id% 25",
+			"&7Example&f: &e/markets add %category_id% 95 -nooffers",
+			"&7Example&f: &e/markets add %category_id% 500 -wholesale",
+			"&7Example&f: &e/markets add %category_id% 35 -wholesale -nooffers",
+			""
+	);
+
+
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.unStore category.name", "&c&lDelete Category");
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.unStore category.lore",
 			"&7This action &4&lCANNOT &7be undone!",
