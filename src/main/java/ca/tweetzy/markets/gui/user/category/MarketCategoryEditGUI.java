@@ -200,7 +200,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 						TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_MARKET_ITEM_LORE)
 						, "market_item_price", String.format("%,.2f", marketItem.getPrice())
 						, "market_item_currency", marketItem.getCurrencyDisplayName()
-						, "market_item_stock", marketItem.getStock()
+						, "market_item_stock", marketItem.isInfinite() ? "∞" : marketItem.getStock()
 						, "market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
 						, "market_item_accepting_offers", TranslationManager.string(this.player, marketItem.isAcceptingOffers() ? Translations.TRUE : Translations.FALSE)
 						, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)

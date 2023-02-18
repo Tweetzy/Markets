@@ -1,7 +1,6 @@
 package ca.tweetzy.markets.gui.shared.checkout;
 
 import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.flight.utils.ItemUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
@@ -51,7 +50,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 		drawPriceBreakdown();
 
-		if (this.marketItem.getStock() != 1 && !this.marketItem.isPriceForAll()) {
+		if (this.marketItem.isInfinite() || this.marketItem.getStock() != 1 && !this.marketItem.isPriceForAll()) {
 			drawDecrementButtons();
 			drawIncrementButtons();
 		}
@@ -118,7 +117,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 	private void drawPurchasingItem() {
 		setItem(1, 4, QuickItem
 				.of(this.marketItem.getItem().clone())
-				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PURCHASE_ITEM_LORE, "market_item_stock", this.marketItem.getStock()))
+				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_PURCHASE_ITEM_LORE, "market_item_stock", this.marketItem.isInfinite() ? "∞" : this.marketItem.getStock()))
 				.amount(this.purchaseQty)
 				.make());
 	}
@@ -152,7 +151,8 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 	private void adjustPurchaseQty(@NonNull final AdjustmentType adjustmentType, final int amount) {
 		if (adjustmentType == AdjustmentType.INCREASE) {
 			int newAmt = this.purchaseQty + amount;
-			if (newAmt > this.marketItem.getStock())
+
+			if (!this.marketItem.isInfinite() && newAmt > this.marketItem.getStock())
 				newAmt = this.marketItem.getStock();
 
 			this.purchaseQty = newAmt;
