@@ -953,7 +953,8 @@ public final class DataManager extends DataManagerAbstract {
 				resultSet.getDouble("price"),
 				resultSet.getInt("stock"),
 				resultSet.getBoolean("price_is_for_all"),
-				resultSet.getBoolean("accepting_offers")
+				resultSet.getBoolean("accepting_offers"),
+				resultSet.getBoolean("infinite")
 		);
 	}
 

@@ -69,17 +69,19 @@ public final class CommandAdd extends Command {
 			final double price = Double.parseDouble(args[1]);
 			final boolean noOffers = FlagExtractor.extract(args).containsKey("-nooffers");
 			final boolean wholesale = FlagExtractor.extract(args).containsKey("-wholesale");
+			final boolean infinite = player.hasPermission("markets.admin") && FlagExtractor.extract(args).containsKey("-infinite");
 
 			final MarketItem marketItem = new CategoryItem(category.getId());
 			marketItem.setPrice(price);
 			marketItem.setItem(toSell);
 			marketItem.setStock(toSell.getAmount());
 			marketItem.setPriceIsForAll(wholesale);
+			marketItem.setInfinite(infinite);
 
 			if (noOffers)
 				marketItem.setIsAcceptingOffers(false);
 
-			Markets.getCategoryItemManager().create(category, marketItem.getItem(), marketItem.getCurrency(), marketItem.getCurrencyItem(), marketItem.getPrice(), marketItem.isPriceForAll(), marketItem.isAcceptingOffers(), created -> {
+			Markets.getCategoryItemManager().create(category, marketItem.getItem(), marketItem.getCurrency(), marketItem.getCurrencyItem(), marketItem.getPrice(), marketItem.isPriceForAll(), marketItem.isAcceptingOffers(), infinite, created -> {
 				if (created) {
 					player.getInventory().setItemInMainHand(CompMaterial.AIR.parseItem());
 

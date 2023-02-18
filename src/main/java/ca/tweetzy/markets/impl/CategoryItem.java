@@ -38,6 +38,7 @@ public final class CategoryItem implements MarketItem {
 	private int stock;
 	private boolean priceIsForAll;
 	private boolean acceptingOffers;
+	private boolean infinite;
 
 	private final List<Player> viewingUsers;
 
@@ -50,7 +51,8 @@ public final class CategoryItem implements MarketItem {
 			final double price,
 			final int stock,
 			final boolean priceIsForAll,
-			final boolean acceptingOffers
+			final boolean acceptingOffers,
+			final boolean infinite
 	) {
 		this.id = id;
 		this.owningCategory = owningCategory;
@@ -61,11 +63,12 @@ public final class CategoryItem implements MarketItem {
 		this.stock = stock;
 		this.priceIsForAll = priceIsForAll;
 		this.acceptingOffers = acceptingOffers;
+		this.infinite = infinite;
 		this.viewingUsers = new ArrayList<>();
 	}
 
 	public CategoryItem(@NonNull final UUID owningCategory) {
-		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? "Markets/Item" : Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1, 0, false, true);
+		this(UUID.randomUUID(), owningCategory, CompMaterial.AIR.parseItem(), Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? "Markets/Item" : Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1, 0, false, true, false);
 
 		if (Settings.CURRENCY_USE_ITEM_ONLY.getBoolean())
 			this.currencyItem = Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack();
@@ -152,6 +155,16 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	@Override
+	public boolean isInfinite() {
+		return this.infinite;
+	}
+
+	@Override
+	public void setInfinite(boolean infinite) {
+		this.infinite = infinite;
+	}
+
+	@Override
 	public List<Player> getViewingPlayers() {
 		return this.viewingUsers;
 	}
@@ -190,13 +203,14 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void performPurchase(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
-		if (this.stock == 0) {//todo add check to prevent multiple purchases
+
+		if (!this.infinite && this.stock == 0) {//todo add check to prevent multiple purchases
 			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 			return;
 		}
 
-		final int newPurchaseAmount = Math.min(quantity, stock);
+		final int newPurchaseAmount = this.infinite ? quantity : Math.min(quantity, stock);
 
 		final double subtotal = this.priceIsForAll ? this.price : this.price * newPurchaseAmount;
 		final double total = subtotal;
@@ -225,25 +239,46 @@ public final class CategoryItem implements MarketItem {
 			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
 
 			if (newStock <= 0) {
-				getViewingPlayers().forEach(viewingUser -> {
-					viewingUser.closeInventory();
-					Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
-				});
+				if (!this.infinite) {
+					getViewingPlayers().forEach(viewingUser -> {
+						viewingUser.closeInventory();
+						Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
+					});
 
-				unStore(result -> {
+					unStore(result -> {
+						if (seller.isOnline()) {
+							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+									"purchase_quantity", newPurchaseAmount,
+									"item_name", ItemUtil.getStackName(this.item),
+									"buyer_name", buyer.getName()
+							));
+
+							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getStackName(this.item)));
+						}
+					});
+				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_quantity", newPurchaseAmount,
 								"item_name", ItemUtil.getStackName(this.item),
 								"buyer_name", buyer.getName()
 						));
-
-						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getStackName(this.item)));
 					}
-				});
+				}
+
 			} else {
-				setStock(newStock);
-				sync(result -> {
+				if (!this.infinite) {
+					setStock(newStock);
+					sync(result -> {
+						if (seller.isOnline()) {
+							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+									"purchase_quantity", newPurchaseAmount,
+									"item_name", ItemUtil.getStackName(this.item),
+									"buyer_name", buyer.getName()
+							));
+						}
+					});
+				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_quantity", newPurchaseAmount,
@@ -251,7 +286,7 @@ public final class CategoryItem implements MarketItem {
 								"buyer_name", buyer.getName()
 						));
 					}
-				});
+				}
 			}
 
 			if (isCurrencyOfItem()) {
