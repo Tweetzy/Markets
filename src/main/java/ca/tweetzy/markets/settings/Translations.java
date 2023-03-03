@@ -13,6 +13,9 @@ public final class Translations extends TranslationManager {
 		this.mainLanguage = Settings.LANGUAGE.getString();
 	}
 
+	public static TranslationEntry ITEM_IS_AIR = create("error.item is air", "&cYou cannot add air to your market...");
+	public static TranslationEntry NO_CATEGORIES = create("error.no categories", "&cYou need to create at least 1 category first.");
+	public static TranslationEntry INVALID_CATEGORY = create("error.invalid category", "&cCould not find a category with id&f: &4%category_id%");
 	public static TranslationEntry MARKET_NAME_TOO_LONG = create("error.market name too long", "&cMarket name too long, max is 72 characters.");
 	public static TranslationEntry CATEGORY_NAME_TOO_LONG = create("error.category name too long", "&cCategory name too long, max is 32 characters.");
 	public static TranslationEntry CANNOT_PAY_CREATION_FEE = create("error.cannot pay creation fee", "&cInsufficient funds to pay the creation fee");
@@ -41,6 +44,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
 	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
+	public static TranslationEntry MARKET_ITEM_ADDED_TO_CATEGORY = create("info.added item to category", "&fx&a%item_quantity% &f%item_name% &ewas added to &b%category_display_name%");
 
 	public static TranslationEntry OFFER_RECEIVED = create("info.offer.received", "&b%sender_name% &ehas sent you an offer on an item!");
 	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name%");
@@ -266,6 +270,21 @@ public final class Translations extends TranslationManager {
 			"&7Used to add a new item",
 			"&a&lClick &7to add item to category"
 	);
+
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_NAME_MOBILE = create("gui.market overview.items.new item mobile.name", "<GRADIENT:65B1B4>&LNew Item</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_LORE_MOBILE = create("gui.market overview.items.new item mobile.lore",
+			"&7To create a new item on mobile.",
+			"",
+			"&f/&emarkets add &b%category_id% &a<price>",
+			"&7Additionally, you can add &e-nooffers &7and/or &e-wholesale &7after price",
+			"",
+			"&7Example&f: &e/markets add %category_id% 25",
+			"&7Example&f: &e/markets add %category_id% 95 -nooffers",
+			"&7Example&f: &e/markets add %category_id% 500 -wholesale",
+			"&7Example&f: &e/markets add %category_id% 35 -wholesale -nooffers",
+			""
+	);
+
 
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.unStore category.name", "&c&lDelete Category");
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.unStore category.lore",

@@ -160,7 +160,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 					return;
 				}
 
-				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(), created -> {
+				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(),false, created -> {
 					if (created) {
 						setItem(1, 4, CompMaterial.AIR.parseItem());
 						click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));

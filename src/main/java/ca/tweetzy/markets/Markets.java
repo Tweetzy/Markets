@@ -71,7 +71,8 @@ public final class Markets extends FlightPlugin {
 				new _12_BankEntryMigration(),
 				new _13_MarketReviewMigration(),
 				new _14_MarketRequestMigration(),
-				new _15_TransactionsMigration()
+				new _15_TransactionsMigration(),
+				new _16_InfiniteItemsMigration()
 		);
 
 		// run migrations for tables
@@ -98,6 +99,7 @@ public final class Markets extends FlightPlugin {
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
+				new CommandAdd(),
 				new CommandBank(),
 				new CommandPayments(),
 				new CommandOffers(),
