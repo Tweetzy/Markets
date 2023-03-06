@@ -215,7 +215,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		final Player player = click.player;
 
 		final MarketItem locate = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
-		if (locate == null) {
+		if (locate == null || locate.getStock() != marketItem.getStock()) {
 			reopen(click);
 			return;
 		}
@@ -246,32 +246,32 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 			case RIGHT -> click.manager.showGUI(click.player, new MarketItemEditGUI(this.player, this.market, this.category, marketItem));
 
-			case DROP -> marketItem.unStore(result -> {
-				if (result != SynchronizeResult.SUCCESS)
-					return;
+			case DROP -> {
+//				final MarketItem relocatedItem = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
 
-				// close guis of other users
-				marketItem.getViewingPlayers().forEach(viewingUser -> {
-					click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category));
+				marketItem.unStore(result -> {
+					if (result != SynchronizeResult.SUCCESS)
+						return;
+
+					// close guis of other users
+					marketItem.getViewingPlayers().forEach(viewingUser -> {
+						click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category));
+					});
+
+					// give user the item or drop
+					giveBackMarketItem(marketItem);
+					reopen(click);
 				});
-
-				// give user the item or drop
-				giveBackMarketItem(marketItem);
-				reopen(click);
-			});
+			}
 		}
 	}
 
 	private void giveBackMarketItem(@NonNull final MarketItem marketItem) {
 		final ItemStack item = marketItem.getItem().clone();
+		item.setAmount(1);
 
-		if (marketItem.getStock() <= item.getMaxStackSize())
+		for (int i = 0; i < marketItem.getStock(); i++)
 			PlayerUtil.giveItem(this.player, item);
-		else {
-			item.setAmount(1);
-			for (int i = 0; i < marketItem.getStock(); i++)
-				PlayerUtil.giveItem(this.player, item);
-		}
 	}
 
 	private void reopen(@NonNull GuiClickEvent click) {
