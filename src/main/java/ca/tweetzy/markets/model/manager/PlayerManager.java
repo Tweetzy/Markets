@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 
 	private final Pattern maximumAllowedItemsPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
-	private final Pattern maximumAllowedCategoriesPattern = Pattern.compile("markets\\.maxllowedcategories\\.(\\d+)");
-	private final Pattern maximumAllowedRequestsPattern = Pattern.compile("markets\\.maxllowedrequests\\.(\\d+)");
+	private final Pattern maximumAllowedCategoriesPattern = Pattern.compile("markets\\.maxallowedcategories\\.(\\d+)");
+	private final Pattern maximumAllowedRequestsPattern = Pattern.compile("markets\\.maxallowedrequests\\.(\\d+)");
 
 	public enum MarketLimitPermission {
 		ITEMS,
@@ -96,7 +96,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			return 0;
 		}).max(Integer::compareTo).orElse(0);
 
-		if (player.hasPermission("markets.maxllowedcategories.*")) {
+		if (player.hasPermission("markets.maxallowedcategories.*")) {
 			maxAllowedCategories = Integer.MAX_VALUE;
 		}
 
@@ -127,7 +127,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			return 0;
 		}).max(Integer::compareTo).orElse(0);
 
-		if (player.hasPermission("markets.maxllowedrequests.*")) {
+		if (player.hasPermission("markets.maxallowedrequests.*")) {
 			maxAllowedRequests = Integer.MAX_VALUE;
 		}
 
