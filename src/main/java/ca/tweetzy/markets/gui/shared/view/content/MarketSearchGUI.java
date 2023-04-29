@@ -14,6 +14,7 @@ import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.checkout.MarketItemPurchaseGUI;
 import ca.tweetzy.markets.gui.shared.checkout.OfferCreateGUI;
 import ca.tweetzy.markets.impl.MarketOffer;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -29,6 +30,7 @@ public final class MarketSearchGUI extends MarketsPagedGUI<MarketItem> {
 	public MarketSearchGUI(Gui parent, @NonNull Player player, @NonNull String keywords) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_SEARCH_TITLE, "search_keywords", keywords), 6, Markets.getMarketManager().getSearchResults(player, keywords));
 		this.keywords = keywords;
+		setDefaultItem(QuickItem.bg(Settings.GUI_SEARCH_BACKGROUND.getItemStack()));
 		draw();
 	}
 

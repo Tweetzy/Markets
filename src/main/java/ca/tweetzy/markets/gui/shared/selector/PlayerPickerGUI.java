@@ -6,6 +6,7 @@ import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ public final class PlayerPickerGUI extends MarketsPagedGUI<Player> {
 		this.player = player;
 		this.selectedPlayer = selectedPlayer;
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_PLAYER_PICKER_BACKGROUND.getItemStack()));
 		draw();
 	}
 

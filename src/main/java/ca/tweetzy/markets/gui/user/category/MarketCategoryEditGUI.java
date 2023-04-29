@@ -40,7 +40,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		this.market = market;
 		this.category = category;
 		setAcceptsItems(true);
-
+		setDefaultItem(QuickItem.bg(Settings.GUI_MARKET_CATEGORY_EDIT_BACKGROUND.getItemStack()));
 		draw();
 	}
 

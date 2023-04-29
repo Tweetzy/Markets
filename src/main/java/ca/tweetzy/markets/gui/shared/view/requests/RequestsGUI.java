@@ -33,6 +33,7 @@ public final class RequestsGUI extends MarketsPagedGUI<Request> {
 	public RequestsGUI(Gui parent, @NonNull Player player, final boolean viewOwnRequests) {
 		super(parent, player, TranslationManager.string(player, viewOwnRequests ? Translations.GUI_REQUEST_TITLE_YOURS : Translations.GUI_REQUEST_TITLE_ALL), 6, viewOwnRequests ? Markets.getRequestManager().getRequestsBy(player) : Markets.getRequestManager().getRequestsExclude(player));
 		this.viewOwnRequests = viewOwnRequests;
+		setDefaultItem(QuickItem.bg(Settings.GUI_REQUEST_BACKGROUND.getItemStack()));
 		draw();
 	}
 

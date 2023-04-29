@@ -38,7 +38,7 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 
 		setOnClose(open -> this.marketItem.getViewingPlayers().add(player));
 		setOnClose(close -> this.marketItem.getViewingPlayers().remove(player));
-
+		setDefaultItem(QuickItem.bg(Settings.GUI_OFFER_CREATE_BACKGROUND.getItemStack()));
 		draw();
 	}
 

@@ -34,6 +34,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 		setOnClose(open -> this.marketItem.getViewingPlayers().add(player));
 		setOnClose(close -> this.marketItem.getViewingPlayers().remove(player));
+		setDefaultItem(QuickItem.bg(Settings.GUI_PURCHASE_ITEM_BACKGROUND.getItemStack()));
 		draw();
 	}
 

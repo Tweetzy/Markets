@@ -64,7 +64,4 @@ public abstract class MarketsPagedGUI<T> extends PagedGUI<T> {
 				.make();
 	}
 
-	protected int getRows() {
-		return this.rows;
-	}
 }

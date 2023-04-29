@@ -66,8 +66,4 @@ public abstract class MarketsBaseGUI extends BaseGUI {
 				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make();
 	}
-
-	protected int getRows() {
-		return this.rows;
-	}
 }

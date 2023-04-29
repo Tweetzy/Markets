@@ -10,6 +10,7 @@ import ca.tweetzy.flight.utils.TimeUtil;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ public final class MarketRatingsViewGUI extends MarketsPagedGUI<Rating> {
 
 	public MarketRatingsViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_RATINGS_TITLE, "market_display_name", market.getDisplayName()), 6, market.getRatings());
+		setDefaultItem(QuickItem.bg(Settings.GUI_RATINGS_BACKGROUND.getItemStack()));
 		draw();
 	}
 

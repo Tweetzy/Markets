@@ -26,6 +26,7 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 		this.parent = parent;
 		this.market = market;
 		this.rating = rating;
+		setDefaultItem(QuickItem.bg(Settings.GUI_NEW_RATING_BACKGROUND.getItemStack()));
 		draw();
 	}
 

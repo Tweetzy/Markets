@@ -10,6 +10,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.MarketUser;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	public UserProfileGUI(Gui parent, @NonNull Player player, @NonNull final OfflinePlayer profileUser) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_USER_PROFILE_TITLE, "player_name", profileUser.getName()), 6, Markets.getRatingManager().getRatingsByOrFor(profileUser));
 		this.profileUser = profileUser;
+		setDefaultItem(QuickItem.bg(Settings.GUI_USER_PROFILE_BACKGROUND.getItemStack()));
 		draw();
 	}
 

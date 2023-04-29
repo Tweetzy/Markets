@@ -37,6 +37,7 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 
 		setAcceptsItems(true);
 		setOnClose(close -> this.market.sync(null));
+		setDefaultItem(QuickItem.bg(Settings.GUI_LAYOUT_EDITOR_BACKGROUND.getItemStack()));
 		draw();
 	}
 
