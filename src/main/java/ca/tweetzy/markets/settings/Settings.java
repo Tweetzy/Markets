@@ -3,13 +3,13 @@ package ca.tweetzy.markets.settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.FlightSettings;
-import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.markets.Markets;
 
 public final class Settings extends FlightSettings {
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
+	public static ConfigEntry MAIN_COMMAND_REQUIRES_PERM = create("settings.main command requires permission", false).withComment("If true, players will need the permission: 'markets.command' to use /markets");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_REQUESTS = create("settings.max allowed requests", 64).withComment("The maximum # of requests a player can make without further permission");
