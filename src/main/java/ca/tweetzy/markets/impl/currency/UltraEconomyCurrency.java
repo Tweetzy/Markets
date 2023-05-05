@@ -13,11 +13,11 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 
 	public UltraEconomyCurrency(String currencyName) {
 		super("UltraEconomy", currencyName, "", CompMaterial.PAPER.parseItem());
+
 		this.currency = UltraEconomy.getAPI().getCurrencies().name(currencyName).orElse(null);
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
-//			setIcon(this.currency.getIcon().getAsItemStack().orElse(CompMaterial.PAPER.parseItem()));
 		}
 	}
 

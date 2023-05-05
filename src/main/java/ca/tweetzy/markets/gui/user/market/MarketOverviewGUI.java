@@ -30,6 +30,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 		super(new MarketsMainGUI(player), player, TranslationManager.string(player, Translations.GUI_MARKET_OVERVIEW_TITLE), 6, market.getCategories());
 		this.player = player;
 		this.market = market;
+		setDefaultItem(QuickItem.bg(Settings.GUI_MARKET_OVERVIEW_BACKGROUND.getItemStack()));
 
 		draw();
 	}

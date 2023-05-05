@@ -63,4 +63,5 @@ public abstract class MarketsPagedGUI<T> extends PagedGUI<T> {
 				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make();
 	}
+
 }

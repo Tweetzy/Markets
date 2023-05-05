@@ -9,6 +9,7 @@ public final class Settings extends FlightSettings {
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
+	public static ConfigEntry MAIN_COMMAND_REQUIRES_PERM = create("settings.main command requires permission", false).withComment("If true, players will need the permission: 'markets.command' to use /markets");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_REQUESTS = create("settings.max allowed requests", 64).withComment("The maximum # of requests a player can make without further permission");
@@ -47,7 +48,16 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_SHARED_ITEMS_PREVIOUS_BUTTON = create("gui.shared buttons.previous button.item", CompMaterial.ARROW.name());
 	public static ConfigEntry GUI_SHARED_ITEMS_NEXT_BUTTON = create("gui.shared buttons.next button.item", CompMaterial.ARROW.name());
 
+	public static ConfigEntry GUI_USER_PROFILE_BACKGROUND = create("gui.user profile.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_OFFLINE_PAYMENTS_BACKGROUND = create("gui.offline payments.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_OFFERS_BACKGROUND = create("gui.offers.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_RATINGS_BACKGROUND = create("gui.ratings.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_SEARCH_BACKGROUND = create("gui.search.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_CURRENCY_PICKER_BACKGROUND = create("gui.currency picker.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_PLAYER_PICKER_BACKGROUND = create("gui.player picker.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 
+
+	public static ConfigEntry GUI_MAIN_VIEW_BACKGROUND = create("gui.main view.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS = create("gui.main view.items.global.item", "https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS = create("gui.main view.items.payments.item", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_REQUESTS = create("gui.main view.items.requests.item", CompMaterial.PAPER.name());
@@ -55,19 +65,21 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_OFFERS = create("gui.main view.items.offers.item", CompMaterial.CREEPER_BANNER_PATTERN.name());
 
 
+	public static ConfigEntry GUI_MARKET_OVERVIEW_BACKGROUND = create("gui.market overview.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM = create("gui.market overview.items.display name.item", CompMaterial.NAME_TAG.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM = create("gui.market overview.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM = create("gui.market overview.items.new category.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM = create("gui.market overview.items.unStore market.item", CompMaterial.LAVA_BUCKET.name());
+
+	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_BACKGROUND = create("gui.market category edit.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM = create("gui.market category edit.items.display name.item", CompMaterial.NAME_TAG.name());
-
-
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_ITEM = create("gui.market category edit.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_SETTINGS_ITEM = create("gui.market category edit.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_NEW_ITEM_ITEM = create("gui.market overview.items.new item.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_ITEM = create("gui.market category edit.items.unStore category.item", CompMaterial.LAVA_BUCKET.name());
 
+	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_BACKGROUND = create("gui.category add item.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_ITEM = create("gui.category add item.items.new item.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CURRENCY_ITEM = create("gui.category add item.items.currency.item", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM = create("gui.category add item.items.offers.item", CompMaterial.FLOWER_BANNER_PATTERN.name());
@@ -75,55 +87,65 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM = create("gui.category add item.items.price for all.item", CompMaterial.RED_SHULKER_BOX.name());
 
 
+	public static ConfigEntry GUI_MARKET_SETTINGS_BACKGROUND = create("gui.market settings.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_OPEN_ITEM = create("gui.market settings.items.open.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_CLOSE_ITEM = create("gui.market settings.items.closed.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
-
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_CLOSE_WHEN_OUT_OF_STOCK_ENABLED_ITEM = create("gui.market settings.items.close when out of stock.enabled.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_CLOSE_WHEN_OUT_OF_STOCK_DISABLED_ITEM = create("gui.market settings.items.close when out of stock.disabled.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_BANNED_USERS_ITEM = create("gui.market settings.items.banned users.item", CompMaterial.SHIELD.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_HOME_LAYOUT_ITEM = create("gui.market settings.items.home layout.item", CompMaterial.PINK_BED.name());
 	public static ConfigEntry GUI_MARKET_SETTINGS_ITEMS_CATEGORY_LAYOUT_ITEM = create("gui.market settings.items.category layout.item.item", CompMaterial.CHEST.name());
+	public static ConfigEntry GUI_MARKET_BANNED_USERS_BACKGROUND = create("gui.market banned users.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN = create("gui.market banned users.items.new ban.item", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_BACKGROUND = create("gui.layout control picker.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_EXIT = create("gui.layout control picker.items.exit.item", CompMaterial.BARRIER.name());
 	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_PREV_PAGE = create("gui.layout control picker.items.prev page.item", CompMaterial.ARROW.name());
 	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_NEXT_PAGE = create("gui.layout control picker.items.next page.item", CompMaterial.ARROW.name());
 	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_SEARCH = create("gui.layout control picker.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_LAYOUT_CONTROL_PICKER_ITEMS_REVIEW = create("gui.layout control picker.items.review.item", CompMaterial.NETHER_STAR.name());
 
+	public static ConfigEntry GUI_LAYOUT_EDITOR_BACKGROUND = create("gui.layout editor.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_LAYOUT_EDITOR_ITEMS_REVIEW = create("gui.layout editor.items.review.item", CompMaterial.NETHER_STAR.name());
 	public static ConfigEntry GUI_LAYOUT_EDITOR_ITEMS_SEARCH = create("gui.layout editor.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 
 	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_SEARCH = create("gui.market view.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_MARKET_VIEW_ITEMS_REVIEW = create("gui.market view.items.reviews.item", CompMaterial.NETHER_STAR.name());
 
+	public static ConfigEntry GUI_PURCHASE_ITEM_BACKGROUND = create("gui.purchase item.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_BUY = create("gui.purchase item.items.buy.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_INCREMENT = create("gui.purchase item.items.increment.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_DECREMENT = create("gui.purchase item.items.decrement.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_PURCHASE_ITEM_ITEMS_PRICE_BREAKDOWN = create("gui.purchase item.items.price breakdown.item", CompMaterial.PAPER.name());
 
+	public static ConfigEntry GUI_OFFER_CREATE_BACKGROUND = create("gui.offer creation.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CREATE_OFFER = create("gui.offer creation.items.create offer.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN = create("gui.offer creation.items.breakdown.item", CompMaterial.PAPER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency.item", CompMaterial.GOLD_INGOT.name());
+	public static ConfigEntry GUI_BANK_BACKGROUND = create("gui.bank.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add.item", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_EDIT_ITEM_BACKGROUND = create("gui.edit market item.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM = create("gui.edit market item.items.accepting offers.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_REJECTING_OFFERS_ITEM = create("gui.edit market item.items.rejecting offers.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
-
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_IS_WHOLESALE_ITEM = create("gui.edit market item.items.wholesale enabled.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_NOT_WHOLESALE_ITEM = create("gui.edit market item.items.wholesale disabled.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_STOCK_ITEM = create("gui.edit market item.items.stock.item", CompMaterial.HOPPER.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_CURRENCY_ITEM = create("gui.edit market item.items.currency.item", CompMaterial.GOLD_INGOT.name());
 
+	public static ConfigEntry GUI_NEW_RATING_BACKGROUND = create("gui.new rating.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_CREATE_ITEM = create("gui.new rating.items.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_STAR_ITEM = create("gui.new rating.star.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_MSG_ITEM = create("gui.new rating.message.item", CompMaterial.DARK_OAK_SIGN.name());
 
+	public static ConfigEntry GUI_ALL_MARKETS_BACKGROUND = create("gui.all markets.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM = create("gui.all markets.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
+	public static ConfigEntry GUI_REQUEST_BACKGROUND = create("gui.request.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_REQUEST_ITEMS_TOGGLE_ITEM = create("gui.request.items.toggle.item", CompMaterial.LEVER.name());
 	public static ConfigEntry GUI_REQUEST_ITEMS_CREATE_ITEM = create("gui.request.items.create.item", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_CREATE_REQUEST_BACKGROUND = create("gui.create request.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_CURRENCY_ITEM = create("gui.create request.items.currency.item", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_AMOUNT_ITEM = create("gui.create request.items.amount.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_CREATE_REQUEST_ITEMS_PRICE_ITEM = create("gui.create request.items.price.item", CompMaterial.SUNFLOWER.name());

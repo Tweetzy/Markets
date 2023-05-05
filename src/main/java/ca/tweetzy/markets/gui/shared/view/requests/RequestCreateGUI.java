@@ -32,6 +32,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 		this.request = request;
 
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_CREATE_REQUEST_BACKGROUND.getItemStack()));
 		draw();
 	}
 

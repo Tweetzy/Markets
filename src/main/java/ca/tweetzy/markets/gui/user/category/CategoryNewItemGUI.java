@@ -46,6 +46,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 			if (placedItem != null) PlayerUtil.giveItem(close.player, placedItem);
 		});
 
+		setDefaultItem(QuickItem.bg(Settings.GUI_CATEGORY_ADD_ITEM_BACKGROUND.getItemStack()));
 		draw();
 	}
 

@@ -29,6 +29,8 @@ public final class MarketBannedUsersGUI extends MarketsPagedGUI<UUID> {
 		super(new MarketSettingsGUI(player, market), player, TranslationManager.string(player, Translations.GUI_MARKET_BANNED_USERS_TITLE), 6, market.getBannedUsers());
 		this.player = player;
 		this.market = market;
+		setDefaultItem(QuickItem.bg(Settings.GUI_MARKET_BANNED_USERS_BACKGROUND.getItemStack()));
+
 		draw();
 	}
 

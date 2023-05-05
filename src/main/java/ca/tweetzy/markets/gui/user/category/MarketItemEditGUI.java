@@ -28,6 +28,7 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 		this.marketItem = marketItem;
 
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_EDIT_ITEM_BACKGROUND.getItemStack()));
 		draw();
 	}
 

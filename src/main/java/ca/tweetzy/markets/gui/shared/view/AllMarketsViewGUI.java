@@ -27,6 +27,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	public AllMarketsViewGUI(Gui parent, @NonNull Player player) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_ALL_MARKETS_TITLE), 6, Markets.getMarketManager().getOpenMarketsExclusive(player));
+		setDefaultItem(QuickItem.bg(Settings.GUI_ALL_MARKETS_BACKGROUND.getItemStack()));
 		draw();
 	}
 

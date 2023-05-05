@@ -10,6 +10,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.Payment;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ public final class OfflinePaymentsGUI extends MarketsPagedGUI<Payment> {
 	public OfflinePaymentsGUI(Gui parent, @NonNull final Player player) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_OFFLINE_PAYMENTS_TITLE), 6, Markets.getOfflineItemPaymentManager().getPaymentsFor(player.getUniqueId()));
 		this.player = player;
+		setDefaultItem(QuickItem.bg(Settings.GUI_OFFLINE_PAYMENTS_BACKGROUND.getItemStack()));
 		draw();
 	}
 

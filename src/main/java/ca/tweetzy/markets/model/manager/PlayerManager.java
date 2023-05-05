@@ -5,6 +5,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.KeyValueManager;
 import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.core.MarketUser;
 import ca.tweetzy.markets.impl.MarketPlayer;
 import ca.tweetzy.markets.settings.Settings;
@@ -20,8 +21,8 @@ import java.util.regex.Pattern;
 public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 
 	private final Pattern maximumAllowedItemsPattern = Pattern.compile("markets\\.maxalloweditems\\.(\\d+)");
-	private final Pattern maximumAllowedCategoriesPattern = Pattern.compile("markets\\.maxllowedcategories\\.(\\d+)");
-	private final Pattern maximumAllowedRequestsPattern = Pattern.compile("markets\\.maxllowedrequests\\.(\\d+)");
+	private final Pattern maximumAllowedCategoriesPattern = Pattern.compile("markets\\.maxallowedcategories\\.(\\d+)");
+	private final Pattern maximumAllowedRequestsPattern = Pattern.compile("markets\\.maxallowedrequests\\.(\\d+)");
 
 	public enum MarketLimitPermission {
 		ITEMS,
@@ -50,7 +51,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 	}
 
 	public int getMaxAllowedMarketItems(@NonNull final Player player) {
-		int maxAllowedItems = Settings.DEFAULT_MAX_ALLOWED_MARKET_ITEMS.getIntOr(64);
+		int maxAllowedItems = Settings.DEFAULT_MAX_ALLOWED_MARKET_ITEMS.getInt();
 		int max = player.getEffectivePermissions().stream().map(i -> {
 			final Matcher matcher = maximumAllowedItemsPattern.matcher(i.getPermission());
 			if (matcher.matches()) {
@@ -77,7 +78,12 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		if (playerMarket == null)
 			return false;
 
-		return playerMarket.getCategories().stream().map(Category::getItems).count() > maxAllowedItems;
+		int categoryItemTotal = 0;
+		for (List<MarketItem> marketItems : playerMarket.getCategories().stream().map(Category::getItems).toList()) {
+			categoryItemTotal += marketItems.size();
+		}
+
+		return categoryItemTotal >= maxAllowedItems;
 	}
 
 	public int getMaxAllowedMarketCategories(@NonNull final Player player) {
@@ -90,7 +96,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			return 0;
 		}).max(Integer::compareTo).orElse(0);
 
-		if (player.hasPermission("markets.maxllowedcategories.*")) {
+		if (player.hasPermission("markets.maxallowedcategories.*")) {
 			maxAllowedCategories = Integer.MAX_VALUE;
 		}
 
@@ -108,7 +114,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 		if (playerMarket == null)
 			return false;
 
-		return playerMarket.getCategories().size() > maxAllowedCategories;
+		return playerMarket.getCategories().size() >= maxAllowedCategories;
 	}
 
 	public int getMaxAllowedRequests(@NonNull final Player player) {
@@ -121,7 +127,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 			return 0;
 		}).max(Integer::compareTo).orElse(0);
 
-		if (player.hasPermission("markets.maxllowedrequests.*")) {
+		if (player.hasPermission("markets.maxallowedrequests.*")) {
 			maxAllowedRequests = Integer.MAX_VALUE;
 		}
 
@@ -134,7 +140,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 
 	public boolean isAtRequestLimit(@NonNull final Player player) {
 		final int maxAllowedRequests = getMaxAllowedRequests(player);
-		return Markets.getRequestManager().getRequestsBy(player.getUniqueId()).size() > maxAllowedRequests;
+		return Markets.getRequestManager().getRequestsBy(player.getUniqueId()).size() >= maxAllowedRequests;
 	}
 
 

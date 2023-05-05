@@ -13,6 +13,7 @@ import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_OFFERS_TITLE), 6, Markets.getOfferManager().getOffersSentTo(player.getUniqueId()));
 		this.player = player;
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_OFFERS_BACKGROUND.getItemStack()));
 		draw();
 	}
 

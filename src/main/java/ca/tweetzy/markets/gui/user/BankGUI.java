@@ -32,6 +32,8 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_BANK_TITLE), 6, Markets.getBankManager().getEntriesByPlayer(player.getUniqueId()));
 		this.player = player;
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_BANK_BACKGROUND.getItemStack()));
+
 		draw();
 	}
 

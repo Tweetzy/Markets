@@ -27,6 +27,8 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 		this.player = player;
 		this.market = market;
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_MARKET_SETTINGS_BACKGROUND.getItemStack()));
+
 		draw();
 	}
 

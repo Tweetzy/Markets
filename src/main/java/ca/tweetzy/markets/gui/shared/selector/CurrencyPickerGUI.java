@@ -35,6 +35,7 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 		this.player = player;
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_CURRENCY_PICKER_BACKGROUND.getItemStack()));
 		draw();
 	}
 

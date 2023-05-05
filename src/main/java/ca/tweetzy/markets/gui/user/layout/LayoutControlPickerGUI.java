@@ -26,6 +26,7 @@ public final class LayoutControlPickerGUI extends MarketsPagedGUI<LayoutControl>
 		super(parent, player, TranslationManager.string(player, Translations.GUI_LAYOUT_CONTROL_PICKER_TITLE), 4, Arrays.asList(LayoutControl.values()));
 		this.player = player;
 		this.selectedControl = selectedControl;
+		setDefaultItem(QuickItem.bg(Settings.GUI_LAYOUT_CONTROL_PICKER_BACKGROUND.getItemStack()));
 		draw();
 	}
 

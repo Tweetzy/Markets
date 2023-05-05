@@ -23,8 +23,9 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 	private final Player player;
 
 	public MarketsMainGUI(@NonNull final Player player) {
-		super(null, player, TranslationManager.string(player, Translations.GUI_MAIN_VIEW_TITLE), Settings.ALLOW_REQUESTS.getBoolean() ? 6 :5);
+		super(null, player, TranslationManager.string(player, Translations.GUI_MAIN_VIEW_TITLE), Settings.ALLOW_REQUESTS.getBoolean() ? 6 : 5);
 		this.player = player;
+		setDefaultItem(QuickItem.bg(Settings.GUI_MAIN_VIEW_BACKGROUND.getItemStack()));
 		draw();
 	}
 
@@ -37,10 +38,10 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 				1,
 				Settings.ALLOW_REQUESTS.getBoolean() ? 4 : 6,
 				QuickItem
-				.of(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(this, click.player)));
+						.of(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS.getItemStack())
+						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
+						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+						.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(this, click.player)));
 
 		// your market
 		setButton(Settings.ALLOW_REQUESTS.getBoolean() ? 2 : 1, 2, QuickItem
