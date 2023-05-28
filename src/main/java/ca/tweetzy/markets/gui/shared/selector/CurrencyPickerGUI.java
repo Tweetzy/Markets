@@ -42,34 +42,35 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 	@Override
 	protected void drawAdditional() {
 		// custom item
-		setButton(Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 1 : getRows() - 1, 4, QuickItem
-				.of(CompMaterial.HOPPER)
-				.name(TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME))
-				.lore(Replacer.replaceVariables(
-						TranslationManager.list(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_LORE),
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
-				)).make(), click -> {
+		if (Settings.ALLOW_BANK.getBoolean())
+			setButton(Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 1 : getRows() - 1, 4, QuickItem
+					.of(CompMaterial.HOPPER)
+					.name(TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_NAME))
+					.lore(Replacer.replaceVariables(
+							TranslationManager.list(player, Translations.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_CURRENCY_LORE),
+							"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+							"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+					)).make(), click -> {
 
-			if (click.clickType == ClickType.RIGHT) {
-				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
-					if (selected != null) {
-						this.selectedCurrency.accept(new ItemCurrency(), selected.parseItem());
-					}
-				}));
-			}
-
-			if (click.clickType == ClickType.LEFT) {
-				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
-
-					final ItemStack currency = cursor.clone();
-					currency.setAmount(1);
-
-					this.selectedCurrency.accept(new ItemCurrency(), currency);
+				if (click.clickType == ClickType.RIGHT) {
+					click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
+						if (selected != null) {
+							this.selectedCurrency.accept(new ItemCurrency(), selected.parseItem());
+						}
+					}));
 				}
-			}
-		});
+
+				if (click.clickType == ClickType.LEFT) {
+					final ItemStack cursor = click.cursor;
+					if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+
+						final ItemStack currency = cursor.clone();
+						currency.setAmount(1);
+
+						this.selectedCurrency.accept(new ItemCurrency(), currency);
+					}
+				}
+			});
 	}
 
 	@Override
