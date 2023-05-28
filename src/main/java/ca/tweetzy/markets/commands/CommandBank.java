@@ -5,6 +5,7 @@ import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.user.BankGUI;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,6 +19,8 @@ public final class CommandBank extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
+		if (!Settings.ALLOW_BANK.getBoolean()) return ReturnType.FAIL;
+
 		if (sender instanceof final Player player) {
 			Markets.getGuiManager().showGUI(player, new BankGUI(null, player));
 		}
