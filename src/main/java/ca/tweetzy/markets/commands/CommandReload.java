@@ -3,27 +3,27 @@ package ca.tweetzy.markets.commands;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public final class CommandBank extends Command {
+public final class CommandReload extends Command {
 
-	public CommandBank() {
-		super(AllowedExecutor.PLAYER, "bank");
+	public CommandReload() {
+		super(AllowedExecutor.BOTH, "reload");
 	}
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (!Settings.ALLOW_BANK.getBoolean()) return ReturnType.FAIL;
-
-		if (sender instanceof final Player player) {
-			Markets.getGuiManager().showGUI(player, new BankGUI(null, player));
-		}
+		Settings.init();
+		Translations.init();
+		Common.setPrefix(Settings.PREFIX.getStringOr("&8[&EMarkets&8]"));
 		return ReturnType.SUCCESS;
 	}
 
@@ -34,16 +34,16 @@ public final class CommandBank extends Command {
 
 	@Override
 	public String getPermissionNode() {
-		return "markets.command.bank";
+		return "markets.command.reload";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "bank [add]";
+		return "reload";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Opens your bank";
+		return "Reloads all the configuration files";
 	}
 }

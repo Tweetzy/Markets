@@ -105,7 +105,8 @@ public final class Markets extends FlightPlugin {
 				new CommandOffers(),
 				new CommandView(),
 				new CommandSearch(),
-				new CommandAdmin()
+				new CommandAdmin(),
+				new CommandReload()
 		);
 	}
 

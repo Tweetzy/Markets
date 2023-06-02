@@ -83,11 +83,12 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 				.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
 
 		// bank
-		setButton(getRows() - 2, 4, QuickItem
-				.of(Settings.GUI_MAIN_VIEW_ITEMS_BANK.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> click.manager.showGUI(click.player, new BankGUI(this, click.player)));
+		if (Settings.ALLOW_BANK.getBoolean())
+			setButton(getRows() - 2, 4, QuickItem
+					.of(Settings.GUI_MAIN_VIEW_ITEMS_BANK.getItemStack())
+					.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+					.make(), click -> click.manager.showGUI(click.player, new BankGUI(this, click.player)));
 
 		// offers
 		setButton(getRows() - 2, 7, QuickItem
