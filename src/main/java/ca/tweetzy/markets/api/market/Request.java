@@ -45,7 +45,7 @@ public interface Request extends Identifiable, Trackable, Storeable<Request> { /
 
 	default String getCurrencyDisplayName() {
 		if (isCurrencyOfItem())
-			return ItemUtil.getStackName(this.getCurrencyItem());
+			return ItemUtil.getItemName(this.getCurrencyItem());
 
 		final String[] split = getCurrency().split("/");
 
