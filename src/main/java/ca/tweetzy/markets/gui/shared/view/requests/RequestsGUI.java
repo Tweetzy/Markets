@@ -140,7 +140,7 @@ public final class RequestsGUI extends MarketsPagedGUI<Request> {
 				});
 
 		if (requestedOwner.isOnline()) {
-			Common.tell(requestedOwner.getPlayer(), TranslationManager.string(requestedOwner.getPlayer(), Translations.REQUEST_FULFILLED, "fulfill_name", fulfiller.getName(), "request_item_name", ItemUtil.getStackName(request.getRequestItem())));
+			Common.tell(requestedOwner.getPlayer(), TranslationManager.string(requestedOwner.getPlayer(), Translations.REQUEST_FULFILLED, "fulfill_name", fulfiller.getName(), "request_item_name", ItemUtil.getItemName(request.getRequestItem())));
 		}
 
 		// call transaction event

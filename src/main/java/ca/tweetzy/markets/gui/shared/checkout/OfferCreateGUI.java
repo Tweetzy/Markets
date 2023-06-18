@@ -96,7 +96,7 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 						"offer_amount", this.offer.getOfferedAmount(),
 						"offer_currency", this.offer.getCurrencyDisplayName(),
 						"requested_amount", this.offer.getRequestAmount(),
-						"market_item_name", ItemUtil.getStackName(this.marketItem.getItem())))
+						"market_item_name", ItemUtil.getItemName(this.marketItem.getItem())))
 				.make()
 		);
 

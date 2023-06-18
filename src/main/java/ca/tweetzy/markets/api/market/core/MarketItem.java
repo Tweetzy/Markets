@@ -66,7 +66,7 @@ public interface MarketItem extends Identifiable, Synchronize, UserViewable, Sto
 
 	default String getCurrencyDisplayName() {
 		if (isCurrencyOfItem())
-			return ItemUtil.getStackName(this.getCurrencyItem());
+			return ItemUtil.getItemName(this.getCurrencyItem());
 
 		final String[] split = getCurrency().split("/");
 

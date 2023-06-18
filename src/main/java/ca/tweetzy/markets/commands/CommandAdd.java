@@ -85,7 +85,7 @@ public final class CommandAdd extends Command {
 				if (created) {
 					player.getInventory().setItemInMainHand(CompMaterial.AIR.parseItem());
 
-					tell(player, TranslationManager.string(player, Translations.MARKET_ITEM_ADDED_TO_CATEGORY, "item_quantity", marketItem.getStock(), "item_name", ItemUtil.getStackName(toSell), "category_display_name", category.getDisplayName()));
+					tell(player, TranslationManager.string(player, Translations.MARKET_ITEM_ADDED_TO_CATEGORY, "item_quantity", marketItem.getStock(), "item_name", ItemUtil.getItemName(toSell), "category_display_name", category.getDisplayName()));
 
 					if (Settings.OPEN_CATEGORY_SETTINGS_AFTER_ITEM_ADD.getBoolean())
 						Markets.getGuiManager().showGUI(player, new MarketCategoryEditGUI(player, market, category));

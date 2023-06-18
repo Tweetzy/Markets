@@ -79,11 +79,11 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 				if (offerSender.isOnline())
 					switch (result) {
 						case SUCCESS ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
 						case FAILED_NO_MONEY ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NO_MONEY, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NO_MONEY, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
 						case FAILED_OUT_OF_STOCK ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
 						case NO_LONGER_AVAILABLE ->
 								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_AVAILABLE, "owner_name", click.player.getName()));
 					}
@@ -101,11 +101,11 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 				if (offerSender.isOnline())
 					switch (reason) {
 						case NOT_ACCEPTED ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
 						case ITEM_NO_LONGER_AVAILABLE ->
 								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_AVAILABLE, "owner_name", click.player.getName()));
 						case INSUFFICIENT_STOCK ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getStackName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
 					}
 
 				click.manager.showGUI(click.player, new OffersGUI(this.parent, click.player));

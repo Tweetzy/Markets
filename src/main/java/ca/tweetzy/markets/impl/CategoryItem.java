@@ -249,18 +249,18 @@ public final class CategoryItem implements MarketItem {
 						if (seller.isOnline()) {
 							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getStackName(this.item),
+									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
 							));
 
-							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getStackName(this.item)));
+							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getItemName(this.item)));
 						}
 					});
 				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_quantity", newPurchaseAmount,
-								"item_name", ItemUtil.getStackName(this.item),
+								"item_name", ItemUtil.getItemName(this.item),
 								"buyer_name", buyer.getName()
 						));
 					}
@@ -273,7 +273,7 @@ public final class CategoryItem implements MarketItem {
 						if (seller.isOnline()) {
 							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getStackName(this.item),
+									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
 							));
 						}
@@ -282,7 +282,7 @@ public final class CategoryItem implements MarketItem {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_quantity", newPurchaseAmount,
-								"item_name", ItemUtil.getStackName(this.item),
+								"item_name", ItemUtil.getItemName(this.item),
 								"buyer_name", buyer.getName()
 						));
 					}
@@ -299,7 +299,7 @@ public final class CategoryItem implements MarketItem {
 							(int) total,
 							TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getStackName(this.item),
+									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
 							), created -> {
 								// todo maybe do something here
@@ -310,7 +310,7 @@ public final class CategoryItem implements MarketItem {
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_quantity", newPurchaseAmount,
-					"item_name", ItemUtil.getStackName(this.item),
+					"item_name", ItemUtil.getItemName(this.item),
 					"seller_name", market.getOwnerName()
 			));
 
