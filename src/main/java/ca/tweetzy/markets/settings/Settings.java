@@ -40,7 +40,6 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry INTERNAL_ADD_ITEM_DELAY = create("settings.internal.add item delay", 3).withComment("In ticks, how long should markets wait before calling the method to create an item after the button is clicked.");
 
 
-
 	/*
 	========================= GUI STUFF =========================
 	 */
@@ -59,11 +58,18 @@ public final class Settings extends FlightSettings {
 
 
 	public static ConfigEntry GUI_MAIN_VIEW_BACKGROUND = create("gui.main view.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ROWS = create("gui.main view.rows", 6);
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS = create("gui.main view.items.global.item", "https://textures.minecraft.net/texture/fc1e73023352cbc77b896fe7ea242b43143e013bec5bf314d41e5f26548fb2d2");
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_ALL_MARKETS_SLOT = create("gui.main view.items.global.slot", 13, "Set to -1 to disable icon");
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_SLOT = create("gui.main view.items.your market.slot", 20, "Set to -1 to disable icon");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS = create("gui.main view.items.payments.item", CompMaterial.GOLD_INGOT.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_PAYMENTS_SLOT = create("gui.main view.items.payments.slot", 37, "Set to -1 to disable icon");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_REQUESTS = create("gui.main view.items.requests.item", CompMaterial.PAPER.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_REQUESTS_SLOT = create("gui.main view.items.requests.slot", 24, "Set to -1 to disable icon");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_BANK = create("gui.main view.items.bank.item", CompMaterial.ENDER_CHEST.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_BANK_SLOT = create("gui.main view.items.bank.slot", 40, "Set to -1 to disable icon");
 	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_OFFERS = create("gui.main view.items.offers.item", CompMaterial.CREEPER_BANNER_PATTERN.name());
+	public static ConfigEntry GUI_MAIN_VIEW_ITEMS_OFFERS_SLOT = create("gui.main view.items.offers.slot", 43, "Set to -1 to disable icon");
 
 
 	public static ConfigEntry GUI_MARKET_OVERVIEW_BACKGROUND = create("gui.market overview.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
