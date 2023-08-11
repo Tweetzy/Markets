@@ -20,6 +20,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -270,8 +271,10 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		final ItemStack item = marketItem.getItem().clone();
 		item.setAmount(1);
 
-		for (int i = 0; i < marketItem.getStock(); i++)
-			PlayerUtil.giveItem(this.player, item);
+		Bukkit.getServer().getScheduler().runTask(Markets.getInstance(), () -> {
+			for (int i = 0; i < marketItem.getStock(); i++)
+				PlayerUtil.giveItem(this.player, item);
+		});
 	}
 
 	private void reopen(@NonNull GuiClickEvent click) {
