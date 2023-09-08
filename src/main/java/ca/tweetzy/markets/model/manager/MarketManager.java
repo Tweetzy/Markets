@@ -34,18 +34,18 @@ public final class MarketManager extends ListManager<Market> {
 
 
 		// populate items into search list
-		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getItems())));
+		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems())));
 		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final Market market, @NonNull final String keywords) {
 		final List<MarketItem> marketItems = new ArrayList<>();
-		market.getCategories().forEach(category -> marketItems.addAll(category.getItems()));
+		market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems()));
 		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<MarketItem> getSearchResults(@NonNull final Category category, @NonNull final String keywords) {
-		return category.getItems().stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
+		return category.getInStockItems().stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<Market> getOpenMarketsExclusive(@NonNull final OfflinePlayer ignoredUser) {

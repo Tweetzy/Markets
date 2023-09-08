@@ -77,4 +77,8 @@ public interface MarketItem extends Identifiable, Synchronize, UserViewable, Sto
 
 		return Settings.CURRENCY_VAULT_SYMBOL.getString();
 	}
+
+	default int getPlusOneStock() {
+		return getStock() <= 0 ? 1 : getStock();
+	}
 }

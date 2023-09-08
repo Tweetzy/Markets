@@ -78,6 +78,12 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
+			// check if they even purchased anything from that market
+			if (!Markets.getRatingManager().userMeetsReviewRequirements(this.market, click.player)) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.MUST_BUY_ITEM_TO_REVIEW));
+				return;
+			}
+
 			if (!Markets.getRatingManager().canUserRateMarket(this.market, click.player)) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_ALLOWED_TO_REVIEW));
 				return;

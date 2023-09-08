@@ -48,7 +48,7 @@ public final class MarketSearchGUI extends MarketsPagedGUI<MarketItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
-		final QuickItem item = QuickItem.of(marketItem.getItem()).amount(marketItem.getStock()).lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER));
+		final QuickItem item = QuickItem.of(marketItem.getItem()).amount(marketItem.getPlusOneStock()).lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER));
 
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
