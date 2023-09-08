@@ -31,6 +31,10 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry MIN_PURCHASES_BEFORE_REVIEW = create("settings.minimum purchases before review", 1).withComment("How many items must a player buy from a market before they can leave a review?");
 
 	/*
+	========================= BLACKLISTED ITEMS =========================
+	 */
+
+	/*
 	========================= CLICKS =========================
 	 */
 	public static ConfigEntry CLICK_LAYOUT_BG_APPLY = create("settings.clicks.layout change background", "RIGHT").withComment("https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/inventory/ClickType.html");
