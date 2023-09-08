@@ -828,6 +828,24 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void getTransactions(@NonNull final Callback<List<Transaction>> callback) {
+		final List<Transaction> transactions = new ArrayList<>();
+
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transaction")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Transaction transaction = extractTransaction(resultSet);
+					transactions.add(transaction);
+				}
+
+				callback.accept(null, transactions);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 	private Transaction extractTransaction(@NonNull final ResultSet resultSet) throws SQLException {
 		return new MarketTransaction(
 				UUID.fromString(resultSet.getString("id")),

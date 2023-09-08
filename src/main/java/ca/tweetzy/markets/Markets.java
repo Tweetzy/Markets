@@ -39,6 +39,7 @@ public final class Markets extends FlightPlugin {
 	private final RatingManager ratingManager = new RatingManager();
 	private final RequestManager requestManager = new RequestManager();
 	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
+	private final TransactionManager transactionManager = new TransactionManager();
 
 	// default vault economy
 	private Economy economy = null;
@@ -92,6 +93,7 @@ public final class Markets extends FlightPlugin {
 		this.bankManager.load();
 		this.offerManager.load();
 		this.requestManager.load();
+		this.transactionManager.load();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -150,6 +152,10 @@ public final class Markets extends FlightPlugin {
 
 	public static BankManager getBankManager() {
 		return getInstance().bankManager;
+	}
+
+	public static TransactionManager getTransactionManager() {
+		return getInstance().transactionManager;
 	}
 
 	public static OfferManager getOfferManager() {
