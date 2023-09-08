@@ -6,6 +6,7 @@ import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
 import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.units.qual.C;
 
 public final class UltraEconomyCurrency extends IconableCurrency {
 
@@ -14,7 +15,7 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 	public UltraEconomyCurrency(String currencyName) {
 		super("UltraEconomy", currencyName, "", CompMaterial.PAPER.parseItem());
 
-		this.currency = UltraEconomy.getAPI().getCurrencies().name(currencyName).orElse(null);
+		this.currency = UltraEconomy.getInstance().getCurrencies().name(currencyName).orElse(null);
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
@@ -23,31 +24,27 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 
 	@Override
 	public boolean has(OfflinePlayer player, double amount) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
-		if (account == null)
-			return false;
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		if (account == null) return false;
 
-		return account.getBalance(this.currency).getSum() >= amount;
+		return account.getBalance(this.currency).getSum()>= amount;
 	}
 
 	@Override
 	public boolean withdraw(OfflinePlayer player, double amount) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
-		if (account == null)
-			return false;
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		if (account == null) return false;
 
-		final float oldAmount = account.getBalance(this.currency).getOnBank();
-		account.getBalance(this.currency).setBank(oldAmount - (float) amount);
+		account.removeBalance(this.currency, amount);
 		return true;
 	}
 
 	@Override
 	public boolean deposit(OfflinePlayer player, double amount) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
-		if (account == null)
-			return false;
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		if (account == null) return false;
 
-		account.getBalance(this.currency).addBank((float) amount);
+		account.addBalance(this.currency, amount);
 		return true;
 	}
 }
