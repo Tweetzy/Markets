@@ -19,7 +19,7 @@ public final class UltraEconomyLoader extends CurrencyLoader {
 	public List<AbstractCurrency> getCurrencies() {
 		final List<AbstractCurrency> currencies = new ArrayList<>();
 
-		for (Currency currency : UltraEconomy.getAPI().getCurrencies()) {
+		for (Currency currency : UltraEconomy.getInstance().getCurrencies()) {
 			currencies.add(new UltraEconomyCurrency(currency.getName()));
 		}
 
