@@ -7,6 +7,7 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.settings.Settings;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -22,6 +23,11 @@ public final class RatingManager extends ListManager<Rating> {
 
 	public List<Rating> getRatingsByOrFor(@NonNull final OfflinePlayer profileUser) {
 		return getRatingsByOrFor(profileUser.getUniqueId());
+	}
+
+	public boolean userMeetsReviewRequirements(@NonNull final Market market, @NonNull final Player player) {
+		final int totalTransactionsMade = Markets.getTransactionManager().getTransactionsMadeToMarket(market.getOwnerUUID(), player.getUniqueId());
+		return totalTransactionsMade >= Settings.MIN_PURCHASES_BEFORE_REVIEW.getInt();
 	}
 
 	public boolean canUserRateMarket(@NonNull final Market market, @NonNull final Player player) {
