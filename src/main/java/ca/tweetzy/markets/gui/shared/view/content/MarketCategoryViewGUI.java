@@ -38,7 +38,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
-		), 6, category.getItems());
+		), 6, category.getInStockItems());
 
 		this.player = player;
 		this.market = market;
@@ -58,7 +58,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(MarketItem marketItem) {
-		final QuickItem item = QuickItem.of(marketItem.getItem()).amount(marketItem.getStock()).lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER));
+		final QuickItem item = QuickItem.of(marketItem.getItem()).amount(marketItem.getPlusOneStock()).lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_HEADER));
 
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),

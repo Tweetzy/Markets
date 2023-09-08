@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public interface Category extends Identifiable, UserIdentifiable, Displayable, Trackable, Synchronize, UserViewable, Storeable<Category> {
 
@@ -19,4 +20,7 @@ public interface Category extends Identifiable, UserIdentifiable, Displayable, T
 
 	void setItems(@NonNull final List<MarketItem> items);
 
+	default List<MarketItem> getInStockItems() {
+		return getItems().stream().filter(item -> item.getStock() >= 1).collect(Collectors.toList());
+	}
 }

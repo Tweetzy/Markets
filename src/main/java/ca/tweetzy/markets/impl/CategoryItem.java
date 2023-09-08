@@ -245,17 +245,13 @@ public final class CategoryItem implements MarketItem {
 						Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
 					});
 
-					unStore(result -> {
-						if (seller.isOnline()) {
-							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getItemName(this.item),
-									"buyer_name", buyer.getName()
-							));
+					this.stock = 0;
 
-							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getItemName(this.item)));
-						}
-					});
+					if (Settings.AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK.getBoolean()) {
+						unStore(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+					} else {
+						sync(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+					}
 				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
@@ -330,5 +326,17 @@ public final class CategoryItem implements MarketItem {
 		}
 
 		transactionResult.accept(TransactionResult.ERROR);
+	}
+
+	private void alertOutOfStock(final OfflinePlayer seller, @NonNull final Player buyer, final int newPurchaseAmount) {
+		if (seller.isOnline()) {
+			Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+					"purchase_quantity", newPurchaseAmount,
+					"item_name", ItemUtil.getItemName(this.item),
+					"buyer_name", buyer.getName()
+			));
+
+			Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_OUT_OF_STOCK, "item_name", ItemUtil.getItemName(this.item)));
+		}
 	}
 }
