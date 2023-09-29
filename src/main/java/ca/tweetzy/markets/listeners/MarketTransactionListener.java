@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.listeners;
 
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.event.MarketTransactionEvent;
 import ca.tweetzy.markets.api.market.Transaction;
 import ca.tweetzy.markets.impl.MarketTransaction;
@@ -30,6 +31,8 @@ public final class MarketTransactionListener implements Listener {
 		transaction.store(storeTransaction -> {
 			if (storeTransaction == null)
 				Common.log("&CSomething went wrong while trying to store transaction: &d" + transaction.getId().toString());
+			else
+				Markets.getTransactionManager().add(storeTransaction);
 		});
 	}
 }
