@@ -110,23 +110,24 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
 		});
 
-		setButton(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem
-				.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+		if (Settings.ENABLE_SEARCH_IN_MARKETS.getBoolean())
+			setButton(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem
+					.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())
+					.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
+					.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
 
-			@Override
-			public void onExit(Player player) {
-				click.manager.showGUI(click.player, MarketCategoryViewGUI.this);
-			}
+				@Override
+				public void onExit(Player player) {
+					click.manager.showGUI(click.player, MarketCategoryViewGUI.this);
+				}
 
-			@Override
-			public boolean onResult(String string) {
-				click.manager.showGUI(click.player, new MarketSearchGUI(MarketCategoryViewGUI.this, click.player, MarketCategoryViewGUI.this.category, string));
-				return true;
-			}
-		});
+				@Override
+				public boolean onResult(String string) {
+					click.manager.showGUI(click.player, new MarketSearchGUI(MarketCategoryViewGUI.this, click.player, MarketCategoryViewGUI.this.category, string));
+					return true;
+				}
+			});
 
 		setAction(getRows() - 1, 0, click -> {
 			this.category.getViewingPlayers().remove(click.player);

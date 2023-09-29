@@ -37,6 +37,9 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 		if (marketItem == null) this.marketItem = new CategoryItem(this.category.getId());
 		else this.marketItem = marketItem;
 
+		if (Settings.ITEMS_ARE_WHOLESALE_BY_DEFAULT.getBoolean())
+			this.marketItem.setPriceIsForAll(true);
+
 		// pre setup
 		setAcceptsItems(true);
 		setUnlocked(1, 4);
