@@ -29,6 +29,8 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry OPEN_CATEGORY_SETTINGS_AFTER_ITEM_ADD = create("settings.open category after item add", false).withComment("If true, when adding an item using the command, it will open the category after");
 	public static ConfigEntry AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK = create("settings.remove market item when out of stock", false).withComment("If true, then when an item's stock count hits zero, it will be removed from the market.");
 	public static ConfigEntry MIN_PURCHASES_BEFORE_REVIEW = create("settings.minimum purchases before review", 1).withComment("How many items must a player buy from a market before they can leave a review?");
+	public static ConfigEntry ENABLE_SEARCH_IN_MARKETS = create("settings.enable search in markets", true).withComment("If true, the search button will be shown in the market content view/search");
+	public static ConfigEntry ITEMS_ARE_WHOLESALE_BY_DEFAULT = create("settings.default new items to wholesale", false).withComment("If true, any new items added to a market will be set as a wholesale item.");
 
 	/*
 	========================= BLACKLISTED ITEMS =========================

@@ -68,7 +68,7 @@ public final class CommandAdd extends Command {
 
 			final double price = Double.parseDouble(args[1]);
 			final boolean noOffers = FlagExtractor.extract(args).containsKey("-nooffers");
-			final boolean wholesale = FlagExtractor.extract(args).containsKey("-wholesale");
+			final boolean wholesale = FlagExtractor.extract(args).containsKey("-wholesale") || Settings.ITEMS_ARE_WHOLESALE_BY_DEFAULT.getBoolean();
 			final boolean infinite = (player.hasPermission("markets.admin") || player.isOp()) && FlagExtractor.extract(args).containsKey("-infinite");
 
 			final MarketItem marketItem = new CategoryItem(category.getId());
