@@ -85,21 +85,23 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 	}
 
 	private void drawWholesaleButton() {
-		setButton(3, 3, QuickItem
-				.of(this.marketItem.isPriceForAll() ? Settings.GUI_EDIT_ITEM_ITEMS_IS_WHOLESALE_ITEM.getItemStack() : Settings.GUI_EDIT_ITEM_ITEMS_NOT_WHOLESALE_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_EDIT_ITEM_ITEMS_WHOLESALE_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_EDIT_ITEM_ITEMS_WHOLESALE_LORE,
-						"enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED),
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
-				))
-				.make(), click -> {
+        if (!Settings.DISABLE_WHOLESALE.getBoolean()) {
+            setButton(3, 3, QuickItem
+                .of(this.marketItem.isPriceForAll() ? Settings.GUI_EDIT_ITEM_ITEMS_IS_WHOLESALE_ITEM.getItemStack() : Settings.GUI_EDIT_ITEM_ITEMS_NOT_WHOLESALE_ITEM.getItemStack())
+                .name(TranslationManager.string(this.player, Translations.GUI_EDIT_ITEM_ITEMS_WHOLESALE_NAME))
+                .lore(TranslationManager.list(this.player, Translations.GUI_EDIT_ITEM_ITEMS_WHOLESALE_LORE,
+                    "enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED),
+                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+                ))
+                .make(), click -> {
 
-			this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
-			this.marketItem.sync(result -> {
-				if (result == SynchronizeResult.SUCCESS)
-					drawWholesaleButton();
-			});
-		});
+                this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
+                this.marketItem.sync(result -> {
+                    if (result == SynchronizeResult.SUCCESS)
+                        drawWholesaleButton();
+                });
+            });
+        }
 	}
 
 	private void drawCurrencyButton() {

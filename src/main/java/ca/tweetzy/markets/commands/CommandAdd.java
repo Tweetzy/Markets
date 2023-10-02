@@ -68,7 +68,7 @@ public final class CommandAdd extends Command {
 
 			final double price = Double.parseDouble(args[1]);
 			final boolean noOffers = FlagExtractor.extract(args).containsKey("-nooffers");
-			final boolean wholesale = FlagExtractor.extract(args).containsKey("-wholesale") || Settings.ITEMS_ARE_WHOLESALE_BY_DEFAULT.getBoolean();
+			final boolean wholesale = !Settings.DISABLE_WHOLESALE.getBoolean() && (FlagExtractor.extract(args).containsKey("-wholesale") || Settings.ITEMS_ARE_WHOLESALE_BY_DEFAULT.getBoolean());
 			final boolean infinite = (player.hasPermission("markets.admin") || player.isOp()) && FlagExtractor.extract(args).containsKey("-infinite");
 
 			final MarketItem marketItem = new CategoryItem(category.getId());
@@ -111,8 +111,13 @@ public final class CommandAdd extends Command {
 		if (args.length == 2)
 			return List.of("1.00", "5.00", "10.00", "15.00", "20.00");
 
-		if (args.length > 2)
-			return List.of("-wholesale", "-nooffers");
+		if (args.length > 2) {
+            if (Settings.DISABLE_WHOLESALE.getBoolean()) {
+                return List.of("-nooffers");
+            } else {
+                return List.of("-wholesale", "-nooffers");
+            }
+        }
 
 		return null;
 	}

@@ -201,20 +201,21 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 	}
 
 	private void drawPriceForAllButton() {
-		setButton(getRows() - 1, 6, QuickItem
-				.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
-				.hideTags(true)
-				.make(), click -> {
+        if (!Settings.DISABLE_WHOLESALE.getBoolean()) {
+            setButton(getRows() - 1, 6, QuickItem
+                .of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM.getItemStack())
+                .name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME))
+                .lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE,
+                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+                    "enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
+                .hideTags(true)
+                .make(), click -> {
 
-			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
+                if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
-			this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
-			click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
-		});
+                this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
+                click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+            });
+        }
 	}
-
 }

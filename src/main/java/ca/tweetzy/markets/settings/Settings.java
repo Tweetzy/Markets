@@ -33,6 +33,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry ITEMS_ARE_WHOLESALE_BY_DEFAULT = create("settings.default new items to wholesale", false).withComment("If true, any new items added to a market will be set as a wholesale item.");
     public static ConfigEntry DISABLE_REVIEWS = create("settings.disable reviews", false).withComment("If true, ratings/reviews will be disabled");
     public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
+    public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
 
 	/*
 	========================= BLACKLISTED ITEMS =========================
