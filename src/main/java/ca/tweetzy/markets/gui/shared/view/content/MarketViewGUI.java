@@ -58,22 +58,24 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 				))
 				.make(), click -> click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))));
 
-		setButton(this.market.getHomeLayout().getReviewButtonSlot(), QuickItem
-				.of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_VIEW_ITEMS_REVIEW_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_VIEW_ITEMS_REVIEW_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
-				))
-				.make(), click -> {
+        if (!Settings.DISABLE_REVIEWS.getBoolean()) {
+            setButton(this.market.getHomeLayout().getReviewButtonSlot(), QuickItem
+                .of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
+                .name(TranslationManager.string(this.player, Translations.GUI_MARKET_VIEW_ITEMS_REVIEW_NAME))
+                .lore(TranslationManager.list(this.player, Translations.GUI_MARKET_VIEW_ITEMS_REVIEW_LORE,
+                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+                    "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+                ))
+                .make(), click -> {
 
-			if (click.clickType == ClickType.LEFT)
-				click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
+                if (click.clickType == ClickType.LEFT)
+                    click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
 
-			if (click.clickType == ClickType.RIGHT)
-				click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
+                if (click.clickType == ClickType.RIGHT)
+                    click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
 
-		});
+            });
+        }
 
 		if (Settings.ENABLE_SEARCH_IN_MARKETS.getBoolean())
 			setButton(this.market.getHomeLayout().getSearchButtonSlot(), QuickItem
