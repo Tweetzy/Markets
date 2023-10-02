@@ -190,12 +190,14 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 	}
 
 	private void drawOffersButton() {
-		setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
-			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
+        if (!Settings.DISABLE_OFFERS.getBoolean()) {
+            setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
+                if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
-			this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
-			click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
-		});
+                this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
+                click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+            });
+        }
 	}
 
 	private void drawPriceForAllButton() {

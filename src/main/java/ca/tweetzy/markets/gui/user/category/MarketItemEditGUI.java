@@ -65,21 +65,23 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 	}
 
 	private void drawOffersButton() {
-		setButton(3, 1, QuickItem
-				.of(this.marketItem.isAcceptingOffers() ? Settings.GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM.getItemStack() : Settings.GUI_EDIT_ITEM_ITEMS_REJECTING_OFFERS_ITEM.getItemStack())
-				.name(TranslationManager.string(this.player, Translations.GUI_EDIT_ITEM_ITEMS_OFFERS_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_EDIT_ITEM_ITEMS_OFFERS_LORE,
-						"enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED),
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
-				))
-				.make(), click -> {
+        if (!Settings.DISABLE_OFFERS.getBoolean()) {
+            setButton(3, 1, QuickItem
+                .of(this.marketItem.isAcceptingOffers() ? Settings.GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM.getItemStack() : Settings.GUI_EDIT_ITEM_ITEMS_REJECTING_OFFERS_ITEM.getItemStack())
+                .name(TranslationManager.string(this.player, Translations.GUI_EDIT_ITEM_ITEMS_OFFERS_NAME))
+                .lore(TranslationManager.list(this.player, Translations.GUI_EDIT_ITEM_ITEMS_OFFERS_LORE,
+                    "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED),
+                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+                ))
+                .make(), click -> {
 
-			this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
-			this.marketItem.sync(result -> {
-				if (result == SynchronizeResult.SUCCESS)
-					drawOffersButton();
-			});
-		});
+                this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
+                this.marketItem.sync(result -> {
+                    if (result == SynchronizeResult.SUCCESS)
+                        drawOffersButton();
+                });
+            });
+        }
 	}
 
 	private void drawWholesaleButton() {
