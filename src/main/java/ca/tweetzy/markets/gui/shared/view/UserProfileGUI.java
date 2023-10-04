@@ -1,10 +1,10 @@
 package ca.tweetzy.markets.gui.shared.view;
 
-import ca.tweetzy.flight.comp.SkullUtils;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.flight.utils.TimeUtil;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.MarketUser;

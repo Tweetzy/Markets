@@ -39,7 +39,6 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 
 	@Override
 	protected void drawAdditional() {
-
 		setButton(getRows() - 1, 4, QuickItem.of(Settings.GUI_BANK_ITEMS_ADD.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_BANK_ITEMS_ADD_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_BANK_ITEMS_ADD_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK))).make(), click -> {
 
 			final ItemStack cursor = click.cursor;
@@ -53,7 +52,7 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 					locatedEntry.sync(result -> {
 						if (result == SynchronizeResult.SUCCESS) {
 							click.player.setItemOnCursor(CompMaterial.AIR.parseItem());
-							click.manager.showGUI(click.player, new BankGUI(this.parent, click.player));
+							updateAndRedraw();
 						}
 					});
 
@@ -62,7 +61,7 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 
 				Markets.getBankManager().create(click.player, currency, currency.getAmount(), wasCreated -> {
 					click.player.setItemOnCursor(CompMaterial.AIR.parseItem());
-					click.manager.showGUI(click.player, new BankGUI(this.parent, click.player));
+					updateAndRedraw();
 				});
 			}
 		});
@@ -75,8 +74,9 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 
 	@Override
 	protected void onClick(BankEntry bankEntry, GuiClickEvent click) {
-		if (click.clickType == ClickType.LEFT)
+		if (click.clickType == ClickType.LEFT) {
 			deleteAndGiveEntry(bankEntry, click);
+		}
 
 		if (click.clickType == ClickType.RIGHT)
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_WITHDRAW_ENTRY_TITLE), TranslationManager.string(click.player, Translations.PROMPT_WITHDRAW_ENTRY_SUBTITLE)) {
@@ -131,12 +131,17 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 			for (int i = 0; i < bankEntry.getQuantity(); i++)
 				PlayerUtil.giveItem(click.player, bankEntry.getItem());
 
-			click.manager.showGUI(click.player, new BankGUI(this.parent, click.player));
+			updateAndRedraw();
 		});
 	}
 
 	@Override
 	protected List<Integer> fillSlots() {
 		return InventoryBorder.getInsideBorders(5);
+	}
+
+	private void updateAndRedraw() {
+		updateItems(Markets.getBankManager().getEntriesByPlayer(player.getUniqueId()));
+		draw();
 	}
 }

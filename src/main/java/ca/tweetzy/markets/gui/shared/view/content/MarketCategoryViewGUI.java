@@ -1,6 +1,6 @@
 package ca.tweetzy.markets.gui.shared.view.content;
 
-import ca.tweetzy.flight.comp.SkullUtils;
+import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
