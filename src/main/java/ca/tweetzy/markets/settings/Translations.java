@@ -41,6 +41,8 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
 	public static TranslationEntry PROVIDE_REQUESTED_ITEM = create("error.provide requested item", "&cYou need to place/select a requested item first");
 	public static TranslationEntry MAX_STACK_SIZE = create("error.max stack size", "&cCannot request that many, max stack size is &4%max_stack_size%");
+    public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
+    public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
 
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
