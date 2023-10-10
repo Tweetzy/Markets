@@ -3,8 +3,12 @@ package ca.tweetzy.markets.commands;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.user.OffersGUI;
+import ca.tweetzy.markets.settings.Settings;
+import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,7 +22,12 @@ public final class CommandOffers extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (sender instanceof final Player player) {
+        if (sender instanceof final Player player) {
+            if (Settings.DISABLE_OFFERS.getBoolean()) {
+                Common.tell(player, TranslationManager.string(player, Translations.OFFERS_DISABLED));
+                return ReturnType.SUCCESS;
+            }
+
 			Markets.getGuiManager().showGUI(player, new OffersGUI(null, player));
 		}
 		return ReturnType.SUCCESS;
