@@ -6,7 +6,9 @@ import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
@@ -47,7 +49,16 @@ public final class CommandView extends Command {
 				return ReturnType.FAIL;
 			}
 
-			Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+			if (args.length == 2) {
+				final Category locatedCategory = market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[1])).findFirst().orElse(null);
+				if (locatedCategory == null)
+					Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+				else
+					Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
+
+			} else {
+				Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+			}
 		}
 
 		return ReturnType.SUCCESS;
