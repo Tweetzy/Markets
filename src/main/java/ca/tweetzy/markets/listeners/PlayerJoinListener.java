@@ -3,6 +3,7 @@ package ca.tweetzy.markets.listeners;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
+import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketUser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +29,19 @@ public final class PlayerJoinListener implements Listener {
 				if (result == SynchronizeResult.FAILURE)
 					Common.log("&cSomething went wrong while updating the market profile for&F: &e" + player.getName());
 			});
+
+			// update the market if the player has one
+			final Market market = Markets.getMarketManager().getByOwner(player.getUniqueId());
+			if (market != null) {
+				if (!market.getOwnerName().equalsIgnoreCase(player.getName())) {
+					market.setOwnerName(player.getName());
+					market.sync(result -> {
+						if (result == SynchronizeResult.FAILURE)
+							Common.log("&cSomething went wrong while updating the market owner name for&F: &e" + player.getName());
+					});
+				}
+			}
+
 			return;
 		}
 

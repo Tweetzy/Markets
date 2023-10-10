@@ -2,6 +2,7 @@ package ca.tweetzy.markets.model.currency;
 
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.impl.currency.UltraEconomyCurrency;
+import ca.tweetzy.markets.settings.Settings;
 import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.objects.Currency;
 
@@ -20,7 +21,21 @@ public final class UltraEconomyLoader extends CurrencyLoader {
 		final List<AbstractCurrency> currencies = new ArrayList<>();
 
 		for (Currency currency : UltraEconomy.getInstance().getCurrencies()) {
-			currencies.add(new UltraEconomyCurrency(currency.getName()));
+			boolean blackListed = false;
+
+			for (String blacklisted : Settings.CURRENCY_BLACKLISTED.getStringList()) {
+				final String[] blacklistSplit = blacklisted.split(":");
+
+				if (blacklistSplit.length != 2) continue;
+				if (!blacklistSplit[0].equalsIgnoreCase(this.owningPlugin)) continue;
+
+				if (blacklistSplit[1].equalsIgnoreCase(currency.getName()))
+					blackListed = true;
+
+			}
+
+			if (!blackListed)
+				currencies.add(new UltraEconomyCurrency(currency.getName()));
 		}
 
 		return currencies;

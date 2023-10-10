@@ -44,10 +44,11 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 		// banned users
 		drawBannedUsersButton();
 
-		// layout
-		drawHomeLayoutButton();
-
-		drawCategoryLayoutButton();
+        // layout
+        if (!Settings.DISABLE_LAYOUT_EDITING.getBoolean()) {
+            drawHomeLayoutButton();
+            drawCategoryLayoutButton();
+        }
 
 		applyBackExit();
 	}

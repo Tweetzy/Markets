@@ -1,9 +1,10 @@
 package ca.tweetzy.markets.gui.shared;
 
-import ca.tweetzy.flight.comp.SkullUtils;
+import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
@@ -39,7 +40,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS.getItemStack())
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-						.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(this, click.player)));
+						.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(new MarketsMainGUI(click.player), click.player)));
 
 		// your market
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_SLOT.getInt(),
@@ -72,7 +73,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_REQUESTS.getItemStack())
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-						.make(), click -> click.manager.showGUI(click.player, new RequestsGUI(this, click.player, true)));
+						.make(), click -> click.manager.showGUI(click.player, new RequestsGUI(new MarketsMainGUI(click.player), click.player, true)));
 
 		// payments
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS_SLOT.getInt(),
@@ -80,7 +81,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS.getItemStack())
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-						.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(this, click.player)));
+						.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(new MarketsMainGUI(click.player), click.player)));
 
 		// bank
 		setButton(Settings.ALLOW_BANK.getBoolean() ? Settings.GUI_MAIN_VIEW_ITEMS_BANK_SLOT.getInt() : -1,
@@ -88,7 +89,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_BANK.getItemStack())
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-						.make(), click -> click.manager.showGUI(click.player, new BankGUI(this, click.player)));
+						.make(), click -> click.manager.showGUI(click.player, new BankGUI(new MarketsMainGUI(click.player), click.player)));
 
 		// offers
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_OFFERS_SLOT.getInt(),
@@ -96,7 +97,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_OFFERS.getItemStack())
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-						.make(), click -> click.manager.showGUI(click.player, new OffersGUI(this, click.player)));
+						.make(), click -> click.manager.showGUI(click.player, new OffersGUI(new MarketsMainGUI(click.player), click.player)));
 
 	}
 }
