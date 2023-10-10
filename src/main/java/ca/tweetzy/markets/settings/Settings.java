@@ -5,6 +5,8 @@ import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.FlightSettings;
 import ca.tweetzy.markets.Markets;
 
+import java.util.List;
+
 public final class Settings extends FlightSettings {
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
@@ -25,6 +27,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CURRENCY_ITEM_DEFAULT_SELECTED = create("settings.currency.default item selection", "DIAMOND").withComment("The default currency selection if using item only mode");
 	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
 	public static ConfigEntry CURRENCY_USE_ITEM_ONLY = create("settings.currency.use item only", false).withComment("If true, Markets will only allow the usage of another item for currency.");
+	public static ConfigEntry CURRENCY_BLACKLISTED = create("settings.currency.black listed", List.of("UltraEconomy:Gems")).withComment("A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Gems");
 	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 	public static ConfigEntry OPEN_CATEGORY_SETTINGS_AFTER_ITEM_ADD = create("settings.open category after item add", false).withComment("If true, when adding an item using the command, it will open the category after");
 	public static ConfigEntry AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK = create("settings.remove market item when out of stock", false).withComment("If true, then when an item's stock count hits zero, it will be removed from the market.");
