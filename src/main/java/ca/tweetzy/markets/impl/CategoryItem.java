@@ -255,6 +255,7 @@ public final class CategoryItem implements MarketItem {
 				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+								"purchase_price", isCurrencyOfItem() ? total : (int) total,
 								"purchase_quantity", newPurchaseAmount,
 								"item_name", ItemUtil.getItemName(this.item),
 								"buyer_name", buyer.getName()
@@ -277,6 +278,7 @@ public final class CategoryItem implements MarketItem {
 				} else {
 					if (seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+								"purchase_price", isCurrencyOfItem() ? total : (int) total,
 								"purchase_quantity", newPurchaseAmount,
 								"item_name", ItemUtil.getItemName(this.item),
 								"buyer_name", buyer.getName()
@@ -294,6 +296,7 @@ public final class CategoryItem implements MarketItem {
 							this.currencyItem,
 							(int) total,
 							TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+									"purchase_price", isCurrencyOfItem() ? total : (int) total,
 									"purchase_quantity", newPurchaseAmount,
 									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
@@ -305,6 +308,7 @@ public final class CategoryItem implements MarketItem {
 			}
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
+					"purchase_price", isCurrencyOfItem() ? total : (int) total,
 					"purchase_quantity", newPurchaseAmount,
 					"item_name", ItemUtil.getItemName(this.item),
 					"seller_name", market.getOwnerName()
