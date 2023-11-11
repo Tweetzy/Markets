@@ -1,9 +1,12 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
+import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,6 +174,18 @@ public final class PlayerMarket extends AbstractMarket {
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
 		this.updatedAt = System.currentTimeMillis();
 		Markets.getDataManager().updateMarket(this, (error, updateStatus) -> {
+			if (syncResult != null)
+				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+		});
+	}
+
+	@Override
+	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		Markets.getDataManager().deleteMarket(this, (error, updateStatus) -> {
+			if (updateStatus) {
+				Markets.getMarketManager().remove(this);
+			}
+
 			if (syncResult != null)
 				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
 		});

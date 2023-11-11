@@ -44,6 +44,7 @@ public final class Translations extends TranslationManager {
     public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
     public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
 
+	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
 	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");

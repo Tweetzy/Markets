@@ -121,6 +121,7 @@ public final class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+
 	public void getMarkets(@NonNull final Callback<List<AbstractMarket>> callback) {
 		final List<AbstractMarket> markets = new ArrayList<>();
 
