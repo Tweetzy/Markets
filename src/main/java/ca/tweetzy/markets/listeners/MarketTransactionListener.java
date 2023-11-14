@@ -34,5 +34,8 @@ public final class MarketTransactionListener implements Listener {
 			else
 				Markets.getTransactionManager().add(storeTransaction);
 		});
+
+		// create an offline notification for the player
+
 	}
 }

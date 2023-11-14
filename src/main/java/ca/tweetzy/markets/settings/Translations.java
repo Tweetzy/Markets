@@ -49,6 +49,12 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_ITEM_BOUGHT_BUYER = create("info.market item bought.buyer", "&eBought &fx&a%purchase_quantity% &f%item_name% &efrom &b%seller_name%");
 	public static TranslationEntry MARKET_ITEM_OUT_OF_STOCK = create("info.market item bought.out of stock", "&EAll &f%item_name% &estock has been sold!");
 	public static TranslationEntry MARKET_ITEM_ADDED_TO_CATEGORY = create("info.added item to category", "&fx&a%item_quantity% &f%item_name% &ewas added to &b%category_display_name%");
+	public static TranslationEntry OFFLINE_SALES_INFO = create("info.offline sales messages",
+			"<center>&e&lMarkets",
+			"",
+			"<center>&7Hey, you had &a%offline_sales_amount% &7sales while offline.",
+			"<center>&7Use &f/&emarkets transactions &7to view"
+	);
 
 	public static TranslationEntry OFFER_RECEIVED = create("info.offer.received", "&b%sender_name% &ehas sent you an offer on an item!");
 	public static TranslationEntry OFFER_SENT = create("info.offer.sent", "&EYou offer has successfully be sent to &b%owner_name%");
@@ -716,6 +722,18 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: &e%offer_currency%",
 			"",
 			"&e&l%left_click% &7to edit currency"
+	);
+
+	public static TranslationEntry GUI_TRANSACTIONS_TITLE = create("gui.transactions.title", "&eMarkets &f- &7Transactions");
+	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_ENTRY_LORE = create("gui.transactions.items.entry.lore",
+			"&7----------------------------",
+			"&7Quantity&f: &E%item_quantity%",
+			"&7Price&F: &a%market_item_price%",
+			"&7Currency&f: &a%market_item_currency%",
+			"",
+			"&7Buyer&f: &e%buyer_name%",
+			"&7Date&f: &e%transaction_date%",
+			""
 	);
 
 	public static TranslationEntry GUI_BANK_TITLE = create("gui.bank.title", "&eMarkets &f- &7Bank");

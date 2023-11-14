@@ -3,8 +3,11 @@ package ca.tweetzy.markets.api.market;
 import ca.tweetzy.markets.api.Identifiable;
 import ca.tweetzy.markets.api.Storeable;
 import ca.tweetzy.markets.api.Trackable;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public interface Transaction extends Identifiable, Trackable, Storeable<Transaction> {
@@ -26,4 +29,11 @@ public interface Transaction extends Identifiable, Trackable, Storeable<Transact
 	int getQuantity();
 
 	double getPrice();
+
+	default String getFormattedDate() {
+		Date date = new Date(getTimeCreated());
+		SimpleDateFormat formatter = new SimpleDateFormat(Settings.DATETIME_FORMAT.getStringOr("MMM dd, yyyy hh:mm:ss a"));
+
+		return formatter.format(date);
+	}
 }
