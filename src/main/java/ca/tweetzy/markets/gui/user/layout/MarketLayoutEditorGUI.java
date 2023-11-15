@@ -5,8 +5,8 @@ import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.api.market.layout.MarketLayoutType;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.user.market.MarketSettingsGUI;
@@ -45,7 +45,11 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 	protected void drawAdditional() {
 
 		// controls
-		setItem(this.layout.getExitButtonSlot(), getBackButton());
+		setButton(this.layout.getExitButtonSlot(), getBackButton(), click -> {
+			this.market.sync(null);
+			click.manager.showGUI(click.player, new MarketSettingsGUI(click.player, this.market));
+		});
+
 		setItem(this.layout.getPrevPageButtonSlot(), getPreviousButton());
 		setItem(this.layout.getNextPageButtonSlot(), getNextButton());
 
@@ -78,24 +82,19 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 					.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_FILL_SLOT_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 					.make();
 
-		if (this.layout.getDecoration().containsKey(slot))
+		if (this.layout.getDecoration().containsKey(slot)) {
 			return QuickItem
-					.of(this.market.getHomeLayout().getDecoration().get(slot))
+					.of(this.layout.getDecoration().get(slot))
 					.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_NAME))
 					.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_DECO_SLOT_LORE,
 							"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 							"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 					))
 					.make();
+		}
 
-		return QuickItem
-				.of(CompMaterial.WHITE_STAINED_GLASS_PANE)
-				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_LORE,
-						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
-				))
-				.make();
+
+		return emptySlotItem();
 	}
 
 	@Override
@@ -114,19 +113,24 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 		}
 
 		// empty slots
-		if (isEmptySlot(slot)) {
+		else if (isEmptySlot(slot)) {
 			if (click.clickType == ClickType.LEFT) {
 				this.layout.getFillSlots().add(slot);
 				draw();
 			}
 
 			if (click.clickType == ClickType.RIGHT) {
-
 				final ItemStack cursor = click.cursor;
 				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
 					final ItemStack newIcon = cursor.clone();
 					newIcon.setAmount(1);
-
+//					Map<Integer, ItemStack> decorationMap = this.layout.getDecoration();
+//
+//					if (decorationMap == null)
+//						decorationMap = new HashMap<>();
+//
+//					decorationMap.put(slot, newIcon);
+//					this.layout.setDecoration(decorationMap);
 					this.layout.getDecoration().put(slot, newIcon);
 					draw();
 					return;
@@ -147,16 +151,13 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 				}));
 			}
 			return;
-		}
-
-		if (this.layout.getDecoration().containsKey(slot)) {
+		} else if (this.layout.getDecoration().containsKey(slot)) {
 			if (click.clickType == ClickType.LEFT) {
 				this.layout.getDecoration().remove(slot);
 				draw();
 			}
 
 			if (click.clickType == ClickType.RIGHT) {
-
 				final ItemStack cursor = click.cursor;
 				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
 					final ItemStack newIcon = cursor.clone();
@@ -181,6 +182,24 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 				&& this.layout.getExitButtonSlot() != slot
 				&& this.layout.getNextPageButtonSlot() != slot
 				&& this.layout.getPrevPageButtonSlot() != slot
-				&& this.layout.getOwnerProfileSlot() != slot;
+				&& this.layout.getOwnerProfileSlot() != slot
+				&& this.layout.getReviewButtonSlot() != slot
+				&& this.layout.getSearchButtonSlot() != slot;
+	}
+
+	private ItemStack emptySlotItem() {
+		return QuickItem
+				.of(CompMaterial.WHITE_STAINED_GLASS_PANE)
+				.name(TranslationManager.string(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_LAYOUT_EDITOR_ITEMS_EMPTY_SLOT_LORE,
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+						"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+				))
+				.make();
+	}
+
+	@Override
+	protected int getBackExitButtonSlot() {
+		return -1;
 	}
 }
