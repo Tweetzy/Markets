@@ -3,18 +3,22 @@ package ca.tweetzy.markets.gui.user.market;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -137,13 +141,60 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 		});
 
 		// unStore button
-//		setButton(getRows() - 1, 8, QuickItem
-//				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
-//				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
-//				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
-//				.make(), click -> {
-//
-//		});
+		setButton(getRows() - 1, 8, QuickItem
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
+				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
+				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
+				.make(), click -> {
+
+
+			// skip category check if there is none
+			if (this.market.getCategories().isEmpty()) {
+				 // just delete since no categories
+				yeetMarket(click);
+				return;
+			}
+
+			// loop through categories with items
+			market.getCategories().forEach(category -> {
+				category.getItems().forEach(item -> item.getViewingPlayers().clear());
+
+				Markets.getDataManager().deleteMarketItems(category, (error, itemResult) -> {
+					if (error == null && itemResult) {
+						category.getItems().forEach(item -> {
+							giveBackMarketItem(item);
+							Markets.getCategoryItemManager().remove(item);
+						});
+					}
+				});
+			});
+
+			// kill categories
+			market.getCategories().forEach(category -> category.unStore(categoryRemoveResult -> {
+			}));
+
+			// remove market
+			yeetMarket(click);
+		});
+	}
+
+	private void yeetMarket(@NonNull final GuiClickEvent event) {
+		market.unStore(result -> {
+			if (result == SynchronizeResult.SUCCESS) {
+				Common.tell(player, TranslationManager.string(Translations.DELETED_MARKET));
+				event.manager.showGUI(event.player, new MarketsMainGUI(event.player));
+			}
+		});
+	}
+
+	private void giveBackMarketItem(@NonNull final MarketItem marketItem) {
+		final ItemStack item = marketItem.getItem().clone();
+		item.setAmount(1);
+
+		Bukkit.getServer().getScheduler().runTask(Markets.getInstance(), () -> {
+			for (int i = 0; i < marketItem.getStock(); i++)
+				PlayerUtil.giveItem(this.player, item);
+		});
 	}
 
 	@Override
