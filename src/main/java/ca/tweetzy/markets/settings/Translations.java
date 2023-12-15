@@ -215,8 +215,8 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to create new category"
 	);
 
-	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.unStore market.name", "&c&lDelete Market");
-	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.unStore market.lore",
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.delete market.name", "&c&lDelete Market");
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.delete market.lore",
 			"&7This action &4&lCANNOT &7be undone!",
 			"&8Any items that cannot fit into your inventory",
 			"&8will be dropped to the floor!",
@@ -300,11 +300,11 @@ public final class Translations extends TranslationManager {
 	);
 
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.unStore category.name", "&c&lDelete Category");
-	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.unStore category.lore",
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.delete category.name", "&c&lDelete Category");
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.delete category.lore",
 			"&7This action &4&lCANNOT &7be undone!",
 			"",
-			"&a&lClick &7to unStore this category"
+			"&a&lClick &7to delete this category"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_TITLE = create("gui.category add item.title", "&eCategory &f- &7%category_name% &f- &7New Item");
