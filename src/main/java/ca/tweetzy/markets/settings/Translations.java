@@ -886,6 +886,16 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_SEARCH_TITLE = create("gui.search.title", "&eMarkets &f- &7Search &f- &7%search_keywords%");
+	public static TranslationEntry GUI_SEARCH_ITEMS_ITEM_LORE_INFO = create("gui.search.items.item.lore.info",
+			"&7Price&f: &a%market_item_price%",
+			"&7Currency&f: &e%market_item_currency%",
+			"&7Stock&f: &e%market_item_stock%",
+			"&7Wholesale&f: %market_item_wholesale%",
+			"&7Owner&F: &e%market_item_owner%",
+			"&7Shop&F: %market_item_market_name%",
+			""
+	);
+
 	public static TranslationEntry GUI_REQUEST_TITLE_ALL = create("gui.request.title.all", "&eMarkets &f- &7All Requests");
 	public static TranslationEntry GUI_REQUEST_TITLE_YOURS = create("gui.request.title.yours", "&eMarkets &f- &7Your Requests");
 
