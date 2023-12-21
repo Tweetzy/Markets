@@ -71,6 +71,13 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry REQUEST_FULFILLED = create("info.request.fulfilled", "&b%fulfill_name% &efulfilled your request for &e%request_item_name%");
 
 
+	public static TranslationEntry DEFAULTS_MARKET_DISPLAY_NAME = create("info.defaults.market name", "&e%player_name%'s Market");
+	public static TranslationEntry DEFAULTS_MARKET_DESCRIPTION = create("info.defaults.market description", "&aWelcome to my market");
+	public static TranslationEntry DEFAULTS_MARKET_CATEGORY_DISPLAY_NAME = create("info.defaults.category name", "&e%market_category_name%");
+	public static TranslationEntry DEFAULTS_MARKET_CATEGORY_DESCRIPTION = create("info.defaults.category description", "&7Market category");
+	public static TranslationEntry DEFAULTS_REVIEW_MSG = create("info.defaults.review message", "&bAn awesome market");
+
+
 	// inputs
 	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_SEARCH_SUBTITLE = create("prompts.search.subtitle", "&fEnter search keywords into chat");

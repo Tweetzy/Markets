@@ -31,7 +31,7 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 	}
 
 	public NewMarketRatingGUI(Gui parent, @NonNull final Player player, @NonNull final Market market) {
-		this(parent, player, market, new MarketRating(market, player, 5, "&BAn awesome market"));
+		this(parent, player, market, new MarketRating(market, player, 5, TranslationManager.string(player, Translations.DEFAULTS_REVIEW_MSG)));
 	}
 
 	@Override
