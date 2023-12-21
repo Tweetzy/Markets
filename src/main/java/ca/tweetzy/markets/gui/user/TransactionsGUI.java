@@ -31,8 +31,11 @@ public final class TransactionsGUI extends MarketsPagedGUI<Transaction> {
 
 	@Override
 	protected ItemStack makeDisplayItem(Transaction transaction) {
+		final ItemStack item = transaction.getItem();
+
 		return QuickItem
-				.of(transaction.getItem())
+				.of(item)
+				.amount(Math.min(transaction.getQuantity(), item.getMaxStackSize()))
 				.lore(TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_ITEMS_ENTRY_LORE,
 						"item_quantity", transaction.getQuantity(),
 						"market_item_price", transaction.getPrice(),
