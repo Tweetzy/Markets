@@ -81,4 +81,10 @@ public interface MarketItem extends Identifiable, Synchronize, UserViewable, Sto
 	default int getPlusOneStock() {
 		return getStock() <= 0 ? 1 : getStock();
 	}
+
+	default Market getOwningMarket() {
+		final Category category = Markets.getCategoryManager().getByUUID(getOwningCategory());
+		if (category == null) return null;
+		return Markets.getMarketManager().getByUUID(category.getOwningMarket());
+	}
 }

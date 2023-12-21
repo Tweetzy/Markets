@@ -71,6 +71,13 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry REQUEST_FULFILLED = create("info.request.fulfilled", "&b%fulfill_name% &efulfilled your request for &e%request_item_name%");
 
 
+	public static TranslationEntry DEFAULTS_MARKET_DISPLAY_NAME = create("info.defaults.market name", "&e%player_name%'s Market");
+	public static TranslationEntry DEFAULTS_MARKET_DESCRIPTION = create("info.defaults.market description", "&aWelcome to my market");
+	public static TranslationEntry DEFAULTS_MARKET_CATEGORY_DISPLAY_NAME = create("info.defaults.category name", "&e%market_category_name%");
+	public static TranslationEntry DEFAULTS_MARKET_CATEGORY_DESCRIPTION = create("info.defaults.category description", "&7Market category");
+	public static TranslationEntry DEFAULTS_REVIEW_MSG = create("info.defaults.review message", "&bAn awesome market");
+
+
 	// inputs
 	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_SEARCH_SUBTITLE = create("prompts.search.subtitle", "&fEnter search keywords into chat");
@@ -215,8 +222,8 @@ public final class Translations extends TranslationManager {
 			"&a&lClick &7to create new category"
 	);
 
-	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.unStore market.name", "&c&lDelete Market");
-	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.unStore market.lore",
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME = create("gui.market overview.items.delete market.name", "&c&lDelete Market");
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE = create("gui.market overview.items.delete market.lore",
 			"&7This action &4&lCANNOT &7be undone!",
 			"&8Any items that cannot fit into your inventory",
 			"&8will be dropped to the floor!",
@@ -300,11 +307,11 @@ public final class Translations extends TranslationManager {
 	);
 
 
-	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.unStore category.name", "&c&lDelete Category");
-	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.unStore category.lore",
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_NAME = create("gui.market category edit.items.delete category.name", "&c&lDelete Category");
+	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE = create("gui.market category edit.items.delete category.lore",
 			"&7This action &4&lCANNOT &7be undone!",
 			"",
-			"&a&lClick &7to unStore this category"
+			"&a&lClick &7to delete this category"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_TITLE = create("gui.category add item.title", "&eCategory &f- &7%category_name% &f- &7New Item");
@@ -886,6 +893,16 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_SEARCH_TITLE = create("gui.search.title", "&eMarkets &f- &7Search &f- &7%search_keywords%");
+	public static TranslationEntry GUI_SEARCH_ITEMS_ITEM_LORE_INFO = create("gui.search.items.item.lore.info",
+			"&7Price&f: &a%market_item_price%",
+			"&7Currency&f: &e%market_item_currency%",
+			"&7Stock&f: &e%market_item_stock%",
+			"&7Wholesale&f: %market_item_wholesale%",
+			"&7Owner&F: &e%market_item_owner%",
+			"&7Shop&F: %market_item_market_name%",
+			""
+	);
+
 	public static TranslationEntry GUI_REQUEST_TITLE_ALL = create("gui.request.title.all", "&eMarkets &f- &7All Requests");
 	public static TranslationEntry GUI_REQUEST_TITLE_YOURS = create("gui.request.title.yours", "&eMarkets &f- &7Your Requests");
 

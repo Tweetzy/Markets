@@ -144,7 +144,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
 				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
-				.lore(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
+				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
 				.make(), click -> {
 
 

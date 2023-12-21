@@ -32,7 +32,7 @@ public interface Transaction extends Identifiable, Trackable, Storeable<Transact
 
 	default String getFormattedDate() {
 		Date date = new Date(getTimeCreated());
-		SimpleDateFormat formatter = new SimpleDateFormat(Settings.DATETIME_FORMAT.getStringOr("MMM dd, yyyy hh:mm:ss a"));
+		SimpleDateFormat formatter = new SimpleDateFormat(Settings.DATETIME_FORMAT.getString());
 
 		return formatter.format(date);
 	}
