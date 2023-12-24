@@ -71,6 +71,6 @@ public abstract class MarketsPagedGUI<T> extends PagedGUI<T> {
 
 	@Override
 	protected int getNextButtonSlot() {
-		return 49;
+		return 50;
 	}
 }

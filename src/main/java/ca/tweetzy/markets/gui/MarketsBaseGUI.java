@@ -74,6 +74,6 @@ public abstract class MarketsBaseGUI extends BaseGUI {
 
 	@Override
 	protected int getNextButtonSlot() {
-		return 49;
+		return 50;
 	}
 }
