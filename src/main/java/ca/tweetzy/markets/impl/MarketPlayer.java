@@ -2,6 +2,7 @@ package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
+import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.MarketUser;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -24,6 +25,7 @@ public final class MarketPlayer implements MarketUser {
 	private String preferredLanguage;
 
 	private String currencyFormatCountry;
+	private MarketSortType marketSortType;
 
 	private long lastSeenAt;
 
@@ -64,6 +66,11 @@ public final class MarketPlayer implements MarketUser {
 	}
 
 	@Override
+	public MarketSortType getMarketSortType() {
+		return this.marketSortType;
+	}
+
+	@Override
 	public void setLastKnownName(@NonNull String lastKnownName) {
 		this.lastKnownName = lastKnownName;
 	}
@@ -91,6 +98,11 @@ public final class MarketPlayer implements MarketUser {
 	@Override
 	public void setLastSeenAt(long lastSeenAt) {
 		this.lastSeenAt = lastSeenAt;
+	}
+
+	@Override
+	public void setMarketSortType(MarketSortType marketSortType) {
+		this.marketSortType = marketSortType;
 	}
 
 	@Override

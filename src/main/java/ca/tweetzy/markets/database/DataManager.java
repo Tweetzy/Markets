@@ -7,10 +7,7 @@ import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.api.currency.Payment;
-import ca.tweetzy.markets.api.market.BankEntry;
-import ca.tweetzy.markets.api.market.Request;
-import ca.tweetzy.markets.api.market.Transaction;
-import ca.tweetzy.markets.api.market.TransactionType;
+import ca.tweetzy.markets.api.market.*;
 import ca.tweetzy.markets.api.market.core.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.api.market.offer.Offer;
@@ -987,6 +984,7 @@ public final class DataManager extends DataManagerAbstract {
 				new ArrayList<>(List.of(resultSet.getString("bio").split(";;;"))),
 				resultSet.getString("preferred_language"),
 				resultSet.getString("currency_format_country"),
+				MarketSortType.NAME,
 				resultSet.getLong("last_seen_at")
 		);
 	}

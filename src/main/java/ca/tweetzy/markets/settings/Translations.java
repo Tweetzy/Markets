@@ -77,6 +77,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry DEFAULTS_MARKET_CATEGORY_DESCRIPTION = create("info.defaults.category description", "&7Market category");
 	public static TranslationEntry DEFAULTS_REVIEW_MSG = create("info.defaults.review message", "&bAn awesome market");
 
+	public static TranslationEntry MARKET_SORT_NAME = create("info.market sort type.name", "&eName");
+	public static TranslationEntry MARKET_SORT_REVIEWS = create("info.market sort type.reviews", "&eReviews");
+	public static TranslationEntry MARKET_SORT_ITEMS = create("info.market sort type.items", "&eTotal Items");
+	public static TranslationEntry MARKET_SORT_LAST_UPDATED = create("info.market sort type.last updated", "&eLast Updated");
 
 	// inputs
 	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
@@ -786,6 +790,16 @@ public final class Translations extends TranslationManager {
 			"&7Ratings&f: &6%market_ratings_stars% &f(&7%market_ratings_total%&f)",
 			"",
 			"&e&L%left_click% &7To enter market"
+	);
+
+	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_FILTER_NAME = create("gui.all markets.items.filter.name", "<GRADIENT:65B1B4>&LFilter</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_FILTER_LORE = create("gui.all markets.items.filter.lore",
+			"&7Used to filter markets by",
+			"&7name,items,ratings and last updated",
+			"",
+			"&7Current&F: &e%market_sort_type%",
+			"",
+			"&e&lClick &7to change filter."
 	);
 
 	public static TranslationEntry GUI_ALL_MARKETS_ITEMS_SEARCH_NAME = create("gui.all markets.items.search.name", "<GRADIENT:65B1B4>&lSearch</GRADIENT:2B6F8A>");

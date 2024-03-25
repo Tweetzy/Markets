@@ -41,8 +41,19 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 				break;
 			}
 		}
-
-
 		return isEmpty;
+	}
+
+	default int getItemCount() {
+		int count = 0;
+		for (Category category : getCategories()) {
+			count += category.getItems().size();
+		}
+
+		return count;
+	}
+
+	default double getReviewAvg() {
+		return getRatings().stream().mapToInt(Rating::getStars).average().orElse(0);
 	}
 }

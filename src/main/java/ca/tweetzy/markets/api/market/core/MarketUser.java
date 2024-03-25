@@ -2,6 +2,7 @@ package ca.tweetzy.markets.api.market.core;
 
 import ca.tweetzy.markets.api.Storeable;
 import ca.tweetzy.markets.api.Synchronize;
+import ca.tweetzy.markets.api.market.MarketSortType;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +26,8 @@ public interface MarketUser extends Synchronize, Storeable<MarketUser> {
 
 	long getLastSeenAt();
 
+	MarketSortType getMarketSortType();
+
 	void setLastKnownName(@NonNull final String name);
 
 	void setPlayer(@NonNull final Player player);
@@ -36,4 +39,6 @@ public interface MarketUser extends Synchronize, Storeable<MarketUser> {
 	void setCurrencyFormatCountry(@NonNull final String currencyFormatCountry);
 
 	void setLastSeenAt(final long lastSeenAt);
+
+	void setMarketSortType(MarketSortType marketSortType);
 }
