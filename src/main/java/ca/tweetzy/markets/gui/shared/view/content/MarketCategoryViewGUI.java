@@ -81,7 +81,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 		// decorations
 		this.market.getCategoryLayout().getDecoration().forEach(this::setItem);
 

@@ -33,4 +33,16 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 
 	void setCloseWhenOutOfStock(final boolean closeWhenOutOfStock);
 
+	default boolean isEmpty() {
+		boolean isEmpty = true;
+		for (Category category : getCategories()) {
+			if (!category.getItems().isEmpty()) {
+				isEmpty = false;
+				break;
+			}
+		}
+
+
+		return isEmpty;
+	}
 }

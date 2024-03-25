@@ -46,7 +46,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_ALL_MARKETS_ITEMS_SEARCH_NAME))

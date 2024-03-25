@@ -35,7 +35,7 @@ public final class MarketBannedUsersGUI extends MarketsPagedGUI<UUID> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 		// new ban button
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_MARKET_BANNED_USERS_ITEMS_NEW_BAN.getItemStack())

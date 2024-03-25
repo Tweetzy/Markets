@@ -40,7 +40,7 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 		// custom item
 		if (Settings.ALLOW_BANK.getBoolean())
 			setButton(Settings.CURRENCY_USE_ITEM_ONLY.getBoolean() ? 1 : getRows() - 1, 4, QuickItem
