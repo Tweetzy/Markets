@@ -33,11 +33,16 @@ public final class CommandDelete extends Command {
 		}// 0 1 2
 
 
-		final Player target = Bukkit.getPlayerExact(args[0]);
+		 OfflinePlayer target = Bukkit.getPlayerExact(args[0]);
 
 		if (target == null) {
-			tell(sender, TranslationManager.string(Translations.PLAYER_NOT_FOUND, "value", args[0]));
-			return ReturnType.FAIL;
+			// try again with offline user list
+			target = Bukkit.getOfflinePlayer(args[0]);
+			if (target == null) {
+				tell(sender, TranslationManager.string(Translations.PLAYER_NOT_FOUND, "value", args[0]));
+				return ReturnType.FAIL;
+
+			}
 		}
 
 		// check if they have a market
