@@ -49,7 +49,7 @@ public final class MarketManager extends ListManager<Market> {
 	}
 
 	public List<Market> getOpenMarketsExclusive(@NonNull final OfflinePlayer ignoredUser) {
-		return getManagerContent().stream().filter(market -> !market.getOwnerUUID().equals(ignoredUser.getUniqueId()) && market.isOpen()).collect(Collectors.toList());
+		return getManagerContent().stream().filter(market -> !market.getOwnerUUID().equals(ignoredUser.getUniqueId()) && market.isOpen() && !market.isEmpty()).collect(Collectors.toList());
 	}
 
 	public List<Market> getOpenMarketsInclusive() {

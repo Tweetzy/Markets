@@ -40,7 +40,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 
 		// name
 		setButton(1, 1, QuickItem

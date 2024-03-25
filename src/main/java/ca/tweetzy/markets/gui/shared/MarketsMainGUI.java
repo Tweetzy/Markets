@@ -38,6 +38,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS_SLOT.getInt(),
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_ALL_MARKETS.getItemStack())
+						.hideTags(true)
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_GLOBAL_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new AllMarketsViewGUI(new MarketsMainGUI(click.player), click.player)));
@@ -46,6 +47,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_SLOT.getInt(),
 				QuickItem
 						.of(SkullUtils.getSkull(this.player.getUniqueId()))
+						.hideTags(true)
 						.name(TranslationManager.string(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME))
 						.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
 						.make(), click -> {
@@ -71,6 +73,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.ALLOW_REQUESTS.getBoolean() ? Settings.GUI_MAIN_VIEW_ITEMS_REQUESTS_SLOT.getInt() : -1,
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_REQUESTS.getItemStack())
+						.hideTags(true)
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_REQUESTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new RequestsGUI(new MarketsMainGUI(click.player), click.player, true)));
@@ -79,7 +82,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS_SLOT.getInt(),
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS.getItemStack())
-						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
+						.hideTags(true)	.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(new MarketsMainGUI(click.player), click.player)));
 
@@ -87,6 +90,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.ALLOW_BANK.getBoolean() ? Settings.GUI_MAIN_VIEW_ITEMS_BANK_SLOT.getInt() : -1,
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_BANK.getItemStack())
+						.hideTags(true)
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_BANK_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new BankGUI(new MarketsMainGUI(click.player), click.player)));
@@ -95,6 +99,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_OFFERS_SLOT.getInt(),
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_OFFERS.getItemStack())
+						.hideTags(true)
 						.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new OffersGUI(new MarketsMainGUI(click.player), click.player)));

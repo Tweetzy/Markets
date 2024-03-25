@@ -3,6 +3,7 @@ package ca.tweetzy.markets.model.manager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.KeyValueManager;
+import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
@@ -165,6 +166,7 @@ public final class PlayerManager extends KeyValueManager<UUID, MarketUser> {
 				List.of("Hi there, welcome to my profile"),
 				"english",
 				"us",
+				MarketSortType.NAME,
 				System.currentTimeMillis()
 		);
 	}

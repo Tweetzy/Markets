@@ -32,7 +32,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 		final MarketUser user = Markets.getPlayerManager().get(this.profileUser.getUniqueId());
 
 		setItem(1, 4, QuickItem

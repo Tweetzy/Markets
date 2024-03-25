@@ -49,7 +49,7 @@ public final class CategoryManager extends ListManager<Category> {
 				UUID.randomUUID(),
 				CompMaterial.CHEST.parseItem(),
 				name.toLowerCase(),
-				TranslationManager.string(Translations.DEFAULTS_MARKET_CATEGORY_DISPLAY_NAME),
+				TranslationManager.string(Translations.DEFAULTS_MARKET_CATEGORY_DISPLAY_NAME, "market_category_name", name),
 				TranslationManager.list(Translations.DEFAULTS_MARKET_CATEGORY_DESCRIPTION),
 				new ArrayList<>(),
 				System.currentTimeMillis(),

@@ -42,7 +42,7 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 
 		// controls
 		setButton(this.layout.getExitButtonSlot(), getBackButton(), click -> {

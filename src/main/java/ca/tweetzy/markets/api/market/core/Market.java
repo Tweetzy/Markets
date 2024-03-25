@@ -33,4 +33,27 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 
 	void setCloseWhenOutOfStock(final boolean closeWhenOutOfStock);
 
+	default boolean isEmpty() {
+		boolean isEmpty = true;
+		for (Category category : getCategories()) {
+			if (!category.getItems().isEmpty()) {
+				isEmpty = false;
+				break;
+			}
+		}
+		return isEmpty;
+	}
+
+	default int getItemCount() {
+		int count = 0;
+		for (Category category : getCategories()) {
+			count += category.getItems().size();
+		}
+
+		return count;
+	}
+
+	default double getReviewAvg() {
+		return getRatings().stream().mapToInt(Rating::getStars).average().orElse(0);
+	}
 }

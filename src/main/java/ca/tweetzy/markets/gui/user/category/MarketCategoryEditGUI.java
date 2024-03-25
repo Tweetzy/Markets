@@ -46,7 +46,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 	}
 
 	@Override
-	protected void drawAdditional() {
+	protected void drawFixed() {
 
 		drawIconButton();
 
