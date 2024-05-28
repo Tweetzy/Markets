@@ -94,6 +94,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM = create("gui.market overview.items.new category.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM = create("gui.market overview.items.unStore market.item", CompMaterial.LAVA_BUCKET.name());
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_ITEM = create("gui.market overview.items.reviews.item", CompMaterial.NETHER_STAR.name());
 
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_BACKGROUND = create("gui.market category edit.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM = create("gui.market category edit.items.display name.item", CompMaterial.NAME_TAG.name());

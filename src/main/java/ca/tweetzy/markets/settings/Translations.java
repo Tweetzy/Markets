@@ -43,6 +43,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MAX_STACK_SIZE = create("error.max stack size", "&cCannot request that many, max stack size is &4%max_stack_size%");
     public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
     public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
+    public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
 
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
@@ -233,6 +234,16 @@ public final class Translations extends TranslationManager {
 			"&8will be dropped to the floor!",
 			"",
 			"&a&lClick &7to delete market"
+	);
+
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_NAME = create("gui.market overview.items.reviews.name", "<GRADIENT:65B1B4>&LReviews</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_LORE = create("gui.market overview.items.reviews.lore",
+			"&7Used to view any reviews that",
+			"&7were left by other players",
+			"",
+			"&7Rating&f: &6%market_ratings_stars% &f(&7%market_ratings_total%&f)",
+			"",
+			"&a&lClick &7to view reviews"
 	);
 
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_TITLE = create("gui.market category edit.title", "&eMarkets &f- &7Edit &f- &7%category_name%");
