@@ -1,12 +1,9 @@
 package ca.tweetzy.markets.impl;
 
-import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
-import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 

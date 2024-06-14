@@ -6,7 +6,6 @@ import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
 import org.bukkit.OfflinePlayer;
-import org.checkerframework.checker.units.qual.C;
 
 public final class UltraEconomyCurrency extends IconableCurrency {
 
@@ -27,7 +26,7 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		if (account == null) return false;
 
-		return account.getBalance(this.currency).getSum()>= amount;
+		return account.getBalance(this.currency).getSum() >= amount;
 	}
 
 	@Override

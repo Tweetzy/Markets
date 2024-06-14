@@ -22,11 +22,11 @@ public final class CommandOffers extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-        if (sender instanceof final Player player) {
-            if (Settings.DISABLE_OFFERS.getBoolean()) {
-                Common.tell(player, TranslationManager.string(player, Translations.OFFERS_DISABLED));
-                return ReturnType.SUCCESS;
-            }
+		if (sender instanceof final Player player) {
+			if (Settings.DISABLE_OFFERS.getBoolean()) {
+				Common.tell(player, TranslationManager.string(player, Translations.OFFERS_DISABLED));
+				return ReturnType.SUCCESS;
+			}
 
 			Markets.getGuiManager().showGUI(player, new OffersGUI(null, player));
 		}

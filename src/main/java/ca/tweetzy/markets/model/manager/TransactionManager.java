@@ -3,7 +3,6 @@ package ca.tweetzy.markets.model.manager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.Transaction;
-import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketUser;
 import lombok.NonNull;
 

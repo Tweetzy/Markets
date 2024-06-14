@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.model.manager;
 
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.Trackable;
 import ca.tweetzy.markets.api.manager.ListManager;
@@ -8,7 +7,6 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.settings.Settings;
 import lombok.NonNull;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 

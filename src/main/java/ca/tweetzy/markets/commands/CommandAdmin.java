@@ -38,7 +38,7 @@ public final class CommandAdmin extends Command {
 
 
 			// open main menu
-			switch(args[1].toLowerCase()) {
+			switch (args[1].toLowerCase()) {
 				case "openmain":
 					Markets.getGuiManager().showGUI(target, new MarketsMainGUI(target));
 					break;

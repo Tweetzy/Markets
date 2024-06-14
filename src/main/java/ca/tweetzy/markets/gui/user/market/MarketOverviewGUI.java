@@ -13,7 +13,6 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
-import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.shared.view.ratings.MarketRatingsViewGUI;
 import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import ca.tweetzy.markets.settings.Settings;
@@ -160,7 +159,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 
 			// skip category check if there is none
 			if (this.market.getCategories().isEmpty()) {
-				 // just delete since no categories
+				// just delete since no categories
 				yeetMarket(click);
 				return;
 			}

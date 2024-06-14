@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.gui.shared.view.content;
 
-import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
@@ -69,9 +68,9 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_BUY, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)));
 
-        if (!Settings.DISABLE_OFFERS.getBoolean() && marketItem.isAcceptingOffers()) {
-            item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_MAKE_OFFER, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)));
-        }
+		if (!Settings.DISABLE_OFFERS.getBoolean() && marketItem.isAcceptingOffers()) {
+			item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_MAKE_OFFER, "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)));
+		}
 
 		if (marketItem.isCurrencyOfItem())
 			item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_VIEW_CURRENCY, "shift_right_click", TranslationManager.string(this.player, Translations.MOUSE_SHIFT_RIGHT_CLICK)));
@@ -87,7 +86,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 		// set custom shit
 		setButton(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
-				.of(SkullUtils.getSkull(this.market.getOwnerUUID()))
+				.of(Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),
@@ -95,23 +94,23 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				))
 				.make(), click -> click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))));
 
-        if (!Settings.DISABLE_REVIEWS.getBoolean()) {
-            setButton(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
-                .of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
-                .name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME))
-                .lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_LORE,
-                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-                    "right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
-                ))
-                .make(), click -> {
+		if (!Settings.DISABLE_REVIEWS.getBoolean()) {
+			setButton(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
+					.of(Settings.GUI_MARKET_VIEW_ITEMS_REVIEW.getItemStack())
+					.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_REVIEW_LORE,
+							"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+							"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
+					))
+					.make(), click -> {
 
-                if (click.clickType == ClickType.LEFT)
-                    click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
+				if (click.clickType == ClickType.LEFT)
+					click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
 
-                if (click.clickType == ClickType.RIGHT)
-                    click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
-            });
-        }
+				if (click.clickType == ClickType.RIGHT)
+					click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market));
+			});
+		}
 
 		if (Settings.ENABLE_SEARCH_IN_MARKETS.getBoolean())
 			setButton(this.market.getCategoryLayout().getSearchButtonSlot(), QuickItem

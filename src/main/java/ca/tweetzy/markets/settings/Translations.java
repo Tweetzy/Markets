@@ -41,9 +41,9 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
 	public static TranslationEntry PROVIDE_REQUESTED_ITEM = create("error.provide requested item", "&cYou need to place/select a requested item first");
 	public static TranslationEntry MAX_STACK_SIZE = create("error.max stack size", "&cCannot request that many, max stack size is &4%max_stack_size%");
-    public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
-    public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
-    public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
+	public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
+	public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
+	public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
 
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");

@@ -114,10 +114,10 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
-            if (Settings.DISABLE_OFFERS.getBoolean()) {
-                Common.tell(player, TranslationManager.string(player, Translations.OFFERS_DISABLED));
-                return;
-            }
+			if (Settings.DISABLE_OFFERS.getBoolean()) {
+				Common.tell(player, TranslationManager.string(player, Translations.OFFERS_DISABLED));
+				return;
+			}
 
 			Markets.getOfferManager().create(
 					click.player,

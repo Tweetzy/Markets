@@ -5,7 +5,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
-import ca.tweetzy.markets.api.market.*;
+import ca.tweetzy.markets.api.market.BankEntry;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.offer.Offer;
