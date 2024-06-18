@@ -78,6 +78,11 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
+			if (this.request.getRequestItem() == null || this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial()) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_REQUEST_ITEM));
+				return;
+			}
+
 			Markets.getRequestManager().create(
 					click.player,
 					this.request.getRequestItem(),
