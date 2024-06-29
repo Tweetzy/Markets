@@ -39,7 +39,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 				.of(this.profileUser)
 				.name(TranslationManager.string(this.player, Translations.GUI_USER_PROFILE_ITEMS_USER_NAME, "player_name", this.profileUser.getName()))
 				.lore(TranslationManager.list(this.player, Translations.GUI_USER_PROFILE_ITEMS_USER_LORE,
-						"user_last_seen", TimeUtil.convertToReadableDate(user.getLastSeenAt()),
+						"user_last_seen", TimeUtil.convertToReadableDate(user.getLastSeenAt(),Settings.DATETIME_FORMAT.getString()),
 						"true", TranslationManager.string(this.player, this.profileUser.isOnline() ? Translations.TRUE : Translations.FALSE)
 				))
 				.make()
@@ -55,7 +55,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 				.name(TranslationManager.string(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_NAME, "rater_name", rating.getRaterName()))
 				.lore(TranslationManager.list(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_LORE,
 						"rating_stars", StringUtils.repeat("★", rating.getStars()),
-						"rating_date", TimeUtil.convertToReadableDate(rating.getTimeCreated()),
+						"rating_date", TimeUtil.convertToReadableDate(rating.getTimeCreated(),Settings.DATETIME_FORMAT.getString()),
 						"rating_feedback", rating.getFeedback()
 				))
 				.make();

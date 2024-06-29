@@ -34,7 +34,7 @@ public final class MarketRatingsViewGUI extends MarketsPagedGUI<Rating> {
 				.name(TranslationManager.string(player, Translations.GUI_RATINGS_ITEMS_RATING_NAME, "rater_name", rating.getRaterName()))
 				.lore(TranslationManager.list(player, Translations.GUI_RATINGS_ITEMS_RATING_LORE,
 						"rating_stars", StringUtils.repeat("★", rating.getStars()),
-						"rating_date", TimeUtil.convertToReadableDate(rating.getTimeCreated()),
+						"rating_date", TimeUtil.convertToReadableDate(rating.getTimeCreated(), Settings.DATETIME_FORMAT.getString()),
 						"rating_feedback", rating.getFeedback()
 				))
 				.make();
