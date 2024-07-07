@@ -12,3 +12,4 @@ softdepend:
 
 libraries:
   - com.google.code.gson:gson:2.8.9
+  - org.apache.commons:commons-lang3:3.14.0
