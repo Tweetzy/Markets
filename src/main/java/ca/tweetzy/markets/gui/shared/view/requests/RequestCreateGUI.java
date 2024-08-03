@@ -225,7 +225,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
 
 					if (selected != null) {
-						final ItemStack item = selected.parseItem();
+						final ItemStack item = selected;
 						item.setAmount(1);
 
 						this.request.setRequestedItem(item);

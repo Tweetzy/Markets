@@ -181,7 +181,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
 
 					if (selected != null) {
-						this.category.setIcon(selected.parseItem());
+						this.category.setIcon(selected);
 						this.category.sync(result -> {
 							if (result == SynchronizeResult.SUCCESS)
 								click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, MarketCategoryEditGUI.this.market, MarketCategoryEditGUI.this.category));

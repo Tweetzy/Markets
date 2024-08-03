@@ -168,9 +168,9 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 			click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
 				if (selected != null)
 					if (layoutType == MarketLayoutType.HOME)
-						this.market.getHomeLayout().setBackgroundItem(selected.parseItem());
+						this.market.getHomeLayout().setBackgroundItem(selected);
 					else
-						this.market.getCategoryLayout().setBackgroundItem(selected.parseItem());
+						this.market.getCategoryLayout().setBackgroundItem(selected);
 
 				this.market.sync(result -> {
 					if (result == SynchronizeResult.SUCCESS)

@@ -55,7 +55,7 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 				if (click.clickType == ClickType.RIGHT) {
 					click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
 						if (selected != null) {
-							this.selectedCurrency.accept(new ItemCurrency(), selected.parseItem());
+							this.selectedCurrency.accept(new ItemCurrency(), selected);
 						}
 					}));
 				}

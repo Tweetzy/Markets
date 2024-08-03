@@ -31,7 +31,7 @@ public final class MarketManager extends ListManager<Market> {
 	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final String keywords) {
 		final List<MarketItem> marketItems = new ArrayList<>();
 		final List<Market> possibleSearchMarkets = getOpenMarketsExclusive(searcher).stream().filter(market -> !market.getBannedUsers().contains(searcher.getUniqueId())).toList();
-
+//		final List<Market> possibleSearchMarkets = getOpenMarketsInclusive();
 
 		// populate items into search list
 		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems())));
