@@ -1007,6 +1007,6 @@ public final class Translations extends TranslationManager {
 
 
 	public static void init() {
-		new Translations(Markets.getInstance()).setup();
+		new Translations(Markets.getInstance()).setup(Markets.getInstance());
 	}
 }
