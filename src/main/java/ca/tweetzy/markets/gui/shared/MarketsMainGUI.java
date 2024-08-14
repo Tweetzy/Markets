@@ -47,7 +47,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 						.of(this.player)
 						.hideTags(true)
 						.name(TranslationManager.string(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME))
-						.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
+						.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE, "market_cost", String.format("%,.2f", Settings.CREATION_COST_COST.getDouble())) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
 						.make(), click -> {
 
 					if (playerMarket == null) {

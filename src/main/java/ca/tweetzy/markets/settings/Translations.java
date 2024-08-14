@@ -145,6 +145,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME = create("gui.main view.items.your market.name", "&e&lYour Market");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE = create("gui.main view.items.your market.lore",
 			"&7You currently don't have a market",
+			"&7It will cost &a%market_cost% &7to create one.",
 			"",
 			"&a&lClick &7to create one."
 	);
