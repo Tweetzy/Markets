@@ -16,7 +16,7 @@ import java.util.List;
 public final class MarketsCommand extends Command {
 
 	public MarketsCommand() {
-		super(AllowedExecutor.BOTH, "markets");
+		super(AllowedExecutor.BOTH, Settings.CMD_ALIAS_MAIN.getStringList().toArray(new String[0]));
 	}
 
 	@Override

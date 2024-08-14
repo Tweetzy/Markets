@@ -17,7 +17,7 @@ import java.util.List;
 public final class CommandOffers extends Command {
 
 	public CommandOffers() {
-		super(AllowedExecutor.PLAYER, "offers");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_OFFERS.getStringList().toArray(new String[0]));
 	}
 
 	@Override

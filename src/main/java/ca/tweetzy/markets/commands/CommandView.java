@@ -10,6 +10,7 @@ import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,7 +22,7 @@ import java.util.List;
 public final class CommandView extends Command {
 
 	public CommandView() {
-		super(AllowedExecutor.PLAYER, "view");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_VIEW.getStringList().toArray(new String[0]));
 	}
 
 	@Override

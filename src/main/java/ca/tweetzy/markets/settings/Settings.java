@@ -41,6 +41,21 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
 
 	/*
+	========================= COMMAND ALIASES =========================
+	 */
+	public static ConfigEntry CMD_ALIAS_MAIN = create("command aliases.main", List.of("markets", "market")).withComment("Aliases for the main command, please ensure this doesn't conflict with other plugin commands.");
+	public static ConfigEntry CMD_ALIAS_SUB_ADD = create("command aliases.subcommands.add", List.of("add")).withComment("Aliases for the add command");
+	public static ConfigEntry CMD_ALIAS_SUB_ADMIN = create("command aliases.subcommands.admin", List.of("admin")).withComment("Aliases for the add command");
+	public static ConfigEntry CMD_ALIAS_SUB_DELETE = create("command aliases.subcommands.delete", List.of("delete")).withComment("Aliases for the delete command");
+	public static ConfigEntry CMD_ALIAS_SUB_BANK = create("command aliases.subcommands.bank", List.of("bank")).withComment("Aliases for the bank command");
+	public static ConfigEntry CMD_ALIAS_SUB_OFFERS = create("command aliases.subcommands.offers", List.of("offers")).withComment("Aliases for the offers command");
+	public static ConfigEntry CMD_ALIAS_SUB_SEARCH = create("command aliases.subcommands.search", List.of("search", "lookup")).withComment("Aliases for the search command");
+	public static ConfigEntry CMD_ALIAS_SUB_TRANSACTIONS = create("command aliases.subcommands.transactions", List.of("transactions")).withComment("Aliases for the transactions command");
+	public static ConfigEntry CMD_ALIAS_SUB_VIEW = create("command aliases.subcommands.view", List.of("view")).withComment("Aliases for the view command");
+	public static ConfigEntry CMD_ALIAS_SUB_PAYMENTS = create("command aliases.subcommands.payments", List.of("payments")).withComment("Aliases for the payments command");
+
+
+	/*
 	========================= BLACKLISTED ITEMS =========================
 	 */
 

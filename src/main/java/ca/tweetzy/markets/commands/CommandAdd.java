@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public final class CommandAdd extends Command {
 
 	public CommandAdd() {
-		super(AllowedExecutor.PLAYER, "add");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_ADD.getStringList().toArray(new String[0]));
 	}
 
 	@Override

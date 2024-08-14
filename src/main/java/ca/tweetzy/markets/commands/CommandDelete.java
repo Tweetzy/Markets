@@ -7,6 +7,7 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public final class CommandDelete extends Command {
 
 	public CommandDelete() {
-		super(AllowedExecutor.BOTH, "delete");
+		super(AllowedExecutor.BOTH, Settings.CMD_ALIAS_SUB_DELETE.getStringList().toArray(new String[0]));
 	}
 
 	@Override
