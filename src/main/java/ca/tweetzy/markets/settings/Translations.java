@@ -30,6 +30,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
 	public static TranslationEntry AT_MAX_ITEM_LIMIT = create("error.at maximum item limit", "&cYou aren't allowed to add more items!");
 	public static TranslationEntry AT_MAX_REQUEST_LIMIT = create("error.at maximum request limit", "&cYou aren't allowed to create more requests!");
+	public static TranslationEntry PLACE_REQUEST_ITEM = create("error.place request item", "&cPlease select/provide the item you want to request");
 	public static TranslationEntry PLACE_ITEM_TO_ADD = create("error.placed item to add", "&cPlease put the item you wish to add into the empty slot");
 	public static TranslationEntry MUST_BE_HIGHER_THAN_ZERO = create("error.must be higher than zero", "&cPlease enter a number that is higher than 0");
 	public static TranslationEntry INSUFFICIENT_ENTRY_AMOUNT = create("error.insufficient bank entry balance", "&cWithdrawal amount exceeds your stored total!");
@@ -41,8 +42,9 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
 	public static TranslationEntry PROVIDE_REQUESTED_ITEM = create("error.provide requested item", "&cYou need to place/select a requested item first");
 	public static TranslationEntry MAX_STACK_SIZE = create("error.max stack size", "&cCannot request that many, max stack size is &4%max_stack_size%");
-    public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
-    public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
+	public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
+	public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
+	public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
 
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
@@ -143,6 +145,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME = create("gui.main view.items.your market.name", "&e&lYour Market");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE = create("gui.main view.items.your market.lore",
 			"&7You currently don't have a market",
+			"&7It will cost &a%market_cost% &7to create one.",
 			"",
 			"&a&lClick &7to create one."
 	);
@@ -233,6 +236,16 @@ public final class Translations extends TranslationManager {
 			"&8will be dropped to the floor!",
 			"",
 			"&a&lClick &7to delete market"
+	);
+
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_NAME = create("gui.market overview.items.reviews.name", "<GRADIENT:65B1B4>&LReviews</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_LORE = create("gui.market overview.items.reviews.lore",
+			"&7Used to view any reviews that",
+			"&7were left by other players",
+			"",
+			"&7Rating&f: &6%market_ratings_stars% &f(&7%market_ratings_total%&f)",
+			"",
+			"&a&lClick &7to view reviews"
 	);
 
 	public static TranslationEntry GUI_MARKET_CATEGORY_EDIT_TITLE = create("gui.market category edit.title", "&eMarkets &f- &7Edit &f- &7%category_name%");
@@ -995,6 +1008,6 @@ public final class Translations extends TranslationManager {
 
 
 	public static void init() {
-		new Translations(Markets.getInstance()).setup();
+		new Translations(Markets.getInstance()).setup(Markets.getInstance());
 	}
 }

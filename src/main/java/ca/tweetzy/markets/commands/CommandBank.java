@@ -14,7 +14,7 @@ import java.util.List;
 public final class CommandBank extends Command {
 
 	public CommandBank() {
-		super(AllowedExecutor.PLAYER, "bank");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_BANK.getStringList().toArray(new String[0]));
 	}
 
 	@Override

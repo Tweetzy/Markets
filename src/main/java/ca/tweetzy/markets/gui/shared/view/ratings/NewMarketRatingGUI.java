@@ -78,11 +78,11 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
-            // checks if reviews are enabled
-            if (Settings.DISABLE_REVIEWS.getBoolean()) {
-                Common.tell(click.player, TranslationManager.string(click.player, Translations.REVIEWS_DISABLED));
-                return;
-            }
+			// checks if reviews are enabled
+			if (Settings.DISABLE_REVIEWS.getBoolean()) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.REVIEWS_DISABLED));
+				return;
+			}
 
 			// check if they even purchased anything from that market
 			if (!Markets.getRatingManager().userMeetsReviewRequirements(this.market, click.player)) {

@@ -78,6 +78,11 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
+			if (this.request.getRequestItem() == null || this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial()) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_REQUEST_ITEM));
+				return;
+			}
+
 			Markets.getRequestManager().create(
 					click.player,
 					this.request.getRequestItem(),
@@ -220,7 +225,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
 
 					if (selected != null) {
-						final ItemStack item = selected.parseItem();
+						final ItemStack item = selected;
 						item.setAmount(1);
 
 						this.request.setRequestedItem(item);

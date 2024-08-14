@@ -4,7 +4,7 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.api.Navigable;
 import ca.tweetzy.markets.settings.Translations;
 
-public enum MarketSortType implements Navigable<MarketSortType>  {
+public enum MarketSortType implements Navigable<MarketSortType> {
 
 	NAME,
 	REVIEWS,

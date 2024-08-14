@@ -13,11 +13,12 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
-import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
+import ca.tweetzy.markets.gui.shared.view.ratings.MarketRatingsViewGUI;
 import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -140,6 +141,14 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 			};
 		});
 
+		setButton(getRows() - 1, 6, QuickItem
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_ITEM.getItemStack())
+				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_NAME))
+				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_LORE,
+						"market_ratings_total", market.getRatings().size(),
+						"market_ratings_stars", market.getRatings().isEmpty() ? TranslationManager.string(Translations.NO_REVIEWS) : StringUtils.repeat("★", (int) market.getReviewAvg())
+				)).make(), click -> click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market)));
+
 		// unStore button
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM.getItemStack())
@@ -150,7 +159,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 
 			// skip category check if there is none
 			if (this.market.getCategories().isEmpty()) {
-				 // just delete since no categories
+				// just delete since no categories
 				yeetMarket(click);
 				return;
 			}

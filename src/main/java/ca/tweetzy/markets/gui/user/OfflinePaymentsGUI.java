@@ -38,7 +38,7 @@ public final class OfflinePaymentsGUI extends MarketsPagedGUI<Payment> {
 						Translations.GUI_OFFLINE_PAYMENTS_ITEMS_PROFILE_LORE,
 						"payment_total", payment.getAmount(),
 						"payment_reason", payment.getReason(),
-						"payment_date", TimeUtil.convertToReadableDate(payment.getTimeCreated()),
+						"payment_date", TimeUtil.convertToReadableDate(payment.getTimeCreated(), Settings.DATETIME_FORMAT.getString()),
 						"left_click", TranslationManager.string(Translations.MOUSE_LEFT_CLICK)
 				))
 				.make();

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public final class CommandAdd extends Command {
 
 	public CommandAdd() {
-		super(AllowedExecutor.PLAYER, "add");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_ADD.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -112,12 +112,12 @@ public final class CommandAdd extends Command {
 			return List.of("1.00", "5.00", "10.00", "15.00", "20.00");
 
 		if (args.length > 2) {
-            if (Settings.DISABLE_WHOLESALE.getBoolean()) {
-                return List.of("-nooffers");
-            } else {
-                return List.of("-wholesale", "-nooffers");
-            }
-        }
+			if (Settings.DISABLE_WHOLESALE.getBoolean()) {
+				return List.of("-nooffers");
+			} else {
+				return List.of("-wholesale", "-nooffers");
+			}
+		}
 
 		return null;
 	}

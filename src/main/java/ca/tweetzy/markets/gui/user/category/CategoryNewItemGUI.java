@@ -164,7 +164,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 					return;
 				}
 
-				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(),false, created -> {
+				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(), false, created -> {
 					if (created) {
 						setItem(1, 4, CompMaterial.AIR.parseItem());
 						click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
@@ -190,32 +190,32 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 	}
 
 	private void drawOffersButton() {
-        if (!Settings.DISABLE_OFFERS.getBoolean()) {
-            setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
-                if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
+		if (!Settings.DISABLE_OFFERS.getBoolean()) {
+			setButton(getRows() - 1, 2, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK), "enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED))).hideTags(true).make(), click -> {
+				if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
-                this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
-                click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
-            });
-        }
+				this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
+				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+			});
+		}
 	}
 
 	private void drawPriceForAllButton() {
-        if (!Settings.DISABLE_WHOLESALE.getBoolean()) {
-            setButton(getRows() - 1, 6, QuickItem
-                .of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM.getItemStack())
-                .name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME))
-                .lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE,
-                    "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
-                    "enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
-                .hideTags(true)
-                .make(), click -> {
+		if (!Settings.DISABLE_WHOLESALE.getBoolean()) {
+			setButton(getRows() - 1, 6, QuickItem
+					.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM.getItemStack())
+					.name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_LORE,
+							"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
+							"enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
+					.hideTags(true)
+					.make(), click -> {
 
-                if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
+				if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
-                this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
-                click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
-            });
-        }
+				this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
+				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+			});
+		}
 	}
 }

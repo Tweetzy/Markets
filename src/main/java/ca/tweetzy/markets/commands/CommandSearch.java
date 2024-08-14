@@ -5,6 +5,7 @@ import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.shared.view.content.MarketSearchGUI;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public final class CommandSearch extends Command {
 
 	public CommandSearch() {
-		super(AllowedExecutor.PLAYER, "search");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_SEARCH.getStringList().toArray(new String[0]));
 	}
 
 	@Override

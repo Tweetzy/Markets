@@ -6,6 +6,7 @@ import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public final class CommandAdmin extends Command {
 
 	public CommandAdmin() {
-		super(AllowedExecutor.BOTH, "admin");
+		super(AllowedExecutor.BOTH, Settings.CMD_ALIAS_SUB_ADMIN.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public final class CommandAdmin extends Command {
 
 
 			// open main menu
-			switch(args[1].toLowerCase()) {
+			switch (args[1].toLowerCase()) {
 				case "openmain":
 					Markets.getGuiManager().showGUI(target, new MarketsMainGUI(target));
 					break;

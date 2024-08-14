@@ -7,23 +7,19 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.Market;
-import ca.tweetzy.markets.api.market.core.MarketItem;
-import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
-import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class CommandDelete extends Command {
 
 	public CommandDelete() {
-		super(AllowedExecutor.BOTH, "delete");
+		super(AllowedExecutor.BOTH, Settings.CMD_ALIAS_SUB_DELETE.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -33,7 +29,7 @@ public final class CommandDelete extends Command {
 		}// 0 1 2
 
 
-		 OfflinePlayer target = Bukkit.getPlayerExact(args[0]);
+		OfflinePlayer target = Bukkit.getPlayerExact(args[0]);
 
 		if (target == null) {
 			// try again with offline user list

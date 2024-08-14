@@ -31,7 +31,7 @@ public final class MarketManager extends ListManager<Market> {
 	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final String keywords) {
 		final List<MarketItem> marketItems = new ArrayList<>();
 		final List<Market> possibleSearchMarkets = getOpenMarketsExclusive(searcher).stream().filter(market -> !market.getBannedUsers().contains(searcher.getUniqueId())).toList();
-
+//		final List<Market> possibleSearchMarkets = getOpenMarketsInclusive();
 
 		// populate items into search list
 		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems())));
@@ -78,14 +78,29 @@ public final class MarketManager extends ListManager<Market> {
 
 	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
 		if (Settings.CREATION_COST_ENABLED.getBoolean()) {
-			if (!Markets.getEconomy().has(player, Settings.CREATION_COST_COST.getDouble())) {
-				Common.tell(player, TranslationManager.string(player, Translations.CANNOT_PAY_CREATION_FEE));
-				created.accept(false);
-				return;
-			}
 
-			// withdraw the creation cost
-			Markets.getEconomy().withdrawPlayer(player, Settings.CREATION_COST_COST.getDouble());
+			// item only mode
+			if (Settings.CURRENCY_USE_ITEM_ONLY.getBoolean()) {
+				if (!Markets.getCurrencyManager().has(player, Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack(), (int) Settings.CREATION_COST_COST.getDouble())) {
+					Common.tell(player, TranslationManager.string(player, Translations.CANNOT_PAY_CREATION_FEE));
+					created.accept(false);
+					return;
+				}
+
+				// withdraw the creation cost
+				Markets.getCurrencyManager().withdraw(player, Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack(), (int) Settings.CREATION_COST_COST.getDouble());
+
+
+			} else {
+				if (!Markets.getEconomy().has(player, Settings.CREATION_COST_COST.getDouble())) {
+					Common.tell(player, TranslationManager.string(player, Translations.CANNOT_PAY_CREATION_FEE));
+					created.accept(false);
+					return;
+				}
+
+				// withdraw the creation cost
+				Markets.getEconomy().withdrawPlayer(player, Settings.CREATION_COST_COST.getDouble());
+			}
 		}
 
 		final Market market = new PlayerMarket(

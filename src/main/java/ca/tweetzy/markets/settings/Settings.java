@@ -35,10 +35,25 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry MIN_PURCHASES_BEFORE_REVIEW = create("settings.minimum purchases before review", 1).withComment("How many items must a player buy from a market before they can leave a review?");
 	public static ConfigEntry ENABLE_SEARCH_IN_MARKETS = create("settings.enable search in markets", true).withComment("If true, the search button will be shown in the market content view/search");
 	public static ConfigEntry ITEMS_ARE_WHOLESALE_BY_DEFAULT = create("settings.default new items to wholesale", false).withComment("If true, any new items added to a market will be set as a wholesale item.");
-    public static ConfigEntry DISABLE_REVIEWS = create("settings.disable reviews", false).withComment("If true, ratings/reviews will be disabled");
-    public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
-    public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
-    public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
+	public static ConfigEntry DISABLE_REVIEWS = create("settings.disable reviews", false).withComment("If true, ratings/reviews will be disabled");
+	public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
+	public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
+	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
+
+	/*
+	========================= COMMAND ALIASES =========================
+	 */
+	public static ConfigEntry CMD_ALIAS_MAIN = create("command aliases.main", List.of("markets", "market")).withComment("Aliases for the main command, please ensure this doesn't conflict with other plugin commands.");
+	public static ConfigEntry CMD_ALIAS_SUB_ADD = create("command aliases.subcommands.add", List.of("add")).withComment("Aliases for the add command");
+	public static ConfigEntry CMD_ALIAS_SUB_ADMIN = create("command aliases.subcommands.admin", List.of("admin")).withComment("Aliases for the add command");
+	public static ConfigEntry CMD_ALIAS_SUB_DELETE = create("command aliases.subcommands.delete", List.of("delete")).withComment("Aliases for the delete command");
+	public static ConfigEntry CMD_ALIAS_SUB_BANK = create("command aliases.subcommands.bank", List.of("bank")).withComment("Aliases for the bank command");
+	public static ConfigEntry CMD_ALIAS_SUB_OFFERS = create("command aliases.subcommands.offers", List.of("offers")).withComment("Aliases for the offers command");
+	public static ConfigEntry CMD_ALIAS_SUB_SEARCH = create("command aliases.subcommands.search", List.of("search", "lookup")).withComment("Aliases for the search command");
+	public static ConfigEntry CMD_ALIAS_SUB_TRANSACTIONS = create("command aliases.subcommands.transactions", List.of("transactions")).withComment("Aliases for the transactions command");
+	public static ConfigEntry CMD_ALIAS_SUB_VIEW = create("command aliases.subcommands.view", List.of("view")).withComment("Aliases for the view command");
+	public static ConfigEntry CMD_ALIAS_SUB_PAYMENTS = create("command aliases.subcommands.payments", List.of("payments")).withComment("Aliases for the payments command");
+
 
 	/*
 	========================= BLACKLISTED ITEMS =========================
@@ -94,6 +109,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM = create("gui.market overview.items.new category.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DELETE_ITEM = create("gui.market overview.items.unStore market.item", CompMaterial.LAVA_BUCKET.name());
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_ITEM = create("gui.market overview.items.reviews.item", CompMaterial.NETHER_STAR.name());
 
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_BACKGROUND = create("gui.market category edit.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM = create("gui.market category edit.items.display name.item", CompMaterial.NAME_TAG.name());

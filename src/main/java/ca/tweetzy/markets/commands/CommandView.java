@@ -10,6 +10,9 @@ import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
+import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
+import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
+import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,7 +24,7 @@ import java.util.List;
 public final class CommandView extends Command {
 
 	public CommandView() {
-		super(AllowedExecutor.PLAYER, "view");
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_VIEW.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -51,17 +54,30 @@ public final class CommandView extends Command {
 
 			if (args.length == 2) {
 				final Category locatedCategory = market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[1])).findFirst().orElse(null);
-				if (locatedCategory == null)
-					Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
-				else
-					Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
+				if (locatedCategory == null) {
+					handle(market, player, target);
+				} else {
+					if (market.getOwnerUUID().equals(target.getUniqueId())) {
+						Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
+					} else {
+						Markets.getGuiManager().showGUI(player, new MarketCategoryEditGUI(player, market, locatedCategory));
+					}
+				}
 
 			} else {
-				Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+				handle(market, player, target);
 			}
 		}
 
 		return ReturnType.SUCCESS;
+	}
+
+	private void handle(Market market, Player player, OfflinePlayer target) {
+		if (market.getOwnerUUID().equals(target.getUniqueId())) {
+			Markets.getGuiManager().showGUI(player, new MarketOverviewGUI(player, market));
+		} else {
+			Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+		}
 	}
 
 	@Override

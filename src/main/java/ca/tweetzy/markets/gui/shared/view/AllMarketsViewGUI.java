@@ -4,10 +4,8 @@ import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.flight.utils.ChatUtil;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.MarketSortType;
@@ -20,6 +18,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -60,7 +59,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 	@Override
 	protected ItemStack makeDisplayItem(Market market) {
 		return QuickItem
-				.of(SkullUtils.getSkull(market.getOwnerUUID()))
+				.of(Bukkit.getOfflinePlayer(market.getOwnerUUID()))
 				.name(market.getDisplayName())
 				.lore(market.getDescription())
 				.lore(TranslationManager.list(this.player, Translations.GUI_ALL_MARKETS_ITEMS_MARKET_LORE,

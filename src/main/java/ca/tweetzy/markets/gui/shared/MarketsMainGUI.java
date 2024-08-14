@@ -1,10 +1,8 @@
 package ca.tweetzy.markets.gui.shared;
 
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.SkullUtils;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
@@ -46,10 +44,10 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		// your market
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_SLOT.getInt(),
 				QuickItem
-						.of(SkullUtils.getSkull(this.player.getUniqueId()))
+						.of(this.player)
 						.hideTags(true)
 						.name(TranslationManager.string(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME))
-						.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
+						.lore(playerMarket == null ? TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE, "market_cost", String.format("%,.2f", Settings.CREATION_COST_COST.getDouble())) : TranslationManager.list(player, Translations.GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_VIEW))
 						.make(), click -> {
 
 					if (playerMarket == null) {
@@ -82,7 +80,7 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 		setButton(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS_SLOT.getInt(),
 				QuickItem
 						.of(Settings.GUI_MAIN_VIEW_ITEMS_PAYMENTS.getItemStack())
-						.hideTags(true)	.name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
+						.hideTags(true).name(TranslationManager.string(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_NAME))
 						.lore(TranslationManager.list(this.player, Translations.GUI_MAIN_VIEW_ITEMS_PAYMENTS_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 						.make(), click -> click.manager.showGUI(click.player, new OfflinePaymentsGUI(new MarketsMainGUI(click.player), click.player)));
 

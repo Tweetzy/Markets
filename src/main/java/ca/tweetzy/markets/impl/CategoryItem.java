@@ -315,6 +315,7 @@ public final class CategoryItem implements MarketItem {
 			));
 
 			// call transaction event
+			final double totalFixed = isCurrencyOfItem() ? (int) total : total;
 			Bukkit.getServer().getPluginManager().callEvent(new MarketTransactionEvent(
 					buyer,
 					seller,
@@ -322,7 +323,7 @@ public final class CategoryItem implements MarketItem {
 					this.item,
 					getCurrencyDisplayName(),
 					newPurchaseAmount,
-					isCurrencyOfItem() ? total : (int) total
+					totalFixed
 			));
 
 			transactionResult.accept(TransactionResult.SUCCESS);
