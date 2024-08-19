@@ -52,32 +52,31 @@ public final class CommandView extends Command {
 				return ReturnType.FAIL;
 			}
 
+			if (args.length == 1){
+				if (market.getOwnerUUID().equals(player.getUniqueId())) {
+					Markets.getGuiManager().showGUI(player, new MarketOverviewGUI(player, market));
+				} else {
+					Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
+				}
+				return ReturnType.SUCCESS;
+			}
+
 			if (args.length == 2) {
 				final Category locatedCategory = market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[1])).findFirst().orElse(null);
 				if (locatedCategory == null) {
-					handle(market, player, target);
-				} else {
-					if (market.getOwnerUUID().equals(target.getUniqueId())) {
-						Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
-					} else {
-						Markets.getGuiManager().showGUI(player, new MarketCategoryEditGUI(player, market, locatedCategory));
-					}
+					return ReturnType.FAIL;
 				}
 
-			} else {
-				handle(market, player, target);
+				if (market.getOwnerUUID().equals(player.getUniqueId())) {
+					Markets.getGuiManager().showGUI(player, new MarketCategoryEditGUI(player, market, locatedCategory));
+				} else {
+					Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
+
+				}
 			}
 		}
 
 		return ReturnType.SUCCESS;
-	}
-
-	private void handle(Market market, Player player, OfflinePlayer target) {
-		if (market.getOwnerUUID().equals(target.getUniqueId())) {
-			Markets.getGuiManager().showGUI(player, new MarketOverviewGUI(player, market));
-		} else {
-			Markets.getGuiManager().showGUI(player, new MarketViewGUI(player, market));
-		}
 	}
 
 	@Override
