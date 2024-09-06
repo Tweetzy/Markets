@@ -180,6 +180,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_MSG_ITEM = create("gui.new rating.message.item", CompMaterial.DARK_OAK_SIGN.name());
 
 	public static ConfigEntry GUI_ALL_MARKETS_BACKGROUND = create("gui.all markets.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_MARKET_ITEM = create("gui.all markets.items.market.item", CompMaterial.NETHER_STAR.name());
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM = create("gui.all markets.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_FILTER_ITEM = create("gui.all markets.items.filter.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_REQUEST_BACKGROUND = create("gui.request.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());

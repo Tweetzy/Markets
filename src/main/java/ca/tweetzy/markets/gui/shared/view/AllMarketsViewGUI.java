@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.gui.shared.view;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
@@ -7,6 +8,7 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
+import ca.tweetzy.flight.utils.profiles.builder.XSkull;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.Market;
@@ -21,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -58,7 +61,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	@Override
 	protected ItemStack makeDisplayItem(Market market) {
-		return QuickItem
+		ItemStack item = QuickItem
 				.of(Bukkit.getOfflinePlayer(market.getOwnerUUID()))
 				.name(market.getDisplayName())
 				.lore(market.getDescription())
@@ -68,6 +71,8 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 						"market_ratings_stars", StringUtils.repeat("★", (int) market.getReviewAvg())
 				))
 				.make();
+
+		return item;
 	}
 
 	@Override
