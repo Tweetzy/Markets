@@ -17,10 +17,15 @@ import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.*;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public final class Markets extends FlightPlugin {
+
+	private static TaskChainFactory taskChainFactory;
 
 	@SuppressWarnings("FieldCanBeLocal")
 	private DatabaseConnector databaseConnector;
@@ -52,6 +57,7 @@ public final class Markets extends FlightPlugin {
 		Translations.init();
 
 		Common.setPrefix(Settings.PREFIX.getStringOr("&8[&EMarkets&8]"));
+		taskChainFactory = BukkitTaskChainFactory.create(this);
 
 		// Set up the database if enabled
 		this.databaseConnector = new SQLiteConnector(this);
@@ -186,6 +192,10 @@ public final class Markets extends FlightPlugin {
 
 	public static Economy getEconomy() {
 		return getInstance().economy;
+	}
+
+	public static <T> TaskChain<T> newChain() {
+		return taskChainFactory.newChain();
 	}
 
 	// helpers
