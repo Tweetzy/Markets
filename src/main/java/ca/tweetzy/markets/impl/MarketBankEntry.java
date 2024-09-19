@@ -19,6 +19,10 @@ public final class MarketBankEntry implements BankEntry {
 	private final ItemStack item;
 	private int quantity;
 
+	private String currency;
+	private ItemStack currencyItem;
+	private double price;
+
 	@Override
 	public @NonNull UUID getId() {
 		return this.id;
@@ -42,6 +46,36 @@ public final class MarketBankEntry implements BankEntry {
 	@Override
 	public void setQuantity(int amount) {
 		this.quantity = amount;
+	}
+
+	@Override
+	public String getCurrency() {
+		return this.currency;
+	}
+
+	@Override
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	@Override
+	public ItemStack getCurrencyItem() {
+		return this.currencyItem;
+	}
+
+	@Override
+	public void setCurrencyItem(ItemStack currencyItem) {
+		this.currencyItem = currencyItem;
+	}
+
+	@Override
+	public double getPrice() {
+		return this.price;
+	}
+
+	@Override
+	public void setPrice(double price) {
+		this.price = price;
 	}
 
 	@Override

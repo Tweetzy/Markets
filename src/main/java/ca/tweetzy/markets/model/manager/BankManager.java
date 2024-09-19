@@ -1,8 +1,10 @@
 package ca.tweetzy.markets.model.manager;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.BankEntry;
+import ca.tweetzy.markets.impl.CategoryItem;
 import ca.tweetzy.markets.impl.MarketBankEntry;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -14,6 +16,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class BankManager extends ListManager<BankEntry> {
+
+	public static final UUID SERVER_ACCOUNT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
 	public BankManager() {
 		super("Bank");
@@ -42,7 +46,32 @@ public final class BankManager extends ListManager<BankEntry> {
 				UUID.randomUUID(),
 				sender.getUniqueId(),
 				toAdd,
-				amount
+				amount,
+				"Vault/Vault",
+				CompMaterial.AIR.parseItem(),
+				0
+		);
+
+		entry.store(storedBankEntry -> {
+			if (storedBankEntry != null) {
+				add(storedBankEntry);
+				created.accept(true);
+			} else {
+				created.accept(false);
+			}
+		});
+	}
+
+	public void createTaxEntry(CategoryItem categoryItem, int qty, double price, @NonNull final Consumer<Boolean> created) {
+
+		final BankEntry entry = new MarketBankEntry(
+				UUID.randomUUID(),
+				SERVER_ACCOUNT_UUID,
+				categoryItem.getCurrencyItem(),
+				qty,
+				categoryItem.getCurrency(),
+				categoryItem.getCurrencyItem(),
+				price
 		);
 
 		entry.store(storedBankEntry -> {

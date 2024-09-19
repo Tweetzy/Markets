@@ -17,4 +17,16 @@ public interface BankEntry extends Identifiable, Synchronize, Storeable<BankEntr
 	int getQuantity();
 
 	void setQuantity(final int amount);
+
+	String getCurrency();
+
+	void setCurrency(String string);
+
+	ItemStack getCurrencyItem();
+
+	void setCurrencyItem(ItemStack currencyItem);
+
+	double getPrice();
+
+	void setPrice(double price);
 }

@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.impl.*;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
 import lombok.NonNull;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -578,7 +579,7 @@ public final class DataManager extends DataManagerAbstract {
 	public void createBankEntry(@NonNull final BankEntry bankEntry, final Callback<BankEntry> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 
-			final String query = "INSERT INTO " + this.getTablePrefix() + "bank_entry (id, owner, item, quantity) VALUES (?, ?, ?, ?)";
+			final String query = "INSERT INTO " + this.getTablePrefix() + "bank_entry (id, owner, item, quantity, price, currency, currency_item) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "bank_entry WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -590,6 +591,10 @@ public final class DataManager extends DataManagerAbstract {
 				preparedStatement.setString(2, bankEntry.getOwner().toString());
 				preparedStatement.setString(3, SerializeUtil.encodeItem(bankEntry.getItem()));
 				preparedStatement.setInt(4, bankEntry.getQuantity());
+
+				preparedStatement.setDouble(5, bankEntry.getPrice());
+				preparedStatement.setString(6, bankEntry.getCurrency());
+				preparedStatement.setString(7, SerializeUtil.encodeItem( bankEntry.getCurrencyItem()));
 
 				preparedStatement.executeUpdate();
 
@@ -627,12 +632,14 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateBankEntry(@NonNull final BankEntry entry, final Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			//id, owning_market, name, icon, display_name, description, created_at, updated_at
-			final String query = "UPDATE " + this.getTablePrefix() + "bank_entry SET quantity = ? WHERE id = ?";
+			final String query = "UPDATE " + this.getTablePrefix() + "bank_entry SET quantity = ?, price = ? WHERE id = ?";
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
 				preparedStatement.setInt(1, entry.getQuantity());
-				preparedStatement.setString(2, entry.getId().toString());
+				preparedStatement.setDouble(2, entry.getPrice());
+
+				preparedStatement.setString(3, entry.getId().toString());
 
 				int result = preparedStatement.executeUpdate();
 
@@ -887,11 +894,17 @@ public final class DataManager extends DataManagerAbstract {
 	}
 
 	private BankEntry extractBankEntry(@NonNull final ResultSet resultSet) throws SQLException {
+
+		final ItemStack currencyItem = resultSet.getString("currency_item") == null ? CompMaterial.AIR.parseItem() : SerializeUtil.decodeItem(resultSet.getString("currency_item"));
+
 		return new MarketBankEntry(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("owner")),
 				SerializeUtil.decodeItem(resultSet.getString("item")),
-				resultSet.getInt("quantity")
+				resultSet.getInt("quantity"),
+				resultSet.getString("currency"),
+				currencyItem,
+				resultSet.getDouble("price")
 		);
 	}
 
