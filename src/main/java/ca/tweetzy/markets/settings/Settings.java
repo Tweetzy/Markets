@@ -21,7 +21,6 @@ public final class Settings extends FlightSettings {
 
 	public static ConfigEntry SEND_TAX_TO_SERVER_ACCOUNT = create("settings.tax.send to server account", false).withComment("If true, any tax collected will just be sent to a server account for collection.");
 
-
 	public static ConfigEntry CREATION_COST_ENABLED = create("settings.creation cost.enabled", true).withComment("If enabled, players will be charged to create their market");
 	public static ConfigEntry CREATION_COST_COST = create("settings.creation cost.cost", 1000).withComment("How much should market's charge the player to create their market");
 	public static ConfigEntry ALLOW_ANYONE_TO_CREATE_MARKET = create("settings.allow anyone to create market", true).withComment("If true, anyone can create a market. Otherwise they will need the permission: markets.createmarket");
@@ -169,6 +168,8 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_TRANSACTIONS_BACKGROUND = create("gui.transactions.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_BANK_BACKGROUND = create("gui.bank.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add.item", CompMaterial.LIME_DYE.name());
+
+	public static ConfigEntry GUI_TAX_BANK_ITEMS_MONEY = create("gui.tax bank.items.money.item", CompMaterial.SUNFLOWER.name());
 
 	public static ConfigEntry GUI_EDIT_ITEM_BACKGROUND = create("gui.edit market item.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM = create("gui.edit market item.items.accepting offers.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());

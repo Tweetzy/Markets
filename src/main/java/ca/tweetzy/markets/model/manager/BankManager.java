@@ -27,6 +27,10 @@ public final class BankManager extends ListManager<BankEntry> {
 		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(owner)).collect(Collectors.toList());
 	}
 
+	public List<BankEntry> getTaxEntries() {
+		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(SERVER_ACCOUNT_UUID)).collect(Collectors.toList());
+	}
+
 	public BankEntry getEntryByPlayer(@NonNull final UUID owner, @NonNull final ItemStack itemStack) {
 		return getManagerContent().stream().filter(entry -> entry.getOwner().equals(owner) && entry.getItem().isSimilar(itemStack)).findFirst().orElse(null);
 	}

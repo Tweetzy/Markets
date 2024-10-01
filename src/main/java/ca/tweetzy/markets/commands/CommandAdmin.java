@@ -6,6 +6,7 @@ import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import org.bukkit.Bukkit;
@@ -28,6 +29,16 @@ public final class CommandAdmin extends Command {
 			return ReturnType.SUCCESS;
 		}// 0 1 2
 
+
+		if (args.length == 1) {
+			if (!(sender instanceof final Player player)) return ReturnType.FAIL;
+
+			switch(args[0].toLowerCase()) {
+				case "collecttax":
+					Markets.getGuiManager().showGUI(player, new BankGUI(null, player, true));
+			}
+			return ReturnType.SUCCESS;
+		}
 
 		if (args.length >= 2) {
 			final Player target = Bukkit.getPlayerExact(args[0]);

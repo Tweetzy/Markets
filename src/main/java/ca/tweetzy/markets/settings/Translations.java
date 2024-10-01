@@ -764,6 +764,14 @@ public final class Translations extends TranslationManager {
 			""
 	);
 
+	public static TranslationEntry GUI_BANK_TAX_TITLE = create("gui.tax bank.title", "&eMarkets &f- &7Tax Collection");
+	public static TranslationEntry GUI_BANK_TAX_ITEMS_ENTRY_NAME = create("gui.tax bank.items.entry.name","&a%entry_name%");
+	public static TranslationEntry GUI_BANK_TAX_ITEMS_ENTRY_LORE = create("gui.tax bank.items.entry.lore",
+			"&7Value&f: &E%entry_quantity%",
+			"",
+			"&e&l%left_click% &7to withdraw tax"
+	);
+
 	public static TranslationEntry GUI_BANK_TITLE = create("gui.bank.title", "&eMarkets &f- &7Bank");
 	public static TranslationEntry GUI_BANK_ITEMS_ADD_NAME = create("gui.bank.items.add.name", "<GRADIENT:65B1B4>&LDeposit</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_BANK_ITEMS_ADD_LORE = create("gui.bank.items.add.lore",
