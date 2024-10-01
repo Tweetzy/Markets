@@ -309,14 +309,15 @@ public final class CategoryItem implements MarketItem {
 			}
 
 			// insert tax
-			Markets.getBankManager().createTaxEntry(
-					this,
-					newPurchaseAmount,
-					tax,
-					created -> {
-						// todo do something
-					}
-			);
+			if (Settings.SEND_TAX_TO_SERVER_ACCOUNT.getBoolean())
+				Markets.getBankManager().createTaxEntry(
+						this,
+						newPurchaseAmount,
+						tax,
+						created -> {
+							// todo do something
+						}
+				);
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_price", isCurrencyOfItem() ? total : (int) total,
