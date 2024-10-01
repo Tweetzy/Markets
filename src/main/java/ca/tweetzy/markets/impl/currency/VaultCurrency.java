@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 public final class VaultCurrency extends AbstractCurrency {
 
 	public VaultCurrency() {
-		super("Vault", "Vault", Settings.CURRENCY_VAULT_SYMBOL.getString());
+		super("Vault", "Vault", Settings.CURRENCY_VAULT_SYMBOL.getString(), true);
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package ca.tweetzy.markets.impl.currency;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.funds.api.FundsAPI;
 import ca.tweetzy.funds.api.interfaces.Account;
 import ca.tweetzy.funds.api.interfaces.Currency;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.OfflinePlayer;
 
 public final class FundsCurrency extends IconableCurrency {
@@ -17,7 +19,14 @@ public final class FundsCurrency extends IconableCurrency {
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
-			setIcon(this.currency.getIcon().parseItem());
+
+			if (Settings.CURRENCY_ICONS_OVERRIDE.getBoolean())
+				setIcon(Settings.CURRENCY_ICONS.getItemStack());
+			else
+				setIcon(this.currency.getIcon().parseItem());
+
+			if (this.currency.isVaultCurrency())
+				setVault(true);
 		}
 	}
 

@@ -2,6 +2,7 @@ package ca.tweetzy.markets.impl.currency;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
+import ca.tweetzy.markets.settings.Settings;
 import com.willfp.ecobits.currencies.Currencies;
 import com.willfp.ecobits.currencies.Currency;
 import com.willfp.ecobits.currencies.CurrencyUtils;
@@ -19,6 +20,12 @@ public final class EcoBitsCurrency extends IconableCurrency {
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
+
+			if (Settings.CURRENCY_ICONS_OVERRIDE.getBoolean())
+				setIcon(Settings.CURRENCY_ICONS.getItemStack());
+
+			if (this.currency.isRegisteredWithVault())
+				setVault(true);
 		}
 	}
 

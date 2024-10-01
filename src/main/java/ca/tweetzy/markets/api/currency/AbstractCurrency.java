@@ -14,6 +14,10 @@ public abstract class AbstractCurrency implements Chargeable {
 	@Setter
 	protected String displayName;
 
+	@Setter
+	@Getter
+	protected boolean isVault;
+
 	public String getStoreableName() {
 		return this.owningPlugin + "/" + this.currencyName + "/" + this.displayName;
 	}

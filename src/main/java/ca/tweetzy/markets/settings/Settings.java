@@ -32,6 +32,10 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
 	public static ConfigEntry CURRENCY_USE_ITEM_ONLY = create("settings.currency.use item only", false).withComment("If true, Markets will only allow the usage of another item for currency.");
 	public static ConfigEntry CURRENCY_BLACKLISTED = create("settings.currency.black listed", List.of("UltraEconomy:Gems")).withComment("A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Gems");
+	public static ConfigEntry CURRENCY_ICONS = create("settings.currency.icon", "EMERALD").withComment("The item/texture to be used instead of the provided one use :# for model data ex. PAPER:4");
+	public static ConfigEntry CURRENCY_ICONS_OVERRIDE = create("settings.currency.override icon", false).withComment("If true, markets will use override the icon provided by the currency plugin");
+	public static ConfigEntry CURRENCY_HIDE_VAULT_AND_VAULT_HOOKED = create("settings.currency.hide vault and vault hooked", false).withComment("If true, markets will just hide the vault currency option and any other currency that is set as the default vault one.");
+
 	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 	public static ConfigEntry OPEN_CATEGORY_SETTINGS_AFTER_ITEM_ADD = create("settings.open category after item add", false).withComment("If true, when adding an item using the command, it will open the category after");
 	public static ConfigEntry AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK = create("settings.remove market item when out of stock", false).withComment("If true, then when an item's stock count hits zero, it will be removed from the market.");

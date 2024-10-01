@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public final class ItemCurrency extends AbstractCurrency {
 
 	public ItemCurrency() {
-		super("Markets", "Item", "&bCustom Item");
+		super("Markets", "Item", "&bCustom Item", false);
 	}
 
 	public boolean has(OfflinePlayer player, double amount, ItemStack item) {
