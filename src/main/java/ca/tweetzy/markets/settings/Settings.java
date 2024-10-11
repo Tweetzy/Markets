@@ -46,6 +46,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
 	public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
 	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
+	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount",10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
 
 	/*
 	========================= COMMAND ALIASES =========================
