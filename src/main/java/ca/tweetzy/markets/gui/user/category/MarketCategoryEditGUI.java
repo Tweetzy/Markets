@@ -256,7 +256,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 					// close guis of other users
 					marketItem.getViewingPlayers().forEach(viewingUser -> {
-						click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category));
+						click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
 					});
 
 					// give user the item or drop

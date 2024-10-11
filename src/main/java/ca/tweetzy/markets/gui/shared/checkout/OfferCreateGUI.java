@@ -129,7 +129,7 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 					created -> {
 						if (!created) return;
 						this.marketItem.getViewingPlayers().remove(this.player);
-						click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, Markets.getCategoryManager().getByUUID(this.marketItem.getOwningCategory())));
+						click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, Markets.getCategoryManager().getByUUID(this.marketItem.getOwningCategory()), false));
 					});
 		});
 
@@ -157,7 +157,7 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 		applyBackExit();
 		setAction(getRows() - 1, 0, click -> {
 			this.marketItem.getViewingPlayers().remove(click.player);
-			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 		});
 	}
 }

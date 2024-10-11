@@ -18,6 +18,9 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_REQUESTS = create("settings.max allowed requests", 64).withComment("The maximum # of requests a player can make without further permission");
 	public static ConfigEntry TAX_ENABLED = create("settings.tax.enabled", false).withComment("If true, will apply sales tax to the total when a user is buying an item");
 	public static ConfigEntry TAX_AMOUNT = create("settings.tax.percentage", 13.0).withComment("The tax percentage. By default it's 13%");
+
+	public static ConfigEntry SEND_TAX_TO_SERVER_ACCOUNT = create("settings.tax.send to server account", false).withComment("If true, any tax collected will just be sent to a server account for collection. /markets admin collecttax");
+
 	public static ConfigEntry CREATION_COST_ENABLED = create("settings.creation cost.enabled", true).withComment("If enabled, players will be charged to create their market");
 	public static ConfigEntry CREATION_COST_COST = create("settings.creation cost.cost", 1000).withComment("How much should market's charge the player to create their market");
 	public static ConfigEntry ALLOW_ANYONE_TO_CREATE_MARKET = create("settings.allow anyone to create market", true).withComment("If true, anyone can create a market. Otherwise they will need the permission: markets.createmarket");
@@ -29,6 +32,10 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
 	public static ConfigEntry CURRENCY_USE_ITEM_ONLY = create("settings.currency.use item only", false).withComment("If true, Markets will only allow the usage of another item for currency.");
 	public static ConfigEntry CURRENCY_BLACKLISTED = create("settings.currency.black listed", List.of("UltraEconomy:Gems")).withComment("A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Gems");
+	public static ConfigEntry CURRENCY_ICONS = create("settings.currency.icon", "EMERALD").withComment("The item/texture to be used instead of the provided one use :# for model data ex. PAPER:4");
+	public static ConfigEntry CURRENCY_ICONS_OVERRIDE = create("settings.currency.override icon", false).withComment("If true, markets will use override the icon provided by the currency plugin");
+	public static ConfigEntry CURRENCY_HIDE_VAULT_AND_VAULT_HOOKED = create("settings.currency.hide vault and vault hooked", false).withComment("If true, markets will just hide the vault currency option and any other currency that is set as the default vault one.");
+
 	public static ConfigEntry TIME_BETWEEN_RATINGS = create("settings.time between ratings", 86400).withComment("How many seconds must a player wait before they can rate the same market?");
 	public static ConfigEntry OPEN_CATEGORY_SETTINGS_AFTER_ITEM_ADD = create("settings.open category after item add", false).withComment("If true, when adding an item using the command, it will open the category after");
 	public static ConfigEntry AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK = create("settings.remove market item when out of stock", false).withComment("If true, then when an item's stock count hits zero, it will be removed from the market.");
@@ -39,6 +46,8 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
 	public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
 	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
+	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount",10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
+	public static ConfigEntry REQUEST_MENU_SHOWS_OWN_FIRST = create("settings.request menu shows own first",true).withComment("If false, the request menu will show global requests by default instead of your own.");
 
 	/*
 	========================= COMMAND ALIASES =========================
@@ -105,6 +114,7 @@ public final class Settings extends FlightSettings {
 
 	public static ConfigEntry GUI_MARKET_OVERVIEW_BACKGROUND = create("gui.market overview.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM = create("gui.market overview.items.display name.item", CompMaterial.NAME_TAG.name());
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_ITEM = create("gui.market overview.items.customer view.item", CompMaterial.ENDER_EYE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM = create("gui.market overview.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM = create("gui.market overview.items.new category.item", CompMaterial.LIME_DYE.name());
@@ -166,6 +176,8 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_BANK_BACKGROUND = create("gui.bank.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add.item", CompMaterial.LIME_DYE.name());
 
+	public static ConfigEntry GUI_TAX_BANK_ITEMS_MONEY = create("gui.tax bank.items.money.item", CompMaterial.SUNFLOWER.name());
+
 	public static ConfigEntry GUI_EDIT_ITEM_BACKGROUND = create("gui.edit market item.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_ACCEPTING_OFFERS_ITEM = create("gui.edit market item.items.accepting offers.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_EDIT_ITEM_ITEMS_REJECTING_OFFERS_ITEM = create("gui.edit market item.items.rejecting offers.item", CompMaterial.RED_STAINED_GLASS_PANE.name());
@@ -180,6 +192,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_NEW_RATING_ITEMS_MSG_ITEM = create("gui.new rating.message.item", CompMaterial.DARK_OAK_SIGN.name());
 
 	public static ConfigEntry GUI_ALL_MARKETS_BACKGROUND = create("gui.all markets.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_MARKET_ITEM = create("gui.all markets.items.market.item", CompMaterial.NETHER_STAR.name());
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM = create("gui.all markets.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_ALL_MARKETS_ITEMS_FILTER_ITEM = create("gui.all markets.items.filter.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_REQUEST_BACKGROUND = create("gui.request.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());

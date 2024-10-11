@@ -11,7 +11,7 @@ public abstract class IconableCurrency extends AbstractCurrency {
 	protected ItemStack icon;
 
 	public IconableCurrency(String owningPlugin, String currencyName, String displayName, ItemStack icon) {
-		super(owningPlugin, currencyName, displayName);
+		super(owningPlugin, currencyName, displayName, false);
 		this.icon = icon;
 	}
 }

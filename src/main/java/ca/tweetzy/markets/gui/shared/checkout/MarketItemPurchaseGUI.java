@@ -21,7 +21,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 	private int purchaseQty;
 
 	public MarketItemPurchaseGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final MarketItem marketItem) {
-		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())), player, TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
+		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false), player, TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
 
 		this.player = player;
 		this.market = market;
@@ -64,14 +64,14 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
 				this.marketItem.getViewingPlayers().remove(click.player);
-				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 			});
 		});
 
 		applyBackExit();
 		setAction(getRows() - 1, 0, click -> {
 			this.marketItem.getViewingPlayers().remove(click.player);
-			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 		});
 	}
 
@@ -80,19 +80,19 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC1_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC1_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 1));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, click.clickType.isShiftClick() ? 1 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 1));
 
 		setButton(2, 7, QuickItem
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC5_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC5_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 5));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, click.clickType.isShiftClick() ? 5 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 5));
 
 		setButton(3, 6, QuickItem
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_INCREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC10_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_INC10_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, 10));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.INCREASE, click.clickType.isShiftClick() ? 10 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 10));
 	}
 
 	private void drawDecrementButtons() {
@@ -100,19 +100,19 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC1_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC1_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 1));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, click.clickType.isShiftClick() ? 1 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 1));
 
 		setButton(2, 1, QuickItem
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC5_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC5_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 5));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, click.clickType.isShiftClick() ? 5 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 5));
 
 		setButton(3, 2, QuickItem
 				.of(Settings.GUI_PURCHASE_ITEM_ITEMS_DECREMENT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC10_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_DEC10_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, 10));
+				.make(), click -> adjustPurchaseQty(AdjustmentType.DECREASE, click.clickType.isShiftClick() ? 10 * Settings.PURCHASE_ITEM_SHIFT_MULTI_AMT.getInt() : 10));
 	}
 
 	private void drawPurchasingItem() {

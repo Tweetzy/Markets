@@ -32,8 +32,9 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 	private final Player player;
 	private final Market market;
 	private final Category category;
+	private final boolean viewAsCustomer;
 
-	public MarketCategoryViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
+	public MarketCategoryViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
@@ -42,6 +43,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		this.player = player;
 		this.market = market;
 		this.category = category;
+		this.viewAsCustomer = viewAsCustomer;
 
 		setDefaultItem(this.market.getCategoryLayout().getBackgroundItem());
 
@@ -51,8 +53,8 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		draw();
 	}
 
-	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category) {
-		this(new MarketViewGUI(player, market), player, market, category);
+	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer) {
+		this(new MarketViewGUI(player, market), player, market, category, viewAsCustomer);
 	}
 
 	@Override
@@ -92,7 +94,15 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 						"market_owner", this.market.getOwnerName(),
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
 				))
-				.make(), click -> click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))));
+				.make(), click -> {
+
+			if (this.viewAsCustomer) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.IN_CUSTOMER_MODE));
+				return;
+			}
+
+			click.manager.showGUI(click.player, new UserProfileGUI(this, click.player, Bukkit.getOfflinePlayer(this.market.getOwnerUUID())));
+		});
 
 		if (!Settings.DISABLE_REVIEWS.getBoolean()) {
 			setButton(this.market.getCategoryLayout().getReviewButtonSlot(), QuickItem
@@ -103,6 +113,11 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 							"right_click", TranslationManager.string(this.player, Translations.MOUSE_RIGHT_CLICK)
 					))
 					.make(), click -> {
+
+				if (this.viewAsCustomer) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.IN_CUSTOMER_MODE));
+					return;
+				}
 
 				if (click.clickType == ClickType.LEFT)
 					click.manager.showGUI(click.player, new NewMarketRatingGUI(this, click.player, this.market));
@@ -117,30 +132,43 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 					.of(Settings.GUI_MARKET_VIEW_ITEMS_SEARCH.getItemStack())
 					.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_NAME))
 					.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_SEARCH_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-					.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+					.make(), click -> {
 
-				@Override
-				public void onExit(Player player) {
-					click.manager.showGUI(click.player, MarketCategoryViewGUI.this);
+				if (this.viewAsCustomer) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.IN_CUSTOMER_MODE));
+					return;
 				}
 
-				@Override
-				public boolean onResult(String string) {
-					click.manager.showGUI(click.player, new MarketSearchGUI(MarketCategoryViewGUI.this, click.player, MarketCategoryViewGUI.this.category, string));
-					return true;
-				}
+				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
+
+					@Override
+					public void onExit(Player player) {
+						click.manager.showGUI(click.player, MarketCategoryViewGUI.this);
+					}
+
+					@Override
+					public boolean onResult(String string) {
+						click.manager.showGUI(click.player, new MarketSearchGUI(MarketCategoryViewGUI.this, click.player, MarketCategoryViewGUI.this.category, string));
+						return true;
+					}
+				};
 			});
 
 		setAction(getRows() - 1, 0, click -> {
 			this.category.getViewingPlayers().remove(click.player);
-			click.manager.showGUI(click.player, new MarketViewGUI(this.player, this.market));
+			click.manager.showGUI(click.player, new MarketViewGUI(null, this.player, this.market, this.viewAsCustomer));
 		});
 	}
 
 	@Override
 	protected void onClick(MarketItem marketItem, GuiClickEvent click) {
+		if (this.viewAsCustomer) {
+			Common.tell(click.player, TranslationManager.string(click.player, Translations.IN_CUSTOMER_MODE));
+			return;
+		}
+
 		if (Markets.getCategoryItemManager().getByUUID(marketItem.getId()) == null) {
-			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, this.category));
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, this.category, this.viewAsCustomer));
 			Common.tell(click.player, TranslationManager.string(click.player, Translations.ITEM_NO_LONGER_AVAILABLE));
 			return;
 		}

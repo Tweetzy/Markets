@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.currency.IconableCurrency;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
+import ca.tweetzy.markets.impl.currency.VaultCurrency;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -21,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -37,6 +39,21 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 		setAcceptsItems(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_CURRENCY_PICKER_BACKGROUND.getItemStack()));
 		draw();
+	}
+
+	@Override
+	protected void prePopulate() {
+		if (Settings.CURRENCY_HIDE_VAULT_AND_VAULT_HOOKED.getBoolean()) {
+			final ArrayList<AbstractCurrency> curr = new ArrayList<>();
+
+			for (AbstractCurrency item : this.items) {
+				if (!item.isVault()) {
+					curr.add(item);
+				}
+			}
+
+			this.items = curr;
+		}
 	}
 
 	@Override

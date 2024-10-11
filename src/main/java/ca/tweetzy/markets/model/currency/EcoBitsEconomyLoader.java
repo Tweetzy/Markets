@@ -1,25 +1,26 @@
 package ca.tweetzy.markets.model.currency;
 
-import ca.tweetzy.funds.api.FundsAPI;
-import ca.tweetzy.funds.api.interfaces.Currency;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
-import ca.tweetzy.markets.impl.currency.FundsCurrency;
+import ca.tweetzy.markets.impl.currency.EcoBitsCurrency;
 import ca.tweetzy.markets.settings.Settings;
+import com.willfp.ecobits.currencies.Currencies;
+import com.willfp.ecobits.currencies.Currency;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class FundsEconomyLoader extends CurrencyLoader {
+public final class EcoBitsEconomyLoader extends CurrencyLoader {
 
-	public FundsEconomyLoader() {
-		super("Funds");
+	public EcoBitsEconomyLoader() {
+		super("EcoBits");
 	}
+
 
 	@Override
 	public List<AbstractCurrency> getCurrencies() {
 		final List<AbstractCurrency> currencies = new ArrayList<>();
 
-		for (Currency currency : FundsAPI.getInstance().getCurrencies()) {
+		for (Currency currency : Currencies.values()) {
 			boolean blackListed = false;
 
 			for (String blacklisted : Settings.CURRENCY_BLACKLISTED.getStringList()) {
@@ -34,7 +35,7 @@ public final class FundsEconomyLoader extends CurrencyLoader {
 			}
 
 			if (!blackListed)
-				currencies.add(new FundsCurrency(currency.getId()));
+				currencies.add(new EcoBitsCurrency(currency.getId()));
 		}
 
 		return currencies;

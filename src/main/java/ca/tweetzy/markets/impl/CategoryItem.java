@@ -227,6 +227,7 @@ public final class CategoryItem implements MarketItem {
 		}
 
 		final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+		final double tax = this.isCurrencyOfItem() ? (int) Taxer.calculateTaxAmount(total) : Taxer.calculateTaxAmount(total);
 
 		if (withdrawResult) {
 			final ItemStack updatedItem = this.item.clone();
@@ -306,6 +307,17 @@ public final class CategoryItem implements MarketItem {
 			} else {
 				Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
 			}
+
+			// insert tax
+			if (Settings.SEND_TAX_TO_SERVER_ACCOUNT.getBoolean())
+				Markets.getBankManager().createTaxEntry(
+						this,
+						newPurchaseAmount,
+						tax,
+						created -> {
+							// todo do something
+						}
+				);
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_price", isCurrencyOfItem() ? total : (int) total,

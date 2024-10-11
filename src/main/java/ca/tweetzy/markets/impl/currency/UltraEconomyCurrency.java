@@ -2,7 +2,9 @@ package ca.tweetzy.markets.impl.currency;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
+import ca.tweetzy.markets.settings.Settings;
 import me.TechsCode.UltraEconomy.UltraEconomy;
+import me.TechsCode.UltraEconomy.UltraEconomyAPI;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
 import org.bukkit.OfflinePlayer;
@@ -18,6 +20,16 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 
 		if (this.currency != null) {
 			setDisplayName(this.currency.getName());
+
+			if (Settings.CURRENCY_ICONS_OVERRIDE.getBoolean())
+				setIcon(Settings.CURRENCY_ICONS.getItemStack());
+			else
+				setIcon(this.currency.getIcon().parseItem());
+
+			Currency vaultCurr = UltraEconomy.getInstance().getVaultCurrency().orElse(null);
+
+			if (vaultCurr != null && vaultCurr.getKey().equalsIgnoreCase(this.currency.getKey()))
+				setVault(true);
 		}
 	}
 

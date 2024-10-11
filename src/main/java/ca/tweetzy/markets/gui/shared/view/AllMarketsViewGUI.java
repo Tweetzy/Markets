@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.gui.shared.view;
 
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
@@ -7,6 +8,9 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
+import ca.tweetzy.flight.utils.profiles.builder.XSkull;
+import ca.tweetzy.flight.utils.profiles.objects.ProfileInputType;
+import ca.tweetzy.flight.utils.profiles.objects.Profileable;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.Market;
@@ -21,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,8 +37,9 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	public AllMarketsViewGUI(Gui parent, @NonNull Player player) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_ALL_MARKETS_TITLE), 6, new ArrayList<>(Markets.getMarketManager().getOpenMarketsExclusive(player)));
-		setDefaultItem(QuickItem.bg(Settings.GUI_ALL_MARKETS_BACKGROUND.getItemStack()));
 		this.marketUser = Markets.getPlayerManager().get(player.getUniqueId());
+		setAsync(true);
+		setDefaultItem(QuickItem.bg(Settings.GUI_ALL_MARKETS_BACKGROUND.getItemStack()));
 		draw();
 	}
 
@@ -58,16 +64,26 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	@Override
 	protected ItemStack makeDisplayItem(Market market) {
-		return QuickItem
-				.of(Bukkit.getOfflinePlayer(market.getOwnerUUID()))
+		QuickItem item = QuickItem
+				.of(CompMaterial.PLAYER_HEAD)
 				.name(market.getDisplayName())
 				.lore(market.getDescription())
 				.lore(TranslationManager.list(this.player, Translations.GUI_ALL_MARKETS_ITEMS_MARKET_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"market_ratings_total", market.getRatings().size(),
 						"market_ratings_stars", StringUtils.repeat("★", (int) market.getReviewAvg())
+				));
+
+
+		return  XSkull
+				.of(item.make())
+				.profile(Profileable.of(market.getOwnerUUID()))
+				.fallback(Profileable.of(
+						ProfileInputType.TEXTURE_URL,
+						"http://textures.minecraft.net/texture/533fc9a45be13ca57a78b21762c6e1262dae411f13048b963d972a29e07096ab"
 				))
-				.make();
+				.lenient()
+				.apply();
 	}
 
 	@Override
@@ -116,7 +132,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 			return;
 		}
 
-		click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, market));
+		click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, market, false));
 	}
 
 	@Override
