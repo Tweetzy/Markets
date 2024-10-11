@@ -21,7 +21,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 	private int purchaseQty;
 
 	public MarketItemPurchaseGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final MarketItem marketItem) {
-		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())), player, TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
+		super(new MarketCategoryViewGUI(player, market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false), player, TranslationManager.string(player, Translations.GUI_PURCHASE_ITEM_TITLE, "market_display_name", market.getDisplayName()), 6);
 
 		this.player = player;
 		this.market = market;
@@ -64,14 +64,14 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
 				this.marketItem.getViewingPlayers().remove(click.player);
-				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 			});
 		});
 
 		applyBackExit();
 		setAction(getRows() - 1, 0, click -> {
 			this.marketItem.getViewingPlayers().remove(click.player);
-			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory())));
+			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 		});
 	}
 

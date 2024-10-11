@@ -45,6 +45,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry REVIEWS_DISABLED = create("error.ratings disabled", "&cReviews are disabled");
 	public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
 	public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
+	public static TranslationEntry IN_CUSTOMER_MODE = create("error.not available in customer mode", "&cYou cannot do that in customer preview mode.");
 
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
@@ -203,6 +204,15 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: %market_display_name%",
 			"",
 			"&a&lClick &7to change display name"
+	);
+
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_NAME = create("gui.market overview.items.customer view.name", "<GRADIENT:65B1B4>&LView as Customer</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_LORE = create("gui.market overview.items.customer view.lore",
+			"&7If you would like to see how",
+			"&7your market will look like for buyers",
+			"&7you can click this button.",
+			"",
+			"&a&lClick &7to view as customer"
 	);
 
 	public static TranslationEntry GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME = create("gui.market overview.items.description.name", "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>");

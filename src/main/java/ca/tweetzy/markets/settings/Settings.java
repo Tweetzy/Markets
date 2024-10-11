@@ -112,6 +112,7 @@ public final class Settings extends FlightSettings {
 
 	public static ConfigEntry GUI_MARKET_OVERVIEW_BACKGROUND = create("gui.market overview.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM = create("gui.market overview.items.display name.item", CompMaterial.NAME_TAG.name());
+	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_ITEM = create("gui.market overview.items.customer view.item", CompMaterial.ENDER_EYE.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM = create("gui.market overview.items.description.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_SETTINGS_ITEM = create("gui.market overview.items.settings.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_MARKET_OVERVIEW_ITEMS_NEW_CAT_ITEM = create("gui.market overview.items.new category.item", CompMaterial.LIME_DYE.name());

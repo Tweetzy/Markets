@@ -70,7 +70,7 @@ public final class CommandView extends Command {
 				if (market.getOwnerUUID().equals(player.getUniqueId())) {
 					Markets.getGuiManager().showGUI(player, new MarketCategoryEditGUI(player, market, locatedCategory));
 				} else {
-					Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory));
+					Markets.getGuiManager().showGUI(player, new MarketCategoryViewGUI(player, market, locatedCategory, false));
 
 				}
 			}

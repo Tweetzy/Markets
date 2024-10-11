@@ -132,7 +132,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 			return;
 		}
 
-		click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, market));
+		click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, market, false));
 	}
 
 	@Override
