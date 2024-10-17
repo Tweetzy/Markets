@@ -12,9 +12,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
-import ca.tweetzy.markets.impl.currency.FundsCurrency;
 import ca.tweetzy.markets.impl.currency.ItemCurrency;
-import ca.tweetzy.markets.impl.currency.VaultCurrency;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -97,17 +95,16 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 		if (currency instanceof final IconableCurrency iconableCurrency)
 			quickItem = QuickItem.of(iconableCurrency.getIcon());
 
-		if (currency instanceof final FundsCurrency fundsCurrency) {
-			quickItem.name(fundsCurrency.getDisplayName());
-		} else {
-			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getCurrencyName());
-		}
 
-		quickItem.lore(Replacer.replaceVariables(List.of(
-				"&7Owning Plugin&f: &e%currency_owning_plugin%",
-				"",
-				"&a&l%left_click% &7to select this currency"
-		), "currency_owning_plugin", currency.getOwningPlugin(), "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)));
+		quickItem.name(TranslationManager.string(Translations.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_NAME,
+				"currency_name", currency.getCurrencyName().equalsIgnoreCase("vault") ? Settings.CURRENCY_VAULT_SYMBOL.getString() : currency.getDisplayName(),
+				"currency_id", currency.getCurrencyName()
+		));
+
+		quickItem.lore(TranslationManager.list(Translations.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE,
+				"currency_owning_plugin", currency.getOwningPlugin(),
+				"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+		));
 
 		return quickItem.make();
 	}

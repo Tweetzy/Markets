@@ -7,6 +7,7 @@ import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.UltraEconomyAPI;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
+import me.TechsCode.UltraEconomyAPI.base.item.XMaterial;
 import org.bukkit.OfflinePlayer;
 
 public final class UltraEconomyCurrency extends IconableCurrency {
@@ -24,7 +25,7 @@ public final class UltraEconomyCurrency extends IconableCurrency {
 			if (Settings.CURRENCY_ICONS_OVERRIDE.getBoolean())
 				setIcon(Settings.CURRENCY_ICONS.getItemStack());
 			else
-				setIcon(this.currency.getIcon().parseItem());
+				setIcon(CompMaterial.EMERALD.parseItem()); // this.currency.getIcon().getAsItemStack().orElse(Settings.CURRENCY_ICONS.getItemStack())
 
 			Currency vaultCurr = UltraEconomy.getInstance().getVaultCurrency().orElse(null);
 

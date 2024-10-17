@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.impl.currency;
 
 import ca.tweetzy.flight.utils.PlayerUtil;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,7 @@ public final class ItemCurrency extends AbstractCurrency {
 		if (player == null || player.getPlayer() == null || !player.isOnline()) return false;
 
 		for (int i = 0; i < amount; i++)
-			PlayerUtil.giveItem(player.getPlayer(), item);
+			Markets.newChain().sync(() -> PlayerUtil.giveItem(player.getPlayer(), item)).execute();
 
 		return true;
 	}
