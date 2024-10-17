@@ -72,6 +72,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry OFFER_ACCEPTED_PAYMENT = create("info.offer.accepted payment", "&eThe offer request was accepted");
 	public static TranslationEntry REQUEST_PAYMENT = create("info.request.payment", "&eA request was completed");
 	public static TranslationEntry REQUEST_FULFILLED = create("info.request.fulfilled", "&b%fulfill_name% &efulfilled your request for &e%request_item_name%");
+	public static TranslationEntry REQUEST_FULFILLED_FILLER = create("info.request.filler fulfilled", "&aSuccessfully fulfilled &b%fulfill_name%&a's request for &e%request_item_name%");
 
 
 	public static TranslationEntry DEFAULTS_MARKET_DISPLAY_NAME = create("info.defaults.market name", "&e%player_name%'s Market");
@@ -390,6 +391,12 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_USER_PICKER_TITLE = create("gui.user picker.title", "&eMarkets &f- &7Pick a user");
+	public static TranslationEntry GUI_CONFIRM_ACTION_TITLE = create("gui.confirm action.title", "&eMarkets &f- &7Are you sure?");
+	public static TranslationEntry GUI_CONFIRM_ACTION_ITEMS_YES_NAME = create("gui.confirm action.items.confirm.name", "<GRADIENT:4ab310>&lConfirm</GRADIENT:7ed664>");
+	public static TranslationEntry GUI_CONFIRM_ACTION_ITEMS_YES_LORE = create("gui.confirm action.items.confirm.lore", "&e&lClick &7to confirm action");
+
+	public static TranslationEntry GUI_CONFIRM_ACTION_ITEMS_NO_NAME = create("gui.confirm action.items.cancel.name", "<GRADIENT:9c0505>&lCancel</GRADIENT:c26a6a>");
+	public static TranslationEntry GUI_CONFIRM_ACTION_ITEMS_NO_LORE = create("gui.confirm action.items.cancel.lore", "&e&lClick &7to confirm action");
 
 
 	public static TranslationEntry GUI_CURRENCY_PICKER_TITLE = create("gui.currency picker.title", "&eMarkets &f- &7Pick a currency");
@@ -401,6 +408,13 @@ public final class Translations extends TranslationManager {
 			"&b&l%right_click% &7to open a material picker &eor",
 			"&e&l%left_click% &7with the item you want to use",
 			"&7as the currency onto this icon."
+	);
+
+	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CURRENCY_NAME = create("gui.currency picker.items.currency.name", "<GRADIENT:65B1B4>&l%currency_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE = create("gui.currency picker.items.currency.lore",
+			"&7Owning Plugin&f: &e%currency_owning_plugin%",
+			"",
+			"&a&l%left_click% &7to select this currency"
 	);
 
 	public static TranslationEntry GUI_MARKET_SETTINGS_TITLE = create("gui.market settings.title", "&eMarkets &f- &7Settings");

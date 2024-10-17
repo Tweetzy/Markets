@@ -12,6 +12,7 @@ import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.gui.shared.selector.ConfirmGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
@@ -134,22 +135,48 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE))
 				.make(), click -> {
 
-			// remove items first if any
-			if (!this.category.getItems().isEmpty()) {
-				this.category.getItems().forEach(item -> item.getViewingPlayers().clear());
-
-				Markets.getDataManager().deleteMarketItems(this.category, (error, itemResult) -> {
-					if (error == null && itemResult) {
-						this.category.getItems().forEach(item -> {
-							giveBackMarketItem(item);
-							Markets.getCategoryItemManager().remove(item);
-						});
-
-						performCategoryDeletion(click);
+			if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
+				click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
+					if (!confirmed) {
+						click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, this.market, this.category));
+						return;
 					}
-				});
-			} else
-				performCategoryDeletion(click);
+
+					// remove items first if any
+					if (!this.category.getItems().isEmpty()) {
+						this.category.getItems().forEach(item -> item.getViewingPlayers().clear());
+
+						Markets.getDataManager().deleteMarketItems(this.category, (error, itemResult) -> {
+							if (error == null && itemResult) {
+								this.category.getItems().forEach(item -> {
+									giveBackMarketItem(item);
+									Markets.getCategoryItemManager().remove(item);
+								});
+
+								performCategoryDeletion(click);
+							}
+						});
+					} else
+						performCategoryDeletion(click);
+				}));
+			} else {
+				// remove items first if any
+				if (!this.category.getItems().isEmpty()) {
+					this.category.getItems().forEach(item -> item.getViewingPlayers().clear());
+
+					Markets.getDataManager().deleteMarketItems(this.category, (error, itemResult) -> {
+						if (error == null && itemResult) {
+							this.category.getItems().forEach(item -> {
+								giveBackMarketItem(item);
+								Markets.getCategoryItemManager().remove(item);
+							});
+
+							performCategoryDeletion(click);
+						}
+					});
+				} else
+					performCategoryDeletion(click);
+			}
 		});
 	}
 
@@ -250,19 +277,40 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 			case DROP -> {
 //				final MarketItem relocatedItem = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
 
-				marketItem.unStore(result -> {
-					if (result != SynchronizeResult.SUCCESS)
-						return;
+				if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
+					click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
+						if (!confirmed) return;
 
-					// close guis of other users
-					marketItem.getViewingPlayers().forEach(viewingUser -> {
-						click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
+						marketItem.unStore(result -> {
+							if (result != SynchronizeResult.SUCCESS)
+								return;
+
+							// close guis of other users
+							marketItem.getViewingPlayers().forEach(viewingUser -> {
+								click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
+							});
+
+							// give user the item or drop
+							giveBackMarketItem(marketItem);
+							reopen(click);
+						});
+					}));
+
+				} else {
+					marketItem.unStore(result -> {
+						if (result != SynchronizeResult.SUCCESS)
+							return;
+
+						// close guis of other users
+						marketItem.getViewingPlayers().forEach(viewingUser -> {
+							click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
+						});
+
+						// give user the item or drop
+						giveBackMarketItem(marketItem);
+						reopen(click);
 					});
-
-					// give user the item or drop
-					giveBackMarketItem(marketItem);
-					reopen(click);
-				});
+				}
 			}
 		}
 	}

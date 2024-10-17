@@ -14,6 +14,8 @@ import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public final class TransactionsGUI extends MarketsPagedGUI<Transaction> {
@@ -21,12 +23,17 @@ public final class TransactionsGUI extends MarketsPagedGUI<Transaction> {
 	private final Player player;
 
 	public TransactionsGUI(Gui parent, @NonNull final Player player) {
-		super(parent, player, TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE), 6, Markets.getTransactionManager().getOfflineTransactionsFor(player.getUniqueId()));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE), 6, new ArrayList<>(Markets.getTransactionManager().getManagerContent()));
 		this.player = player;
 		setAcceptsItems(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_TRANSACTIONS_BACKGROUND.getItemStack()));
 
 		draw();
+	}
+
+	@Override
+	protected void prePopulate() {
+		this.items.sort(Comparator.comparing(Transaction::getTimeCreated).reversed());
 	}
 
 	@Override
