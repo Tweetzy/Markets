@@ -48,6 +48,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
 	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount",10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
 	public static ConfigEntry REQUEST_MENU_SHOWS_OWN_FIRST = create("settings.request menu shows own first",true).withComment("If false, the request menu will show global requests by default instead of your own.");
+	public static ConfigEntry USE_ADDITIONAL_CONFIRMS = create("settings.additional confirmations.enabled",true).withComment("If true, markets will ask the player to confirm sensitive actions (ie. deleting, creating) ");
 
 	/*
 	========================= COMMAND ALIASES =========================
@@ -95,6 +96,10 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_SEARCH_BACKGROUND = create("gui.search.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_CURRENCY_PICKER_BACKGROUND = create("gui.currency picker.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_PLAYER_PICKER_BACKGROUND = create("gui.player picker.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static ConfigEntry GUI_CONFIRM_ACTION_BACKGROUND = create("gui.confirm action.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_CONFIRM_ACTION_ITEMS_YES = create("gui.confirm action.items.confirm", CompMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_CONFIRM_ACTION_ITEMS_NO = create("gui.confirm action.items.cancel", CompMaterial.RED_STAINED_GLASS_PANE.name());
 
 
 	public static ConfigEntry GUI_MAIN_VIEW_BACKGROUND = create("gui.main view.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());

@@ -143,6 +143,11 @@ public final class RequestsGUI extends MarketsPagedGUI<Request> {
 			Common.tell(requestedOwner.getPlayer(), TranslationManager.string(requestedOwner.getPlayer(), Translations.REQUEST_FULFILLED, "fulfill_name", fulfiller.getName(), "request_item_name", ItemUtil.getItemName(request.getRequestItem())));
 		}
 
+		Common.tell(click.player, TranslationManager.string(Translations.REQUEST_FULFILLED_FILLER,
+				"request_item_name", ItemUtil.getItemName(request.getRequestItem()),
+				"fulfill_name", requestedOwner.getName()
+		));
+
 		// call transaction event
 		Bukkit.getServer().getPluginManager().callEvent(new MarketTransactionEvent(
 				fulfiller,

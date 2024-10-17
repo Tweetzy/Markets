@@ -6,6 +6,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
+import ca.tweetzy.markets.gui.shared.selector.ConfirmGUI;
 import ca.tweetzy.markets.gui.shared.view.AllMarketsViewGUI;
 import ca.tweetzy.markets.gui.shared.view.requests.RequestsGUI;
 import ca.tweetzy.markets.gui.user.BankGUI;
@@ -56,10 +57,24 @@ public final class MarketsMainGUI extends MarketsBaseGUI {
 							return;
 						}
 
-						Markets.getMarketManager().create(this.player, created -> {
-							if (created)
-								click.manager.showGUI(click.player, new MarketsMainGUI(click.player));
-						});
+						if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
+							click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
+								if (confirmed)
+									Markets.getMarketManager().create(this.player, created -> {
+										if (created)
+											click.manager.showGUI(click.player, new MarketsMainGUI(click.player));
+									});
+								else
+									click.manager.showGUI(click.player, new MarketsMainGUI(click.player));
+							}));
+
+						} else {
+							Markets.getMarketManager().create(this.player, created -> {
+								if (created)
+									click.manager.showGUI(click.player, new MarketsMainGUI(click.player));
+							});
+						}
+
 						return;
 					}
 
