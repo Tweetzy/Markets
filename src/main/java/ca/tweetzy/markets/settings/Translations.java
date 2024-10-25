@@ -47,6 +47,11 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
 	public static TranslationEntry IN_CUSTOMER_MODE = create("error.not available in customer mode", "&cYou cannot do that in customer preview mode.");
 
+	public static TranslationEntry BLOCKED_ITEM = create("error.blacklist.item", "&cThe sale of %item% in markets is not allowed!");
+	public static TranslationEntry BLOCKED_ITEM_NAME = create("error.blacklist.name", "&cYou cannot sell an item w/%blacklisted_word% &cin its name");
+	public static TranslationEntry BLOCKED_ITEM_LORE = create("error.blacklist.lore", "&cYou cannot sell an item w/%blacklisted_word% &cin its lore");
+	public static TranslationEntry BLOCKED_ITEM_TAG = create("error.blacklist.nbt tag", "&cThat item is currently blacklisted.");
+
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
 	public static TranslationEntry MARKET_ITEM_BOUGHT_SELLER = create("info.market item bought.seller", "&fx&a%purchase_quantity% &f%item_name% &ewas bought by &b%buyer_name%");

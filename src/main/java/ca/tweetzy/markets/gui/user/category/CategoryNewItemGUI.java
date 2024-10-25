@@ -1,5 +1,6 @@
 package ca.tweetzy.markets.gui.user.category;
 
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
@@ -13,6 +14,7 @@ import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.impl.CategoryItem;
+import ca.tweetzy.markets.model.BlacklistChecker;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -152,6 +154,9 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_ITEM_TO_ADD));
 				return;
 			}
+
+			// check blacklist
+			if (!BlacklistChecker.passesChecks(click.player, placedItem)) return;
 
 			this.marketItem.setItem(placedItem.clone());
 			this.marketItem.setStock(placedItem.clone().getAmount());

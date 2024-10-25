@@ -5,6 +5,7 @@ import ca.tweetzy.flight.config.ConfigEntry;
 import ca.tweetzy.flight.settings.FlightSettings;
 import ca.tweetzy.markets.Markets;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class Settings extends FlightSettings {
@@ -12,6 +13,24 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
 	public static ConfigEntry DATETIME_FORMAT = create("date time format", "MMM dd, yyyy hh:mm:ss a").withComment("How should timestamps be formatted");
+
+
+	/*
+	========================= Database Stuff =========================
+	 */
+	public static final ConfigEntry DATABASE_USE = create("database.use database", false, "Should the plugin use a database to store market data?");
+	public static final ConfigEntry DATABASE_TABLE_PREFIX = create("database.table prefix", "markets_", "What prefix should be used for table names");
+	public static final ConfigEntry DATABASE_HOST = create("database.host", "localhost", "What is the connection url/host");
+	public static final ConfigEntry DATABASE_PORT = create("database.port", 3306, "What is the port to database (default is 3306)");
+	public static final ConfigEntry DATABASE_NAME = create("database.name", "plugin_dev", "What is the name of the database?");
+	public static final ConfigEntry DATABASE_USERNAME = create("database.username", "root", "What is the name of the user connecting?");
+	public static final ConfigEntry DATABASE_PASSWORD = create("database.password", "Password1.", "What is the password to the user connecting?");
+	public static final ConfigEntry DATABASE_CUSTOM_PARAMS = create("database.custom parameters", "?useUnicode=yes&characterEncoding=UTF-8&useServerPrepStmts=false&rewriteBatchedStatements=true&useSSL=true", "Leave this alone if you don't know what you're doing. Set to 'None' to use no custom connection params");
+
+
+	/*
+	========================= General Settings =========================
+	 */
 	public static ConfigEntry MAIN_COMMAND_REQUIRES_PERM = create("settings.main command requires permission", false).withComment("If true, players will need the permission: 'markets.command' to use /markets");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
@@ -46,9 +65,9 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry DISABLE_OFFERS = create("settings.disable offers", false).withComment("If true, offers will be disabled");
 	public static ConfigEntry DISABLE_WHOLESALE = create("settings.disable wholesale", false).withComment("If true, wholesale will be disabled");
 	public static ConfigEntry DISABLE_LAYOUT_EDITING = create("settings.disable layout editing", false).withComment("If true, users will not be able to change the layout of their markets");
-	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount",10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
-	public static ConfigEntry REQUEST_MENU_SHOWS_OWN_FIRST = create("settings.request menu shows own first",true).withComment("If false, the request menu will show global requests by default instead of your own.");
-	public static ConfigEntry USE_ADDITIONAL_CONFIRMS = create("settings.additional confirmations.enabled",true).withComment("If true, markets will ask the player to confirm sensitive actions (ie. deleting, creating) ");
+	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount", 10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
+	public static ConfigEntry REQUEST_MENU_SHOWS_OWN_FIRST = create("settings.request menu shows own first", true).withComment("If false, the request menu will show global requests by default instead of your own.");
+	public static ConfigEntry USE_ADDITIONAL_CONFIRMS = create("settings.additional confirmations.enabled", true).withComment("If true, markets will ask the player to confirm sensitive actions (ie. deleting, creating) ");
 
 	/*
 	========================= COMMAND ALIASES =========================
@@ -68,6 +87,20 @@ public final class Settings extends FlightSettings {
 	/*
 	========================= BLACKLISTED ITEMS =========================
 	 */
+	public static final ConfigEntry BLOCKED_ITEMS = create("blocked items", Collections.singletonList("ENDER_CHEST"), "Materials that should be blocked (not allowed to sell) You can add model data by using :# ex. PAPER:5");
+	public static final ConfigEntry BLOCKED_NBT_TAGS = create("blocked nbt tags", Collections.singletonList("example_tag"), "A list of NBT tags that are blocked from the being added to markets. These are case sensitive");
+	public static final ConfigEntry BLOCKED_ITEM_NAMES = create("blocked item names", List.of(
+			"fuck",
+			"bitch",
+			"nigger",
+			"nigga",
+			"pussy"
+	), "If an item contains any words/names specified here, it won't list.");
+
+	public static final ConfigEntry BLOCKED_ITEM_LORES = create("blocked item lores", List.of(
+			"kill yourself",
+			"another random phrase"
+	), "If an item lore contains any of these values, it won't list");
 
 	/*
 	========================= CLICKS =========================

@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.user.category.MarketCategoryEditGUI;
 import ca.tweetzy.markets.impl.CategoryItem;
+import ca.tweetzy.markets.model.BlacklistChecker;
 import ca.tweetzy.markets.model.FlagExtractor;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -55,6 +56,9 @@ public final class CommandAdd extends Command {
 
 			final ItemStack toSell = PlayerUtil.getHand(player).clone();
 			final Category category = Markets.getCategoryManager().getByName(market, args[0]);
+
+			// check blacklist
+			if (!BlacklistChecker.passesChecks(player, toSell)) return ReturnType.FAIL;
 
 			if (category == null) {
 				tell(player, TranslationManager.string(player, Translations.INVALID_CATEGORY, "category_id", args[0]));
