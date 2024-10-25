@@ -21,10 +21,12 @@ import java.util.List;
 public final class TransactionsGUI extends MarketsPagedGUI<Transaction> {
 
 	private final Player player;
+	private boolean viewAll;
 
-	public TransactionsGUI(Gui parent, @NonNull final Player player) {
-		super(parent, player, TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE), 6, new ArrayList<>(Markets.getTransactionManager().getManagerContent()));
+	public TransactionsGUI(Gui parent, @NonNull final Player player, boolean viewAll) {
+		super(parent, player, TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE), 6, new ArrayList<>());
 		this.player = player;
+		this.viewAll = viewAll;
 		setAcceptsItems(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_TRANSACTIONS_BACKGROUND.getItemStack()));
 
@@ -33,7 +35,35 @@ public final class TransactionsGUI extends MarketsPagedGUI<Transaction> {
 
 	@Override
 	protected void prePopulate() {
+		if (this.viewAll) {
+			this.items = new ArrayList<>(Markets.getTransactionManager().getManagerContent());
+		} else {
+			this.items = new ArrayList<>(Markets.getTransactionManager().getOfflineTransactionsFor(this.player.getUniqueId()));
+		}
+
 		this.items.sort(Comparator.comparing(Transaction::getTimeCreated).reversed());
+	}
+
+	@Override
+	protected void drawFixed() {
+		if (!Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
+			setTransactionViewButton();
+		} else {
+			if (this.player.hasPermission("markets.viewalltransactions"))
+				setTransactionViewButton();
+		}
+	}
+
+	private void setTransactionViewButton() {
+		setButton(getRows() - 1, 8, QuickItem
+				.of(Settings.GUI_TRANSACTIONS_VIEW_ALL_ITEM.getItemStack())
+				.name(TranslationManager.string(Translations.GUI_TRANSACTIONS_ITEMS_VIEW_ALL_NAME))
+				.lore(TranslationManager.list(Translations.GUI_TRANSACTIONS_ITEMS_VIEW_ALL_LORE, "is_true", TranslationManager.string(this.viewAll ? Translations.TRUE : Translations.FALSE), "left_click", TranslationManager.string(Translations.MOUSE_LEFT_CLICK)))
+				.make(), click -> {
+
+			this.viewAll = !this.viewAll;
+			draw();
+		});
 	}
 
 	@Override

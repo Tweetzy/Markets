@@ -782,6 +782,16 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_TRANSACTIONS_TITLE = create("gui.transactions.title", "&eMarkets &f- &7Transactions");
+	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_VIEW_ALL_NAME= create("gui.transactions.items.view all.name", "<GRADIENT:65B1B4>&lSwitch View Mode</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_VIEW_ALL_LORE = create("gui.transactions.items.view all.lore",
+			"&7Used to toggle whether you see every transaction",
+			"&7or just the transactions related to you.",
+			"",
+			"&7Viewing all&f: %is_true%",
+			"",
+			"&e&l%left_click% &7to toggle view all"
+	);
+
 	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_ENTRY_LORE = create("gui.transactions.items.entry.lore",
 			"&7----------------------------",
 			"&7Quantity&f: &E%item_quantity%",

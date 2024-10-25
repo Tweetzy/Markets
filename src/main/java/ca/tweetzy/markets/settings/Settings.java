@@ -68,6 +68,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry PURCHASE_ITEM_SHIFT_MULTI_AMT = create("settings.purchase item.shift multiply amount", 10).withComment("Ex. if the player shift clicks the increase 5 button it becomes 50, 1 -> 10, 10 -> 100");
 	public static ConfigEntry REQUEST_MENU_SHOWS_OWN_FIRST = create("settings.request menu shows own first", true).withComment("If false, the request menu will show global requests by default instead of your own.");
 	public static ConfigEntry USE_ADDITIONAL_CONFIRMS = create("settings.additional confirmations.enabled", true).withComment("If true, markets will ask the player to confirm sensitive actions (ie. deleting, creating) ");
+	public static ConfigEntry TRANSACTION_VIEW_ALL_NEEDS_PERM = create("settings.require permission to view all transactions", true).withComment("If true, players will need the perm: markets.viewalltransactions to see the toggle button.");
 
 	/*
 	========================= COMMAND ALIASES =========================
@@ -211,6 +212,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency.item", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_TRANSACTIONS_BACKGROUND = create("gui.transactions.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static ConfigEntry GUI_TRANSACTIONS_VIEW_ALL_ITEM = create("gui.transactions.items.view all", CompMaterial.NETHER_STAR.name());
 	public static ConfigEntry GUI_BANK_BACKGROUND = create("gui.bank.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_BANK_ITEMS_ADD = create("gui.bank.items.add.item", CompMaterial.LIME_DYE.name());
 
