@@ -36,9 +36,11 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 	default boolean isEmpty() {
 		boolean isEmpty = true;
 		for (Category category : getCategories()) {
-			if (!category.getItems().isEmpty()) {
-				isEmpty = false;
-				break;
+			for (MarketItem item : category.getItems()) {
+				if (item.getStock() > 0) {
+					isEmpty = false;
+					break;
+				}
 			}
 		}
 		return isEmpty;
