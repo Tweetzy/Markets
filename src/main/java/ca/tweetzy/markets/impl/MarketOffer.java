@@ -31,7 +31,7 @@ public final class MarketOffer implements Offer {
 	private final String senderName;
 	private final UUID offerTo;
 	private final UUID marketItem;
-	private final int requestAmount;
+	private int requestAmount;
 	private String currency;
 	private ItemStack currencyItem;
 	private double offeredAmount;
@@ -111,6 +111,11 @@ public final class MarketOffer implements Offer {
 	@Override
 	public void setOfferedAmount(double amount) {
 		this.offeredAmount = amount;
+	}
+
+	@Override
+	public void setRequestAmount(int amount) {
+		this.requestAmount = amount;
 	}
 
 	@Override
@@ -207,8 +212,13 @@ public final class MarketOffer implements Offer {
 		});
 
 		// delete the item
-		marketItem.unStore(result -> {
-		});
+
+		int newTotal = marketItem.getStock() - this.requestAmount;
+		if (newTotal < 0)
+			newTotal = 0;
+
+		marketItem.setStock(newTotal);
+		marketItem.sync(null);
 
 		Markets.getOfflineItemPaymentManager().create(
 				this.sender,

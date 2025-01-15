@@ -39,6 +39,8 @@ public interface Offer extends Identifiable, Trackable, Storeable<Offer> {
 
 	void setOfferedAmount(final double amount);
 
+	void setRequestAmount(final int amount);
+
 	void accept(@NonNull final Consumer<TransactionResult> result);
 
 	void reject(@NonNull final BiConsumer<TransactionResult, OfferRejectReason> result);
