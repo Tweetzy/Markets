@@ -11,6 +11,7 @@ import java.util.List;
 public final class Settings extends FlightSettings {
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eMarkets&8]").withComment("The prefix for the plugin");
+	public static ConfigEntry NAME = create("name", "&eMarkets").withComment("The plugin name");
 	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
 	public static ConfigEntry DATETIME_FORMAT = create("date time format", "MMM dd, yyyy hh:mm:ss a").withComment("How should timestamps be formatted");
 
@@ -29,8 +30,16 @@ public final class Settings extends FlightSettings {
 
 
 	/*
+	========================= Admin Market Stuff =========================
+	 */
+	public static final ConfigEntry SERVER_MARKET_UUID = create("settings.server market.uuid", "00000000-0000-0000-0000-000000000000", "Do not touch this");
+	public static final ConfigEntry SERVER_MARKET_TEXTURE = create("settings.server market.icon", "http://textures.minecraft.net/texture/533fc9a45be13ca57a78b21762c6e1262dae411f13048b963d972a29e07096ab", "The head texture url or item name for the server market icon");
+
+
+	/*
 	========================= General Settings =========================
 	 */
+
 	public static ConfigEntry MAIN_COMMAND_REQUIRES_PERM = create("settings.main command requires permission", false).withComment("If true, players will need the permission: 'markets.command' to use /markets");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_ITEMS = create("settings.max allowed market items", 64).withComment("The maximum # of items a player can add to their market before special permissions.");
 	public static ConfigEntry DEFAULT_MAX_ALLOWED_MARKET_CATEGORIES = create("settings.max allowed market categories", 20).withComment("The maximum # of categories a player can add to their market before special permissions.");
@@ -173,6 +182,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_OFFERS_ITEM = create("gui.category add item.items.offers.item", CompMaterial.FLOWER_BANNER_PATTERN.name());
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_ITEM = create("gui.category add item.items.price.item", CompMaterial.SUNFLOWER.name());
 	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_FOR_ALL_ITEM = create("gui.category add item.items.price for all.item", CompMaterial.RED_SHULKER_BOX.name());
+	public static ConfigEntry GUI_CATEGORY_ADD_ITEM_ITEMS_INFINITE_ITEM = create("gui.category add item.items.infinite.item", CompMaterial.HEART_OF_THE_SEA.name());
 
 
 	public static ConfigEntry GUI_MARKET_SETTINGS_BACKGROUND = create("gui.market settings.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
@@ -210,6 +220,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CREATE_OFFER = create("gui.offer creation.items.create offer.item", CompMaterial.LIME_DYE.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_BREAKDOWN = create("gui.offer creation.items.breakdown.item", CompMaterial.PAPER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_AMOUNT = create("gui.offer creation.items.offered amount.item", CompMaterial.SUNFLOWER.name());
+	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_REQUEST_AMT = create("gui.offer creation.items.requested amount.item", CompMaterial.REPEATER.name());
 	public static ConfigEntry GUI_OFFER_CREATE_ITEMS_CURRENCY = create("gui.offer creation.items.currency.item", CompMaterial.GOLD_INGOT.name());
 	public static ConfigEntry GUI_TRANSACTIONS_BACKGROUND = create("gui.transactions.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 	public static ConfigEntry GUI_TRANSACTIONS_VIEW_ALL_ITEM = create("gui.transactions.items.view all", CompMaterial.NETHER_STAR.name());

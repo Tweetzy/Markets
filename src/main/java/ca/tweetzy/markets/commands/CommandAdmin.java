@@ -5,6 +5,7 @@ import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.gui.admin.MarketsAdminGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
 import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.settings.Settings;
@@ -26,9 +27,10 @@ public final class CommandAdmin extends Command {
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
 		if (args.length == 0) {
+			if (sender instanceof final Player player)
+				Markets.getGuiManager().showGUI(player, new MarketsAdminGUI(player));
 			return ReturnType.SUCCESS;
 		}// 0 1 2
-
 
 		if (args.length == 1) {
 			if (!(sender instanceof final Player player)) return ReturnType.FAIL;

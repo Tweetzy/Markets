@@ -52,7 +52,7 @@ public final class MarketViewGUI extends MarketsPagedGUI<Category> {
 
 		// set custom shit
 		setButton(this.market.getHomeLayout().getOwnerProfileSlot(), QuickItem
-				.of(Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))
+				.of(this.market.getDynamicIcon())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),

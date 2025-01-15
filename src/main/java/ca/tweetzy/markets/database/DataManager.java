@@ -942,6 +942,25 @@ public final class DataManager extends DataManagerAbstract {
 		homeLayout = resultSet.getString("home_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("home_layout")) : new HomeLayout();
 		categoryLayout = resultSet.getString("category_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("category_layout")) : new HomeLayout();
 
+		if (Enum.valueOf(MarketType.class, resultSet.getString("type").toUpperCase()) == MarketType.SERVER) {
+			return new ServerMarket(
+					UUID.fromString(resultSet.getString("id")),
+					UUID.fromString(resultSet.getString("owner")),
+					resultSet.getString("owner_name"),
+					resultSet.getString("display_name"),
+					new ArrayList<>(List.of(resultSet.getString("description").split(";;;"))),
+					new ArrayList<>(),
+					new ArrayList<>(),
+					bannedUsers,
+					resultSet.getBoolean("open"),
+					resultSet.getBoolean("close_when_out_of_stock"),
+					homeLayout,
+					categoryLayout,
+					resultSet.getLong("created_at"),
+					resultSet.getLong("updated_at")
+			);
+		}
+
 		return new PlayerMarket(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("owner")),

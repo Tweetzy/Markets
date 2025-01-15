@@ -22,10 +22,8 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -80,7 +78,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				.profile(Profileable.of(market.getOwnerUUID()))
 				.fallback(Profileable.of(
 						ProfileInputType.TEXTURE_URL,
-						"http://textures.minecraft.net/texture/533fc9a45be13ca57a78b21762c6e1262dae411f13048b963d972a29e07096ab"
+						Settings.SERVER_MARKET_TEXTURE.getString()
 				))
 				.lenient()
 				.apply();

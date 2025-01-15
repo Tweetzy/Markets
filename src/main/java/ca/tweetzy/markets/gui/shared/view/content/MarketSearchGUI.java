@@ -55,7 +55,7 @@ public final class MarketSearchGUI extends MarketsPagedGUI<MarketItem> {
 		item.lore(TranslationManager.list(this.player, Translations.GUI_SEARCH_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
 				"market_item_currency", marketItem.getCurrencyDisplayName(),
-				"market_item_stock", marketItem.getStock(),
+				"market_item_stock", marketItem.isInfinite() ? "∞" : marketItem.getStock(),
 				"market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE),
 				"market_item_owner", itemMarket.getOwnerName(),
 				"market_item_market_name", itemMarket.getDisplayName()

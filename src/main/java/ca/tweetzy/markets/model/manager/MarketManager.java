@@ -5,10 +5,12 @@ import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.Filterer;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.manager.ListManager;
+import ca.tweetzy.markets.api.market.core.AbstractMarket;
 import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.impl.PlayerMarket;
+import ca.tweetzy.markets.impl.ServerMarket;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -50,6 +52,15 @@ public final class MarketManager extends ListManager<Market> {
 
 	public List<Market> getOpenMarketsExclusive(@NonNull final OfflinePlayer ignoredUser) {
 		return getManagerContent().stream().filter(market -> !market.getOwnerUUID().equals(ignoredUser.getUniqueId()) && market.isOpen() && !market.isEmpty()).collect(Collectors.toList());
+	}
+
+	public ServerMarket getServerMarket() {
+		return getManagerContent()
+				.stream()
+				.filter(ServerMarket.class::isInstance)
+				.map(ServerMarket.class::cast)
+				.findFirst()
+				.orElse(null);
 	}
 
 	public List<Market> getOpenMarketsInclusive() {

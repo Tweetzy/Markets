@@ -64,7 +64,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
 				"market_item_currency", marketItem.getCurrencyDisplayName(),
-				"market_item_stock", marketItem.getStock(),
+				"market_item_stock", marketItem.isInfinite() ? "∞" : marketItem.getStock(),
 				"market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
 		));
 
@@ -88,7 +88,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 		// set custom shit
 		setButton(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
-				.of(Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))
+				.of(this.market.getDynamicIcon())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),

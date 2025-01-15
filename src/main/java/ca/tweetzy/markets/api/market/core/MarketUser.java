@@ -3,6 +3,7 @@ package ca.tweetzy.markets.api.market.core;
 import ca.tweetzy.markets.api.Storeable;
 import ca.tweetzy.markets.api.Synchronize;
 import ca.tweetzy.markets.api.market.MarketSortType;
+import ca.tweetzy.markets.settings.Settings;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -41,4 +42,8 @@ public interface MarketUser extends Synchronize, Storeable<MarketUser> {
 	void setLastSeenAt(final long lastSeenAt);
 
 	void setMarketSortType(MarketSortType marketSortType);
+
+	default boolean isServerMarket() {
+		return getUUID().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString()));
+	}
 }
