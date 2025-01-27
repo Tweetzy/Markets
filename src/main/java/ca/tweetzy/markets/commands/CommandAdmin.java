@@ -5,8 +5,10 @@ import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.gui.admin.MarketsAdminGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -42,21 +44,31 @@ public final class CommandAdmin extends Command {
 			return ReturnType.SUCCESS;
 		}
 
-		if (args.length >= 2) {
-			final Player target = Bukkit.getPlayerExact(args[0]);
+		final Player target = Bukkit.getPlayerExact(args[0]);
 
-			if (target == null) {
-				tell(sender, TranslationManager.string(Translations.PLAYER_NOT_FOUND, "value", args[0]));
-				return ReturnType.FAIL;
-			}
+		if (target == null) {
+			tell(sender, TranslationManager.string(Translations.PLAYER_NOT_FOUND, "value", args[0]));
+			return ReturnType.FAIL;
+		}
 
-
-			// open main menu
-			switch (args[1].toLowerCase()) {
-				case "openmain":
-					Markets.getGuiManager().showGUI(target, new MarketsMainGUI(target));
+		// open main menu
+		switch (args[1].toLowerCase()) {
+			case "openmain":
+				Markets.getGuiManager().showGUI(target, new MarketsMainGUI(target));
+				break;
+			case "openserver":
+				final Market market = Markets.getMarketManager().getServerMarket();
+				if (market == null){
+					tell(sender, "&cThe server market is not setup, please create it in /markets admin");
 					break;
-			}
+				}
+
+				if (market.isEmpty() || !market.isOpen()){
+					tell(sender, "&cThe server market is closed/has no items - cannot open for player.");
+					break;
+				}
+				Markets.getGuiManager().showGUI(target, new MarketViewGUI(null, target, market, false));
+				break;
 		}
 
 
