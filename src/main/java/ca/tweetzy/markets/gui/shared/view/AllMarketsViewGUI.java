@@ -34,7 +34,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 	MarketUser marketUser;
 
 	public AllMarketsViewGUI(Gui parent, @NonNull Player player) {
-		super(parent, player, TranslationManager.string(player, Translations.GUI_ALL_MARKETS_TITLE), 6, new ArrayList<>(Markets.getMarketManager().getOpenMarketsExclusive(player)));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_ALL_MARKETS_TITLE), 6, new ArrayList<>());
 		this.marketUser = Markets.getPlayerManager().get(player.getUniqueId());
 		setAsync(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_ALL_MARKETS_BACKGROUND.getItemStack()));
@@ -43,21 +43,34 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	@Override
 	protected void prePopulate() {
+		this.items = new ArrayList<>(Markets.getMarketManager().getOpenMarketsExclusive(player));
+
 		if (this.marketUser.getMarketSortType() == MarketSortType.NAME) {
-			items.sort(Comparator.comparing(Market::getDisplayName).reversed());
+			this.items.sort(Comparator.comparing(Market::getDisplayName).reversed());
 		}
 
 		if (this.marketUser.getMarketSortType() == MarketSortType.ITEMS) {
-			items.sort(Comparator.comparing(Market::getItemCount).reversed());
+			this.items.sort(Comparator.comparing(Market::getItemCount).reversed());
 		}
 
 		if (this.marketUser.getMarketSortType() == MarketSortType.REVIEWS) {
-			items.sort(Comparator.comparing(Market::getReviewAvg).reversed());
+			this.items.sort(Comparator.comparing(Market::getReviewAvg).reversed());
 		}
 
 		if (this.marketUser.getMarketSortType() == MarketSortType.LAST_UPDATED) {
-			items.sort(Comparator.comparing(Market::getLastUpdated).reversed());
+			this.items.sort(Comparator.comparing(Market::getLastUpdated).reversed());
 		}
+
+		// place server markets first
+		this.items = this.items.stream().sorted((m1, m2) -> {
+			if (m1.isServerMarket() && !m2.isServerMarket()) {
+				return -1;
+			} else if (!m1.isServerMarket() && m2.isServerMarket()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}).toList();
 	}
 
 	@Override
@@ -73,7 +86,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				));
 
 
-		return  XSkull
+		return XSkull
 				.of(item.make())
 				.profile(Profileable.of(market.getOwnerUUID()))
 				.fallback(Profileable.of(
