@@ -15,7 +15,7 @@ public final class _16_InfiniteItemsMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "category_item ADD infinite BOOLEAN NOT NULL default 'false';");
+			statement.execute("ALTER TABLE " + tablePrefix + "category_item ADD infinite BOOLEAN NOT NULL default 0;");
 
 		}
 	}

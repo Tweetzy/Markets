@@ -20,7 +20,7 @@ public final class CommandTransactions extends Command {
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
 		if (sender instanceof final Player player) {
-			Markets.getGuiManager().showGUI(player, new TransactionsGUI(null, player));
+			Markets.getGuiManager().showGUI(player, new TransactionsGUI(null, player, false));
 		}
 		return ReturnType.SUCCESS;
 	}

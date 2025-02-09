@@ -52,6 +52,11 @@ public final class CommandView extends Command {
 				return ReturnType.FAIL;
 			}
 
+			if (Markets.getMarketManager().isBannedFrom(market, player)) {
+				Common.tell(player, TranslationManager.string(player, Translations.BANNED_FROM_MARKET, "market_owner", market.getOwnerName()));
+				return ReturnType.FAIL;
+			}
+
 			if (args.length == 1){
 				if (market.getOwnerUUID().equals(player.getUniqueId())) {
 					Markets.getGuiManager().showGUI(player, new MarketOverviewGUI(player, market));

@@ -4,6 +4,7 @@ import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.ItemUtil;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.markets.Markets;
@@ -51,7 +52,47 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 				.make()
 		);
 
-		setButton(1, 4, QuickItem
+		setButton(1, 3, QuickItem
+				.of(Settings.GUI_OFFER_CREATE_ITEMS_REQUEST_AMT.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_OFFER_CREATE_ITEMS_TOTAL_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_OFFER_CREATE_ITEMS_TOTAL_LORE,
+						"offer_itemsrequested", this.offer.getRequestAmount(),
+						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)
+				))
+				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_OFFER_TOTAL_ITEMS_TITLE), TranslationManager.string(this.player, Translations.PROMPT_OFFER_TOTAL_ITEMS_SUBTITLE)) {
+
+			@Override
+			public void onExit(Player player) {
+				click.manager.showGUI(click.player, OfferCreateGUI.this);
+			}
+
+			@Override
+			public boolean onResult(String string) {
+				string = ChatColor.stripColor(string);
+
+				if (!MathUtil.isInt(string)) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
+					return false;
+				}
+
+				int offerTotal = Integer.parseInt(string);
+
+				if (offerTotal <= 0) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.MUST_BE_HIGHER_THAN_ZERO, "value", string));
+					return false;
+				}
+
+				if (offerTotal >= OfferCreateGUI.this.marketItem.getStock()) {
+					offerTotal = OfferCreateGUI.this.marketItem.getStock();
+				}
+
+				OfferCreateGUI.this.offer.setRequestAmount(offerTotal);
+				click.manager.showGUI(click.player, new OfferCreateGUI(OfferCreateGUI.this.parent, OfferCreateGUI.this.player, OfferCreateGUI.this.market, OfferCreateGUI.this.marketItem, OfferCreateGUI.this.offer));
+				return true;
+			}
+		});
+
+		setButton(1, 5, QuickItem
 				.of(Settings.GUI_OFFER_CREATE_ITEMS_AMOUNT.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_OFFER_CREATE_ITEMS_AMOUNT_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_OFFER_CREATE_ITEMS_AMOUNT_LORE,
@@ -125,6 +166,7 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 					this.marketItem,
 					this.offer.getCurrency(),
 					this.offer.getCurrencyItem(),
+					this.offer.getRequestAmount(),
 					this.offer.getOfferedAmount(),
 					created -> {
 						if (!created) return;

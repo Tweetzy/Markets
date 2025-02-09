@@ -30,14 +30,14 @@ public final class OfferManager extends ListManager<Offer> {
 		return getManagerContent().stream().filter(offer -> offer.getOfferFor().equals(playerUUID)).collect(Collectors.toList());
 	}
 
-	public void create(@NonNull final Player sender, @NonNull final Market owningMarket, @NonNull final MarketItem marketItem, @NonNull final String currency, @NonNull final ItemStack currencyItem, final double offeredAmount, @NonNull final Consumer<Boolean> created) {
+	public void create(@NonNull final Player sender, @NonNull final Market owningMarket, @NonNull final MarketItem marketItem, @NonNull final String currency, @NonNull final ItemStack currencyItem, final int amountWant, final double offeredAmount, @NonNull final Consumer<Boolean> created) {
 		final Offer offer = new MarketOffer(
 				UUID.randomUUID(),
 				sender.getUniqueId(),
 				sender.getName(),
 				owningMarket.getOwnerUUID(),
 				marketItem.getId(),
-				marketItem.getStock(),
+				amountWant,
 				currency,
 				currencyItem,
 				offeredAmount,

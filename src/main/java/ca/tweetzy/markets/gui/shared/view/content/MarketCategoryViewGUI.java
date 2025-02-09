@@ -33,9 +33,10 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 	private final Market market;
 	private final Category category;
 	private final boolean viewAsCustomer;
+	private final boolean fromAdminCommand;
 
-	public MarketCategoryViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer) {
-		super(parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
+	public MarketCategoryViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer, boolean fromAdminCommand) {
+		super(fromAdminCommand ? null : parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
 		), 6, category.getInStockItems());
@@ -44,6 +45,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		this.market = market;
 		this.category = category;
 		this.viewAsCustomer = viewAsCustomer;
+		this.fromAdminCommand = fromAdminCommand;
 
 		setDefaultItem(this.market.getCategoryLayout().getBackgroundItem());
 
@@ -53,8 +55,12 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		draw();
 	}
 
+	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer, boolean fromAdminCommand) {
+		this(new MarketViewGUI(player, market), player, market, category, viewAsCustomer, fromAdminCommand);
+	}
+
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer) {
-		this(new MarketViewGUI(player, market), player, market, category, viewAsCustomer);
+		this(new MarketViewGUI(player, market), player, market, category, viewAsCustomer, false);
 	}
 
 	@Override
@@ -64,7 +70,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		item.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_ITEM_LORE_INFO,
 				"market_item_price", String.format("%,.2f", marketItem.getPrice()),
 				"market_item_currency", marketItem.getCurrencyDisplayName(),
-				"market_item_stock", marketItem.getStock(),
+				"market_item_stock", marketItem.isInfinite() ? "∞" : marketItem.getStock(),
 				"market_item_wholesale", TranslationManager.string(this.player, marketItem.isPriceForAll() ? Translations.TRUE : Translations.FALSE)
 		));
 
@@ -88,7 +94,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 
 		// set custom shit
 		setButton(this.market.getCategoryLayout().getOwnerProfileSlot(), QuickItem
-				.of(Bukkit.getOfflinePlayer(this.market.getOwnerUUID()))
+				.of(this.market.getDynamicIcon())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_VIEW_ITEMS_PROFILE_LORE,
 						"market_owner", this.market.getOwnerName(),
@@ -154,10 +160,12 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				};
 			});
 
-		setAction(getRows() - 1, 0, click -> {
-			this.category.getViewingPlayers().remove(click.player);
-			click.manager.showGUI(click.player, new MarketViewGUI(null, this.player, this.market, this.viewAsCustomer));
-		});
+		if (!this.fromAdminCommand) {
+			setAction(getRows() - 1, 0, click -> {
+				this.category.getViewingPlayers().remove(click.player);
+				click.manager.showGUI(click.player, new MarketViewGUI(null, this.player, this.market, this.viewAsCustomer));
+			});
+		}
 	}
 
 	@Override

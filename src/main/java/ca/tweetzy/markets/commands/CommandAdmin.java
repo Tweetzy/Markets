@@ -5,7 +5,12 @@ import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.markets.Markets;
+import ca.tweetzy.markets.api.market.core.Category;
+import ca.tweetzy.markets.api.market.core.Market;
+import ca.tweetzy.markets.gui.admin.MarketsAdminGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
+import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
+import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.BankGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -26,14 +31,15 @@ public final class CommandAdmin extends Command {
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
 		if (args.length == 0) {
+			if (sender instanceof final Player player)
+				Markets.getGuiManager().showGUI(player, new MarketsAdminGUI(player));
 			return ReturnType.SUCCESS;
 		}// 0 1 2
-
 
 		if (args.length == 1) {
 			if (!(sender instanceof final Player player)) return ReturnType.FAIL;
 
-			switch(args[0].toLowerCase()) {
+			switch (args[0].toLowerCase()) {
 				case "collecttax":
 					Markets.getGuiManager().showGUI(player, new BankGUI(null, player, true));
 			}
@@ -54,9 +60,30 @@ public final class CommandAdmin extends Command {
 				case "openmain":
 					Markets.getGuiManager().showGUI(target, new MarketsMainGUI(target));
 					break;
-			}
-		}
+				case "openserver":
+					final Market market = Markets.getMarketManager().getServerMarket();
+					if (market == null) {
+						tell(sender, "&cThe server market is not setup, please create it in /markets admin");
+						break;
+					}
 
+					if (market.isEmpty() || !market.isOpen()) {
+						tell(sender, "&cThe server market is closed/has no items - cannot open for player.");
+						break;
+					}
+
+					final Category locatedCategory = args.length == 3 ? market.getCategories().stream().filter(category -> category.getName().equalsIgnoreCase(args[2])).findFirst().orElse(null) : null;
+
+					if (locatedCategory != null) {
+						Markets.getGuiManager().showGUI(target, new MarketCategoryViewGUI(target, market, locatedCategory, false, true));
+						return ReturnType.SUCCESS;
+					}
+
+					Markets.getGuiManager().showGUI(target, new MarketViewGUI(null, target, market, false));
+					break;
+			}
+
+		}
 
 		return ReturnType.SUCCESS;
 	}

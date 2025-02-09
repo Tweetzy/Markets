@@ -18,7 +18,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
+import java.util.HashMap;
 import java.util.List;
 
 public final class BankGUI extends MarketsPagedGUI<BankEntry> {
@@ -162,11 +164,25 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 				};
 	}
 
+	private void givePlayerItems(Player player, ItemStack itemToGive) {
+		PlayerInventory inventory = player.getInventory();
+		HashMap<Integer, ItemStack> leftoverItems = inventory.addItem(itemToGive);
+
+		if (!leftoverItems.isEmpty()) {
+			for (ItemStack leftover : leftoverItems.values()) {
+				player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+			}
+		}
+	}
+
 	private void deleteAndGiveEntry(@NonNull final BankEntry bankEntry, @NonNull final GuiClickEvent click) {
 		bankEntry.unStore(result -> {
 			if (result == SynchronizeResult.FAILURE) return;
-			for (int i = 0; i < bankEntry.getQuantity(); i++)
-				PlayerUtil.giveItem(click.player, bankEntry.getItem());
+			Markets.newChain().sync(() -> {
+				for (int i = 0; i < bankEntry.getQuantity(); i++)
+//					PlayerUtil.giveItem(click.player, bankEntry.getItem());
+					givePlayerItems(click.player, bankEntry.getItem());
+			}).execute();
 
 			updateAndRedraw();
 		});

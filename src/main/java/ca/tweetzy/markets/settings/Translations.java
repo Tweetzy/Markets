@@ -37,6 +37,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry NO_MARKET_FOUND = create("error.no market found", "&cCould not find any market for&F: &4%player_name%");
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("error.one fill slot required", "&cThis layout requires at least one fill slot!");
 	public static TranslationEntry ITEM_OUT_OF_STOCK = create("error.item out of stock", "&cSorry that item is now out of stock");
+	public static TranslationEntry NOT_ENOUGH_STOCK = create("error.not enough stock", "&cSorry there is not enough stock");
 	public static TranslationEntry ITEM_NO_LONGER_AVAILABLE = create("error.item no longer available", "&cSorry that item is no longer available");
 	public static TranslationEntry BANNED_FROM_MARKET = create("error.banned from market", "&4%market_owner% &chas banned you from viewing their market!");
 	public static TranslationEntry MARKET_IS_CLOSED = create("error.market is closed", "&4%market_owner%&c's market is currently closed!");
@@ -46,6 +47,13 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry OFFERS_DISABLED = create("error.offers disabled", "&cOffers are disabled");
 	public static TranslationEntry NO_REVIEWS = create("error.no reviews", "&cThere are no reviews currently.");
 	public static TranslationEntry IN_CUSTOMER_MODE = create("error.not available in customer mode", "&cYou cannot do that in customer preview mode.");
+
+	public static TranslationEntry BLOCKED_ITEM = create("error.blacklist.item", "&cThe sale of %item% in markets is not allowed!");
+	public static TranslationEntry BLOCKED_ITEM_NAME = create("error.blacklist.name", "&cYou cannot sell an item w/%blacklisted_word% &cin its name");
+	public static TranslationEntry BLOCKED_ITEM_LORE = create("error.blacklist.lore", "&cYou cannot sell an item w/%blacklisted_word% &cin its lore");
+	public static TranslationEntry BLOCKED_ITEM_TAG = create("error.blacklist.nbt tag", "&cThat item is currently blacklisted.");
+
+	public static TranslationEntry SERVER_MARKET_NAME = create("info.server market.name", "&eServer Market");
 
 	public static TranslationEntry DELETED_MARKET = create("info.deleted market", "&eSuccessfully deleted your market!");
 	public static TranslationEntry REMOVED_PLAYER_MARKET = create("info.admin.removed market", "&eSuccessfully removed market owned by &b%player_name%");
@@ -90,6 +98,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_SEARCH_TITLE = create("prompts.search.title", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_SEARCH_SUBTITLE = create("prompts.search.subtitle", "&fEnter search keywords into chat");
 
+
+	public static TranslationEntry PROMPT_STOCK_WITHDRAW_TITLE = create("prompts.stock withdraw.title", "<GRADIENT:65B1B4>&LStock Withdrawal</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_STOCK_WITHDRAW_SUBTITLE = create("prompts.stock withdraw.subtitle", "&fEnter the withdraw quantity in chat");
+
 	public static TranslationEntry PROMPT_REQUEST_AMOUNT_TITLE = create("prompts.request amount.title", "<GRADIENT:65B1B4>&lRequest Amount</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_REQUEST_AMOUNT_SUBTITLE = create("prompts.request amount.subtitle", "&fEnter how many of that item you want");
 	public static TranslationEntry PROMPT_REQUEST_PRICE_TITLE = create("prompts.price.title", "<GRADIENT:65B1B4>&lRequest Price</GRADIENT:2B6F8A>");
@@ -109,6 +121,9 @@ public final class Translations extends TranslationManager {
 
 	public static TranslationEntry PROMPT_MARKET_DESC_TITLE = create("prompts.market description.title", "<GRADIENT:65B1B4>&LMarket Description</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_MARKET_DESC_SUBTITLE = create("prompts.market description.subtitle", "&fEnter new description into chat");
+
+	public static TranslationEntry PROMPT_OFFER_TOTAL_ITEMS_TITLE = create("prompts.requested amount.title", "<GRADIENT:65B1B4>&LRequested Amount</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_OFFER_TOTAL_ITEMS_SUBTITLE = create("prompts.requested amount.subtitle", "&fEnter how many items you want");
 
 	public static TranslationEntry PROMPT_OFFER_PRICE_TITLE = create("prompts.offer price.title", "<GRADIENT:65B1B4>&LOffer Price</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_OFFER_PRICE_SUBTITLE = create("prompts.offer price.subtitle", "&fEnter how much you want to offer");
@@ -142,8 +157,20 @@ public final class Translations extends TranslationManager {
 			"&e&l%left_click% &7to go to next page"
 	);
 
-	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
+	public static TranslationEntry GUI_MAIN_ADMIN_TITLE = create("gui.admin main.title", "&eMarkets &f- &cAdmin");
+	public static TranslationEntry GUI_MAIN_ADMIN_ITEMS_ADMIN_MARKET = create("gui.admin main.items.admin market.name", "<GRADIENT:65B1B4>&LAdmin Market</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MAIN_ADMIN_ITEMS_ADMIN_MARKET_LORE_CREATE = create("gui.admin main.items.admin market.create lore",
+			"&7There is no server market setup.",
+			"",
+			"&a&lClick &7to create one."
+	);
 
+	public static TranslationEntry GUI_MAIN_ADMIN_ITEMS_ADMIN_MARKET_LORE_VIEW = create("gui.admin main.items.admin market.view lore",
+			"&a&lClick &7to view server market"
+	);
+
+
+	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_NAME = create("gui.main view.items.your market.name", "&e&lYour Market");
 	public static TranslationEntry GUI_MAIN_VIEW_ITEMS_YOUR_MARKET_LORE_CREATE = create("gui.main view.items.your market.lore",
 			"&7You currently don't have a market",
@@ -382,6 +409,17 @@ public final class Translations extends TranslationManager {
 			"&7Current&f: %enabled%",
 			"",
 			"&e&l%left_click% &7to toggle price mode"
+	);
+
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_INFINITE_NAME = create("gui.category add item.items.infinite.name", "<GRADIENT:65B1B4>&lToggle Infinite Stock</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_INFINITE_LORE = create("gui.category add item.items.infinite.lore",
+			"&7By default items will run out of stock",
+			"&7since this is a server market, it's suggested that",
+			"&7you keep this enabled so you won't have to restock.",
+			"",
+			"&7Current&f: %enabled%",
+			"",
+			"&e&l%left_click% &7to toggle infinite stock"
 	);
 
 	public static TranslationEntry GUI_CATEGORY_ADD_ITEM_ITEMS_CUSTOM_CURRENCY_LORE = create("gui.category add item.items.custom currency.lore",
@@ -766,6 +804,15 @@ public final class Translations extends TranslationManager {
 
 	);
 
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_TOTAL_NAME = create("gui.offer creation.items.requested amount.name", "<GRADIENT:65B1B4>&LItems Requested</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_TOTAL_LORE = create("gui.offer creation.items.requested amount.lore",
+			"&7Total items &f: &a%offer_itemsrequested%",
+			"",
+			"&e&l%left_click% &7to change request amount"
+
+	);
+
+
 	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_NAME = create("gui.offer creation.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_OFFER_CREATE_ITEMS_CURRENCY_LORE = create("gui.offer creation.items.currency.lore",
 			"&7Used to adjust which currency you will",
@@ -777,6 +824,16 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_TRANSACTIONS_TITLE = create("gui.transactions.title", "&eMarkets &f- &7Transactions");
+	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_VIEW_ALL_NAME = create("gui.transactions.items.view all.name", "<GRADIENT:65B1B4>&lSwitch View Mode</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_VIEW_ALL_LORE = create("gui.transactions.items.view all.lore",
+			"&7Used to toggle whether you see every transaction",
+			"&7or just the transactions related to you.",
+			"",
+			"&7Viewing all&f: %is_true%",
+			"",
+			"&e&l%left_click% &7to toggle view all"
+	);
+
 	public static TranslationEntry GUI_TRANSACTIONS_ITEMS_ENTRY_LORE = create("gui.transactions.items.entry.lore",
 			"&7----------------------------",
 			"&7Quantity&f: &E%item_quantity%",
@@ -789,7 +846,7 @@ public final class Translations extends TranslationManager {
 	);
 
 	public static TranslationEntry GUI_BANK_TAX_TITLE = create("gui.tax bank.title", "&eMarkets &f- &7Tax Collection");
-	public static TranslationEntry GUI_BANK_TAX_ITEMS_ENTRY_NAME = create("gui.tax bank.items.entry.name","&a%entry_name%");
+	public static TranslationEntry GUI_BANK_TAX_ITEMS_ENTRY_NAME = create("gui.tax bank.items.entry.name", "&a%entry_name%");
 	public static TranslationEntry GUI_BANK_TAX_ITEMS_ENTRY_LORE = create("gui.tax bank.items.entry.lore",
 			"&7Value&f: &E%entry_quantity%",
 			"",
@@ -881,7 +938,10 @@ public final class Translations extends TranslationManager {
 			"&7If you have any of this item in your",
 			"&7inventory you can &edrop &7it here to add to stock.",
 			"",
-			"&7Current Stock&F: &e%market_item_stock%"
+			"&7Current Stock&F: &e%market_item_stock%",
+			"",
+			"&e&l%shift_left_click% &7to deposit all items from inventory",
+			"&b&l%right_click% &7to withdraw from stock"
 	);
 
 	public static TranslationEntry GUI_EDIT_ITEM_ITEMS_CURRENCY_NAME = create("gui.edit market item.items.currency.name", "<GRADIENT:65B1B4>&lSwitch Currency</GRADIENT:2B6F8A>");

@@ -248,13 +248,15 @@ public final class CategoryItem implements MarketItem {
 
 					this.stock = 0;
 
-					if (Settings.AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK.getBoolean()) {
-						unStore(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
-					} else {
-						sync(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+					if (!market.isServerMarket()) {
+						if (Settings.AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK.getBoolean()) {
+							unStore(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+						} else {
+							sync(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+						}
 					}
 				} else {
-					if (seller.isOnline()) {
+					if (!market.isServerMarket() && seller.isOnline()) {
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_price", isCurrencyOfItem() ? total : (int) total,
 								"purchase_quantity", newPurchaseAmount,
@@ -265,47 +267,51 @@ public final class CategoryItem implements MarketItem {
 				}
 
 			} else {
-				if (!this.infinite) {
-					setStock(newStock);
-					sync(result -> {
+				if (!market.isServerMarket()) {
+					if (!this.infinite) {
+						setStock(newStock);
+						sync(result -> {
+							if (seller.isOnline()) {
+								Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+										"purchase_quantity", newPurchaseAmount,
+										"item_name", ItemUtil.getItemName(this.item),
+										"buyer_name", buyer.getName()
+								));
+							}
+						});
+					} else {
 						if (seller.isOnline()) {
 							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+									"purchase_price", isCurrencyOfItem() ? total : (int) total,
 									"purchase_quantity", newPurchaseAmount,
 									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
 							));
 						}
-					});
-				} else {
-					if (seller.isOnline()) {
-						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-								"purchase_price", isCurrencyOfItem() ? total : (int) total,
-								"purchase_quantity", newPurchaseAmount,
-								"item_name", ItemUtil.getItemName(this.item),
-								"buyer_name", buyer.getName()
-						));
 					}
 				}
 			}
 
-			if (isCurrencyOfItem()) {
-				if (seller.isOnline() && seller.getPlayer() != null)
-					Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
-				else
-					Markets.getOfflineItemPaymentManager().create(
-							seller.getUniqueId(),
-							this.currencyItem,
-							(int) total,
-							TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-									"purchase_price", isCurrencyOfItem() ? total : (int) total,
-									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getItemName(this.item),
-									"buyer_name", buyer.getName()
-							), created -> {
-								// todo maybe do something here
-							});
-			} else {
-				Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
+			if (!market.isServerMarket()) {
+				if (isCurrencyOfItem()) {
+					if (seller.isOnline() && seller.getPlayer() != null)
+						Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
+					else
+						Markets.getOfflineItemPaymentManager().create(
+								seller.getUniqueId(),
+								this.currencyItem,
+								(int) total,
+								TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+										"purchase_price", isCurrencyOfItem() ? total : (int) total,
+										"purchase_quantity", newPurchaseAmount,
+										"item_name", ItemUtil.getItemName(this.item),
+										"buyer_name", buyer.getName()
+								), created -> {
+									// todo maybe do something here
+								});
+				} else {
+					Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
+				}
 			}
 
 			// insert tax

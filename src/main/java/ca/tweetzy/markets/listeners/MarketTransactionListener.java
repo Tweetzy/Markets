@@ -5,6 +5,7 @@ import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.event.MarketTransactionEvent;
 import ca.tweetzy.markets.api.market.Transaction;
 import ca.tweetzy.markets.impl.MarketTransaction;
+import ca.tweetzy.markets.settings.Settings;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -19,7 +20,7 @@ public final class MarketTransactionListener implements Listener {
 				event.getBuyer().getUniqueId(),
 				event.getBuyer().getName(),
 				event.getSeller().getUniqueId(),
-				event.getSeller().getName(),
+				event.getSeller().getUniqueId().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString())) ? Settings.NAME.getString() : event.getSeller().getName(),
 				event.getType(),
 				event.getItem(),
 				event.getCurrency(),

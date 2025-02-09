@@ -4,6 +4,7 @@ import ca.tweetzy.flight.FlightPlugin;
 import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.database.DataMigrationManager;
 import ca.tweetzy.flight.database.DatabaseConnector;
+import ca.tweetzy.flight.database.MySQLConnector;
 import ca.tweetzy.flight.database.SQLiteConnector;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
@@ -60,7 +61,16 @@ public final class Markets extends FlightPlugin {
 		taskChainFactory = BukkitTaskChainFactory.create(this);
 
 		// Set up the database if enabled
-		this.databaseConnector = new SQLiteConnector(this);
+		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
+				this,
+				Settings.DATABASE_HOST.getString(),
+				Settings.DATABASE_PORT.getInt(),
+				Settings.DATABASE_NAME.getString(),
+				Settings.DATABASE_USERNAME.getString(),
+				Settings.DATABASE_PASSWORD.getString(),
+				Settings.DATABASE_CUSTOM_PARAMS.getString().equalsIgnoreCase("None") ? "" : Settings.DATABASE_CUSTOM_PARAMS.getString()
+		) : new SQLiteConnector(this);
+
 		this.dataManager = new DataManager(this.databaseConnector, this);
 
 		final DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
