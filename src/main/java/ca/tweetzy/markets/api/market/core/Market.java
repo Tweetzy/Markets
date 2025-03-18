@@ -43,7 +43,12 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 	void setCloseWhenOutOfStock(final boolean closeWhenOutOfStock);
 
 	default ItemStack getDynamicIcon() {
-		return getOwnerUUID().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString())) ? QuickItem.of(Settings.SERVER_MARKET_TEXTURE.getString()).make() : QuickItem.of(Bukkit.getOfflinePlayer(getOwnerUUID())).make();
+		return getOwnerUUID().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString())) ? QuickItem
+				.of(Settings.SERVER_MARKET_TEXTURE.getString())
+				.make() : QuickItem
+				.of(Bukkit.getOfflinePlayer(getOwnerUUID()))
+				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
+				.make();
 	}
 
 	default boolean isServerMarket() {
