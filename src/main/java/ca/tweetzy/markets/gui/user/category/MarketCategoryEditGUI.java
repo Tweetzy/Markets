@@ -2,7 +2,6 @@ package ca.tweetzy.markets.gui.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.*;
 import ca.tweetzy.flight.utils.input.TitleInput;
@@ -13,6 +12,7 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.selector.ConfirmGUI;
+import ca.tweetzy.markets.gui.shared.selector.ItemSelectorGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
@@ -205,7 +205,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 			}
 
 			if (click.clickType == ClickType.LEFT) {
-				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
+				click.manager.showGUI(click.player, new ItemSelectorGUI(this, false, (event, selected) -> {
 
 					if (selected != null) {
 						this.category.setIcon(selected);

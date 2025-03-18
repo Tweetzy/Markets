@@ -2,13 +2,13 @@ package ca.tweetzy.markets.gui.user.market;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.layout.MarketLayoutType;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
+import ca.tweetzy.markets.gui.shared.selector.ItemSelectorGUI;
 import ca.tweetzy.markets.gui.user.layout.MarketLayoutEditorGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -147,25 +147,7 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 
 		if (click.clickType == ClickType.RIGHT) {
 
-//			final ItemStack cursor = click.cursor;
-//			if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
-//				final ItemStack newIcon = cursor.clone();
-//				newIcon.setAmount(1);
-//
-//				if (layoutType == MarketLayoutType.HOME)
-//					this.market.getHomeLayout().setBackgroundItem(newIcon);
-//				else
-//					this.market.getCategoryLayout().setBackgroundItem(newIcon);
-//
-//				this.market.sync(result -> {
-//					if (result == SynchronizeResult.SUCCESS)
-//						draw();
-//				});
-//
-//				return;
-//			}
-
-			click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, null, (event, selected) -> {
+			click.manager.showGUI(click.player, new ItemSelectorGUI(this, true, (event, selected) -> {
 				if (selected != null)
 					if (layoutType == MarketLayoutType.HOME)
 						this.market.getHomeLayout().setBackgroundItem(selected);

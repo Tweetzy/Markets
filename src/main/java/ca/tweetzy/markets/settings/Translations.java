@@ -136,6 +136,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry PROMPT_CATEGORY_DESC_TITLE = create("prompts.category description.title", "<GRADIENT:65B1B4>&LCategory Description</GRADIENT:2B6F8A>");
 	public static TranslationEntry PROMPT_CATEGORY_DESC_SUBTITLE = create("prompts.category description.subtitle", "&fEnter new category description");
 
+	public static TranslationEntry PROMPT_MATERIAL_PICKER_TITLE = create("prompts.material picker.title", "<GRADIENT:65B1B4>&LMaterial Search</GRADIENT:2B6F8A>");
+	public static TranslationEntry PROMPT_MATERIAL_PICKER_SUBTITLE = create("prompts.material picker.subtitle", "&fEnter keywords into chat to search");
+
+
 	// guis
 	public static TranslationEntry GUI_SHARED_ITEMS_BACK_BUTTON_NAME = create("gui.shared buttons.back button.name", "<GRADIENT:65B1B4>&LGo Back</GRADIENT:2B6F8A>");
 	public static TranslationEntry GUI_SHARED_ITEMS_BACK_BUTTON_LORE = create("gui.shared buttons.back button.lore",
@@ -168,6 +172,28 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_MAIN_ADMIN_ITEMS_ADMIN_MARKET_LORE_VIEW = create("gui.admin main.items.admin market.view lore",
 			"&a&lClick &7to view server market"
 	);
+
+	public static TranslationEntry GUI_MATERIAL_PICKER_TITLE = create("gui.material picker.title", "&eMarkets &f- &7Material Picker");
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_ITEM_NAME = create("gui.material picker.items.item.name", "<GRADIENT:65B1B4>&L%item_name%</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_ITEM_LORE = create("gui.material picker.items.item.lore",
+			"&7Click to select this material."
+	);
+
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_SEARCH_NAME = create("gui.material picker.items.search.name", "<GRADIENT:65B1B4>&LSearch</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_SEARCH_LORE = create("gui.material picker.items.search.lore",
+			"&7Click to search materials"
+	);
+
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_AIR_NAME = create("gui.material picker.items.air.name", "<GRADIENT:65B1B4>&lNo Item</GRADIENT:2B6F8A>");
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_AIR_LORE = create("gui.material picker.items.air.lore",
+			"&7Click to use no item (air)"
+	);
+
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_CLEAR_NAME = create("gui.material picker.items.clear.name", "&c&lClear Search");
+	public static TranslationEntry GUI_MATERIAL_PICKER_ITEMS_CLEAR_LORE = create("gui.material picker.items.clear.lore",
+			"&7Click to clear your search"
+	);
+
 
 
 	public static TranslationEntry GUI_MAIN_VIEW_TITLE = create("gui.main view.title", "&eMarkets &f- &7Home");

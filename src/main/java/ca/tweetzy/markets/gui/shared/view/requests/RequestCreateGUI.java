@@ -2,7 +2,6 @@ package ca.tweetzy.markets.gui.shared.view.requests;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
-import ca.tweetzy.flight.gui.template.MaterialPickerGUI;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.MathUtil;
@@ -13,6 +12,7 @@ import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.MarketsMainGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
+import ca.tweetzy.markets.gui.shared.selector.ItemSelectorGUI;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -222,7 +222,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 			}
 
 			if (click.clickType == ClickType.LEFT) {
-				click.manager.showGUI(click.player, new MaterialPickerGUI(this, null, "", (event, selected) -> {
+				click.manager.showGUI(click.player, new ItemSelectorGUI(this, false, (event, selected) -> {
 
 					if (selected != null) {
 						final ItemStack item = selected;
