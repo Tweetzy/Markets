@@ -248,55 +248,42 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 			return;
 		}
 
-		switch (click.clickType) {
-			case LEFT ->
-					new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
-						@Override
-						public void onExit(Player player) {
-							click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
-						}
+		if (click.clickType == ClickType.LEFT) {
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
+				@Override
+				public void onExit(Player player) {
+					click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
+				}
 
-						@Override
-						public boolean onResult(String string) {
-							string = ChatColor.stripColor(string);
+				@Override
+				public boolean onResult(String string) {
+					string = ChatColor.stripColor(string);
 
-							if (!NumberUtils.isNumber(string)) {
-								Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
-								return false;
-							}
+					if (!NumberUtils.isNumber(string)) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
+						return false;
+					}
 
-							final double price = Double.parseDouble(string);
-							marketItem.setPrice(price);
-							marketItem.sync(result -> reopen(click));
-							return true;
-						}
-					};
+					final double price = Double.parseDouble(string);
+					marketItem.setPrice(price);
+					marketItem.sync(result -> reopen(click));
+					return true;
+				}
+			};
+		}
 
-			case RIGHT -> click.manager.showGUI(click.player, new MarketItemEditGUI(this.player, this.market, this.category, marketItem));
+		if (click.clickType == ClickType.RIGHT) {
+			click.manager.showGUI(click.player, new MarketItemEditGUI(this.player, this.market, this.category, marketItem));
+		}
 
-			case DROP -> {
-//				final MarketItem relocatedItem = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
+		if (click.clickType == Enum.valueOf(ClickType.class, Settings.CLICK_DELETE_ITEM.getString().toUpperCase())) {
+			if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
+				click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
+					if (!confirmed) {
+						click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
+						return;
+					}
 
-				if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
-					click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
-						if (!confirmed) return;
-
-						marketItem.unStore(result -> {
-							if (result != SynchronizeResult.SUCCESS)
-								return;
-
-							// close guis of other users
-							marketItem.getViewingPlayers().forEach(viewingUser -> {
-								click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
-							});
-
-							// give user the item or drop
-							giveBackMarketItem(marketItem);
-							reopen(click);
-						});
-					}));
-
-				} else {
 					marketItem.unStore(result -> {
 						if (result != SynchronizeResult.SUCCESS)
 							return;
@@ -310,7 +297,22 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 						giveBackMarketItem(marketItem);
 						reopen(click);
 					});
-				}
+				}));
+
+			} else {
+				marketItem.unStore(result -> {
+					if (result != SynchronizeResult.SUCCESS)
+						return;
+
+					// close guis of other users
+					marketItem.getViewingPlayers().forEach(viewingUser -> {
+						click.manager.showGUI(viewingUser, new MarketCategoryViewGUI(viewingUser, this.market, this.category, false));
+					});
+
+					// give user the item or drop
+					giveBackMarketItem(marketItem);
+					reopen(click);
+				});
 			}
 		}
 	}

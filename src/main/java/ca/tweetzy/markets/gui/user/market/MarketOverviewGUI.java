@@ -150,13 +150,15 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 			};
 		});
 
-		setButton(getRows() - 1, 6, QuickItem
-				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_ITEM.getItemStack())
-				.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_NAME))
-				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_LORE,
-						"market_ratings_total", market.getRatings().size(),
-						"market_ratings_stars", market.getRatings().isEmpty() ? TranslationManager.string(Translations.NO_REVIEWS) : StringUtils.repeat("★", (int) market.getReviewAvg())
-				)).make(), click -> click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market)));
+		if (!Settings.DISABLE_REVIEWS.getBoolean()) {
+			setButton(getRows() - 1, 6, QuickItem
+					.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_ITEM.getItemStack())
+					.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_NAME))
+					.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_REVIEWS_LORE,
+							"market_ratings_total", market.getRatings().size(),
+							"market_ratings_stars", market.getRatings().isEmpty() ? TranslationManager.string(Translations.NO_REVIEWS) : StringUtils.repeat("★", (int) market.getReviewAvg())
+					)).make(), click -> click.manager.showGUI(click.player, new MarketRatingsViewGUI(this, click.player, this.market)));
+		}
 
 		// unStore button
 		if (!this.market.isServerMarket()) {

@@ -13,6 +13,7 @@ import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.gui.shared.checkout.MarketItemPurchaseGUI;
 import ca.tweetzy.markets.gui.shared.checkout.OfferCreateGUI;
+import ca.tweetzy.markets.gui.shared.view.AllMarketsViewGUI;
 import ca.tweetzy.markets.gui.shared.view.UserProfileGUI;
 import ca.tweetzy.markets.gui.shared.view.ratings.MarketRatingsViewGUI;
 import ca.tweetzy.markets.gui.shared.view.ratings.NewMarketRatingGUI;
@@ -60,7 +61,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 	}
 
 	public MarketCategoryViewGUI(@NonNull final Player player, @NonNull final Market market, @NonNull final Category category, boolean viewAsCustomer) {
-		this(new MarketViewGUI(player, market), player, market, category, viewAsCustomer, false);
+		this(new MarketViewGUI(new AllMarketsViewGUI(null, player), player, market, false), player, market, category, viewAsCustomer, false);
 	}
 
 	@Override
