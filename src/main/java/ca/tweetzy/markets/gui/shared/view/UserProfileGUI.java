@@ -32,6 +32,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 		), 6, Markets.getRatingManager().getRatingsByOrFor(profileUser));
 		this.profileUser = profileUser;
 		this.serverProfile = profileUser.getUniqueId().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString()));
+		setAsync(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_USER_PROFILE_BACKGROUND.getItemStack()));
 		draw();
 	}
@@ -40,7 +41,12 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	protected void drawFixed() {
 		final MarketUser user = Markets.getPlayerManager().get(this.profileUser.getUniqueId());
 
-		ItemStack texture = user.isServerMarket() ? QuickItem.of(Settings.SERVER_MARKET_TEXTURE.getString()).make() : QuickItem.of(this.profileUser).make();
+		ItemStack texture = user.isServerMarket() ? QuickItem
+				.of(Settings.SERVER_MARKET_TEXTURE.getString())
+				.make() : QuickItem
+				.of(this.profileUser)
+				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
+				.make();
 
 		setItem(1, 4, QuickItem
 				.of(texture)
@@ -59,6 +65,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	protected ItemStack makeDisplayItem(Rating rating) {
 		return QuickItem
 				.of(Bukkit.getOfflinePlayer(rating.getRaterUUID()))
+				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
 				.name(TranslationManager.string(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_NAME, "rater_name", rating.getRaterName()))
 				.lore(TranslationManager.list(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_LORE,
 						"rating_stars", StringUtils.repeat("★", rating.getStars()),

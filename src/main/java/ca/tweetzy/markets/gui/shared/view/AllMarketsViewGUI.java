@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.gui.shared.view;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
@@ -8,9 +7,6 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
-import ca.tweetzy.flight.utils.profiles.builder.XSkull;
-import ca.tweetzy.flight.utils.profiles.objects.ProfileInputType;
-import ca.tweetzy.flight.utils.profiles.objects.Profileable;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.Market;
@@ -22,6 +18,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,26 +72,21 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 	@Override
 	protected ItemStack makeDisplayItem(Market market) {
-		QuickItem item = QuickItem
-				.of(CompMaterial.PLAYER_HEAD)
+		QuickItem item = market.isServerMarket() ? QuickItem
+				.of(Settings.SERVER_MARKET_TEXTURE.getString())
+				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
+				: QuickItem
+				.of(Bukkit.getOfflinePlayer(market.getOwnerUUID()))
+				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString());
+
+		return item
 				.name(market.getDisplayName())
 				.lore(market.getDescription())
 				.lore(TranslationManager.list(this.player, Translations.GUI_ALL_MARKETS_ITEMS_MARKET_LORE,
 						"left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK),
 						"market_ratings_total", market.getRatings().size(),
 						"market_ratings_stars", StringUtils.repeat("★", (int) market.getReviewAvg())
-				));
-
-
-		return XSkull
-				.of(item.make())
-				.profile(Profileable.of(market.getOwnerUUID()))
-				.fallback(Profileable.of(
-						ProfileInputType.TEXTURE_URL,
-						Settings.SERVER_MARKET_TEXTURE.getString()
-				))
-				.lenient()
-				.apply();
+				)).make();
 	}
 
 	@Override
