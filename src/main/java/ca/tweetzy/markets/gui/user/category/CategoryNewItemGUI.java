@@ -61,7 +61,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 	@Override
 	protected void draw() {
 
-		if (this.marketItem.getItem().getType() != CompMaterial.AIR.parseMaterial()) setItem(1, 4, this.marketItem.getItem());
+		if (this.marketItem.getItem().getType() != CompMaterial.AIR.get()) setItem(1, 4, this.marketItem.getItem());
 
 		if (this.marketItem.getCurrencyItem() != null && this.marketItem.isCurrencyOfItem()) {
 			final ItemStack currencyItem = this.marketItem.getCurrencyItem().clone();
@@ -127,7 +127,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 					.make(), click -> {
 
 				final ItemStack placedItem = getItem(1, 4);
-				if (placedItem != null && placedItem.getType() != CompMaterial.AIR.parseMaterial())
+				if (placedItem != null && placedItem.getType() != CompMaterial.AIR.get())
 					this.marketItem.setItem(placedItem);
 
 				click.manager.showGUI(click.player, new CurrencyPickerGUI(this, click.player, (currency, item) -> {

@@ -76,7 +76,7 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 
 				if (click.clickType == ClickType.LEFT) {
 					final ItemStack cursor = click.cursor;
-					if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+					if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 
 						final ItemStack currency = cursor.clone();
 						currency.setAmount(1);

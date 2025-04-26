@@ -124,7 +124,7 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 	private void executeLayoutHandle(@NonNull final GuiClickEvent click, @NonNull final MarketLayoutType layoutType) {
 		final ItemStack cursor = click.cursor;
 
-		if (click.clickType == ClickType.valueOf(Settings.CLICK_LAYOUT_BG_APPLY.getString().toUpperCase()) && cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+		if (click.clickType == ClickType.valueOf(Settings.CLICK_LAYOUT_BG_APPLY.getString().toUpperCase()) && cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 			final ItemStack newIcon = cursor.clone();
 			newIcon.setAmount(1);
 

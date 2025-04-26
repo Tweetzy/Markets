@@ -60,7 +60,7 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 			setButton(getRows() - 1, 4, QuickItem.of(Settings.GUI_BANK_ITEMS_ADD.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_BANK_ITEMS_ADD_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_BANK_ITEMS_ADD_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK))).make(), click -> {
 
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 
 					final ItemStack currency = cursor.clone();
 					final BankEntry locatedEntry = Markets.getBankManager().getEntryByPlayer(click.player.getUniqueId(), currency);

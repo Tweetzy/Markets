@@ -121,7 +121,7 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 
 			if (click.clickType == ClickType.RIGHT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 					final ItemStack newIcon = cursor.clone();
 					newIcon.setAmount(1);
 //					Map<Integer, ItemStack> decorationMap = this.layout.getDecoration();
@@ -159,7 +159,7 @@ public final class MarketLayoutEditorGUI extends MarketsPagedGUI<Integer> {
 
 			if (click.clickType == ClickType.RIGHT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 					final ItemStack newIcon = cursor.clone();
 					newIcon.setAmount(1);
 

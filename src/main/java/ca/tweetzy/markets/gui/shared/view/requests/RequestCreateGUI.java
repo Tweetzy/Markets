@@ -78,7 +78,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
-			if (this.request.getRequestItem() == null || this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial()) {
+			if (this.request.getRequestItem() == null || this.request.getRequestItem().getType() == CompMaterial.AIR.get()) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_REQUEST_ITEM));
 				return;
 			}
@@ -110,7 +110,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
-			if (this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial()) {
+			if (this.request.getRequestItem().getType() == CompMaterial.AIR.get()) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.PROVIDE_REQUESTED_ITEM));
 				return;
 			}
@@ -161,7 +161,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				))
 				.make(), click -> {
 
-			if (this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial()) {
+			if (this.request.getRequestItem().getType() == CompMaterial.AIR.get()) {
 				Common.tell(click.player, TranslationManager.string(click.player, Translations.PROVIDE_REQUESTED_ITEM));
 				return;
 			}
@@ -199,20 +199,20 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 
 	private void drawRequestItem() {
 		final QuickItem quickItem = QuickItem
-				.of(this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial() ? CompMaterial.RED_STAINED_GLASS_PANE.parseItem() : this.request.getRequestItem())
+				.of(this.request.getRequestItem().getType() == CompMaterial.AIR.get() ? CompMaterial.RED_STAINED_GLASS_PANE.parseItem() : this.request.getRequestItem())
 				.lore(TranslationManager.list(this.player, Translations.GUI_CREATE_REQUEST_ITEMS_REQUESTED_ITEM_LORE,
 						"left_click", TranslationManager.string(player, Translations.MOUSE_LEFT_CLICK),
 						"right_click", TranslationManager.string(player, Translations.MOUSE_RIGHT_CLICK)
 				));
 
-		if (this.request.getRequestItem().getType() == CompMaterial.AIR.parseMaterial())
+		if (this.request.getRequestItem().getType() == CompMaterial.AIR.get())
 			quickItem.name(TranslationManager.string(player, Translations.GUI_CREATE_REQUEST_ITEMS_REQUESTED_ITEM_NAME));
 
 		setButton(1, 4, quickItem.make(), click -> {
 
 			if (click.clickType == ClickType.RIGHT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 					final ItemStack newIcon = cursor.clone();
 					newIcon.setAmount(1);
 

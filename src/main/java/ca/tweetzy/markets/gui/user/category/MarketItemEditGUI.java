@@ -65,7 +65,7 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 
 			if (click.clickType == ClickType.LEFT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 					if (!this.marketItem.getItem().isSimilar(cursor)) return;
 
 					this.marketItem.addStock(cursor, result -> {

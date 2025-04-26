@@ -192,7 +192,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 			if (click.clickType == ClickType.RIGHT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 					final ItemStack newIcon = cursor.clone();
 					newIcon.setAmount(1);
 
