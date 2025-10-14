@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.gui.shared.checkout;
 
 import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
@@ -32,7 +33,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 		else
 			this.purchaseQty = 1;
 
-		setOnClose(open -> this.marketItem.getViewingPlayers().add(player));
+		setOnOpen(open -> this.marketItem.getViewingPlayers().add(player));
 		setOnClose(close -> this.marketItem.getViewingPlayers().remove(player));
 		setDefaultItem(QuickItem.bg(Settings.GUI_PURCHASE_ITEM_BACKGROUND.getItemStack()));
 		draw();
@@ -62,15 +63,29 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 				.lore(TranslationManager.list(this.player, Translations.GUI_PURCHASE_ITEM_ITEMS_BUY_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 				.make(), click -> {
 
+			if (this.marketItem.removeRequested())  {
+				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
+				this.marketItem.getViewingPlayers().remove(click.player);
+			}
+
+			// refetch item
+			if (Markets.getCategoryItemManager().getByUUID(this.market.getId()) == null) {
+				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
+				return;
+			}
+
 			this.marketItem.performPurchase(this.market, click.player, this.purchaseQty, result -> {
 				this.marketItem.getViewingPlayers().remove(click.player);
 				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 			});
 		});
 
-		applyBackExit();
-		setAction(getRows() - 1, 0, click -> {
+
+		setButton(getRows() - 1, 0,getBackButton(), click -> {
+			Common.log(this.marketItem.getViewingPlayers().size()+" b");
+
 			this.marketItem.getViewingPlayers().remove(click.player);
+			Common.log(this.marketItem.getViewingPlayers().size()+" a");
 			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 		});
 	}

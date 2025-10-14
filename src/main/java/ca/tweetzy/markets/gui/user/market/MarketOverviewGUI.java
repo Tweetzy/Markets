@@ -47,12 +47,12 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 
 		// view as buyer
 		setButton(getRows() - 1, 2, QuickItem
-						.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_ITEM.getItemStack())
-						.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_NAME))
-						.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_LORE))
-						.make(), click -> click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, this.market, true)));
+				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_ITEM.getItemStack())
+				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_NAME))
+				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_CUSTOMER_VIEW_LORE))
+				.make(), click -> click.manager.showGUI(click.player, new MarketViewGUI(this, click.player, this.market, true)));
 
-				// name
+		// name
 		setButton(1, 1, QuickItem
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME))
@@ -167,6 +167,15 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 					.name(TranslationManager.string(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_NAME))
 					.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_DELETE_LORE))
 					.make(), click -> {
+
+				if (this.market.getCategories().stream().anyMatch(category -> !category.getViewingPlayers().isEmpty()) ||
+								this.market.getCategories().stream().anyMatch(category ->
+										category.getItems().stream().anyMatch(item -> !item.getViewingPlayers().isEmpty())
+								)
+				) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
 
 				if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
 

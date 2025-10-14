@@ -27,6 +27,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry REQUESTER_CANT_PAY = create("error.requester cannot pay", "&4%requester_name% &cdoes not have enough money to for you!");
 	public static TranslationEntry NOT_ENOUGH_ITEMS = create("error.not enough items", "&cYou do not have enough items to fulfill that request");
 	public static TranslationEntry TAKE_OUT_ITEM_FIRST = create("error.take out item", "&cPlease remove your item from the menu first!");
+	public static TranslationEntry PLACE_ITEM_FIRST = create("error.place sell item", "&cPlease provide an item to sell first!");
 	public static TranslationEntry AT_MAX_CATEGORY_LIMIT = create("error.at maximum category limit", "&cYou aren't allowed to create more categories.");
 	public static TranslationEntry AT_MAX_ITEM_LIMIT = create("error.at maximum item limit", "&cYou aren't allowed to add more items!");
 	public static TranslationEntry AT_MAX_REQUEST_LIMIT = create("error.at maximum request limit", "&cYou aren't allowed to create more requests!");
@@ -37,6 +38,7 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry NO_MARKET_FOUND = create("error.no market found", "&cCould not find any market for&F: &4%player_name%");
 	public static TranslationEntry ONE_FILL_SLOT_REQUIRED = create("error.one fill slot required", "&cThis layout requires at least one fill slot!");
 	public static TranslationEntry ITEM_OUT_OF_STOCK = create("error.item out of stock", "&cSorry that item is now out of stock");
+	public static TranslationEntry PLAYERS_LOOKING_AT_ITEM = create("error.item being viewed", "&cCustomer(s) are currently viewing that item.");
 	public static TranslationEntry NOT_ENOUGH_STOCK = create("error.not enough stock", "&cSorry there is not enough stock");
 	public static TranslationEntry ITEM_NO_LONGER_AVAILABLE = create("error.item no longer available", "&cSorry that item is no longer available");
 	public static TranslationEntry BANNED_FROM_MARKET = create("error.banned from market", "&4%market_owner% &chas banned you from viewing their market!");

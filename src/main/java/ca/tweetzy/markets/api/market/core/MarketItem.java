@@ -54,6 +54,14 @@ public interface MarketItem extends Identifiable, Synchronize, UserViewable, Sto
 
 	void performPurchase(@NonNull final Market market, @NonNull final Player buyer, final int quantity, Consumer<TransactionResult> transactionResult);
 
+	boolean removeRequested();
+
+	void setRemoveRequested();
+
+	boolean isBeingEdited();
+
+	void setBeingEdited(boolean edited);
+
 	// todo this is needs to be changed
 	default void addStock(@NonNull final ItemStack item, @NonNull final Consumer<SynchronizeResult> resultConsumer) {
 		if (getItem().isSimilar(item)) {

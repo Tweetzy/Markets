@@ -38,6 +38,8 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 
 		setAcceptsItems(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_EDIT_ITEM_BACKGROUND.getItemStack()));
+		setOnOpen(open -> this.marketItem.setBeingEdited(true));
+		setOnClose(close -> this.marketItem.setBeingEdited(false));
 		draw();
 	}
 
@@ -91,6 +93,12 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 			}
 
 			if (click.clickType == ClickType.RIGHT) {
+
+				if (!this.marketItem.getViewingPlayers().isEmpty()) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
 				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_TITLE), TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_SUBTITLE)) {
 					@Override
 					public void onExit(Player player) {

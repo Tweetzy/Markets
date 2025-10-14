@@ -188,13 +188,13 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		if (click.clickType == ClickType.LEFT) {
 			click.manager.showGUI(click.player, new MarketItemPurchaseGUI(this.player, this.market, marketItem));
 			this.category.getViewingPlayers().remove(player);
-			marketItem.getViewingPlayers().add(player);
+//			marketItem.getViewingPlayers().add(player);
 		}
 
 		if (click.clickType == ClickType.RIGHT && !Settings.DISABLE_OFFERS.getBoolean() && marketItem.isAcceptingOffers()) {
 			click.manager.showGUI(click.player, new OfferCreateGUI(this, this.player, this.market, marketItem, new MarketOffer(this.player, this.market, marketItem)));
 			this.category.getViewingPlayers().remove(player);
-			marketItem.getViewingPlayers().add(player);
+//			marketItem.getViewingPlayers().add(player);
 		}
 	}
 

@@ -135,6 +135,11 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DELETE_LORE))
 				.make(), click -> {
 
+			if (!this.category.getViewingPlayers().isEmpty() || this.category.getItems().stream().anyMatch(item -> !item.getViewingPlayers().isEmpty())) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+				return;
+			}
+
 			if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
 				click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
 					if (!confirmed) {
@@ -277,12 +282,26 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		}
 
 		if (click.clickType == Enum.valueOf(ClickType.class, Settings.CLICK_DELETE_ITEM.getString().toUpperCase())) {
+
+			if (!marketItem.getViewingPlayers().isEmpty()) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+				return;
+			}
+
 			if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
 				click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
 					if (!confirmed) {
 						click.manager.showGUI(click.player, MarketCategoryEditGUI.this);
 						return;
 					}
+
+
+					if (!marketItem.getViewingPlayers().isEmpty()) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
+					marketItem.setRemoveRequested();
 
 					marketItem.unStore(result -> {
 						if (result != SynchronizeResult.SUCCESS)
@@ -300,6 +319,8 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				}));
 
 			} else {
+				marketItem.setRemoveRequested();
+
 				marketItem.unStore(result -> {
 					if (result != SynchronizeResult.SUCCESS)
 						return;

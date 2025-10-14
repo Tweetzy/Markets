@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.gui.user.category;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.PlayerUtil;
@@ -13,6 +14,7 @@ import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
 import ca.tweetzy.markets.impl.CategoryItem;
+import ca.tweetzy.markets.impl.currency.ItemCurrency;
 import ca.tweetzy.markets.model.BlacklistChecker;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
@@ -58,6 +60,11 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 		this(player, market, category, null);
 	}
 
+	private boolean hasItemOnCursor(GuiClickEvent click) {
+		final ItemStack cursor = click.cursor;
+		return cursor != null && cursor.getType() != CompMaterial.AIR.get();
+	}
+
 	@Override
 	protected void draw() {
 
@@ -79,7 +86,13 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 				.lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_PRICE_LORE, "market_item_price", this.marketItem.getPrice()))
 				.make(), click -> {
 
+			if (hasItemOnCursor(click)) return;
+
 			if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
+			else {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_ITEM_FIRST));
+				return;
+			}
 
 			click.gui.exit();
 
@@ -126,9 +139,15 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 							"market_item_currency", this.marketItem.getCurrencyDisplayName()))
 					.make(), click -> {
 
+				if (hasItemOnCursor(click)) return;
+
 				final ItemStack placedItem = getItem(1, 4);
 				if (placedItem != null && placedItem.getType() != CompMaterial.AIR.get())
 					this.marketItem.setItem(placedItem);
+				else {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLACE_ITEM_FIRST));
+					return;
+				}
 
 				click.manager.showGUI(click.player, new CurrencyPickerGUI(this, click.player, (currency, item) -> {
 					click.gui.exit();
@@ -152,6 +171,8 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 
 		// new item button
 		setButton(getRows() - 1, 4, QuickItem.of(Settings.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_ITEM.getItemStack()).name(TranslationManager.string(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_NAME)).lore(TranslationManager.list(this.player, Translations.GUI_CATEGORY_ADD_ITEM_ITEMS_NEW_ITEM_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK))).make(), click -> {
+
+			if (hasItemOnCursor(click)) return;
 
 			final ItemStack placedItem = getItem(1, 4);
 			if (placedItem == null) {
@@ -192,6 +213,7 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 		applyBackExit();
 		// override logic here
 		setAction(getRows() - 1, 0, click -> {
+			if (hasItemOnCursor(click)) return;
 			final ItemStack placedItem = getItem(1, 4);
 
 			if (placedItem != null) {
@@ -213,11 +235,12 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 							"enabled", TranslationManager.string(this.player, this.marketItem.isAcceptingOffers() ? Translations.ENABLED : Translations.DISABLED)))
 					.hideTags(true)
 					.make(), click -> {
+				if (hasItemOnCursor(click)) return;
 
 				if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
 				this.marketItem.setIsAcceptingOffers(!this.marketItem.isAcceptingOffers());
-				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+				drawOffersButton();
 			});
 		}
 	}
@@ -232,11 +255,12 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 							"enabled", TranslationManager.string(this.player, this.marketItem.isPriceForAll() ? Translations.ENABLED : Translations.DISABLED)))
 					.hideTags(true)
 					.make(), click -> {
+				if (hasItemOnCursor(click)) return;
 
 				if (getItem(1, 4) != null) this.marketItem.setItem(getItem(1, 4));
 
 				this.marketItem.setPriceIsForAll(!this.marketItem.isPriceForAll());
-				click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+				drawPriceForAllButton();
 			});
 		}
 	}
@@ -251,9 +275,9 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 				.hideTags(true)
 				.make(), click -> {
 
-
+			if (hasItemOnCursor(click)) return;
 			this.marketItem.setInfinite(!this.marketItem.isInfinite());
-			click.manager.showGUI(click.player, new CategoryNewItemGUI(CategoryNewItemGUI.this.player, CategoryNewItemGUI.this.market, CategoryNewItemGUI.this.category, CategoryNewItemGUI.this.marketItem));
+			drawInfiniteButton();
 		});
 	}
 }

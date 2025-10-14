@@ -1,6 +1,5 @@
 package ca.tweetzy.markets.model.manager;
 
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.api.manager.ListManager;
@@ -22,8 +21,47 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 		super("Currency");
 	}
 
+	public AbstractCurrency getFallBack() {
+		final String defaultStr = Settings.CURRENCY_DEFAULT_SELECTED.getString();
+		final String pluginFromConfig;
+		final String currencyFromConfig;
+
+		if (defaultStr == null || defaultStr.trim().isEmpty()) {
+			pluginFromConfig = "Vault";
+			currencyFromConfig = "Vault";
+		} else {
+			final String[] split = defaultStr.split("/");
+			pluginFromConfig = split.length > 0 ? split[0] : "Vault";
+			currencyFromConfig = split.length > 1 ? split[1] : "Vault";
+		}
+
+		// try to find the exact configured fallback in the manager list
+		AbstractCurrency configured = getManagerContent().stream()
+				.filter(c -> pluginFromConfig.equals(c.getOwningPlugin()) && currencyFromConfig.equals(c.getCurrencyName()))
+				.findFirst()
+				.orElse(null);
+
+		if (configured != null) return configured;
+
+		AbstractCurrency marketsItem = getManagerContent().stream()
+				.filter(c -> "Vault".equals(c.getOwningPlugin()) && "Vault".equals(c.getCurrencyName()))
+				.findFirst()
+				.orElse(null);
+
+		if (marketsItem != null) return marketsItem;
+
+		// finally return the first available currency, or make a new ItemCurrency as absolute last resort
+		return getManagerContent().stream().findFirst().orElseGet(VaultCurrency::new);
+	}
+
+	/**
+	 * Locate currency by plugin + name. If not found, use getFallBack() which no longer calls back into this method.
+	 */
 	public AbstractCurrency locateCurrency(@NonNull final String owningPlugin, @NonNull final String currencyName) {
-		return getManagerContent().stream().filter(currency -> currency.getOwningPlugin().equals(owningPlugin) && currency.getCurrencyName().equals(currencyName)).findFirst().orElse(null);
+		return getManagerContent().stream()
+				.filter(currency -> currency.getOwningPlugin().equals(owningPlugin) && currency.getCurrencyName().equals(currencyName))
+				.findFirst()
+				.orElseGet(this::getFallBack);
 	}
 
 	public boolean has(@NonNull final OfflinePlayer offlinePlayer, @NonNull final String owningPlugin, @NonNull final String currencyName, final double amount) {
@@ -74,7 +112,9 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 		}
 
 		// add vault by default
-		add(new VaultCurrency());
+		if (!Settings.CURRENCY_HIDE_VAULT_AND_VAULT_HOOKED.getBoolean())
+			add(new VaultCurrency());
+
 		add(new ItemCurrency());
 
 		// load currencies from providers that allow multiple currencies
@@ -89,6 +129,9 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
 		if (Bukkit.getServer().getPluginManager().isPluginEnabled("CoinsEngine"))
 			new CoinEngineEconomyLoader().getCurrencies().forEach(this::add);
+
+
+
 
 	}
 }

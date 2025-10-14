@@ -40,6 +40,9 @@ public final class CategoryItem implements MarketItem {
 	private boolean acceptingOffers;
 	private boolean infinite;
 
+	private boolean removeRequested = false;
+	private boolean beingEdited;
+
 	private final List<Player> viewingUsers;
 
 	public CategoryItem(
@@ -204,6 +207,11 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void performPurchase(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
 
+		if (removeRequested) {
+			transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
+			return;
+		}
+
 		if (!this.infinite && this.stock == 0) {//todo add check to prevent multiple purchases
 			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
@@ -349,6 +357,26 @@ public final class CategoryItem implements MarketItem {
 		}
 
 		transactionResult.accept(TransactionResult.ERROR);
+	}
+
+	@Override
+	public boolean removeRequested() {
+		return this.removeRequested;
+	}
+
+	@Override
+	public void setRemoveRequested() {
+		this.removeRequested = true;
+	}
+
+	@Override
+	public boolean isBeingEdited() {
+		return this.beingEdited;
+	}
+
+	@Override
+	public void setBeingEdited(boolean edited) {
+		this.beingEdited = edited;
 	}
 
 	private void alertOutOfStock(final OfflinePlayer seller, @NonNull final Player buyer, final int newPurchaseAmount) {
