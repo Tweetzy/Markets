@@ -69,7 +69,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 			}
 
 			// refetch item
-			if (Markets.getCategoryItemManager().getByUUID(this.market.getId()) == null) {
+			if (Markets.getCategoryItemManager().getByUUID(this.marketItem.getId()) == null) {
 				click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 				return;
 			}
@@ -82,10 +82,7 @@ public final class MarketItemPurchaseGUI extends MarketsBaseGUI {
 
 
 		setButton(getRows() - 1, 0,getBackButton(), click -> {
-			Common.log(this.marketItem.getViewingPlayers().size()+" b");
-
 			this.marketItem.getViewingPlayers().remove(click.player);
-			Common.log(this.marketItem.getViewingPlayers().size()+" a");
 			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, Markets.getCategoryManager().getByUUID(marketItem.getOwningCategory()), false));
 		});
 	}
