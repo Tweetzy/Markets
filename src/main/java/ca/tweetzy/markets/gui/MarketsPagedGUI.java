@@ -27,6 +27,10 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 	@Setter
 	protected boolean async = false;
 
+
+	@Setter
+	protected boolean autoApplyBackExit = true;
+
 	public MarketsPagedGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
 		super(parent, title, rows);
 		this.parent = parent;
@@ -44,7 +48,8 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 		populateItems();
 		drawFixed();
 
-		applyBackExit();
+		if (autoApplyBackExit)
+			applyBackExit();
 	}
 
 	protected void prePopulate() {

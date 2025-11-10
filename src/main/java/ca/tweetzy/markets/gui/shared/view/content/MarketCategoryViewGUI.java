@@ -51,7 +51,10 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		setDefaultItem(this.market.getCategoryLayout().getBackgroundItem());
 
 		setOnOpen(open -> this.category.getViewingPlayers().add(player));
-		setOnClose(close -> this.category.getViewingPlayers().remove(player));
+		setAutoApplyBackExit(false);
+		setOnClose(close -> {
+			this.category.getViewingPlayers().remove(player);
+		});
 
 		draw();
 	}
@@ -164,12 +167,10 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 				};
 			});
 
-		if (!this.fromAdminCommand) {
-			setAction(getRows() - 1, 0, click -> {
-				this.category.getViewingPlayers().remove(click.player);
-				click.manager.showGUI(click.player, new MarketViewGUI(null, this.player, this.market, this.viewAsCustomer));
-			});
-		}
+		setButton(this.market.getCategoryLayout().getExitButtonSlot(), getBackButton(), click -> {
+			click.manager.showGUI(click.player, new MarketViewGUI(null, this.player, this.market, this.viewAsCustomer));
+			this.category.getViewingPlayers().remove(click.player);
+		});
 	}
 
 	@Override
@@ -180,6 +181,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		}
 
 		if (Markets.getCategoryItemManager().getByUUID(marketItem.getId()) == null) {
+			this.category.getViewingPlayers().remove(player);
 			click.manager.showGUI(click.player, new MarketCategoryViewGUI(this.player, this.market, this.category, this.viewAsCustomer));
 			Common.tell(click.player, TranslationManager.string(click.player, Translations.ITEM_NO_LONGER_AVAILABLE));
 			return;
