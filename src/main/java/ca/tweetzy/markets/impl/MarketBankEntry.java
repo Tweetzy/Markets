@@ -111,9 +111,12 @@ public final class MarketBankEntry implements BankEntry {
 
 	@Override
 	public void store(@NonNull Consumer<BankEntry> stored) {
-		Markets.getBankEntryRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createBankEntry(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 
@@ -131,9 +134,10 @@ public final class MarketBankEntry implements BankEntry {
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getBankEntryRepository().save(this, (error, saved) -> {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().updateBankEntry(this, (error, success) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

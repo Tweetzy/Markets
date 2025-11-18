@@ -17,13 +17,20 @@ import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.listeners.MarketTransactionListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.*;
+import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
+import ca.tweetzy.markets.model.sync.CrossServerSyncManager;
+import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
+import ca.tweetzy.flight.dependency.Dependency;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class Markets extends FlightPlugin {
 
@@ -59,11 +66,43 @@ public final class Markets extends FlightPlugin {
 	private final RequestManager requestManager = new RequestManager();
 	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
 	private final TransactionManager transactionManager = new TransactionManager();
+	
+	private CrossServerSyncManager crossServerSyncManager;
+	private StockReservationManager stockReservationManager;
+	private CrossServerNotificationManager notificationManager;
 
 	// default vault economy
 	private Economy economy = null;
 
 	private final MarketsAPI API = new MarketsAPIImpl();
+
+	@Override
+	protected Set<Dependency> getOptionalDependencies() {
+		Set<Dependency> dependencies = new HashSet<>(super.getOptionalDependencies());
+		
+		// Ensure Jedis is loaded for Redis sync support
+		// (Already loaded by Flight, but we ensure it's included)
+		dependencies.add(new Dependency(
+				"https://repo1.maven.org/maven2",
+				"redis.clients",
+				"jedis",
+				"5.1.0",
+				true,
+				new ca.tweetzy.flight.dependency.Relocation("redis.clients", "ca.tweetzy.flight.third_party.redis.clients")
+		));
+		
+		// Jedis requires Apache Commons Pool2 as a dependency
+		dependencies.add(new Dependency(
+				"https://repo1.maven.org/maven2",
+				"org.apache.commons",
+				"commons-pool2",
+				"2.12.0",
+				true,
+				null // No relocation needed for commons-pool2
+		));
+		
+		return dependencies;
+	}
 
 	@Override
 	protected void onFlight() {
@@ -85,6 +124,26 @@ public final class Markets extends FlightPlugin {
 		) : new SQLiteConnector(this);
 
 		this.dataManager = new DataManager(this.databaseConnector, this);
+		
+		// Initialize Redis sync if MySQL is enabled and Redis is enabled
+		if (Settings.DATABASE_USE.getBoolean() && Settings.REDIS_ENABLED.getBoolean()) {
+			String redisPassword = Settings.REDIS_PASSWORD.getString();
+			if (redisPassword != null && redisPassword.isEmpty()) {
+				redisPassword = null; // Convert empty string to null
+			}
+			
+			boolean redisInitialized = this.dataManager.initializeRedisSync(
+					Settings.REDIS_HOST.getString(),
+					Settings.REDIS_PORT.getInt(),
+					redisPassword,
+					Settings.REDIS_CHANNEL.getString()
+			);
+			
+			if (!redisInitialized) {
+				Common.log("&cRedis sync initialization failed. Cross-server synchronization disabled.");
+				Common.log("&cMarkets will continue to work in single-server mode.");
+			}
+		}
 		
 		// Initialize repositories
 		final String tablePrefix = this.dataManager.getTablePrefix();
@@ -128,6 +187,13 @@ public final class Markets extends FlightPlugin {
 		// gui system
 		this.guiManager.init();
 
+		// Initialize cross-server sync manager if Redis is enabled
+		if (this.dataManager.getRedisSyncManager() != null && this.dataManager.getRedisSyncManager().isEnabled()) {
+			this.crossServerSyncManager = new CrossServerSyncManager(this, this.dataManager);
+			this.stockReservationManager = new StockReservationManager(this);
+			this.notificationManager = new CrossServerNotificationManager(this, this.dataManager);
+		}
+		
 		// managers
 		this.marketManager.load();
 		this.playerManager.load();
@@ -141,6 +207,9 @@ public final class Markets extends FlightPlugin {
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new MarketTransactionListener(), this);
+		
+		// Note: Database sync events are handled by CrossServerSyncManager, which registers itself
+		// No need for separate DatabaseSyncListener
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
@@ -164,6 +233,11 @@ public final class Markets extends FlightPlugin {
 
 	@Override
 	protected void onSleep() {
+		// Shutdown notification manager before shutting down data manager
+		if (this.notificationManager != null) {
+			this.notificationManager.shutdown();
+		}
+		
 		shutdownDataManager(this.dataManager);
 	}
 
@@ -225,6 +299,14 @@ public final class Markets extends FlightPlugin {
 
 	public static RequestManager getRequestManager() {
 		return getInstance().requestManager;
+	}
+	
+	public static StockReservationManager getStockReservationManager() {
+		return getInstance().stockReservationManager;
+	}
+	
+	public static CrossServerNotificationManager getNotificationManager() {
+		return getInstance().notificationManager;
 	}
 	
 	public static MarketRepository getMarketRepository() {

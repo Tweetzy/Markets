@@ -311,8 +311,13 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 					marketItem.setRemoveRequested();
 
 					marketItem.unStore(result -> {
-						if (result != SynchronizeResult.SUCCESS)
+						if (result != SynchronizeResult.SUCCESS) {
+							// Show error message to user
+							Common.tell(click.player, "&cFailed to delete item. Please try again. If the problem persists, check server logs.");
+							Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName());
+							reopen(click);
 							return;
+						}
 
 						// close guis of other users
 						marketItem.getViewingPlayers().forEach(viewingUser -> {
@@ -329,8 +334,13 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				marketItem.setRemoveRequested();
 
 				marketItem.unStore(result -> {
-					if (result != SynchronizeResult.SUCCESS)
+					if (result != SynchronizeResult.SUCCESS) {
+						// Show error message to user
+						Common.tell(click.player, "&cFailed to delete item. Please try again. If the problem persists, check server logs.");
+						Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName());
+						reopen(click);
 						return;
+					}
 
 					// close guis of other users
 					marketItem.getViewingPlayers().forEach(viewingUser -> {

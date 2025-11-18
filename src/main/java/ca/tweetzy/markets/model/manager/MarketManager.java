@@ -16,6 +16,7 @@ import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,11 @@ public final class MarketManager extends ListManager<Market> {
 	}
 
 	public void create(@NonNull final Player player, @NonNull final Consumer<Boolean> created) {
+		boolean moneyWithdrawn = false;
+		boolean itemWithdrawn = false;
+		ItemStack withdrawnItem = null;
+		int withdrawnAmount = 0;
+		
 		if (Settings.CREATION_COST_ENABLED.getBoolean()) {
 
 			// item only mode
@@ -98,8 +104,10 @@ public final class MarketManager extends ListManager<Market> {
 				}
 
 				// withdraw the creation cost
-				Markets.getCurrencyManager().withdraw(player, Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack(), (int) Settings.CREATION_COST_COST.getDouble());
-
+				withdrawnItem = Settings.CURRENCY_ITEM_DEFAULT_SELECTED.getItemStack();
+				withdrawnAmount = (int) Settings.CREATION_COST_COST.getDouble();
+				Markets.getCurrencyManager().withdraw(player, withdrawnItem, withdrawnAmount);
+				itemWithdrawn = true;
 
 			} else {
 				if (!Markets.getEconomy().has(player, Settings.CREATION_COST_COST.getDouble())) {
@@ -110,6 +118,7 @@ public final class MarketManager extends ListManager<Market> {
 
 				// withdraw the creation cost
 				Markets.getEconomy().withdrawPlayer(player, Settings.CREATION_COST_COST.getDouble());
+				moneyWithdrawn = true;
 			}
 		}
 
@@ -130,11 +139,26 @@ public final class MarketManager extends ListManager<Market> {
 				System.currentTimeMillis()
 		);
 
+		// Create final copies for lambda expression
+		final boolean finalMoneyWithdrawn = moneyWithdrawn;
+		final boolean finalItemWithdrawn = itemWithdrawn;
+		final ItemStack finalWithdrawnItem = withdrawnItem;
+		final int finalWithdrawnAmount = withdrawnAmount;
+		final double creationCost = Settings.CREATION_COST_COST.getDouble();
+
 		market.store(storedMarket -> {
 			if (storedMarket != null) {
 				add(storedMarket);
 				created.accept(true);
 			} else {
+				// Refund the creation cost if database operation failed
+				if (finalMoneyWithdrawn) {
+					Markets.getEconomy().depositPlayer(player, creationCost);
+					Common.tell(player, TranslationManager.string(player, Translations.CREATION_FAILED_REFUNDED));
+				} else if (finalItemWithdrawn && finalWithdrawnItem != null) {
+					Markets.getCurrencyManager().deposit(player, finalWithdrawnItem, finalWithdrawnAmount);
+					Common.tell(player, TranslationManager.string(player, Translations.CREATION_FAILED_REFUNDED));
+				}
 				created.accept(false);
 			}
 		});

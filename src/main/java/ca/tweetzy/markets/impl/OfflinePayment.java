@@ -86,9 +86,12 @@ public final class OfflinePayment implements Payment {
 
 	@Override
 	public void store(@NonNull Consumer<Payment> stored) {
-		Markets.getPaymentRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createOfflineItemPayment(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 

@@ -167,18 +167,22 @@ public final class MarketCategory implements Category {
 
 	@Override
 	public void store(@NonNull Consumer<Category> stored) {
-		Markets.getCategoryRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createCategory(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
 		this.updatedAt = System.currentTimeMillis();
-		Markets.getCategoryRepository().save(this, (error, saved) -> {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().updateCategory(this, (error, success) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 

@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis-markets
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass password --appendonly yes
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:

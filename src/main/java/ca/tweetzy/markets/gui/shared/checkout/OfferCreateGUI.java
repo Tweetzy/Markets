@@ -18,6 +18,7 @@ import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -160,6 +161,14 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
+			// Cache category reference before async operation to avoid database access in callback
+			final var category = Markets.getCategoryManager().getByUUID(this.marketItem.getOwningCategory());
+			
+			// Store references to avoid issues with lambda capture
+			final Player playerRef = click.player;
+			final var managerRef = click.manager;
+			final var currentGUI = click.gui;
+			
 			Markets.getOfferManager().create(
 					click.player,
 					this.market,
@@ -169,9 +178,21 @@ public final class OfferCreateGUI extends MarketsBaseGUI {
 					this.offer.getRequestAmount(),
 					this.offer.getOfferedAmount(),
 					created -> {
-						if (!created) return;
-						this.marketItem.getViewingPlayers().remove(this.player);
-						click.manager.showGUI(click.player, new MarketCategoryViewGUI(click.player, this.market, Markets.getCategoryManager().getByUUID(this.marketItem.getOwningCategory()), false));
+						if (!created) {
+							Common.tell(playerRef, "&cFailed to create offer. Please try again.");
+							return;
+						}
+						// Ensure GUI operations happen on main thread (even though callback should already be on main thread)
+						Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+							if (playerRef != null && playerRef.isOnline() && managerRef != null) {
+								this.marketItem.getViewingPlayers().remove(this.player);
+								// Close current GUI first, then show new one
+								if (currentGUI != null) {
+									currentGUI.exit();
+								}
+								managerRef.showGUI(playerRef, new MarketCategoryViewGUI(playerRef, this.market, category, false));
+							}
+						});
 					});
 		});
 

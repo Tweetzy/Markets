@@ -4,11 +4,13 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.annotations.*;
 import ca.tweetzy.flight.database.repository.EntityMapper;
 import ca.tweetzy.flight.utils.SerializeUtil;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.MarketType;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.impl.MarketLayout;
 import ca.tweetzy.markets.impl.PlayerMarket;
 import ca.tweetzy.markets.impl.ServerMarket;
+import ca.tweetzy.markets.impl.layout.HomeLayout;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -227,7 +229,7 @@ public class MarketsEntityMapper<T> implements EntityMapper<T> {
                 try {
                     return MarketLayout.decodeJSON((String) value);
                 } catch (Exception e) {
-                    return new ca.tweetzy.markets.impl.layout.HomeLayout();
+                    return new HomeLayout();
                 }
             }
         }
@@ -276,14 +278,21 @@ public class MarketsEntityMapper<T> implements EntityMapper<T> {
         // Handle enums
         if (fieldType.isEnum()) {
             if (value instanceof String) {
-                try {
-                    @SuppressWarnings({"unchecked", "rawtypes"})
-                    Class<? extends Enum> enumClass = (Class<? extends Enum>) fieldType;
-                    return Enum.valueOf(enumClass, ((String) value).toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    return null;
+                String strValue = (String) value;
+                if (strValue != null && !strValue.isEmpty()) {
+                    try {
+                        @SuppressWarnings({"unchecked", "rawtypes"})
+                        Class<? extends Enum> enumClass = (Class<? extends Enum>) fieldType;
+                        return Enum.valueOf(enumClass, strValue.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        // Log warning and return null - caller should handle default value
+                        Markets.getInstance().getLogger().warning("Invalid enum value '" + strValue + "' for field " + field.getName() + " in " + entityClass.getSimpleName() + ", returning null");
+                        return null;
+                    }
                 }
             }
+            // Return null if value is null/empty - entity should handle default in store() method
+            return null;
         }
         
         // Handle primitives

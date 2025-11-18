@@ -106,9 +106,12 @@ public final class MarketRating implements Rating {
 
 	@Override
 	public void store(@NonNull Consumer<Rating> stored) {
-		Markets.getRatingRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createMarketRating(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 }

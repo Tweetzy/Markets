@@ -154,16 +154,20 @@ public final class MarketPlayer implements MarketUser {
 
 	@Override
 	public void store(@NonNull Consumer<MarketUser> stored) {
-		Markets.getMarketUserRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createMarketUser(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getMarketUserRepository().save(this, (error, saved) -> {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().updateMarketUser(this, (error, success) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

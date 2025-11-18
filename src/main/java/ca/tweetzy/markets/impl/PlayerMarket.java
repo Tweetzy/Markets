@@ -92,6 +92,7 @@ public class PlayerMarket extends AbstractMarket {
 			final long updatedAt
 	) {
 		super(MarketType.PLAYER);
+		this.marketType = MarketType.PLAYER;
 		this.id = id;
 		this.ownerUUID = ownerUUID;
 		this.ownerName = ownerName;
@@ -217,18 +218,38 @@ public class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public void store(@NonNull Consumer<Market> stored) {
-		Markets.getMarketRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Ensure marketType is never null before saving
+		if (this.marketType == null) {
+			this.marketType = MarketType.PLAYER;
+		}
+		
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createMarket(this, (error, created) -> {
+			if (error == null && created != null) {
 				stored.accept(created);
+			} else {
+				// Log error and still call callback with null to indicate failure
+				if (error != null) {
+					Markets.getInstance().getLogger().severe("Failed to store market for player " + this.ownerName + " (UUID: " + this.ownerUUID + "): " + error.getMessage());
+					error.printStackTrace();
+				}
+				stored.accept(null);
+			}
 		});
 	}
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
+		// Ensure marketType is never null before saving
+		if (this.marketType == null) {
+			this.marketType = MarketType.PLAYER;
+		}
+		
 		this.updatedAt = System.currentTimeMillis();
-		Markets.getMarketRepository().save(this, (error, saved) -> {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().updateMarket(this, (error, success) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 

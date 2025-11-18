@@ -6,6 +6,7 @@ import ca.tweetzy.flight.database.DataManagerAbstract;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.UpdateCallback;
 import ca.tweetzy.flight.database.query.QueryBuilder;
+import ca.tweetzy.flight.database.sync.DatabaseEvent;
 import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.currency.Payment;
@@ -22,6 +23,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,8 +49,11 @@ public final class DataManager extends DataManagerAbstract {
 		// Use repository for create/update (upsert)
 		if (market instanceof PlayerMarket) {
 			Markets.getMarketRepository().save((PlayerMarket) market, (error, saved) -> {
-				if (callback != null) {
-					if (error == null) {
+				if (error == null && saved != null) {
+					// Publish database event for cross-server sync
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "markets", extractEntityData(market));
+					
+					if (callback != null) {
 						// Fetch the saved market to return
 						Markets.getMarketRepository().findById(market.getId(), (findError, found) -> {
 							if (findError == null && found != null) {
@@ -53,7 +62,9 @@ public final class DataManager extends DataManagerAbstract {
 								callback.accept(findError, null);
 							}
 						});
-					} else {
+					}
+				} else {
+					if (callback != null) {
 						callback.accept(error, null);
 					}
 				}
@@ -69,6 +80,11 @@ public final class DataManager extends DataManagerAbstract {
 		// Use repository save (upsert)
 		if (market instanceof PlayerMarket) {
 			Markets.getMarketRepository().save((PlayerMarket) market, (error, saved) -> {
+				if (error == null && saved != null) {
+					// Publish database event for cross-server sync
+					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "markets", extractEntityData(market));
+				}
+				
 				if (callback != null) {
 					callback.accept(error, error == null);
 				}
@@ -82,6 +98,13 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteMarket(@NonNull final AbstractMarket market, Callback<Boolean> callback) {
 		Markets.getMarketRepository().deleteById(market.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				// Publish database event for cross-server sync
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", market.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "markets", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -106,6 +129,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createCategory(@NonNull final Category category, final Callback<Category> callback) {
 		if (category instanceof MarketCategory) {
 			Markets.getCategoryRepository().save((MarketCategory) category, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "category", extractEntityData(category));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getCategoryRepository().findById(category.getId(), (findError, found) -> {
@@ -130,6 +157,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateCategory(@NonNull final Category category, final Callback<Boolean> callback) {
 		if (category instanceof MarketCategory) {
 			Markets.getCategoryRepository().save((MarketCategory) category, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "category", extractEntityData(category));
+				}
+				
 				if (callback != null) {
 					callback.accept(error, error == null);
 				}
@@ -143,6 +174,12 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteCategory(@NonNull final Category category, Callback<Boolean> callback) {
 		Markets.getCategoryRepository().deleteById(category.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", category.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "category", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -166,13 +203,24 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
 		if (marketItem instanceof CategoryItem) {
 			Markets.getMarketItemRepository().save((CategoryItem) marketItem, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "category_item", extractEntityData(marketItem));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
+						// Try to fetch the saved item, but if fetch fails, return the original item
+						// This ensures items are added to cache even if there's a connection issue during fetch
 						Markets.getMarketItemRepository().findById(marketItem.getId(), (findError, found) -> {
 							if (findError == null && found != null) {
 								callback.accept(null, found);
 							} else {
-								callback.accept(findError, null);
+								// Fetch failed, but save succeeded - return original item to ensure cache is updated
+								// This prevents items from not appearing on the server where they were added
+								if (findError != null && isConnectionError(findError)) {
+									Markets.getInstance().getLogger().warning("Failed to fetch saved market item due to connection error, using original item. Item ID: " + marketItem.getId());
+								}
+								callback.accept(null, marketItem); // Return original item if fetch fails
 							}
 						});
 					} else {
@@ -190,6 +238,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateMarketItem(@NonNull final MarketItem marketItem, final Callback<Boolean> callback) {
 		if (marketItem instanceof CategoryItem) {
 			Markets.getMarketItemRepository().save((CategoryItem) marketItem, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "category_item", extractEntityData(marketItem));
+				}
+				
 				if (callback != null) {
 					callback.accept(error, error == null);
 				}
@@ -202,11 +254,25 @@ public final class DataManager extends DataManagerAbstract {
 	}
 
 	public void deleteMarketItem(@NonNull final MarketItem marketItem, Callback<Boolean> callback) {
-		Markets.getMarketItemRepository().deleteById(marketItem.getId(), (error, deleted) -> {
-			if (callback != null) {
-				callback.accept(error, deleted != null && deleted);
-			}
-		});
+		// Use retry logic for item deletion
+		retryDatabaseOperation(
+			(operationCallback) -> {
+				Markets.getMarketItemRepository().deleteById(marketItem.getId(), (error, deleted) -> {
+					if (error == null && deleted != null && deleted) {
+						Map<String, Object> data = new HashMap<>();
+						data.put("id", marketItem.getId().toString());
+						publishEntityEvent(DatabaseEvent.EventType.DELETE, "category_item", data);
+					}
+					operationCallback.accept(error, deleted != null && deleted);
+				});
+			},
+			(error, result) -> {
+				if (callback != null) {
+					callback.accept(error, (Boolean) result);
+				}
+			},
+			3 // Max 3 retries
+		);
 	}
 
 	public void deleteMarketItems(@NonNull final Category category, Callback<Boolean> callback) {
@@ -260,6 +326,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketUser(@NonNull final MarketUser marketUser, final Callback<MarketUser> callback) {
 		if (marketUser instanceof MarketPlayer) {
 			Markets.getMarketUserRepository().save((MarketPlayer) marketUser, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "user", extractEntityData(marketUser));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getMarketUserRepository().findById(marketUser.getUUID(), (findError, found) -> {
@@ -284,6 +354,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateMarketUser(@NonNull final MarketUser marketUser, final Callback<Boolean> callback) {
 		if (marketUser instanceof MarketPlayer) {
 			Markets.getMarketUserRepository().save((MarketPlayer) marketUser, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "user", extractEntityData(marketUser));
+				}
+				
 				if (callback != null) {
 					callback.accept(error, error == null);
 				}
@@ -312,6 +386,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createOfflineItemPayment(@NonNull final Payment payment, final Callback<Payment> callback) {
 		if (payment instanceof OfflinePayment) {
 			Markets.getPaymentRepository().save((OfflinePayment) payment, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "payment", extractEntityData(payment));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getPaymentRepository().findById(payment.getId(), (findError, found) -> {
@@ -349,6 +427,12 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteOfflineItemPayment(@NonNull final Payment payment, Callback<Boolean> callback) {
 		Markets.getPaymentRepository().deleteById(payment.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", payment.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "payment", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -358,13 +442,18 @@ public final class DataManager extends DataManagerAbstract {
 	public void createOffer(@NonNull final Offer offer, final Callback<Offer> callback) {
 		if (offer instanceof MarketOffer) {
 			Markets.getOfferRepository().save((MarketOffer) offer, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "offer", extractEntityData(offer));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getOfferRepository().findById(offer.getId(), (findError, found) -> {
 							if (findError == null && found != null) {
 								callback.accept(null, found);
 							} else {
-								callback.accept(findError, null);
+								// If findById fails but save succeeded, return the original offer
+								callback.accept(null, (Offer) offer);
 							}
 						});
 					} else {
@@ -395,6 +484,12 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteOffer(@NonNull final Offer offer, Callback<Boolean> callback) {
 		Markets.getOfferRepository().deleteById(offer.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", offer.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "offer", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -404,6 +499,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createBankEntry(@NonNull final BankEntry bankEntry, final Callback<BankEntry> callback) {
 		if (bankEntry instanceof MarketBankEntry) {
 			Markets.getBankEntryRepository().save((MarketBankEntry) bankEntry, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "bank_entry", extractEntityData(bankEntry));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getBankEntryRepository().findById(bankEntry.getId(), (findError, found) -> {
@@ -442,6 +541,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void updateBankEntry(@NonNull final BankEntry entry, final Callback<Boolean> callback) {
 		if (entry instanceof MarketBankEntry) {
 			Markets.getBankEntryRepository().save((MarketBankEntry) entry, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "bank_entry", extractEntityData(entry));
+				}
+				
 				if (callback != null) {
 					callback.accept(error, error == null);
 				}
@@ -455,6 +558,12 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteBankEntry(@NonNull final BankEntry entry, Callback<Boolean> callback) {
 		Markets.getBankEntryRepository().deleteById(entry.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", entry.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "bank_entry", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -464,6 +573,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createMarketRating(@NonNull final Rating rating, final Callback<Rating> callback) {
 		if (rating instanceof MarketRating) {
 			Markets.getRatingRepository().save((MarketRating) rating, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "review", extractEntityData(rating));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getRatingRepository().findById(rating.getId(), (findError, found) -> {
@@ -511,6 +624,10 @@ public final class DataManager extends DataManagerAbstract {
 	public void createRequest(@NonNull final Request request, final Callback<Request> callback) {
 		if (request instanceof MarketRequest) {
 			Markets.getRequestRepository().save((MarketRequest) request, (error, saved) -> {
+				if (error == null && saved != null) {
+					publishEntityEvent(DatabaseEvent.EventType.INSERT, "request", extractEntityData(request));
+				}
+				
 				if (callback != null) {
 					if (error == null) {
 						Markets.getRequestRepository().findById(request.getId(), (findError, found) -> {
@@ -548,6 +665,12 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void deleteRequest(@NonNull final Request request, Callback<Boolean> callback) {
 		Markets.getRequestRepository().deleteById(request.getId(), (error, deleted) -> {
+			if (error == null && deleted != null && deleted) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("id", request.getId().toString());
+				publishEntityEvent(DatabaseEvent.EventType.DELETE, "request", data);
+			}
+			
 			if (callback != null) {
 				callback.accept(error, deleted != null && deleted);
 			}
@@ -556,21 +679,37 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void createTransaction(@NonNull final Transaction transaction, final Callback<Transaction> callback) {
 		if (transaction instanceof MarketTransaction) {
-			Markets.getTransactionRepository().save((MarketTransaction) transaction, (error, saved) -> {
-				if (callback != null) {
-					if (error == null) {
-						Markets.getTransactionRepository().findById(transaction.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
-					} else {
-						callback.accept(error, null);
+			// Use retry logic for transaction storage
+			retryDatabaseOperation(
+				(operationCallback) -> {
+					Markets.getTransactionRepository().save((MarketTransaction) transaction, (error, saved) -> {
+						if (error == null && saved != null) {
+							publishEntityEvent(DatabaseEvent.EventType.INSERT, "transaction", extractEntityData(transaction));
+							// Fetch the saved transaction to return
+							Markets.getTransactionRepository().findById(transaction.getId(), (findError, found) -> {
+								if (findError == null && found != null) {
+									operationCallback.accept(null, found);
+								} else {
+									// Fetch failed, but save succeeded - return original transaction to ensure it's tracked
+									// This prevents transactions from being lost due to connection issues during fetch
+									if (findError != null && isConnectionError(findError)) {
+										Markets.getInstance().getLogger().warning("Failed to fetch saved transaction due to connection error, using original transaction. Transaction ID: " + transaction.getId());
+									}
+									operationCallback.accept(null, transaction); // Return original transaction if fetch fails
+								}
+							});
+						} else {
+							operationCallback.accept(error, null);
+						}
+					});
+				},
+				(error, result) -> {
+					if (callback != null) {
+						callback.accept(error, (Transaction) result);
 					}
-				}
-			});
+				},
+				3 // Max 3 retries
+			);
 		} else {
 			if (callback != null) {
 				callback.accept(new Exception("Unsupported transaction type"), null);
@@ -683,7 +822,18 @@ public final class DataManager extends DataManagerAbstract {
 		homeLayout = resultSet.getString("home_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("home_layout")) : new HomeLayout();
 		categoryLayout = resultSet.getString("category_layout") != null ? MarketLayout.decodeJSON(resultSet.getString("category_layout")) : new HomeLayout();
 
-		if (Enum.valueOf(MarketType.class, resultSet.getString("type").toUpperCase()) == MarketType.SERVER) {
+		// Handle null or invalid type - default to PLAYER
+		String typeStr = resultSet.getString("type");
+		MarketType marketType = MarketType.PLAYER;
+		if (typeStr != null && !typeStr.isEmpty()) {
+			try {
+				marketType = Enum.valueOf(MarketType.class, typeStr.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				Markets.getInstance().getLogger().warning("Invalid market type '" + typeStr + "' found in database, defaulting to PLAYER");
+			}
+		}
+
+		if (marketType == MarketType.SERVER) {
 			return new ServerMarket(
 					UUID.fromString(resultSet.getString("id")),
 					UUID.fromString(resultSet.getString("owner")),
@@ -789,5 +939,160 @@ public final class DataManager extends DataManagerAbstract {
 		} else {
 			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Extract entity data to a Map for event publishing
+	 */
+	private Map<String, Object> extractEntityData(@NonNull Object entity) {
+		Map<String, Object> data = new HashMap<>();
+		
+		try {
+			Class<?> clazz = entity.getClass();
+			for (Field field : clazz.getDeclaredFields()) {
+				try {
+					// Try to get Column annotation using reflection
+					Class<?> columnAnnotationClass = Class.forName("ca.tweetzy.flight.database.annotations.Column");
+					java.lang.annotation.Annotation column = field.getAnnotation((Class<? extends java.lang.annotation.Annotation>) columnAnnotationClass);
+					if (column != null) {
+						field.setAccessible(true);
+						Object value = field.get(entity);
+						
+						if (value != null) {
+							// Get column name from annotation
+							String columnName;
+							try {
+								Method valueMethod = columnAnnotationClass.getMethod("value");
+								String columnValue = (String) valueMethod.invoke(column);
+								columnName = columnValue.isEmpty() ? field.getName() : columnValue;
+							} catch (Exception ex) {
+								columnName = field.getName();
+							}
+							
+							// Convert value to string representation
+							if (value instanceof UUID) {
+								data.put(columnName, value.toString());
+							} else if (value instanceof Enum) {
+								data.put(columnName, value.toString());
+							} else if (value instanceof List) {
+								// For lists, join with separator
+								List<?> list = (List<?>) value;
+								if (list.isEmpty()) {
+									data.put(columnName, "");
+								} else if (list.get(0) instanceof String) {
+									data.put(columnName, String.join(";;;", (List<String>) list));
+								} else if (list.get(0) instanceof UUID) {
+									data.put(columnName, list.stream().map(u -> u.toString()).reduce((a, b) -> a + "," + b).orElse(""));
+								} else {
+									data.put(columnName, value.toString());
+								}
+							} else {
+								data.put(columnName, value.toString());
+							}
+						}
+					}
+					
+					// Also check for @Id annotation
+					Class<?> idAnnotationClass = Class.forName("ca.tweetzy.flight.database.annotations.Id");
+					java.lang.annotation.Annotation idAnnotation = field.getAnnotation((Class<? extends java.lang.annotation.Annotation>) idAnnotationClass);
+					if (idAnnotation != null) {
+						field.setAccessible(true);
+						Object value = field.get(entity);
+						if (value != null) {
+							data.put("id", value.toString());
+						}
+					}
+				} catch (ClassNotFoundException ignored) {
+					// Annotation classes not found, skip
+				}
+			}
+		} catch (Exception e) {
+			// If extraction fails, at least include the ID if it's an Identifiable
+			try {
+				Class<?> identifiableClass = Class.forName("ca.tweetzy.markets.api.Identifiable");
+				if (identifiableClass.isInstance(entity)) {
+					Method getIdMethod = identifiableClass.getMethod("getId");
+					Object id = getIdMethod.invoke(entity);
+					if (id != null) {
+						data.put("id", id.toString());
+					}
+				}
+			} catch (Exception ex) {
+				// Ignore
+			}
+		}
+		
+		return data;
+	}
+	
+	/**
+	 * Publish a database event for cross-server synchronization
+	 */
+	private void publishEntityEvent(@NonNull DatabaseEvent.EventType eventType, @NonNull String tableName, @NonNull Map<String, Object> data) {
+		// Use the parent class method to publish event
+		publishDatabaseEvent(eventType, tableName, data);
+	}
+	
+	/**
+	 * Check if an exception is a connection-related error that should be retried
+	 */
+	private boolean isConnectionError(@NonNull Exception error) {
+		String message = error.getMessage();
+		if (message == null) {
+			return false;
+		}
+		message = message.toLowerCase();
+		return message.contains("connection closed") ||
+		       message.contains("no operations allowed") ||
+		       message.contains("communications link failure") ||
+		       message.contains("connection reset") ||
+		       message.contains("broken pipe") ||
+		       (error.getCause() != null && isConnectionError((Exception) error.getCause()));
+	}
+	
+	/**
+	 * Retry a database operation with exponential backoff
+	 * @param operation The operation to retry (should call the callback with result)
+	 * @param callback The final callback to call with result
+	 * @param maxRetries Maximum number of retries (default 3)
+	 */
+	private <T> void retryDatabaseOperation(
+		@NonNull java.util.function.Consumer<java.util.function.BiConsumer<Exception, T>> operation,
+		@NonNull Callback<T> callback,
+		int maxRetries
+	) {
+		retryDatabaseOperationInternal(operation, callback, maxRetries, 0);
+	}
+	
+	private <T> void retryDatabaseOperationInternal(
+		@NonNull java.util.function.Consumer<java.util.function.BiConsumer<Exception, T>> operation,
+		@NonNull Callback<T> callback,
+		int maxRetries,
+		int currentAttempt
+	) {
+		operation.accept((error, result) -> {
+			if (error == null) {
+				// Success
+				callback.accept(null, result);
+			} else if (isConnectionError(error) && currentAttempt < maxRetries) {
+				// Connection error - retry with exponential backoff
+				long delayMs = (long) Math.pow(2, currentAttempt) * 100; // 100ms, 200ms, 400ms
+				Markets.getInstance().getLogger().warning("Database connection error (attempt " + (currentAttempt + 1) + "/" + (maxRetries + 1) + "): " + error.getMessage() + ". Retrying in " + delayMs + "ms...");
+				
+				// Schedule retry on async thread
+				org.bukkit.Bukkit.getScheduler().runTaskLaterAsynchronously(
+					Markets.getInstance(),
+					() -> retryDatabaseOperationInternal(operation, callback, maxRetries, currentAttempt + 1),
+					delayMs / 50 // Convert ms to ticks (20 ticks per second)
+				);
+			} else {
+				// Non-retryable error or max retries reached
+				if (currentAttempt >= maxRetries && isConnectionError(error)) {
+					Markets.getInstance().getLogger().severe("Failed to execute database operation after " + (maxRetries + 1) + " attempts. Last error: " + error.getMessage());
+					error.printStackTrace();
+				}
+				callback.accept(error, result);
+			}
+		});
 	}
 }

@@ -5,6 +5,8 @@ import ca.tweetzy.markets.api.Trackable;
 import ca.tweetzy.markets.api.manager.ListManager;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.Rating;
+import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
+import ca.tweetzy.markets.model.sync.NotificationEvent;
 import ca.tweetzy.markets.settings.Settings;
 import lombok.NonNull;
 import org.bukkit.OfflinePlayer;
@@ -53,11 +55,31 @@ public final class RatingManager extends ListManager<Rating> {
 		return ratingsGiven;
 	}
 
+	public Rating getByUUID(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(rating -> rating.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
 	public void create(@NonNull final Market market, @NonNull final Rating rating, @NonNull final Consumer<Boolean> created) {
 		rating.store(storedRating -> {
 			if (storedRating != null) {
 				add(storedRating);
 				market.getRatings().add(rating);
+				
+				// Send notification to market owner
+				CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+				if (notificationManager != null) {
+					Map<String, Object> notificationData = new HashMap<>();
+					notificationData.put("rater_name", rating.getRaterName());
+					notificationData.put("market_display_name", market.getDisplayName());
+					notificationData.put("stars", rating.getStars());
+					
+					notificationManager.sendNotification(
+						market.getOwnerUUID(),
+						NotificationEvent.NotificationType.REVIEW_CREATED,
+						notificationData
+					);
+				}
+				
 				created.accept(true);
 			} else {
 				created.accept(false);

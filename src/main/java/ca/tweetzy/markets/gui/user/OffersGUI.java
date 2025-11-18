@@ -13,6 +13,8 @@ import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
+import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
+import ca.tweetzy.markets.model.sync.NotificationEvent;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -22,7 +24,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public final class OffersGUI extends MarketsPagedGUI<Offer> {
@@ -75,18 +79,67 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 		if (click.clickType == ClickType.LEFT) {
 			offer.accept(result -> {
 				final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(offer.getOfferSender());
+				final String marketItemName = marketItem != null ? ItemUtil.getItemName(marketItem.getItem()) : "an item";
 
-				if (offerSender.isOnline())
+				// Send cross-server notification
+				CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+				if (notificationManager != null) {
+					Map<String, Object> notificationData = new HashMap<>();
+					notificationData.put("owner_name", click.player.getName());
+					notificationData.put("market_item_name", marketItemName);
+
+					switch (result) {
+						case SUCCESS:
+							notificationManager.sendNotification(
+								offer.getOfferSender(),
+								NotificationEvent.NotificationType.OFFER_ACCEPTED,
+								notificationData
+							);
+							break;
+						case FAILED_NO_MONEY:
+							notificationData.put("reject_reason", "NO_MONEY");
+							notificationManager.sendNotification(
+								offer.getOfferSender(),
+								NotificationEvent.NotificationType.OFFER_REJECTED,
+								notificationData
+							);
+							break;
+						case FAILED_OUT_OF_STOCK:
+							notificationData.put("reject_reason", "INSUFFICIENT_STOCK");
+							notificationManager.sendNotification(
+								offer.getOfferSender(),
+								NotificationEvent.NotificationType.OFFER_REJECTED,
+								notificationData
+							);
+							break;
+						case NO_LONGER_AVAILABLE:
+							notificationData.put("reject_reason", "ITEM_NO_LONGER_AVAILABLE");
+							notificationManager.sendNotification(
+								offer.getOfferSender(),
+								NotificationEvent.NotificationType.OFFER_REJECTED,
+								notificationData
+							);
+							break;
+						case ERROR:
+							// Error case - don't send notification as operation failed
+							break;
+					}
+				} else if (offerSender.isOnline()) {
+					// Fallback to local notification if notification manager not available
 					switch (result) {
 						case SUCCESS ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 						case FAILED_NO_MONEY ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NO_MONEY, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NO_MONEY, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 						case FAILED_OUT_OF_STOCK ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 						case NO_LONGER_AVAILABLE ->
 								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_AVAILABLE, "owner_name", click.player.getName()));
+						case ERROR ->
+								// Error case - don't send notification as operation failed
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 					}
+				}
 
 				click.manager.showGUI(click.player, new OffersGUI(this.parent, click.player));
 			});
@@ -97,16 +150,43 @@ public final class OffersGUI extends MarketsPagedGUI<Offer> {
 				if (result != TransactionResult.SUCCESS) return;
 
 				final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(offer.getOfferSender());
+				final String marketItemName = marketItem != null ? ItemUtil.getItemName(marketItem.getItem()) : "an item";
 
-				if (offerSender.isOnline())
+				// Send cross-server notification
+				CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+				if (notificationManager != null) {
+					Map<String, Object> notificationData = new HashMap<>();
+					notificationData.put("owner_name", click.player.getName());
+					notificationData.put("market_item_name", marketItemName);
+
+					switch (reason) {
+						case NOT_ACCEPTED:
+							notificationData.put("reject_reason", "NOT_ACCEPTED");
+							break;
+						case ITEM_NO_LONGER_AVAILABLE:
+							notificationData.put("reject_reason", "ITEM_NO_LONGER_AVAILABLE");
+							break;
+						case INSUFFICIENT_STOCK:
+							notificationData.put("reject_reason", "INSUFFICIENT_STOCK");
+							break;
+					}
+
+					notificationManager.sendNotification(
+						offer.getOfferSender(),
+						NotificationEvent.NotificationType.OFFER_REJECTED,
+						notificationData
+					);
+				} else if (offerSender.isOnline()) {
+					// Fallback to local notification if notification manager not available
 					switch (reason) {
 						case NOT_ACCEPTED ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_ACCEPTED, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 						case ITEM_NO_LONGER_AVAILABLE ->
 								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_NOT_AVAILABLE, "owner_name", click.player.getName()));
 						case INSUFFICIENT_STOCK ->
-								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", ItemUtil.getItemName(marketItem.getItem())));
+								Common.tell(offerSender.getPlayer(), TranslationManager.string(offerSender.getPlayer(), Translations.OFFER_REJECT_INSUFFICIENT_STOCK, "owner_name", click.player.getName(), "market_item_name", marketItemName));
 					}
+				}
 
 				click.manager.showGUI(click.player, new OffersGUI(this.parent, click.player));
 			});

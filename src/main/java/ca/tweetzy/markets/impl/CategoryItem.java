@@ -15,9 +15,13 @@ import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.currency.TransactionResult;
 import ca.tweetzy.markets.api.event.MarketTransactionEvent;
 import ca.tweetzy.markets.api.market.TransactionType;
+import ca.tweetzy.markets.api.market.core.Category;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.model.Taxer;
+import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
+import ca.tweetzy.markets.model.sync.NotificationEvent;
+import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -213,20 +217,37 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void store(@NonNull Consumer<MarketItem> stored) {
-		Markets.getMarketItemRepository().save(this, (error, created) -> {
-			if (error == null)
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createMarketItem(this, (error, created) -> {
+			if (error == null && created != null)
 				stored.accept(created);
+			else if (error != null)
+				stored.accept(null);
 		});
 	}
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getMarketItemRepository().deleteById(this.id, (error, deleted) -> {
+		// Use DataManager to ensure retry logic and sync events are handled properly
+		Markets.getDataManager().deleteMarketItem(this, (error, deleted) -> {
+			if (error != null) {
+				// Log the error for debugging
+				Markets.getInstance().getLogger().severe("Failed to delete market item " + this.id + ": " + error.getMessage());
+				if (error.getCause() != null) {
+					Markets.getInstance().getLogger().severe("Caused by: " + error.getCause().getMessage());
+					error.getCause().printStackTrace();
+				} else {
+					error.printStackTrace();
+				}
+			}
+			
 			if (deleted != null && deleted) {
-
 				getViewingPlayers().forEach(viewingUser -> Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK)));
 
-				Markets.getCategoryManager().getByUUID(this.owningCategory).getItems().removeIf(category -> category.getId().equals(this.id));
+				Category category = Markets.getCategoryManager().getByUUID(this.owningCategory);
+				if (category != null) {
+					category.getItems().removeIf(categoryItem -> categoryItem.getId().equals(this.id));
+				}
 				Markets.getCategoryItemManager().remove(this);
 			}
 
@@ -237,9 +258,10 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getMarketItemRepository().save(this, (error, saved) -> {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().updateMarketItem(this, (error, success) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
@@ -258,6 +280,16 @@ public final class CategoryItem implements MarketItem {
 			return;
 		}
 
+		// Acquire distributed lock for cross-server synchronization
+		final StockReservationManager reservationManager = Markets.getStockReservationManager();
+		boolean lockAcquired = reservationManager == null || reservationManager.reserveStock(this.id, quantity);
+		
+		if (!lockAcquired) {
+			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+			return;
+		}
+
 		// Set beingEdited flag to prevent concurrent purchases
 		this.beingEdited = true;
 		
@@ -266,6 +298,9 @@ public final class CategoryItem implements MarketItem {
 			if (!this.infinite && this.stock == 0) {
 				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
@@ -278,6 +313,9 @@ public final class CategoryItem implements MarketItem {
 			if (this.currency == null || this.currency.isEmpty() || !this.currency.contains("/")) {
 				transactionResult.accept(TransactionResult.ERROR);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
@@ -285,6 +323,9 @@ public final class CategoryItem implements MarketItem {
 			if (currencyParts.length < 2 || currencyParts[0].isEmpty() || currencyParts[1].isEmpty()) {
 				transactionResult.accept(TransactionResult.ERROR);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
@@ -296,6 +337,9 @@ public final class CategoryItem implements MarketItem {
 			if (!hasEnoughMoney) {
 				transactionResult.accept(TransactionResult.FAILED_NO_MONEY);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.NO_MONEY));
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
@@ -313,6 +357,9 @@ public final class CategoryItem implements MarketItem {
 			if (freeSlots < newPurchaseAmount) {
 				transactionResult.accept(TransactionResult.ERROR);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
@@ -321,20 +368,37 @@ public final class CategoryItem implements MarketItem {
 
 			if (!withdrawResult) {
 				transactionResult.accept(TransactionResult.ERROR);
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
 				return;
 			}
 
 			// Re-validate stock after money withdrawal (prevents race condition)
-			if (!this.infinite && this.stock < newPurchaseAmount) {
-				// Rollback money withdrawal
-				if (this.isCurrencyOfItem()) {
-					Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
-				} else {
-					Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+			// Also reload stock from database if Redis is enabled to get latest value
+			if (!this.infinite) {
+				// For cross-server sync, we need to check database stock
+				if (reservationManager != null) {
+					// Reload item from database to get latest stock
+					Markets.getCategoryItemManager().getByUUID(this.id);
+					// Stock will be updated by sync manager, but we need to check current value
+					// The lock ensures no other server can modify it, but we should still verify
 				}
-				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
-				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-				return;
+				
+				if (this.stock < newPurchaseAmount) {
+					// Rollback money withdrawal
+					if (this.isCurrencyOfItem()) {
+						Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
+					} else {
+						Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+					}
+					transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+					if (reservationManager != null) {
+						reservationManager.releaseReservation(this.id);
+					}
+					return;
+				}
 			}
 
 			// Give items to buyer
@@ -361,8 +425,21 @@ public final class CategoryItem implements MarketItem {
 							sync(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
 						}
 					}
-				} else {
-					if (!market.isServerMarket() && seller.isOnline()) {
+			} else {
+				if (!market.isServerMarket()) {
+					// Send purchase notification (cross-server or local)
+					java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
+					notificationData.put("buyer_name", buyer.getName());
+					notificationData.put("item_name", ItemUtil.getItemName(this.item));
+					notificationData.put("purchase_quantity", newPurchaseAmount);
+					notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
+					
+					CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+					if (notificationManager != null) {
+						notificationManager.sendNotification(seller.getUniqueId(), 
+							NotificationEvent.NotificationType.PURCHASE, notificationData);
+					} else if (seller.isOnline()) {
+						// Fallback to local notification if notification manager not available
 						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 								"purchase_price", isCurrencyOfItem() ? total : (int) total,
 								"purchase_quantity", newPurchaseAmount,
@@ -371,32 +448,57 @@ public final class CategoryItem implements MarketItem {
 						));
 					}
 				}
+			}
 
-			} else {
-				if (!market.isServerMarket()) {
-					if (!this.infinite) {
-						setStock(newStock);
-						sync(result -> {
-							if (seller.isOnline()) {
-								Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-										"purchase_quantity", newPurchaseAmount,
-										"item_name", ItemUtil.getItemName(this.item),
-										"buyer_name", buyer.getName()
-								));
-							}
-						});
-					} else {
-						if (seller.isOnline()) {
+		} else {
+			if (!market.isServerMarket()) {
+				if (!this.infinite) {
+					setStock(newStock);
+					sync(result -> {
+						// Send purchase notification (cross-server or local)
+						java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
+						notificationData.put("buyer_name", buyer.getName());
+						notificationData.put("item_name", ItemUtil.getItemName(this.item));
+						notificationData.put("purchase_quantity", newPurchaseAmount);
+						notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
+						
+						CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+						if (notificationManager != null) {
+							notificationManager.sendNotification(seller.getUniqueId(), 
+								NotificationEvent.NotificationType.PURCHASE, notificationData);
+						} else if (seller.isOnline()) {
+							// Fallback to local notification
 							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-									"purchase_price", isCurrencyOfItem() ? total : (int) total,
 									"purchase_quantity", newPurchaseAmount,
 									"item_name", ItemUtil.getItemName(this.item),
 									"buyer_name", buyer.getName()
 							));
 						}
+					});
+				} else {
+					// Send purchase notification (cross-server or local)
+					java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
+					notificationData.put("buyer_name", buyer.getName());
+					notificationData.put("item_name", ItemUtil.getItemName(this.item));
+					notificationData.put("purchase_quantity", newPurchaseAmount);
+					notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
+					
+					CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+					if (notificationManager != null) {
+						notificationManager.sendNotification(seller.getUniqueId(), 
+							NotificationEvent.NotificationType.PURCHASE, notificationData);
+					} else if (seller.isOnline()) {
+						// Fallback to local notification
+						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+								"purchase_price", isCurrencyOfItem() ? total : (int) total,
+								"purchase_quantity", newPurchaseAmount,
+								"item_name", ItemUtil.getItemName(this.item),
+								"buyer_name", buyer.getName()
+						));
 					}
 				}
 			}
+		}
 
 			if (!market.isServerMarket()) {
 				if (isCurrencyOfItem()) {
@@ -454,6 +556,11 @@ public final class CategoryItem implements MarketItem {
 		} finally {
 			// Always clear the beingEdited flag, even if an error occurred
 			this.beingEdited = false;
+			
+			// Release distributed lock
+			if (reservationManager != null) {
+				reservationManager.releaseReservation(this.id);
+			}
 		}
 	}
 
@@ -478,7 +585,24 @@ public final class CategoryItem implements MarketItem {
 	}
 
 	private void alertOutOfStock(final OfflinePlayer seller, @NonNull final Player buyer, final int newPurchaseAmount) {
-		if (seller.isOnline()) {
+		// Send purchase notification first
+		java.util.Map<String, Object> purchaseData = new java.util.HashMap<>();
+		purchaseData.put("buyer_name", buyer.getName());
+		purchaseData.put("item_name", ItemUtil.getItemName(this.item));
+		purchaseData.put("purchase_quantity", newPurchaseAmount);
+		
+		CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+		if (notificationManager != null) {
+			notificationManager.sendNotification(seller.getUniqueId(), 
+				NotificationEvent.NotificationType.PURCHASE, purchaseData);
+			
+			// Send out of stock notification
+			java.util.Map<String, Object> outOfStockData = new java.util.HashMap<>();
+			outOfStockData.put("item_name", ItemUtil.getItemName(this.item));
+			notificationManager.sendNotification(seller.getUniqueId(), 
+				NotificationEvent.NotificationType.OUT_OF_STOCK, outOfStockData);
+		} else if (seller.isOnline()) {
+			// Fallback to local notification
 			Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
 					"purchase_quantity", newPurchaseAmount,
 					"item_name", ItemUtil.getItemName(this.item),

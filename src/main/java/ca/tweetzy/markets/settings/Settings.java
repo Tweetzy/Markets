@@ -28,6 +28,15 @@ public final class Settings extends FlightSettings {
 	public static final ConfigEntry DATABASE_PASSWORD = create("database.password", "Password1.", "What is the password to the user connecting?");
 	public static final ConfigEntry DATABASE_CUSTOM_PARAMS = create("database.custom parameters", "?useUnicode=yes&characterEncoding=UTF-8&useServerPrepStmts=false&rewriteBatchedStatements=true&useSSL=true", "Leave this alone if you don't know what you're doing. Set to 'None' to use no custom connection params");
 
+	/*
+	========================= Redis Sync Stuff =========================
+	 */
+	public static final ConfigEntry REDIS_ENABLED = create("redis.enabled", true, "Enable Redis for cross-server synchronization (auto-enabled when using MySQL)");
+	public static final ConfigEntry REDIS_HOST = create("redis.host", "localhost", "Redis server host");
+	public static final ConfigEntry REDIS_PORT = create("redis.port", 6379, "Redis server port");
+	public static final ConfigEntry REDIS_PASSWORD = create("redis.password", "", "Redis server password (leave empty if no password)");
+	public static final ConfigEntry REDIS_CHANNEL = create("redis.channel", "markets_sync", "Redis pub/sub channel name for Markets synchronization");
+
 
 	/*
 	========================= Admin Market Stuff =========================

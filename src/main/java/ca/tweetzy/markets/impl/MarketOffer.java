@@ -14,6 +14,7 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.api.market.offer.OfferRejectReason;
+import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -170,98 +171,132 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void accept(@NonNull Consumer<TransactionResult> result) {
-		final MarketItem locatedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
-
-		if (locatedItem == null) {
-			unStore(deleteResult -> {
-				if (deleteResult == SynchronizeResult.SUCCESS) {
-					result.accept(TransactionResult.NO_LONGER_AVAILABLE);
-				}
-			});
+		// Acquire distributed lock for offer acceptance to prevent duplicate acceptances
+		StockReservationManager reservationManager = Markets.getStockReservationManager();
+		String offerLockKey = "offer:" + this.uuid + ":accept";
+		boolean offerLockAcquired = reservationManager == null || 
+			(Markets.getDataManager().getRedisLockManager() != null && 
+			 Markets.getDataManager().getRedisLockManager().acquireLock(offerLockKey, 30));
+		
+		if (!offerLockAcquired) {
+			result.accept(TransactionResult.ERROR);
 			return;
 		}
+		
+		try {
+			final MarketItem locatedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
 
-		if (locatedItem.getStock() < this.requestAmount) {
-			unStore(deleteResult -> {
-				if (deleteResult == SynchronizeResult.SUCCESS) {
-					result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
-				}
-			});
-			return;
-		}
-
-		final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(this.sender);
-		final OfflinePlayer itemOwner = Bukkit.getOfflinePlayer(this.offerTo);
-
-		// Validate currency format before splitting
-		if (this.currency == null || this.currency.isEmpty() || !this.currency.contains("/")) {
-			unStore(deleteResult -> {
-				if (deleteResult == SynchronizeResult.SUCCESS) {
-					result.accept(TransactionResult.ERROR);
-				}
-			});
-			return;
-		}
-
-		final String[] currencyParts = this.currency.split("/");
-		if (currencyParts.length < 2 || currencyParts[0].isEmpty() || currencyParts[1].isEmpty()) {
-			unStore(deleteResult -> {
-				if (deleteResult == SynchronizeResult.SUCCESS) {
-					result.accept(TransactionResult.ERROR);
-				}
-			});
-			return;
-		}
-
-		final String currencyPlugin = currencyParts[0];
-		final String currencyName = currencyParts[1];
-
-		boolean hasEnoughMoney = isCurrencyOfItem() ?
-				Markets.getBankManager().getEntryCountByPlayer(this.sender, this.currencyItem) >= (int) this.offeredAmount :
-				Markets.getCurrencyManager().has(offerSender, currencyPlugin, currencyName, this.offeredAmount);
-
-		if (!hasEnoughMoney) {
-			unStore(deleteResult -> {
-				if (deleteResult == SynchronizeResult.SUCCESS) {
-					result.accept(TransactionResult.FAILED_NO_MONEY);
-				}
-			});
-			return;
-		}
-
-		if (isCurrencyOfItem()) {
-			final BankEntry entry = Markets.getBankManager().getEntryByPlayer(this.sender, this.currencyItem);
-			final int newTotal = entry.getQuantity() - (int) this.offeredAmount;
-
-			if (newTotal <= 0) {
-				entry.unStore(entryResult -> {
-					if (entryResult == SynchronizeResult.FAILURE) return;
-
-					// give the buyer their items
-					giveItemAndCleanup(locatedItem, result);
-
-					// give seller their items
-					giveSellerItemsOrMakePayment(itemOwner);
-
+			if (locatedItem == null) {
+				unStore(deleteResult -> {
+					if (deleteResult == SynchronizeResult.SUCCESS) {
+						result.accept(TransactionResult.NO_LONGER_AVAILABLE);
+					}
 				});
-			} else {
-				entry.setQuantity(newTotal);
-				entry.sync(entryResult -> {
-					if (entryResult == SynchronizeResult.FAILURE) return;
-
-					// give the buyer their items
-					giveItemAndCleanup(locatedItem, result);
-
-					// give seller their items
-					giveSellerItemsOrMakePayment(itemOwner);
-				});
+				return;
 			}
-		} else {
-			Markets.getCurrencyManager().deposit(Bukkit.getOfflinePlayer(this.offerTo), currencyPlugin, currencyName, this.offeredAmount);
-			Markets.getCurrencyManager().withdraw(offerSender, currencyPlugin, currencyName, this.offeredAmount);
 
-			giveItemAndCleanup(locatedItem, result);
+			// Also acquire lock for the market item to prevent stock issues
+			boolean itemLockAcquired = reservationManager == null || 
+				reservationManager.reserveStock(this.marketItem, this.requestAmount);
+			
+			if (!itemLockAcquired) {
+				result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+				return;
+			}
+			
+			try {
+				if (locatedItem.getStock() < this.requestAmount) {
+					unStore(deleteResult -> {
+						if (deleteResult == SynchronizeResult.SUCCESS) {
+							result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+						}
+					});
+					return;
+				}
 
+				final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(this.sender);
+				final OfflinePlayer itemOwner = Bukkit.getOfflinePlayer(this.offerTo);
+
+				// Validate currency format before splitting
+				if (this.currency == null || this.currency.isEmpty() || !this.currency.contains("/")) {
+					unStore(deleteResult -> {
+						if (deleteResult == SynchronizeResult.SUCCESS) {
+							result.accept(TransactionResult.ERROR);
+						}
+					});
+					return;
+				}
+
+				final String[] currencyParts = this.currency.split("/");
+				if (currencyParts.length < 2 || currencyParts[0].isEmpty() || currencyParts[1].isEmpty()) {
+					unStore(deleteResult -> {
+						if (deleteResult == SynchronizeResult.SUCCESS) {
+							result.accept(TransactionResult.ERROR);
+						}
+					});
+					return;
+				}
+
+				final String currencyPlugin = currencyParts[0];
+				final String currencyName = currencyParts[1];
+
+				boolean hasEnoughMoney = isCurrencyOfItem() ?
+						Markets.getBankManager().getEntryCountByPlayer(this.sender, this.currencyItem) >= (int) this.offeredAmount :
+						Markets.getCurrencyManager().has(offerSender, currencyPlugin, currencyName, this.offeredAmount);
+
+				if (!hasEnoughMoney) {
+					unStore(deleteResult -> {
+						if (deleteResult == SynchronizeResult.SUCCESS) {
+							result.accept(TransactionResult.FAILED_NO_MONEY);
+						}
+					});
+					return;
+				}
+
+				if (isCurrencyOfItem()) {
+					final BankEntry entry = Markets.getBankManager().getEntryByPlayer(this.sender, this.currencyItem);
+					final int newTotal = entry.getQuantity() - (int) this.offeredAmount;
+
+					if (newTotal <= 0) {
+						entry.unStore(entryResult -> {
+							if (entryResult == SynchronizeResult.FAILURE) return;
+
+							// give the buyer their items
+							giveItemAndCleanup(locatedItem, result);
+
+							// give seller their items
+							giveSellerItemsOrMakePayment(itemOwner);
+
+						});
+					} else {
+						entry.setQuantity(newTotal);
+						entry.sync(entryResult -> {
+							if (entryResult == SynchronizeResult.FAILURE) return;
+
+							// give the buyer their items
+							giveItemAndCleanup(locatedItem, result);
+
+							// give seller their items
+							giveSellerItemsOrMakePayment(itemOwner);
+						});
+					}
+				} else {
+					Markets.getCurrencyManager().deposit(Bukkit.getOfflinePlayer(this.offerTo), currencyPlugin, currencyName, this.offeredAmount);
+					Markets.getCurrencyManager().withdraw(offerSender, currencyPlugin, currencyName, this.offeredAmount);
+
+					giveItemAndCleanup(locatedItem, result);
+				}
+			} finally {
+				// Release item lock
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.marketItem);
+				}
+			}
+		} finally {
+			// Release offer lock
+			if (Markets.getDataManager().getRedisLockManager() != null) {
+				Markets.getDataManager().getRedisLockManager().releaseLock(offerLockKey);
+			}
 		}
 	}
 
@@ -313,9 +348,15 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void store(@NonNull Consumer<Offer> stored) {
-		Markets.getOfferRepository().save(this, (error, created) -> {
-			if (error == null) {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createOffer(this, (error, created) -> {
+			if (error == null && created != null) {
 				stored.accept(created);
+			} else if (error != null) {
+				stored.accept(null);
+			} else {
+				// created is null but no error - this shouldn't happen but handle it
+				stored.accept(null);
 			}
 		});
 	}

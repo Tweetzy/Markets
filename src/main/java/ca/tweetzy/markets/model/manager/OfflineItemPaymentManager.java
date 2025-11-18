@@ -28,6 +28,10 @@ public final class OfflineItemPaymentManager extends ListManager<Payment> {
 		return getManagerContent().stream().filter(payment -> payment.getFor().equals(user)).collect(Collectors.toList());
 	}
 
+	public Payment getByUUID(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(payment -> payment.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
 	public void create(@NonNull UUID paymentFor, @NonNull final ItemStack currency, final int amount, @NonNull final String reason, @NonNull final Consumer<Boolean> created) {
 		final Payment payment = new OfflinePayment(
 				UUID.randomUUID(),

@@ -30,10 +30,29 @@ public final class MarketTransactionListener implements Listener {
 		);
 
 		transaction.store(storeTransaction -> {
-			if (storeTransaction == null)
-				Common.log("&CSomething went wrong while trying to store transaction: &d" + transaction.getId().toString());
-			else
+			if (storeTransaction == null) {
+				// Log detailed error information
+				try {
+					// Since store() doesn't provide error details directly, we'll log what we can
+					Common.log("&CSomething went wrong while trying to store transaction: &d" + transaction.getId().toString());
+					Common.log("&cTransaction details - Buyer: &f" + transaction.getBuyerName() + 
+					           " &cSeller: &f" + transaction.getSellerName() + 
+					           " &cType: &f" + transaction.getType() + 
+					           " &cPrice: &f" + transaction.getPrice());
+					
+					// Check if this might be a connection issue
+					Markets.getInstance().getLogger().severe("Failed to store transaction " + transaction.getId() + 
+						". This may be due to a database connection issue. Check database connectivity and connection pool settings.");
+					Markets.getInstance().getLogger().severe("Transaction details: Buyer=" + transaction.getBuyerName() + 
+						", Seller=" + transaction.getSellerName() + ", Type=" + transaction.getType() + 
+						", Price=" + transaction.getPrice() + ", Quantity=" + transaction.getQuantity());
+				} catch (Exception e) {
+					Markets.getInstance().getLogger().severe("Error while logging transaction storage failure: " + e.getMessage());
+					e.printStackTrace();
+				}
+			} else {
 				Markets.getTransactionManager().add(storeTransaction);
+			}
 		});
 
 		// create an offline notification for the player

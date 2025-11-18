@@ -26,6 +26,10 @@ public final class TransactionManager extends ListManager<Transaction> {
 		return getManagerContent().stream().filter(transaction -> transaction.getSeller().equals(sellerUUID) && transaction.getTimeCreated() >= user.getLastSeenAt()).collect(Collectors.toList());
 	}
 
+	public Transaction getByUUID(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(transaction -> transaction.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
 	@Override
 	public void load() {
 		clear();

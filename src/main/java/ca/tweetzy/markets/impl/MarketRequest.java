@@ -146,9 +146,12 @@ public final class MarketRequest implements Request {
 
 	@Override
 	public void store(@NonNull Consumer<Request> stored) {
-		Markets.getRequestRepository().save(this, (error, created) -> {
-			if (error == null) {
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createRequest(this, (error, created) -> {
+			if (error == null && created != null) {
 				stored.accept(created);
+			} else if (error != null) {
+				stored.accept(null);
 			}
 		});
 	}

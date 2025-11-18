@@ -42,6 +42,10 @@ public final class BankManager extends ListManager<BankEntry> {
 		return entry.getQuantity();
 	}
 
+	public BankEntry getByUUID(@NonNull final UUID uuid) {
+		return getManagerContent().stream().filter(entry -> entry.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
 	public void create(@NonNull final Player sender, @NonNull final ItemStack itemStack, final int amount, @NonNull final Consumer<Boolean> created) {
 		ItemStack toAdd = itemStack.clone();
 		toAdd.setAmount(1);

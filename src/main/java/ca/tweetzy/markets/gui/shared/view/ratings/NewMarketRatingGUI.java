@@ -13,6 +13,7 @@ import ca.tweetzy.markets.impl.MarketRating;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class NewMarketRatingGUI extends MarketsBaseGUI {
@@ -96,8 +97,14 @@ public final class NewMarketRatingGUI extends MarketsBaseGUI {
 			}
 
 			Markets.getRatingManager().create(this.market, this.rating, created -> {
-				if (created)
-					click.manager.showGUI(click.player, this.parent);
+				if (created) {
+					// Ensure GUI operations happen on main thread to avoid maxlifetime errors
+					Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+						if (click.player.isOnline() && click.manager != null) {
+							click.manager.showGUI(click.player, this.parent);
+						}
+					});
+				}
 			});
 		});
 	}

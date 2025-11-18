@@ -16,6 +16,8 @@ import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.api.market.TransactionType;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
 import ca.tweetzy.markets.impl.MarketRequest;
+import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
+import ca.tweetzy.markets.model.sync.NotificationEvent;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -24,7 +26,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class RequestsGUI extends MarketsPagedGUI<Request> {
 
@@ -139,7 +143,20 @@ public final class RequestsGUI extends MarketsPagedGUI<Request> {
 				TranslationManager.string(Translations.REQUEST_PAYMENT), success -> {
 				});
 
-		if (requestedOwner.isOnline()) {
+		// Send cross-server notification to request owner
+		CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+		if (notificationManager != null) {
+			Map<String, Object> notificationData = new HashMap<>();
+			notificationData.put("fulfill_name", fulfiller.getName());
+			notificationData.put("request_item_name", ItemUtil.getItemName(request.getRequestItem()));
+			
+			notificationManager.sendNotification(
+				request.getOwner(),
+				NotificationEvent.NotificationType.REQUEST_FULFILLED,
+				notificationData
+			);
+		} else if (requestedOwner.isOnline()) {
+			// Fallback to local notification if notification manager not available
 			Common.tell(requestedOwner.getPlayer(), TranslationManager.string(requestedOwner.getPlayer(), Translations.REQUEST_FULFILLED, "fulfill_name", fulfiller.getName(), "request_item_name", ItemUtil.getItemName(request.getRequestItem())));
 		}
 

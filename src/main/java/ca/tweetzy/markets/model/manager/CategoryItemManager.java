@@ -37,11 +37,34 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 
 		marketItem.store(storedItem -> {
 			if (storedItem != null) {
+				// Ensure item is added to cache and category immediately
+				// This prevents items from not appearing on the server where they were added
 				add(storedItem);
 				category.getItems().add(storedItem);
 				created.accept(true);
 			} else {
-				created.accept(false);
+				// If store failed, check if item might have been saved anyway (connection issue during fetch)
+				// Try to reload from DB as fallback
+				Markets.getDataManager().getMarketItemsByCategory(category.getId(), (error, items) -> {
+					if (error == null && items != null) {
+						// Check if our item is in the list
+						MarketItem foundItem = items.stream()
+							.filter(i -> i.getId().equals(marketItem.getId()))
+							.findFirst()
+							.orElse(null);
+						
+						if (foundItem != null) {
+							// Item was saved, add to cache
+							add(foundItem);
+							category.getItems().add(foundItem);
+							created.accept(true);
+						} else {
+							created.accept(false);
+						}
+					} else {
+						created.accept(false);
+					}
+				});
 			}
 		});
 	}

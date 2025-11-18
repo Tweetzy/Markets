@@ -130,9 +130,30 @@ public final class MarketTransaction implements Transaction {
 
 	@Override
 	public void store(@NonNull Consumer<Transaction> stored) {
-		Markets.getTransactionRepository().save(this, (error, created) -> {
-			if (error == null) {
+		// Ensure type is never null before saving
+		if (this.type == null) {
+			Markets.getInstance().getLogger().warning("MarketTransaction with null type detected, defaulting to ITEM_PURCHASE. ID: " + this.id);
+			this.type = TransactionType.ITEM_PURCHASE;
+		}
+		
+		// Use DataManager to ensure sync events are published
+		Markets.getDataManager().createTransaction(this, (error, created) -> {
+			if (error == null && created != null) {
 				stored.accept(created);
+			} else if (error != null) {
+				// Log the actual error for debugging
+				Markets.getInstance().getLogger().severe("Failed to store transaction " + this.id + ": " + error.getMessage());
+				if (error.getCause() != null) {
+					Markets.getInstance().getLogger().severe("Caused by: " + error.getCause().getMessage());
+					error.getCause().printStackTrace();
+				} else {
+					error.printStackTrace();
+				}
+				stored.accept(null);
+			} else {
+				// Error is null but created is also null - this shouldn't happen, but handle it
+				Markets.getInstance().getLogger().warning("Transaction storage returned null without error for transaction: " + this.id);
+				stored.accept(null);
 			}
 		});
 	}
