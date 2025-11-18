@@ -99,6 +99,7 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 					return;
 				}
 
+				click.gui.exit();
 				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_TITLE), TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_SUBTITLE)) {
 					@Override
 					public void onExit(Player player) {

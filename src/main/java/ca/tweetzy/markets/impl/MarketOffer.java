@@ -1,5 +1,9 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.markets.Markets;
@@ -11,7 +15,6 @@ import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.api.market.offer.OfferRejectReason;
 import ca.tweetzy.markets.settings.Translations;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,19 +26,56 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-@AllArgsConstructor
+@Table("offer")
 public final class MarketOffer implements Offer {
 
-	private final UUID uuid;
-	private final UUID sender;
-	private final String senderName;
-	private final UUID offerTo;
-	private final UUID marketItem;
+	@Id
+	@Column("id")
+	private UUID uuid;
+	
+	@Column("sender")
+	private UUID sender;
+	
+	@Column("sender_name")
+	private String senderName;
+	
+	@Column("offer_to")
+	private UUID offerTo;
+	
+	@Column("market_item")
+	private UUID marketItem;
+	
+	@Column("request_amount")
 	private int requestAmount;
+	
+	@Column("currency")
 	private String currency;
+	
+	@Nested
+	@Column("currency_item")
 	private ItemStack currencyItem;
+	
+	@Column("offered_amount")
 	private double offeredAmount;
-	private final long offeredAt;
+	
+	@Column("offered_at")
+	private long offeredAt;
+
+	public MarketOffer() {
+	}
+
+	public MarketOffer(@NonNull UUID uuid, @NonNull UUID sender, @NonNull String senderName, @NonNull UUID offerTo, @NonNull UUID marketItem, int requestAmount, @NonNull String currency, ItemStack currencyItem, double offeredAmount, long offeredAt) {
+		this.uuid = uuid;
+		this.sender = sender;
+		this.senderName = senderName;
+		this.offerTo = offerTo;
+		this.marketItem = marketItem;
+		this.requestAmount = requestAmount;
+		this.currency = currency;
+		this.currencyItem = currencyItem;
+		this.offeredAmount = offeredAmount;
+		this.offeredAt = offeredAt;
+	}
 
 	public MarketOffer(@NonNull final Player sender, @NonNull final Market market, @NonNull final MarketItem marketItem) {
 		this(
@@ -153,8 +193,28 @@ public final class MarketOffer implements Offer {
 		final OfflinePlayer offerSender = Bukkit.getOfflinePlayer(this.sender);
 		final OfflinePlayer itemOwner = Bukkit.getOfflinePlayer(this.offerTo);
 
-		final String currencyPlugin = this.currency.split("/")[0];
-		final String currencyName = this.currency.split("/")[1];
+		// Validate currency format before splitting
+		if (this.currency == null || this.currency.isEmpty() || !this.currency.contains("/")) {
+			unStore(deleteResult -> {
+				if (deleteResult == SynchronizeResult.SUCCESS) {
+					result.accept(TransactionResult.ERROR);
+				}
+			});
+			return;
+		}
+
+		final String[] currencyParts = this.currency.split("/");
+		if (currencyParts.length < 2 || currencyParts[0].isEmpty() || currencyParts[1].isEmpty()) {
+			unStore(deleteResult -> {
+				if (deleteResult == SynchronizeResult.SUCCESS) {
+					result.accept(TransactionResult.ERROR);
+				}
+			});
+			return;
+		}
+
+		final String currencyPlugin = currencyParts[0];
+		final String currencyName = currencyParts[1];
 
 		boolean hasEnoughMoney = isCurrencyOfItem() ?
 				Markets.getBankManager().getEntryCountByPlayer(this.sender, this.currencyItem) >= (int) this.offeredAmount :
@@ -253,7 +313,7 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void store(@NonNull Consumer<Offer> stored) {
-		Markets.getDataManager().createOffer(this, (error, created) -> {
+		Markets.getOfferRepository().save(this, (error, created) -> {
 			if (error == null) {
 				stored.accept(created);
 			}
@@ -262,13 +322,13 @@ public final class MarketOffer implements Offer {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteOffer(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getOfferRepository().deleteById(this.uuid, (error, deleted) -> {
+			if (deleted != null && deleted) {
 				Markets.getOfferManager().remove(this);
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

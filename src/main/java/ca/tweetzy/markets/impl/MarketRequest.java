@@ -1,11 +1,14 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.Request;
 import ca.tweetzy.markets.settings.Settings;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,20 +17,53 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@AllArgsConstructor
+@Table("request")
 public final class MarketRequest implements Request {
 
-	private final UUID uuid;
-	private final UUID owner;
-	private final String ownerName;
+	@Id
+	@Column("id")
+	private UUID uuid;
+	
+	@Column("owner")
+	private UUID owner;
+	
+	@Column("owner_name")
+	private String ownerName;
 
+	@Nested
+	@Column("requested_item")
 	private ItemStack requestedItem;
+	
+	@Column("currency")
 	private String currency;
+	
+	@Nested
+	@Column("currency_item")
 	private ItemStack currencyItem;
 
+	@Column("price")
 	private double price;
+	
+	@Column("requested_amount")
 	private int requestedAmount;
-	private final long requestedAt;
+	
+	@Column("requested_at")
+	private long requestedAt;
+
+	public MarketRequest() {
+	}
+
+	public MarketRequest(@NonNull UUID uuid, @NonNull UUID owner, @NonNull String ownerName, @NonNull ItemStack requestedItem, @NonNull String currency, @NonNull ItemStack currencyItem, double price, int requestedAmount, long requestedAt) {
+		this.uuid = uuid;
+		this.owner = owner;
+		this.ownerName = ownerName;
+		this.requestedItem = requestedItem;
+		this.currency = currency;
+		this.currencyItem = currencyItem;
+		this.price = price;
+		this.requestedAmount = requestedAmount;
+		this.requestedAt = requestedAt;
+	}
 
 	public MarketRequest(@NonNull final Player requester) {
 		this(UUID.randomUUID(), requester.getUniqueId(), requester.getName(), CompMaterial.AIR.parseItem(), Settings.CURRENCY_DEFAULT_SELECTED.getString(), CompMaterial.AIR.parseItem(), 1.0, 1, System.currentTimeMillis());
@@ -110,7 +146,7 @@ public final class MarketRequest implements Request {
 
 	@Override
 	public void store(@NonNull Consumer<Request> stored) {
-		Markets.getDataManager().createRequest(this, (error, created) -> {
+		Markets.getRequestRepository().save(this, (error, created) -> {
 			if (error == null) {
 				stored.accept(created);
 			}
@@ -119,13 +155,13 @@ public final class MarketRequest implements Request {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteRequest(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getRequestRepository().deleteById(this.uuid, (error, deleted) -> {
+			if (deleted != null && deleted) {
 				Markets.getRequestManager().remove(this);
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

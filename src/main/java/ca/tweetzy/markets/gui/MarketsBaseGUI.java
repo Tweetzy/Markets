@@ -22,7 +22,7 @@ public abstract class MarketsBaseGUI extends BaseGUI {
 	}
 
 	public MarketsBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title) {
-		super(parent, title);
+		super(parent, title,1);
 		this.player = player;
 	}
 

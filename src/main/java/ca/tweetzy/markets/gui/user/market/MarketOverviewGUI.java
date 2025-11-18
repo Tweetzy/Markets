@@ -57,7 +57,9 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DPN_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DPN_NAME))
 				.lore(TranslationManager.list(Translations.GUI_MARKET_OVERVIEW_ITEMS_DPN_LORE, "market_display_name", this.market.getDisplayName()))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_MARKET_NAME_TITLE), TranslationManager.string(this.player, Translations.PROMPT_MARKET_NAME_SUBTITLE)) {
+				.make(), click -> {
+			click.gui.exit();
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_MARKET_NAME_TITLE), TranslationManager.string(this.player, Translations.PROMPT_MARKET_NAME_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -77,6 +79,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 				});
 				return true;
 			}
+			};
 		});
 
 		// description
@@ -84,7 +87,9 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 				.of(Settings.GUI_MARKET_OVERVIEW_ITEMS_DESC_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DESC_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_OVERVIEW_ITEMS_DESC_LORE, "market_description", this.market.getDescription().get(0)))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_MARKET_DESC_TITLE), TranslationManager.string(this.player, Translations.PROMPT_MARKET_DESC_SUBTITLE)) {
+				.make(), click -> {
+			click.gui.exit();
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_MARKET_DESC_TITLE), TranslationManager.string(this.player, Translations.PROMPT_MARKET_DESC_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -99,6 +104,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 				});
 				return true;
 			}
+			};
 		});
 
 		// settings button
@@ -120,6 +126,7 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 				return;
 			}
 
+			click.gui.exit();
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_NEW_CATEGORY_TITLE), TranslationManager.string(click.player, Translations.PROMPT_NEW_CATEGORY_SUBTITLE)) {
 
 				@Override

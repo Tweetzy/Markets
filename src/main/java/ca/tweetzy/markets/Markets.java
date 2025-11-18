@@ -12,6 +12,7 @@ import ca.tweetzy.markets.api.MarketsAPI;
 import ca.tweetzy.markets.commands.*;
 import ca.tweetzy.markets.database.DataManager;
 import ca.tweetzy.markets.database.migrations.*;
+import ca.tweetzy.markets.database.repository.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.listeners.MarketTransactionListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
@@ -31,6 +32,18 @@ public final class Markets extends FlightPlugin {
 	@SuppressWarnings("FieldCanBeLocal")
 	private DatabaseConnector databaseConnector;
 	private DataManager dataManager;
+	
+	// Repositories
+	private MarketRepository marketRepository;
+	private CategoryRepository categoryRepository;
+	private MarketItemRepository marketItemRepository;
+	private MarketUserRepository marketUserRepository;
+	private OfferRepository offerRepository;
+	private RatingRepository ratingRepository;
+	private RequestRepository requestRepository;
+	private TransactionRepository transactionRepository;
+	private BankEntryRepository bankEntryRepository;
+	private PaymentRepository paymentRepository;
 
 	private final CommandManager commandManager = new CommandManager(this);
 	private final GuiManager guiManager = new GuiManager(this);
@@ -72,6 +85,19 @@ public final class Markets extends FlightPlugin {
 		) : new SQLiteConnector(this);
 
 		this.dataManager = new DataManager(this.databaseConnector, this);
+		
+		// Initialize repositories
+		final String tablePrefix = this.dataManager.getTablePrefix();
+		this.marketRepository = new MarketRepository(this.databaseConnector, tablePrefix);
+		this.categoryRepository = new CategoryRepository(this.databaseConnector, tablePrefix);
+		this.marketItemRepository = new MarketItemRepository(this.databaseConnector, tablePrefix);
+		this.marketUserRepository = new MarketUserRepository(this.databaseConnector, tablePrefix);
+		this.offerRepository = new OfferRepository(this.databaseConnector, tablePrefix);
+		this.ratingRepository = new RatingRepository(this.databaseConnector, tablePrefix);
+		this.requestRepository = new RequestRepository(this.databaseConnector, tablePrefix);
+		this.transactionRepository = new TransactionRepository(this.databaseConnector, tablePrefix);
+		this.bankEntryRepository = new BankEntryRepository(this.databaseConnector, tablePrefix);
+		this.paymentRepository = new PaymentRepository(this.databaseConnector, tablePrefix);
 
 		final DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
 				new _1_InitialMigration(),
@@ -199,6 +225,46 @@ public final class Markets extends FlightPlugin {
 
 	public static RequestManager getRequestManager() {
 		return getInstance().requestManager;
+	}
+	
+	public static MarketRepository getMarketRepository() {
+		return getInstance().marketRepository;
+	}
+	
+	public static CategoryRepository getCategoryRepository() {
+		return getInstance().categoryRepository;
+	}
+	
+	public static MarketItemRepository getMarketItemRepository() {
+		return getInstance().marketItemRepository;
+	}
+	
+	public static MarketUserRepository getMarketUserRepository() {
+		return getInstance().marketUserRepository;
+	}
+	
+	public static OfferRepository getOfferRepository() {
+		return getInstance().offerRepository;
+	}
+	
+	public static RatingRepository getRatingRepository() {
+		return getInstance().ratingRepository;
+	}
+	
+	public static RequestRepository getRequestRepository() {
+		return getInstance().requestRepository;
+	}
+	
+	public static TransactionRepository getTransactionRepository() {
+		return getInstance().transactionRepository;
+	}
+	
+	public static BankEntryRepository getBankEntryRepository() {
+		return getInstance().bankEntryRepository;
+	}
+	
+	public static PaymentRepository getPaymentRepository() {
+		return getInstance().paymentRepository;
 	}
 
 	public static Economy getEconomy() {

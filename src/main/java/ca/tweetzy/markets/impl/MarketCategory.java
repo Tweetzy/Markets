@@ -1,5 +1,10 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Ignore;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.Category;
@@ -15,20 +20,45 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+@Table("category")
 public final class MarketCategory implements Category {
 
-	private final UUID id;
-	private final String name;
-	private final UUID owningMarket;
+	@Id
+	@Column("id")
+	private UUID id;
+	
+	@Column("name")
+	private String name;
+	
+	@Column("owning_market")
+	private UUID owningMarket;
+	
+	@Nested
+	@Column("icon")
 	private ItemStack icon;
+	
+	@Column("display_name")
 	private String displayName;
+	
+	@Nested
+	@Column("description")
 	private List<String> description;
+	
+	@Ignore
 	private List<MarketItem> items;
 
-	private final long createdAt;
+	@Column("created_at")
+	private long createdAt;
+	
+	@Column("updated_at")
 	private long updatedAt;
 
-	private final List<Player> viewingUsers;
+	@Ignore
+	private List<Player> viewingUsers;
+
+	public MarketCategory() {
+		this.viewingUsers = new ArrayList<>();
+	}
 
 	public MarketCategory(
 			@NonNull final UUID owningMarket,
@@ -82,12 +112,18 @@ public final class MarketCategory implements Category {
 
 	@Override
 	public @NonNull List<String> getDescription() {
+		if (this.description == null) {
+			this.description = new ArrayList<>();
+		}
 		return this.description;
 	}
 
 	@NotNull
 	@Override
 	public List<MarketItem> getItems() {
+		if (this.items == null) {
+			this.items = new ArrayList<>();
+		}
 		return this.items;
 	}
 
@@ -123,12 +159,15 @@ public final class MarketCategory implements Category {
 
 	@Override
 	public List<Player> getViewingPlayers() {
+		if (this.viewingUsers == null) {
+			this.viewingUsers = new ArrayList<>();
+		}
 		return this.viewingUsers;
 	}
 
 	@Override
 	public void store(@NonNull Consumer<Category> stored) {
-		Markets.getDataManager().createCategory(this, (error, created) -> {
+		Markets.getCategoryRepository().save(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
 		});
@@ -137,22 +176,22 @@ public final class MarketCategory implements Category {
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
 		this.updatedAt = System.currentTimeMillis();
-		Markets.getDataManager().updateCategory(this, (error, updateStatus) -> {
+		Markets.getCategoryRepository().save(this, (error, saved) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteCategory(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getCategoryRepository().deleteById(this.id, (error, deleted) -> {
+			if (deleted != null && deleted) {
 				Markets.getMarketManager().getByUUID(this.owningMarket).getCategories().removeIf(category -> category.getId().equals(this.id));
 				Markets.getCategoryManager().remove(this);
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

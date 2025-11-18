@@ -71,8 +71,15 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 				}).asyncLast((data) -> {
 					pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 
-					setPrevPage(getPreviousButtonSlot(), getPreviousButton());
-					setNextPage(getNextButtonSlot(), getNextButton());
+					// Only show navigation buttons when there are multiple pages
+					if (pages > 1) {
+						setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+						setNextPage(getNextButtonSlot(), getNextButton());
+					} else {
+						// Use background item for navigation button slots when there's only one page
+						setItem(getPreviousButtonSlot(), getDefaultItem());
+						setItem(getNextButtonSlot(), getDefaultItem());
+					}
 					setOnPage(e -> draw());
 
 					for (int i = 0; i < this.rows * 9; i++) {
@@ -93,8 +100,15 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 		final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
 		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 
-		setPrevPage(getPreviousButtonSlot(), getPreviousButton());
-		setNextPage(getNextButtonSlot(), getNextButton());
+		// Only show navigation buttons when there are multiple pages
+		if (pages > 1) {
+			setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+			setNextPage(getNextButtonSlot(), getNextButton());
+		} else {
+			// Use background item for navigation button slots when there's only one page
+			setItem(getPreviousButtonSlot(), getDefaultItem());
+			setItem(getNextButtonSlot(), getDefaultItem());
+		}
 		setOnPage(e -> draw());
 
 		for (int i = 0; i < this.rows * 9; i++) {

@@ -1,9 +1,12 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.BankEntry;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -11,17 +14,45 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@AllArgsConstructor
+@Table("bank_entry")
 public final class MarketBankEntry implements BankEntry {
 
-	private final UUID id;
-	private final UUID owner;
-	private final ItemStack item;
+	@Id
+	@Column("id")
+	private UUID id;
+	
+	@Column("owner")
+	private UUID owner;
+	
+	@Nested
+	@Column("item")
+	private ItemStack item;
+	
+	@Column("quantity")
 	private int quantity;
 
+	@Column("currency")
 	private String currency;
+	
+	@Nested
+	@Column("currency_item")
 	private ItemStack currencyItem;
+	
+	@Column("price")
 	private double price;
+
+	public MarketBankEntry() {
+	}
+
+	public MarketBankEntry(@NonNull UUID id, @NonNull UUID owner, @NonNull ItemStack item, int quantity, @NonNull String currency, ItemStack currencyItem, double price) {
+		this.id = id;
+		this.owner = owner;
+		this.item = item;
+		this.quantity = quantity;
+		this.currency = currency;
+		this.currencyItem = currencyItem;
+		this.price = price;
+	}
 
 	@Override
 	public @NonNull UUID getId() {
@@ -80,7 +111,7 @@ public final class MarketBankEntry implements BankEntry {
 
 	@Override
 	public void store(@NonNull Consumer<BankEntry> stored) {
-		Markets.getDataManager().createBankEntry(this, (error, created) -> {
+		Markets.getBankEntryRepository().save(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
 		});
@@ -88,21 +119,21 @@ public final class MarketBankEntry implements BankEntry {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteBankEntry(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getBankEntryRepository().deleteById(this.id, (error, deleted) -> {
+			if (deleted != null && deleted) {
 				Markets.getBankManager().remove(this);
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().updateBankEntry(this, (error, updateStatus) -> {
+		Markets.getBankEntryRepository().save(this, (error, saved) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

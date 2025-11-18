@@ -1,33 +1,66 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Ignore;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.MarketSortType;
 import ca.tweetzy.markets.api.market.core.MarketUser;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@AllArgsConstructor
+@Table("user")
 public final class MarketPlayer implements MarketUser {
 
-	private final UUID uuid;
+	@Id
+	@Column("id")
+	private UUID uuid;
+	
+	@Ignore
 	private Player player;
+	
+	@Column("last_known_name")
 	private String lastKnownName;
+	
+	@Nested
+	@Column("bio")
 	private List<String> bio;
 
+	@Column("preferred_language")
 	private String preferredLanguage;
 
+	@Column("currency_format_country")
 	private String currencyFormatCountry;
+	
+	@Ignore
 	private MarketSortType marketSortType;
 
+	@Column("last_seen_at")
 	private long lastSeenAt;
+
+	public MarketPlayer() {
+	}
+
+	public MarketPlayer(@NonNull UUID uuid, Player player, @NonNull String lastKnownName, @NonNull List<String> bio, @NonNull String preferredLanguage, @NonNull String currencyFormatCountry, MarketSortType marketSortType, long lastSeenAt) {
+		this.uuid = uuid;
+		this.player = player;
+		this.lastKnownName = lastKnownName;
+		this.bio = bio;
+		this.preferredLanguage = preferredLanguage;
+		this.currencyFormatCountry = currencyFormatCountry;
+		this.marketSortType = marketSortType;
+		this.lastSeenAt = lastSeenAt;
+	}
 
 	@Override
 	public @NonNull UUID getUUID() {
@@ -46,6 +79,9 @@ public final class MarketPlayer implements MarketUser {
 
 	@Override
 	public @NonNull List<String> getBio() {
+		if (this.bio == null) {
+			this.bio = new ArrayList<>();
+		}
 		return this.bio;
 	}
 
@@ -67,6 +103,17 @@ public final class MarketPlayer implements MarketUser {
 
 	@Override
 	public MarketSortType getMarketSortType() {
+		if (this.marketSortType == null) {
+			// Return the first enabled sort type as default
+			for (MarketSortType type : MarketSortType.values()) {
+				if (type.isEnabled()) {
+					this.marketSortType = type;
+					return type;
+				}
+			}
+			// Fallback to NAME if no enabled types found
+			this.marketSortType = MarketSortType.NAME;
+		}
 		return this.marketSortType;
 	}
 
@@ -107,16 +154,16 @@ public final class MarketPlayer implements MarketUser {
 
 	@Override
 	public void store(@NonNull Consumer<MarketUser> stored) {
-		Markets.getDataManager().createMarketUser(this, (error, created) -> {
+		Markets.getMarketUserRepository().save(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
 		});
 	}
 
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().updateMarketUser(this, (error, updateStatus) -> {
+		Markets.getMarketUserRepository().save(this, (error, saved) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

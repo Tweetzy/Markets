@@ -152,6 +152,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 					return;
 				}
 
+				click.gui.exit();
 				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_SEARCH_TITLE), TranslationManager.string(click.player, Translations.PROMPT_SEARCH_SUBTITLE)) {
 
 					@Override

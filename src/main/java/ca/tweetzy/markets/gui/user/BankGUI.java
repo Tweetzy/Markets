@@ -117,7 +117,8 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 		}
 
 		if (!this.taxCollection)
-			if (click.clickType == ClickType.RIGHT)
+			if (click.clickType == ClickType.RIGHT) {
+				click.gui.exit();
 				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_WITHDRAW_ENTRY_TITLE), TranslationManager.string(click.player, Translations.PROMPT_WITHDRAW_ENTRY_SUBTITLE)) {
 
 					@Override
@@ -162,6 +163,7 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 						return true;
 					}
 				};
+			}
 	}
 
 	private void givePlayerItems(Player player, ItemStack itemToGive) {

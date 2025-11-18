@@ -96,7 +96,10 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				.name(TranslationManager.string(this.player, Translations.GUI_ALL_MARKETS_ITEMS_FILTER_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_ALL_MARKETS_ITEMS_FILTER_LORE, "market_sort_type", marketUser.getMarketSortType().getTranslatedName()))
 				.make(), click -> {
-			this.marketUser.setMarketSortType(this.marketUser.getMarketSortType().next());
+			MarketSortType next = marketUser.getMarketSortType().next();
+			if (next != null) {
+				this.marketUser.setMarketSortType(next);
+			}
 			draw();
 		});
 

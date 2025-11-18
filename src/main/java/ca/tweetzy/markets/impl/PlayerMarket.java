@@ -1,5 +1,10 @@
 package ca.tweetzy.markets.impl;
 
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Ignore;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.SynchronizeResult;
 import ca.tweetzy.markets.api.market.core.*;
@@ -7,29 +12,68 @@ import ca.tweetzy.markets.api.market.layout.Layout;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+@Table("markets")
 public class PlayerMarket extends AbstractMarket {
 
-	private final UUID id;
+	@Id
+	@Column("id")
+	private UUID id;
 
+	@Column("display_name")
 	private String displayName;
+	
+	@Nested
+	@Column("description")
 	private List<String> description;
 
-	private final UUID ownerUUID;
+	@Column("owner")
+	private UUID ownerUUID;
+	
+	@Column("owner_name")
 	private String ownerName;
 
-	private final List<Category> categories;
-	private final List<Rating> ratings;
-	private final List<UUID> bannedUsers;
+	@Ignore
+	private List<Category> categories;
+	
+	@Ignore
+	private List<Rating> ratings;
+	
+	@Nested
+	@Column("banned_users")
+	private List<UUID> bannedUsers;
+	
+	@Column("open")
 	private boolean open;
+	
+	@Column("close_when_out_of_stock")
 	private boolean closeWhenOutOfStock;
+	
+	@Nested
+	@Column("home_layout")
 	private Layout homeLayout;
+	
+	@Nested
+	@Column("category_layout")
 	private Layout categoryLayout;
-	private final long createdAt;
+	
+	@Column("created_at")
+	private long createdAt;
+	
+	@Column("updated_at")
 	private long updatedAt;
+
+	@Column("type")
+	protected MarketType marketType;
+
+	public PlayerMarket() {
+		super(MarketType.PLAYER);
+		this.marketType = MarketType.PLAYER;
+	}
 
 	public PlayerMarket(
 			@NonNull final UUID id,
@@ -86,16 +130,25 @@ public class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public @NonNull List<String> getDescription() {
+		if (this.description == null) {
+			this.description = new ArrayList<>();
+		}
 		return this.description;
 	}
 
 	@Override
 	public @NonNull List<Category> getCategories() {
+		if (this.categories == null) {
+			this.categories = new ArrayList<>();
+		}
 		return this.categories;
 	}
 
 	@Override
 	public @NonNull List<Rating> getRatings() {
+		if (this.ratings == null) {
+			this.ratings = new ArrayList<>();
+		}
 		return this.ratings;
 	}
 
@@ -106,6 +159,9 @@ public class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public List<UUID> getBannedUsers() {
+		if (this.bannedUsers == null) {
+			this.bannedUsers = new ArrayList<>();
+		}
 		return this.bannedUsers;
 	}
 
@@ -161,7 +217,7 @@ public class PlayerMarket extends AbstractMarket {
 
 	@Override
 	public void store(@NonNull Consumer<Market> stored) {
-		Markets.getDataManager().createMarket(this, (error, created) -> {
+		Markets.getMarketRepository().save(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
 		});
@@ -170,21 +226,21 @@ public class PlayerMarket extends AbstractMarket {
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
 		this.updatedAt = System.currentTimeMillis();
-		Markets.getDataManager().updateMarket(this, (error, updateStatus) -> {
+		Markets.getMarketRepository().save(this, (error, saved) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteMarket(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getMarketRepository().deleteById(this.id, (error, deleted) -> {
+			if (deleted != null && deleted) {
 				Markets.getMarketManager().remove(this);
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 }

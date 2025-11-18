@@ -55,7 +55,9 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DPN_LORE, "category_display_name", this.category.getDisplayName()))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_SUBTITLE)) {
+				.make(), click -> {
+			click.gui.exit();
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_NAME_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -75,6 +77,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				});
 				return true;
 			}
+			};
 		});
 
 		// description
@@ -82,7 +85,9 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				.of(Settings.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_NAME))
 				.lore(TranslationManager.list(this.player, Translations.GUI_MARKET_CATEGORY_EDIT_ITEMS_DESC_LORE, "category_description", this.category.getDescription().get(0)))
-				.make(), click -> new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_SUBTITLE)) {
+				.make(), click -> {
+			click.gui.exit();
+			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_TITLE), TranslationManager.string(click.player, Translations.PROMPT_CATEGORY_DESC_SUBTITLE)) {
 
 			@Override
 			public void onExit(Player player) {
@@ -98,6 +103,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				});
 				return true;
 			}
+			};
 		});
 
 		// settings button
@@ -254,6 +260,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 		}
 
 		if (click.clickType == ClickType.LEFT) {
+			click.gui.exit();
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_TITLE), TranslationManager.string(click.player, Translations.PROMPT_ITEM_PRICE_SUBTITLE)) {
 				@Override
 				public void onExit(Player player) {

@@ -115,6 +115,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
+			click.gui.exit();
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_REQUEST_AMOUNT_TITLE), TranslationManager.string(this.player, Translations.PROMPT_REQUEST_AMOUNT_SUBTITLE)) {
 
 				@Override
@@ -166,6 +167,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 				return;
 			}
 
+			click.gui.exit();
 			new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(this.player, Translations.PROMPT_REQUEST_PRICE_TITLE), TranslationManager.string(this.player, Translations.PROMPT_REQUEST_PRICE_SUBTITLE)) {
 
 				@Override

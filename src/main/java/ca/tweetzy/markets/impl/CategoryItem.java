@@ -1,6 +1,11 @@
 package ca.tweetzy.markets.impl;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.database.annotations.Column;
+import ca.tweetzy.flight.database.annotations.Id;
+import ca.tweetzy.flight.database.annotations.Ignore;
+import ca.tweetzy.flight.database.annotations.Nested;
+import ca.tweetzy.flight.database.annotations.Table;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.ItemUtil;
@@ -27,23 +32,54 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+@Table("category_item")
 public final class CategoryItem implements MarketItem {
 
-	private final UUID id;
-	private final UUID owningCategory;
+	@Id
+	@Column("id")
+	private UUID id;
+	
+	@Column("owning_category")
+	private UUID owningCategory;
+	
+	@Nested
+	@Column("item")
 	private ItemStack item;
+	
+	@Column("currency")
 	private String currency;
+	
+	@Nested
+	@Column("currency_item")
 	private ItemStack currencyItem;
+	
+	@Column("price")
 	private double price;
+	
+	@Column("stock")
 	private int stock;
+	
+	@Column("price_is_for_all")
 	private boolean priceIsForAll;
+	
+	@Column("accepting_offers")
 	private boolean acceptingOffers;
+	
+	@Column("infinite")
 	private boolean infinite;
 
+	@Ignore
 	private boolean removeRequested = false;
+	
+	@Ignore
 	private boolean beingEdited;
 
-	private final List<Player> viewingUsers;
+	@Ignore
+	private List<Player> viewingUsers;
+
+	public CategoryItem() {
+		this.viewingUsers = new ArrayList<>();
+	}
 
 	public CategoryItem(
 			@NonNull final UUID id,
@@ -169,12 +205,15 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public List<Player> getViewingPlayers() {
+		if (this.viewingUsers == null) {
+			this.viewingUsers = new ArrayList<>();
+		}
 		return this.viewingUsers;
 	}
 
 	@Override
 	public void store(@NonNull Consumer<MarketItem> stored) {
-		Markets.getDataManager().createMarketItem(this, (error, created) -> {
+		Markets.getMarketItemRepository().save(this, (error, created) -> {
 			if (error == null)
 				stored.accept(created);
 		});
@@ -182,8 +221,8 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().deleteMarketItem(this, (error, updateStatus) -> {
-			if (updateStatus) {
+		Markets.getMarketItemRepository().deleteById(this.id, (error, deleted) -> {
+			if (deleted != null && deleted) {
 
 				getViewingPlayers().forEach(viewingUser -> Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK)));
 
@@ -192,57 +231,116 @@ public final class CategoryItem implements MarketItem {
 			}
 
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null && deleted != null && deleted ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
 	@Override
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getDataManager().updateMarketItem(this, (error, updateStatus) -> {
+		Markets.getMarketItemRepository().save(this, (error, saved) -> {
 			if (syncResult != null)
-				syncResult.accept(error == null ? updateStatus ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE : SynchronizeResult.FAILURE);
+				syncResult.accept(error == null ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});
 	}
 
 	@Override
 	public void performPurchase(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
 
+		// Check if item is being edited (prevents race conditions)
+		if (this.beingEdited) {
+			transactionResult.accept(TransactionResult.ERROR);
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+			return;
+		}
+
 		if (removeRequested) {
 			transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
 			return;
 		}
 
-		if (!this.infinite && this.stock == 0) {//todo add check to prevent multiple purchases
-			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
-			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-			return;
-		}
+		// Set beingEdited flag to prevent concurrent purchases
+		this.beingEdited = true;
+		
+		try {
+			// Initial stock check
+			if (!this.infinite && this.stock == 0) {
+				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
 
-		final int newPurchaseAmount = this.infinite ? quantity : Math.min(quantity, stock);
+			final int newPurchaseAmount = this.infinite ? quantity : Math.min(quantity, stock);
 
-		final double subtotal = this.priceIsForAll ? this.price : this.price * newPurchaseAmount;
-		final double total = subtotal;
+			final double subtotal = this.priceIsForAll ? this.price : this.price * newPurchaseAmount;
+			final double total = subtotal;
 
-		final String currencyPlugin = this.currency.split("/")[0];
-		final String currencyName = this.currency.split("/")[1];
+			// Validate currency format before splitting
+			if (this.currency == null || this.currency.isEmpty() || !this.currency.contains("/")) {
+				transactionResult.accept(TransactionResult.ERROR);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
 
-		final boolean hasEnoughMoney = this.isCurrencyOfItem() ? Markets.getCurrencyManager().has(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().has(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+			final String[] currencyParts = this.currency.split("/");
+			if (currencyParts.length < 2 || currencyParts[0].isEmpty() || currencyParts[1].isEmpty()) {
+				transactionResult.accept(TransactionResult.ERROR);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
 
-		if (!hasEnoughMoney) {
-			Common.tell(buyer, TranslationManager.string(buyer, Translations.NO_MONEY));
-			transactionResult.accept(TransactionResult.FAILED_NO_MONEY);
-			return;
-		}
+			final String currencyPlugin = currencyParts[0];
+			final String currencyName = currencyParts[1];
 
-		final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
-		final double tax = this.isCurrencyOfItem() ? (int) Taxer.calculateTaxAmount(total) : Taxer.calculateTaxAmount(total);
+			final boolean hasEnoughMoney = this.isCurrencyOfItem() ? Markets.getCurrencyManager().has(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().has(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
 
-		if (withdrawResult) {
+			if (!hasEnoughMoney) {
+				transactionResult.accept(TransactionResult.FAILED_NO_MONEY);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.NO_MONEY));
+				return;
+			}
+
+			// Check inventory space before withdrawing money
 			final ItemStack updatedItem = this.item.clone();
 			updatedItem.setAmount(1);
+			int freeSlots = 0;
+			for (int i = 0; i < buyer.getInventory().getSize(); i++) {
+				ItemStack slot = buyer.getInventory().getItem(i);
+				if (slot == null || slot.getType().isAir()) {
+					freeSlots++;
+				}
+			}
+			
+			if (freeSlots < newPurchaseAmount) {
+				transactionResult.accept(TransactionResult.ERROR);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
 
-			for (int i = 0; i < newPurchaseAmount; i++)
+			final boolean withdrawResult = this.isCurrencyOfItem() ? Markets.getCurrencyManager().withdraw(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total)) : Markets.getCurrencyManager().withdraw(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+			final double tax = this.isCurrencyOfItem() ? (int) Taxer.calculateTaxAmount(total) : Taxer.calculateTaxAmount(total);
+
+			if (!withdrawResult) {
+				transactionResult.accept(TransactionResult.ERROR);
+				return;
+			}
+
+			// Re-validate stock after money withdrawal (prevents race condition)
+			if (!this.infinite && this.stock < newPurchaseAmount) {
+				// Rollback money withdrawal
+				if (this.isCurrencyOfItem()) {
+					Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
+				} else {
+					Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+				}
+				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
+
+			// Give items to buyer
+			for (int i = 0; i < newPurchaseAmount; i++) {
 				PlayerUtil.giveItem(buyer, updatedItem);
+			}
 
 			final int newStock = this.stock - newPurchaseAmount;
 			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
@@ -353,10 +451,10 @@ public final class CategoryItem implements MarketItem {
 			));
 
 			transactionResult.accept(TransactionResult.SUCCESS);
-			return;
+		} finally {
+			// Always clear the beingEdited flag, even if an error occurred
+			this.beingEdited = false;
 		}
-
-		transactionResult.accept(TransactionResult.ERROR);
 	}
 
 	@Override
