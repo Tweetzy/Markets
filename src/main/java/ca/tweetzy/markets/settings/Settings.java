@@ -31,7 +31,7 @@ public final class Settings extends FlightSettings {
 	/*
 	========================= Redis Sync Stuff =========================
 	 */
-	public static final ConfigEntry REDIS_ENABLED = create("redis.enabled", true, "Enable Redis for cross-server synchronization (auto-enabled when using MySQL)");
+	public static final ConfigEntry REDIS_ENABLED = create("redis.enabled", true, "Enable Redis for cross-server synchronization (auto-enabled when using MySQL) THIS IS EXPIREMENTAL");
 	public static final ConfigEntry REDIS_HOST = create("redis.host", "localhost", "Redis server host");
 	public static final ConfigEntry REDIS_PORT = create("redis.port", 6379, "Redis server port");
 	public static final ConfigEntry REDIS_PASSWORD = create("redis.password", "", "Redis server password (leave empty if no password)");

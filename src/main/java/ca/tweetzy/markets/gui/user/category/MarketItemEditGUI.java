@@ -14,10 +14,10 @@ import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.MarketItem;
 import ca.tweetzy.markets.gui.MarketsBaseGUI;
 import ca.tweetzy.markets.gui.shared.selector.CurrencyPickerGUI;
+import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -99,6 +99,19 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 					return;
 				}
 
+				// Check if item is being purchased - prevent stock withdrawal during purchase
+				if (this.marketItem.isBeingEdited()) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
+				// Check for active stock reservations (cross-server purchase protection)
+				final StockReservationManager reservationManager = Markets.getStockReservationManager();
+				if (reservationManager != null && reservationManager.isReserved(this.marketItem.getId())) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
 				click.gui.exit();
 				new TitleInput(Markets.getInstance(), click.player, TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_TITLE), TranslationManager.string(click.player, Translations.PROMPT_STOCK_WITHDRAW_SUBTITLE)) {
 					@Override
@@ -116,12 +129,28 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 						}
 
 						int qty = Integer.parseInt(string);
-						if (marketItem.getStock() < qty) {
+						
+						// Re-check stock and beingEdited after user input (race condition protection)
+						if (marketItem.isBeingEdited()) {
+							Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+							return false;
+						}
+						
+						if (reservationManager != null && reservationManager.isReserved(marketItem.getId())) {
+							Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+							return false;
+						}
+						
+						// Reload item to get latest stock value
+						MarketItem reloadedItem = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
+						int currentStock = (reloadedItem != null) ? reloadedItem.getStock() : marketItem.getStock();
+						
+						if (currentStock < qty) {
 							Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_ENOUGH_STOCK));
 							return false;
 						}
 
-						marketItem.setStock(marketItem.getStock() - qty);
+						marketItem.setStock(currentStock - qty);
 
 						final ItemStack item = marketItem.getItem().clone();
 						item.setAmount(1);
@@ -132,6 +161,9 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 						});
 
 						marketItem.sync(result -> {
+							if (result == SynchronizeResult.FAILURE) {
+								Markets.getInstance().getLogger().warning("Failed to sync stock withdrawal for item " + marketItem.getId() + ". Stock may be inconsistent!");
+							}
 							click.manager.showGUI(click.player, new MarketItemEditGUI(click.player, MarketItemEditGUI.this.market, MarketItemEditGUI.this.category, MarketItemEditGUI.this.marketItem));
 						});
 

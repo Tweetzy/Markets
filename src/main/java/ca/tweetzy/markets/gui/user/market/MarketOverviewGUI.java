@@ -26,6 +26,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
@@ -149,7 +150,12 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 					}
 
 					Markets.getCategoryManager().create(MarketOverviewGUI.this.market, string, created -> {
-						click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
+						if (created) {
+							click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
+						} else {
+							Common.tell(click.player, "&cFailed to create category. Please check the server logs for details.");
+							click.manager.showGUI(click.player, MarketOverviewGUI.this);
+						}
 					});
 
 					return true;
@@ -199,23 +205,23 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 							return;
 						}
 
-						// loop through categories with items
-						market.getCategories().forEach(category -> {
-							category.getItems().forEach(item -> item.getViewingPlayers().clear());
+					// loop through categories with items - create a copy to avoid ConcurrentModificationException
+					new ArrayList<>(market.getCategories()).forEach(category -> {
+						category.getItems().forEach(item -> item.getViewingPlayers().clear());
 
-							Markets.getDataManager().deleteMarketItems(category, (error, itemResult) -> {
-								if (error == null && itemResult) {
-									category.getItems().forEach(item -> {
-										giveBackMarketItem(item);
-										Markets.getCategoryItemManager().remove(item);
-									});
-								}
-							});
+						Markets.getDataManager().deleteMarketItems(category, (error, itemResult) -> {
+							if (error == null && itemResult) {
+								category.getItems().forEach(item -> {
+									giveBackMarketItem(item);
+									Markets.getCategoryItemManager().remove(item);
+								});
+							}
 						});
+					});
 
-						// kill categories
-						market.getCategories().forEach(category -> category.unStore(categoryRemoveResult -> {
-						}));
+					// kill categories - create a copy to avoid ConcurrentModificationException
+					new ArrayList<>(market.getCategories()).forEach(category -> category.unStore(categoryRemoveResult -> {
+					}));
 
 						// remove market
 						yeetMarket(click);
@@ -229,8 +235,8 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 						return;
 					}
 
-					// loop through categories with items
-					market.getCategories().forEach(category -> {
+					// loop through categories with items - create a copy to avoid ConcurrentModificationException
+					new ArrayList<>(market.getCategories()).forEach(category -> {
 						category.getItems().forEach(item -> item.getViewingPlayers().clear());
 
 						Markets.getDataManager().deleteMarketItems(category, (error, itemResult) -> {
@@ -243,8 +249,8 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 						});
 					});
 
-					// kill categories
-					market.getCategories().forEach(category -> category.unStore(categoryRemoveResult -> {
+					// kill categories - create a copy to avoid ConcurrentModificationException
+					new ArrayList<>(market.getCategories()).forEach(category -> category.unStore(categoryRemoveResult -> {
 					}));
 
 					// remove market

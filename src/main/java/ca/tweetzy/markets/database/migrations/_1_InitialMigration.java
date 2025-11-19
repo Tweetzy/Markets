@@ -23,8 +23,8 @@ public final class _1_InitialMigration extends DataMigration {
 					"display_name VARCHAR(72) NOT NULL, " +
 					"description TEXT NOT NULL, " +
 					"type VARCHAR(16) NOT NULL, " +
-					"created_at BigInt NOT NULL, " +
-					"updated_at BigInt NOT NULL " +
+					"created_at BIGINT NOT NULL, " +
+					"updated_at BIGINT NOT NULL " +
 					")");
 
 			// category
@@ -35,8 +35,8 @@ public final class _1_InitialMigration extends DataMigration {
 					"icon VARCHAR(50) NOT NULL, " +
 					"display_name VARCHAR(72) NOT NULL, " +
 					"description TEXT NOT NULL, " +
-					"created_at BigInt NOT NULL, " +
-					"updated_at BigInt NOT NULL " +
+					"created_at BIGINT NOT NULL, " +
+					"updated_at BIGINT NOT NULL " +
 					")");
 		}
 	}

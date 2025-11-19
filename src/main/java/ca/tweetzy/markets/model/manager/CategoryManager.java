@@ -61,6 +61,8 @@ public final class CategoryManager extends ListManager<Category> {
 				market.getCategories().add(storedCategory);
 				created.accept(true);
 			} else {
+				Markets.getInstance().getLogger().severe("Failed to create category. Market: " + market.getId() + ", Category Name: " + name);
+				Common.log("&cCategory creation failed for market: " + market.getDisplayName() + " with name: " + name);
 				created.accept(false);
 			}
 		});

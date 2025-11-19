@@ -19,6 +19,7 @@ import ca.tweetzy.markets.impl.*;
 import ca.tweetzy.markets.model.manager.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 	private final DataManager dataManager;
 	private final Map<String, Long> processedEvents = new ConcurrentHashMap<>();
 	private static final long EVENT_TTL = 24 * 60 * 60 * 1000; // 24 hours
+	private BukkitRunnable cleanupTask;
 	
 	public CrossServerSyncManager(@NonNull Markets plugin, @NonNull DataManager dataManager) {
 		this.plugin = plugin;
@@ -45,12 +47,13 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 			dataManager.registerDatabaseEventListener(this);
 			
 			// Cleanup old events periodically
-			new BukkitRunnable() {
+			this.cleanupTask = new BukkitRunnable() {
 				@Override
 				public void run() {
 					cleanupProcessedEvents();
 				}
-			}.runTaskTimerAsynchronously(plugin, 3600 * 20L, 3600 * 20L); // Every hour
+			};
+			this.cleanupTask.runTaskTimerAsynchronously(plugin, 3600 * 20L, 3600 * 20L); // Every hour
 		}
 	}
 	
@@ -107,7 +110,7 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 					}
 				}
 			});
-		} catch (org.bukkit.plugin.IllegalPluginAccessException e) {
+		} catch (IllegalPluginAccessException e) {
 			// Plugin disabled between check and scheduling - ignore silently
 			// Don't check plugin.isEnabled() here as it might throw
 		} catch (IllegalStateException e) {
@@ -371,6 +374,20 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 	private void cleanupProcessedEvents() {
 		long now = System.currentTimeMillis();
 		processedEvents.entrySet().removeIf(entry -> (now - entry.getValue()) > EVENT_TTL);
+	}
+	
+	/**
+	 * Shutdown and cleanup resources
+	 */
+	public void shutdown() {
+		if (this.cleanupTask != null) {
+			this.cleanupTask.cancel();
+			this.cleanupTask = null;
+		}
+		processedEvents.clear();
+		if (dataManager.getRedisSyncManager() != null && dataManager.getRedisSyncManager().isEnabled()) {
+			dataManager.unregisterDatabaseEventListener(this);
+		}
 	}
 }
 

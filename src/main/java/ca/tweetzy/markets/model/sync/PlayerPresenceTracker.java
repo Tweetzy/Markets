@@ -10,10 +10,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Tracks which server each player is currently on using Redis
@@ -142,7 +144,7 @@ public class PlayerPresenceTracker implements Listener {
 	 * @param playerId The player UUID
 	 * @param callback Callback that receives the server ID, or null if player is offline or not found
 	 */
-	public void getPlayerServerAsync(@NonNull UUID playerId, @NonNull java.util.function.Consumer<String> callback) {
+	public void getPlayerServerAsync(@NonNull UUID playerId, @NonNull Consumer<String> callback) {
 		if (redisSyncManager == null || !redisSyncManager.isEnabled()) {
 			// Check if player is online on this server
 			Player player = Bukkit.getPlayer(playerId);
@@ -202,7 +204,7 @@ public class PlayerPresenceTracker implements Listener {
 	 * @param playerId The player UUID
 	 * @return The server ID, or null if player is offline or not found
 	 */
-	@org.jetbrains.annotations.Nullable
+	@Nullable
 	@Deprecated
 	public String getPlayerServer(@NonNull UUID playerId) {
 		if (redisSyncManager == null || !redisSyncManager.isEnabled()) {

@@ -19,15 +19,19 @@ import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.impl.*;
 import ca.tweetzy.markets.impl.layout.HomeLayout;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,19 +63,41 @@ public final class DataManager extends DataManagerAbstract {
 							if (findError == null && found != null) {
 								callback.accept(null, found);
 							} else {
-								callback.accept(findError, null);
+								// Fetch failed, but save succeeded - return original market to ensure cache is updated
+								// This prevents markets from not appearing on the server where they were created
+								if (findError != null) {
+									Markets.getInstance().getLogger().warning("Failed to fetch saved market after creation due to connection error, using original market. Market ID: " + market.getId());
+									Markets.getInstance().getLogger().warning("Error: " + findError.getMessage());
+									if (isConnectionError(findError)) {
+										findError.printStackTrace();
+									}
+								}
+								// Return original market if fetch fails, since save succeeded
+								callback.accept(null, market);
 							}
 						});
 					}
 				} else {
+					if (error != null) {
+						Markets.getInstance().getLogger().severe("Failed to create market. Market ID: " + market.getId() + ", Owner: " + market.getOwnerName());
+						Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
+						if (error instanceof SQLException) {
+							SQLException sqlEx = (SQLException) error;
+							Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
+							Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
+						}
+						error.printStackTrace();
+					}
 					if (callback != null) {
 						callback.accept(error, null);
 					}
 				}
 			});
 		} else {
+			Exception unsupportedError = new Exception("Unsupported market type: " + (market != null ? market.getClass().getName() : "null"));
+			Markets.getInstance().getLogger().severe("Failed to create market: " + unsupportedError.getMessage());
 			if (callback != null) {
-				callback.accept(new Exception("Unsupported market type"), null);
+				callback.accept(unsupportedError, null);
 			}
 		}
 	}
@@ -139,17 +165,32 @@ public final class DataManager extends DataManagerAbstract {
 							if (findError == null && found != null) {
 								callback.accept(null, found);
 							} else {
+								if (findError != null) {
+									Markets.getInstance().getLogger().severe("Failed to fetch saved category after creation. Category ID: " + category.getId());
+									Markets.getInstance().getLogger().severe("Error: " + findError.getMessage());
+									findError.printStackTrace();
+								}
 								callback.accept(findError, null);
 							}
 						});
 					} else {
+						Markets.getInstance().getLogger().severe("Failed to create category. Category ID: " + category.getId() + ", Name: " + category.getName() + ", Market: " + category.getOwningMarket());
+						Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
+						if (error instanceof SQLException) {
+							SQLException sqlEx = (SQLException) error;
+							Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
+							Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
+						}
+						error.printStackTrace();
 						callback.accept(error, null);
 					}
 				}
 			});
 		} else {
+			Exception unsupportedError = new Exception("Unsupported category type: " + (category != null ? category.getClass().getName() : "null"));
+			Markets.getInstance().getLogger().severe("Failed to create category: " + unsupportedError.getMessage());
 			if (callback != null) {
-				callback.accept(new Exception("Unsupported category type"), null);
+				callback.accept(unsupportedError, null);
 			}
 		}
 	}
@@ -953,7 +994,7 @@ public final class DataManager extends DataManagerAbstract {
 				try {
 					// Try to get Column annotation using reflection
 					Class<?> columnAnnotationClass = Class.forName("ca.tweetzy.flight.database.annotations.Column");
-					java.lang.annotation.Annotation column = field.getAnnotation((Class<? extends java.lang.annotation.Annotation>) columnAnnotationClass);
+					Annotation column = field.getAnnotation((Class<? extends Annotation>) columnAnnotationClass);
 					if (column != null) {
 						field.setAccessible(true);
 						Object value = field.get(entity);
@@ -994,7 +1035,7 @@ public final class DataManager extends DataManagerAbstract {
 					
 					// Also check for @Id annotation
 					Class<?> idAnnotationClass = Class.forName("ca.tweetzy.flight.database.annotations.Id");
-					java.lang.annotation.Annotation idAnnotation = field.getAnnotation((Class<? extends java.lang.annotation.Annotation>) idAnnotationClass);
+					Annotation idAnnotation = field.getAnnotation((Class<? extends Annotation>) idAnnotationClass);
 					if (idAnnotation != null) {
 						field.setAccessible(true);
 						Object value = field.get(entity);
@@ -1057,7 +1098,7 @@ public final class DataManager extends DataManagerAbstract {
 	 * @param maxRetries Maximum number of retries (default 3)
 	 */
 	private <T> void retryDatabaseOperation(
-		@NonNull java.util.function.Consumer<java.util.function.BiConsumer<Exception, T>> operation,
+		@NonNull Consumer<BiConsumer<Exception, T>> operation,
 		@NonNull Callback<T> callback,
 		int maxRetries
 	) {
@@ -1065,7 +1106,7 @@ public final class DataManager extends DataManagerAbstract {
 	}
 	
 	private <T> void retryDatabaseOperationInternal(
-		@NonNull java.util.function.Consumer<java.util.function.BiConsumer<Exception, T>> operation,
+		@NonNull Consumer<BiConsumer<Exception, T>> operation,
 		@NonNull Callback<T> callback,
 		int maxRetries,
 		int currentAttempt
@@ -1080,7 +1121,7 @@ public final class DataManager extends DataManagerAbstract {
 				Markets.getInstance().getLogger().warning("Database connection error (attempt " + (currentAttempt + 1) + "/" + (maxRetries + 1) + "): " + error.getMessage() + ". Retrying in " + delayMs + "ms...");
 				
 				// Schedule retry on async thread
-				org.bukkit.Bukkit.getScheduler().runTaskLaterAsynchronously(
+				Bukkit.getScheduler().runTaskLaterAsynchronously(
 					Markets.getInstance(),
 					() -> retryDatabaseOperationInternal(operation, callback, maxRetries, currentAttempt + 1),
 					delayMs / 50 // Convert ms to ticks (20 ticks per second)

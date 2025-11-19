@@ -17,12 +17,13 @@ import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.listeners.MarketTransactionListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
 import ca.tweetzy.markets.model.manager.*;
+import ca.tweetzy.flight.dependency.Dependency;
+import ca.tweetzy.flight.dependency.Relocation;
 import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
 import ca.tweetzy.markets.model.sync.CrossServerSyncManager;
 import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
-import ca.tweetzy.flight.dependency.Dependency;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -80,25 +81,22 @@ public final class Markets extends FlightPlugin {
 	protected Set<Dependency> getOptionalDependencies() {
 		Set<Dependency> dependencies = new HashSet<>(super.getOptionalDependencies());
 		
-		// Ensure Jedis is loaded for Redis sync support
-		// (Already loaded by Flight, but we ensure it's included)
 		dependencies.add(new Dependency(
 				"https://repo1.maven.org/maven2",
 				"redis.clients",
 				"jedis",
 				"5.1.0",
 				true,
-				new ca.tweetzy.flight.dependency.Relocation("redis.clients", "ca.tweetzy.flight.third_party.redis.clients")
+				new Relocation("redis.clients", "ca.tweetzy.flight.third_party.redis.clients")
 		));
 		
-		// Jedis requires Apache Commons Pool2 as a dependency
 		dependencies.add(new Dependency(
 				"https://repo1.maven.org/maven2",
 				"org.apache.commons",
 				"commons-pool2",
 				"2.12.0",
 				true,
-				null // No relocation needed for commons-pool2
+				null 
 		));
 		
 		return dependencies;
@@ -236,6 +234,16 @@ public final class Markets extends FlightPlugin {
 		// Shutdown notification manager before shutting down data manager
 		if (this.notificationManager != null) {
 			this.notificationManager.shutdown();
+		}
+		
+		// Shutdown cross-server sync manager
+		if (this.crossServerSyncManager != null) {
+			this.crossServerSyncManager.shutdown();
+		}
+		
+		// Shutdown stock reservation manager
+		if (this.stockReservationManager != null) {
+			this.stockReservationManager.shutdown();
 		}
 		
 		shutdownDataManager(this.dataManager);

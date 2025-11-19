@@ -26,7 +26,7 @@ public final class _14_MarketRequestMigration extends DataMigration {
 					"currency_item TEXT, " +
 					"price DOUBLE NOT NULL, " +
 					"requested_amount INT NOT NULL, " +
-					"requested_at BigInt NOT NULL " +
+					"requested_at BIGINT NOT NULL " +
 					")");
 
 		}

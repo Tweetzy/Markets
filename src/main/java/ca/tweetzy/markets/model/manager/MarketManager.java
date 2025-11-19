@@ -35,19 +35,21 @@ public final class MarketManager extends ListManager<Market> {
 		final List<Market> possibleSearchMarkets = getOpenMarketsExclusive(searcher).stream().filter(market -> !market.getBannedUsers().contains(searcher.getUniqueId())).toList();
 //		final List<Market> possibleSearchMarkets = getOpenMarketsInclusive();
 
-		// populate items into search list
-		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems())));
+		// populate items into search list - pass null to hide items with 0 stock (non-owner view)
+		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems(null))));
 		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<MarketItem> getSearchResults(@NonNull final Player searcher, @NonNull final Market market, @NonNull final String keywords) {
 		final List<MarketItem> marketItems = new ArrayList<>();
-		market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems()));
+		// Pass searcher to show 0 stock items if they're the owner, otherwise hide them
+		market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems(searcher)));
 		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<MarketItem> getSearchResults(@NonNull final Category category, @NonNull final String keywords) {
-		return category.getInStockItems().stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
+		// Pass null to hide items with 0 stock (non-owner view for search)
+		return category.getInStockItems(null).stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 
 	public List<Market> getOpenMarketsExclusive(@NonNull final OfflinePlayer ignoredUser) {

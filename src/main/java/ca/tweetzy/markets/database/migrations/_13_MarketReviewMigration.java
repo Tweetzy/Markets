@@ -23,7 +23,7 @@ public final class _13_MarketReviewMigration extends DataMigration {
 					"rater_name VARCHAR(36) NOT NULL, " +
 					"feedback VARCHAR(128), " +
 					"stars INT NOT NULL, " +
-					"posted_on BigInt NOT NULL" +
+					"posted_on BIGINT NOT NULL" +
 					")");
 
 		}

@@ -40,7 +40,7 @@ public final class MarketCategoryViewGUI extends MarketsPagedGUI<MarketItem> {
 		super(fromAdminCommand ? null : parent, player, TranslationManager.string(player, Translations.GUI_MARKET_CATEGORY_VIEW_TITLE,
 				"market_display_name", market.getDisplayName(),
 				"category_display_name", category.getDisplayName()
-		), 6, category.getInStockItems());
+		), 6, category.getInStockItems(viewAsCustomer ? null : player));
 
 		this.player = player;
 		this.market = market;

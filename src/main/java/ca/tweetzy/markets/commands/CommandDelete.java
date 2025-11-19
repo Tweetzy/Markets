@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,8 @@ public final class CommandDelete extends Command {
 			return ReturnType.FAIL;
 		}
 
-		market.getCategories().forEach(category -> {
+		// Create a copy to avoid ConcurrentModificationException
+		new ArrayList<>(market.getCategories()).forEach(category -> {
 			category.getItems().forEach(item -> item.getViewingPlayers().clear());
 
 			Markets.getDataManager().deleteMarketItems(category, (error, itemResult) -> {
@@ -59,8 +61,8 @@ public final class CommandDelete extends Command {
 			});
 		});
 
-		// kill categories
-		market.getCategories().forEach(category -> category.unStore(categoryRemoveResult -> {
+		// kill categories - create a copy to avoid ConcurrentModificationException
+		new ArrayList<>(market.getCategories()).forEach(category -> category.unStore(categoryRemoveResult -> {
 		}));
 
 		// remove market

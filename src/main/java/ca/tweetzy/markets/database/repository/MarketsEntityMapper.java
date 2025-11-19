@@ -5,6 +5,7 @@ import ca.tweetzy.flight.database.annotations.*;
 import ca.tweetzy.flight.database.repository.EntityMapper;
 import ca.tweetzy.flight.utils.SerializeUtil;
 import ca.tweetzy.markets.Markets;
+import com.google.gson.Gson;
 import ca.tweetzy.markets.api.market.core.MarketType;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.impl.MarketLayout;
@@ -154,7 +155,7 @@ public class MarketsEntityMapper<T> implements EntityMapper<T> {
                                     .orElse("");
                         } else {
                             // Other lists - use JSON
-                            value = new com.google.gson.Gson().toJson(value);
+                            value = new Gson().toJson(value);
                         }
                     } else {
                         value = null;

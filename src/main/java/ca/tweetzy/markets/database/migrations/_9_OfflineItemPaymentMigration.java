@@ -23,7 +23,7 @@ public final class _9_OfflineItemPaymentMigration extends DataMigration {
 					"currency TEXT NOT NULL, " +
 					"amount VARCHAR(72) NOT NULL, " +
 					"reason VARCHAR(128) NOT NULL, " +
-					"received_at BigInt NOT NULL " +
+					"received_at BIGINT NOT NULL " +
 					")");
 
 		}

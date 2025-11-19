@@ -9,6 +9,7 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -33,6 +34,7 @@ public class CrossServerNotificationManager {
 	private Thread subscriberThread;
 	private JedisPubSub pubSub;
 	private volatile boolean shutdown = false;
+	private BukkitRunnable cleanupTask;
 	
 	public CrossServerNotificationManager(@NonNull Markets plugin, @NonNull DataManager dataManager) {
 		this.plugin = plugin;
@@ -44,12 +46,13 @@ public class CrossServerNotificationManager {
 			subscribeToNotifications();
 			
 			// Cleanup old notifications periodically
-			new BukkitRunnable() {
+			this.cleanupTask = new BukkitRunnable() {
 				@Override
 				public void run() {
 					cleanupProcessedNotifications();
 				}
-			}.runTaskTimerAsynchronously(plugin, 3600 * 20L, 3600 * 20L); // Every hour
+			};
+			this.cleanupTask.runTaskTimerAsynchronously(plugin, 3600 * 20L, 3600 * 20L); // Every hour
 		}
 	}
 	
@@ -100,7 +103,7 @@ public class CrossServerNotificationManager {
 											}
 										}
 									});
-								} catch (org.bukkit.plugin.IllegalPluginAccessException e) {
+								} catch (IllegalPluginAccessException e) {
 									// Plugin disabled between check and scheduling - ignore silently
 									if (plugin.isEnabled() && !shutdown) {
 										plugin.getLogger().warning("Failed to schedule notification task: " + e.getMessage());
@@ -441,6 +444,12 @@ public class CrossServerNotificationManager {
 	 */
 	public void shutdown() {
 		shutdown = true;
+		
+		// Cancel cleanup task
+		if (this.cleanupTask != null) {
+			this.cleanupTask.cancel();
+			this.cleanupTask = null;
+		}
 		
 		// Unsubscribe from Redis channel
 		if (pubSub != null) {

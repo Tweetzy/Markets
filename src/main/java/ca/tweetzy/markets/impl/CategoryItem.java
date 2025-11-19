@@ -32,7 +32,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -76,10 +78,13 @@ public final class CategoryItem implements MarketItem {
 	private boolean removeRequested = false;
 	
 	@Ignore
-	private boolean beingEdited;
+	private volatile boolean beingEdited;
 
 	@Ignore
 	private List<Player> viewingUsers;
+	
+	@Ignore
+	private final Object editLock = new Object();
 
 	public CategoryItem() {
 		this.viewingUsers = new ArrayList<>();
@@ -228,8 +233,41 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
+		// Prevent deletion while item is being purchased (race condition protection)
+		synchronized (this.editLock) {
+			if (this.beingEdited) {
+				// Item is currently being purchased - cannot delete
+				Markets.getInstance().getLogger().warning("Cannot delete market item " + this.id + " - item is currently being purchased");
+				if (syncResult != null) {
+					syncResult.accept(SynchronizeResult.FAILURE);
+				}
+				return;
+			}
+			// Set beingEdited to prevent new purchases during deletion
+			this.beingEdited = true;
+		}
+		
+		// Check for active stock reservations (cross-server protection)
+		final StockReservationManager reservationManager = Markets.getStockReservationManager();
+		if (reservationManager != null && reservationManager.isReserved(this.id)) {
+			// Stock is reserved - wait a bit and retry, or fail
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+			}
+			Markets.getInstance().getLogger().warning("Cannot delete market item " + this.id + " - stock is currently reserved (purchase in progress on another server)");
+			if (syncResult != null) {
+				syncResult.accept(SynchronizeResult.FAILURE);
+			}
+			return;
+		}
+		
 		// Use DataManager to ensure retry logic and sync events are handled properly
 		Markets.getDataManager().deleteMarketItem(this, (error, deleted) -> {
+			// Clear beingEdited flag after deletion completes (success or failure)
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+			}
+			
 			if (error != null) {
 				// Log the error for debugging
 				Markets.getInstance().getLogger().severe("Failed to delete market item " + this.id + ": " + error.getMessage());
@@ -268,14 +306,20 @@ public final class CategoryItem implements MarketItem {
 	@Override
 	public void performPurchase(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult) {
 
-		// Check if item is being edited (prevents race conditions)
-		if (this.beingEdited) {
-			transactionResult.accept(TransactionResult.ERROR);
-			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-			return;
+		// Atomically check and set beingEdited flag to prevent race conditions
+		synchronized (this.editLock) {
+			if (this.beingEdited) {
+				transactionResult.accept(TransactionResult.ERROR);
+				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+				return;
+			}
+			this.beingEdited = true;
 		}
 
 		if (removeRequested) {
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+			}
 			transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
 			return;
 		}
@@ -285,13 +329,13 @@ public final class CategoryItem implements MarketItem {
 		boolean lockAcquired = reservationManager == null || reservationManager.reserveStock(this.id, quantity);
 		
 		if (!lockAcquired) {
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+			}
 			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 			return;
 		}
-
-		// Set beingEdited flag to prevent concurrent purchases
-		this.beingEdited = true;
 		
 		try {
 			// Initial stock check
@@ -300,6 +344,9 @@ public final class CategoryItem implements MarketItem {
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
+				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
 				}
 				return;
 			}
@@ -316,6 +363,9 @@ public final class CategoryItem implements MarketItem {
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
 				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
+				}
 				return;
 			}
 
@@ -325,6 +375,9 @@ public final class CategoryItem implements MarketItem {
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
+				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
 				}
 				return;
 			}
@@ -340,25 +393,41 @@ public final class CategoryItem implements MarketItem {
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
 				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
+				}
 				return;
 			}
 
-			// Check inventory space before withdrawing money
+			// Check inventory space before withdrawing money - account for item stacking
 			final ItemStack updatedItem = this.item.clone();
 			updatedItem.setAmount(1);
-			int freeSlots = 0;
+			int maxStackSize = updatedItem.getMaxStackSize();
+			int totalNeeded = newPurchaseAmount;
+			
+			// Calculate how many slots are needed considering existing stacks
 			for (int i = 0; i < buyer.getInventory().getSize(); i++) {
 				ItemStack slot = buyer.getInventory().getItem(i);
 				if (slot == null || slot.getType().isAir()) {
-					freeSlots++;
+					// Empty slot can hold maxStackSize items
+					totalNeeded -= maxStackSize;
+					if (totalNeeded <= 0) break;
+				} else if (slot.isSimilar(updatedItem)) {
+					// Existing stack of same item - can add more
+					int spaceInStack = maxStackSize - slot.getAmount();
+					totalNeeded -= spaceInStack;
+					if (totalNeeded <= 0) break;
 				}
 			}
 			
-			if (freeSlots < newPurchaseAmount) {
+			if (totalNeeded > 0) {
 				transactionResult.accept(TransactionResult.ERROR);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
+				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
 				}
 				return;
 			}
@@ -371,6 +440,9 @@ public final class CategoryItem implements MarketItem {
 				if (reservationManager != null) {
 					reservationManager.releaseReservation(this.id);
 				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
+				}
 				return;
 			}
 
@@ -378,14 +450,17 @@ public final class CategoryItem implements MarketItem {
 			// Also reload stock from database if Redis is enabled to get latest value
 			if (!this.infinite) {
 				// For cross-server sync, we need to check database stock
+				MarketItem reloadedItem = null;
 				if (reservationManager != null) {
 					// Reload item from database to get latest stock
-					Markets.getCategoryItemManager().getByUUID(this.id);
-					// Stock will be updated by sync manager, but we need to check current value
+					reloadedItem = Markets.getCategoryItemManager().getByUUID(this.id);
 					// The lock ensures no other server can modify it, but we should still verify
 				}
 				
-				if (this.stock < newPurchaseAmount) {
+				// Use reloaded stock if available, otherwise use current stock
+				int currentStock = (reloadedItem != null) ? reloadedItem.getStock() : this.stock;
+				
+				if (currentStock < newPurchaseAmount) {
 					// Rollback money withdrawal
 					if (this.isCurrencyOfItem()) {
 						Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
@@ -397,7 +472,15 @@ public final class CategoryItem implements MarketItem {
 					if (reservationManager != null) {
 						reservationManager.releaseReservation(this.id);
 					}
+					synchronized (this.editLock) {
+						this.beingEdited = false;
+					}
 					return;
+				}
+				
+				// Update local stock from reloaded value if available
+				if (reloadedItem != null) {
+					this.stock = currentStock;
 				}
 			}
 
@@ -409,75 +492,66 @@ public final class CategoryItem implements MarketItem {
 			final int newStock = this.stock - newPurchaseAmount;
 			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
 
-			if (newStock <= 0) {
-				if (!this.infinite) {
+			// Update stock if not infinite
+			if (!this.infinite) {
+				setStock(newStock);
+				
+				// If stock reached 0, notify viewing users and sync to database
+				// Items remain in category but are hidden from non-owners (handled by getInStockItems)
+				if (newStock <= 0) {
 					getViewingPlayers().forEach(viewingUser -> {
-						viewingUser.closeInventory();
-						Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
-					});
-
-					this.stock = 0;
-
-					if (!market.isServerMarket()) {
-						if (Settings.AUTO_REMOVE_ITEM_WHEN_OUT_OF_STOCK.getBoolean()) {
-							unStore(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
-						} else {
-							sync(result -> alertOutOfStock(seller, buyer, newPurchaseAmount));
+						try {
+							viewingUser.closeInventory();
+							Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
+						} catch (Exception e) {
+							Markets.getInstance().getLogger().warning("Error notifying viewing user " + viewingUser.getName() + " of out of stock: " + e.getMessage());
 						}
-					}
-			} else {
-				if (!market.isServerMarket()) {
-					// Send purchase notification (cross-server or local)
-					java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
-					notificationData.put("buyer_name", buyer.getName());
-					notificationData.put("item_name", ItemUtil.getItemName(this.item));
-					notificationData.put("purchase_quantity", newPurchaseAmount);
-					notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
+					});
 					
-					CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
-					if (notificationManager != null) {
-						notificationManager.sendNotification(seller.getUniqueId(), 
-							NotificationEvent.NotificationType.PURCHASE, notificationData);
-					} else if (seller.isOnline()) {
-						// Fallback to local notification if notification manager not available
-						Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-								"purchase_price", isCurrencyOfItem() ? total : (int) total,
-								"purchase_quantity", newPurchaseAmount,
-								"item_name", ItemUtil.getItemName(this.item),
-								"buyer_name", buyer.getName()
-						));
-					}
-				}
-			}
-
-		} else {
-			if (!market.isServerMarket()) {
-				if (!this.infinite) {
-					setStock(newStock);
+					// Always sync stock to 0 - never delete items
 					sync(result -> {
-						// Send purchase notification (cross-server or local)
-						java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
-						notificationData.put("buyer_name", buyer.getName());
-						notificationData.put("item_name", ItemUtil.getItemName(this.item));
-						notificationData.put("purchase_quantity", newPurchaseAmount);
-						notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
-						
-						CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
-						if (notificationManager != null) {
-							notificationManager.sendNotification(seller.getUniqueId(), 
-								NotificationEvent.NotificationType.PURCHASE, notificationData);
-						} else if (seller.isOnline()) {
-							// Fallback to local notification
-							Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-									"purchase_quantity", newPurchaseAmount,
-									"item_name", ItemUtil.getItemName(this.item),
-									"buyer_name", buyer.getName()
-							));
+						if (result == SynchronizeResult.FAILURE) {
+							Markets.getInstance().getLogger().severe("Failed to sync stock update to 0 for item " + this.id + ". Stock may be inconsistent!");
+						}
+						if (!market.isServerMarket()) {
+							alertOutOfStock(seller, buyer, newPurchaseAmount);
 						}
 					});
 				} else {
+					// Stock still available - sync the update
+					sync(result -> {
+						if (result == SynchronizeResult.FAILURE) {
+							Markets.getInstance().getLogger().severe("Failed to sync stock update for item " + this.id + ". Stock may be inconsistent! Expected stock: " + newStock);
+						}
+						if (!market.isServerMarket()) {
+							// Send purchase notification (cross-server or local)
+							Map<String, Object> notificationData = new HashMap<>();
+							notificationData.put("buyer_name", buyer.getName());
+							notificationData.put("item_name", ItemUtil.getItemName(this.item));
+							notificationData.put("purchase_quantity", newPurchaseAmount);
+							notificationData.put("purchase_price", isCurrencyOfItem() ? total : (int) total);
+							
+							CrossServerNotificationManager notificationManager = Markets.getNotificationManager();
+							if (notificationManager != null) {
+								notificationManager.sendNotification(seller.getUniqueId(), 
+									NotificationEvent.NotificationType.PURCHASE, notificationData);
+							} else if (seller.isOnline()) {
+								// Fallback to local notification
+								Common.tell(seller.getPlayer(), TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+										"purchase_price", isCurrencyOfItem() ? total : (int) total,
+										"purchase_quantity", newPurchaseAmount,
+										"item_name", ItemUtil.getItemName(this.item),
+										"buyer_name", buyer.getName()
+								));
+							}
+						}
+					});
+				}
+			} else {
+				// Infinite stock - just send notification
+				if (!market.isServerMarket()) {
 					// Send purchase notification (cross-server or local)
-					java.util.Map<String, Object> notificationData = new java.util.HashMap<>();
+					Map<String, Object> notificationData = new HashMap<>();
 					notificationData.put("buyer_name", buyer.getName());
 					notificationData.put("item_name", ItemUtil.getItemName(this.item));
 					notificationData.put("purchase_quantity", newPurchaseAmount);
@@ -498,40 +572,62 @@ public final class CategoryItem implements MarketItem {
 					}
 				}
 			}
-		}
 
+			// Pay seller
 			if (!market.isServerMarket()) {
-				if (isCurrencyOfItem()) {
-					if (seller.isOnline() && seller.getPlayer() != null)
-						Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
-					else
-						Markets.getOfflineItemPaymentManager().create(
-								seller.getUniqueId(),
-								this.currencyItem,
-								(int) total,
-								TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
-										"purchase_price", isCurrencyOfItem() ? total : (int) total,
-										"purchase_quantity", newPurchaseAmount,
-										"item_name", ItemUtil.getItemName(this.item),
-										"buyer_name", buyer.getName()
-								), created -> {
-									// todo maybe do something here
-								});
-				} else {
-					Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
+				try {
+					if (isCurrencyOfItem()) {
+						if (seller.isOnline() && seller.getPlayer() != null) {
+							boolean depositSuccess = Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
+							if (!depositSuccess) {
+								Markets.getInstance().getLogger().warning("Failed to deposit item currency to seller " + seller.getName() + " for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total);
+							}
+						} else {
+							Markets.getOfflineItemPaymentManager().create(
+									seller.getUniqueId(),
+									this.currencyItem,
+									(int) total,
+									TranslationManager.string(seller.getPlayer(), Translations.MARKET_ITEM_BOUGHT_SELLER,
+											"purchase_price", isCurrencyOfItem() ? total : (int) total,
+											"purchase_quantity", newPurchaseAmount,
+											"item_name", ItemUtil.getItemName(this.item),
+											"buyer_name", buyer.getName()
+									), created -> {
+										if (created == null) {
+											Markets.getInstance().getLogger().severe("Failed to create offline payment for seller " + seller.getUniqueId() + " for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total);
+										}
+									});
+						}
+					} else {
+						boolean depositSuccess = Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
+						if (!depositSuccess) {
+							Markets.getInstance().getLogger().warning("Failed to deposit currency to seller " + seller.getName() + " for purchase. Currency: " + currencyPlugin + "/" + currencyName + ", Amount: " + total);
+						}
+					}
+				} catch (Exception e) {
+					Markets.getInstance().getLogger().severe("Error paying seller " + seller.getName() + " for purchase: " + e.getMessage());
+					e.printStackTrace();
 				}
 			}
 
 			// insert tax
-			if (Settings.SEND_TAX_TO_SERVER_ACCOUNT.getBoolean())
-				Markets.getBankManager().createTaxEntry(
-						this,
-						newPurchaseAmount,
-						tax,
-						created -> {
-							// todo do something
-						}
-				);
+			if (Settings.SEND_TAX_TO_SERVER_ACCOUNT.getBoolean()) {
+				try {
+					Markets.getBankManager().createTaxEntry(
+							this,
+							newPurchaseAmount,
+							tax,
+							created -> {
+								if (created == null) {
+									Markets.getInstance().getLogger().warning("Failed to create tax entry for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Tax: " + tax);
+								}
+							}
+					);
+				} catch (Exception e) {
+					Markets.getInstance().getLogger().warning("Error creating tax entry for purchase: " + e.getMessage());
+					// Don't fail the purchase if tax entry fails
+				}
+			}
 
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.MARKET_ITEM_BOUGHT_BUYER,
 					"purchase_price", isCurrencyOfItem() ? total : (int) total,
@@ -555,7 +651,9 @@ public final class CategoryItem implements MarketItem {
 			transactionResult.accept(TransactionResult.SUCCESS);
 		} finally {
 			// Always clear the beingEdited flag, even if an error occurred
-			this.beingEdited = false;
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+			}
 			
 			// Release distributed lock
 			if (reservationManager != null) {
@@ -586,7 +684,7 @@ public final class CategoryItem implements MarketItem {
 
 	private void alertOutOfStock(final OfflinePlayer seller, @NonNull final Player buyer, final int newPurchaseAmount) {
 		// Send purchase notification first
-		java.util.Map<String, Object> purchaseData = new java.util.HashMap<>();
+		Map<String, Object> purchaseData = new HashMap<>();
 		purchaseData.put("buyer_name", buyer.getName());
 		purchaseData.put("item_name", ItemUtil.getItemName(this.item));
 		purchaseData.put("purchase_quantity", newPurchaseAmount);
@@ -597,7 +695,7 @@ public final class CategoryItem implements MarketItem {
 				NotificationEvent.NotificationType.PURCHASE, purchaseData);
 			
 			// Send out of stock notification
-			java.util.Map<String, Object> outOfStockData = new java.util.HashMap<>();
+			Map<String, Object> outOfStockData = new HashMap<>();
 			outOfStockData.put("item_name", ItemUtil.getItemName(this.item));
 			notificationManager.sendNotification(seller.getUniqueId(), 
 				NotificationEvent.NotificationType.OUT_OF_STOCK, outOfStockData);

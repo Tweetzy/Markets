@@ -308,6 +308,12 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 						return;
 					}
 
+					// Check if item is being edited (purchased) - prevent deletion during purchase
+					if (marketItem.isBeingEdited()) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
 					marketItem.setRemoveRequested();
 
 					marketItem.unStore(result -> {
@@ -331,6 +337,12 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				}));
 
 			} else {
+				// Check if item is being edited (purchased) - prevent deletion during purchase
+				if (marketItem.isBeingEdited()) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
 				marketItem.setRemoveRequested();
 
 				marketItem.unStore(result -> {

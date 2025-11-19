@@ -19,6 +19,7 @@ public class StockReservationManager {
 	private final RedisLockManager lockManager;
 	private final Map<UUID, ReservationInfo> activeReservations = new ConcurrentHashMap<>();
 	private static final long RESERVATION_TIMEOUT = 30; // seconds
+	private BukkitRunnable cleanupTask;
 	
 	private static class ReservationInfo {
 		final UUID itemId;
@@ -39,12 +40,13 @@ public class StockReservationManager {
 		this.lockManager = Markets.getDataManager().getRedisLockManager();
 		
 		// Cleanup expired reservations periodically
-		new BukkitRunnable() {
+		this.cleanupTask = new BukkitRunnable() {
 			@Override
 			public void run() {
 				cleanupExpiredReservations();
 			}
-		}.runTaskTimerAsynchronously(plugin, 60 * 20L, 60 * 20L); // Every minute
+		};
+		this.cleanupTask.runTaskTimerAsynchronously(plugin, 60 * 20L, 60 * 20L); // Every minute
 	}
 	
 	/**
@@ -175,6 +177,24 @@ public class StockReservationManager {
 			}
 			return false;
 		});
+	}
+	
+	/**
+	 * Shutdown and cleanup resources
+	 */
+	public void shutdown() {
+		if (this.cleanupTask != null) {
+			this.cleanupTask.cancel();
+			this.cleanupTask = null;
+		}
+		// Release all active reservations
+		activeReservations.forEach((itemId, info) -> {
+			String lockKey = "market_item:" + itemId + ":purchase";
+			if (lockManager != null) {
+				lockManager.releaseLock(lockKey);
+			}
+		});
+		activeReservations.clear();
 	}
 }
 

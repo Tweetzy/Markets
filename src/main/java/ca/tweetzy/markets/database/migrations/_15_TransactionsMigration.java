@@ -28,7 +28,7 @@ public final class _15_TransactionsMigration extends DataMigration {
 					"currency TEXT NOT NULL, " +
 					"quantity INT NOT NULL, " +
 					"price DOUBLE NOT NULL, " +
-					"created_at BigInt NOT NULL " +
+					"created_at BIGINT NOT NULL " +
 					")");
 
 		}

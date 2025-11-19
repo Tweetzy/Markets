@@ -26,7 +26,7 @@ public final class _10_MarketOfferMigration extends DataMigration {
 					"currency VARCHAR(72) NOT NULL, " +
 					"currency_item TEXT, " +
 					"offered_amount DOUBLE NOT NULL, " +
-					"offered_at BigInt NOT NULL " +
+					"offered_at BIGINT NOT NULL " +
 					")");
 
 		}

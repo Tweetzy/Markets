@@ -21,7 +21,7 @@ public final class _2_UserProfileMigration extends DataMigration {
 					"id VARCHAR(36) PRIMARY KEY, " +
 					"last_known_name VARCHAR(16) NOT NULL, " +
 					"bio TEXT NOT NULL, " +
-					"last_seen_at BigInt NOT NULL " +
+					"last_seen_at BIGINT NOT NULL " +
 					")");
 
 		}
