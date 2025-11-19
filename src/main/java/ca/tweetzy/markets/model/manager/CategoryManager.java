@@ -58,7 +58,16 @@ public final class CategoryManager extends ListManager<Category> {
 		category.store(storedCategory -> {
 			if (storedCategory != null) {
 				add(storedCategory);
-				market.getCategories().add(storedCategory);
+				
+				// Ensure we're adding to the market instance from the manager (same reference)
+				Market marketFromManager = Markets.getMarketManager().getByUUID(market.getId());
+				if (marketFromManager != null) {
+					marketFromManager.getCategories().add(storedCategory);
+				} else {
+					// Fallback to the passed market if manager lookup fails
+					market.getCategories().add(storedCategory);
+				}
+				
 				created.accept(true);
 			} else {
 				Markets.getInstance().getLogger().severe("Failed to create category. Market: " + market.getId() + ", Category Name: " + name);

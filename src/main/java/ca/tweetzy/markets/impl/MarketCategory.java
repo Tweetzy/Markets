@@ -169,10 +169,20 @@ public final class MarketCategory implements Category {
 	public void store(@NonNull Consumer<Category> stored) {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createCategory(this, (error, created) -> {
-			if (error == null && created != null)
+			if (error == null && created != null) {
 				stored.accept(created);
-			else if (error != null)
+			} else if (error != null) {
+				Markets.getInstance().getLogger().severe("Error storing category: " + error.getMessage());
+				if (error.getCause() != null) {
+					error.getCause().printStackTrace();
+				} else {
+					error.printStackTrace();
+				}
 				stored.accept(null);
+			} else {
+				Markets.getInstance().getLogger().warning("createCategory returned null created category without error");
+				stored.accept(null);
+			}
 		});
 	}
 

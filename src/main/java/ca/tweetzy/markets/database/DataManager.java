@@ -58,24 +58,9 @@ public final class DataManager extends DataManagerAbstract {
 					publishEntityEvent(DatabaseEvent.EventType.INSERT, "markets", extractEntityData(market));
 					
 					if (callback != null) {
-						// Fetch the saved market to return
-						Markets.getMarketRepository().findById(market.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								// Fetch failed, but save succeeded - return original market to ensure cache is updated
-								// This prevents markets from not appearing on the server where they were created
-								if (findError != null) {
-									Markets.getInstance().getLogger().warning("Failed to fetch saved market after creation due to connection error, using original market. Market ID: " + market.getId());
-									Markets.getInstance().getLogger().warning("Error: " + findError.getMessage());
-									if (isConnectionError(findError)) {
-										findError.printStackTrace();
-									}
-								}
-								// Return original market if fetch fails, since save succeeded
-								callback.accept(null, market);
-							}
-						});
+						// Use the saved market directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					}
 				} else {
 					if (error != null) {
@@ -157,32 +142,28 @@ public final class DataManager extends DataManagerAbstract {
 			Markets.getCategoryRepository().save((MarketCategory) category, (error, saved) -> {
 				if (error == null && saved != null) {
 					publishEntityEvent(DatabaseEvent.EventType.INSERT, "category", extractEntityData(category));
-				}
-				
-				if (callback != null) {
-					if (error == null) {
-						Markets.getCategoryRepository().findById(category.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								if (findError != null) {
-									Markets.getInstance().getLogger().severe("Failed to fetch saved category after creation. Category ID: " + category.getId());
-									Markets.getInstance().getLogger().severe("Error: " + findError.getMessage());
-									findError.printStackTrace();
-								}
-								callback.accept(findError, null);
-							}
-						});
-					} else {
-						Markets.getInstance().getLogger().severe("Failed to create category. Category ID: " + category.getId() + ", Name: " + category.getName() + ", Market: " + category.getOwningMarket());
-						Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
-						if (error instanceof SQLException) {
-							SQLException sqlEx = (SQLException) error;
-							Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
-							Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
-						}
-						error.printStackTrace();
+					
+					// Use the saved category directly instead of fetching it again
+					// The repository save() already returns the saved entity, so we don't need findById()
+					if (callback != null) {
+						callback.accept(null, saved);
+					}
+				} else if (error != null) {
+					Markets.getInstance().getLogger().severe("Failed to create category. Category ID: " + category.getId() + ", Name: " + category.getName() + ", Market: " + category.getOwningMarket());
+					Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
+					if (error instanceof SQLException) {
+						SQLException sqlEx = (SQLException) error;
+						Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
+						Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
+					}
+					error.printStackTrace();
+					if (callback != null) {
 						callback.accept(error, null);
+					}
+				} else {
+					Markets.getInstance().getLogger().severe("Category save returned null without error. Category ID: " + category.getId());
+					if (callback != null) {
+						callback.accept(new Exception("Category save returned null"), null);
 					}
 				}
 			});
@@ -249,21 +230,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						// Try to fetch the saved item, but if fetch fails, return the original item
-						// This ensures items are added to cache even if there's a connection issue during fetch
-						Markets.getMarketItemRepository().findById(marketItem.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								// Fetch failed, but save succeeded - return original item to ensure cache is updated
-								// This prevents items from not appearing on the server where they were added
-								if (findError != null && isConnectionError(findError)) {
-									Markets.getInstance().getLogger().warning("Failed to fetch saved market item due to connection error, using original item. Item ID: " + marketItem.getId());
-								}
-								callback.accept(null, marketItem); // Return original item if fetch fails
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved item directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -372,14 +342,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getMarketUserRepository().findById(marketUser.getUUID(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved user directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -432,14 +398,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getPaymentRepository().findById(payment.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved payment directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -488,15 +450,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getOfferRepository().findById(offer.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								// If findById fails but save succeeded, return the original offer
-								callback.accept(null, (Offer) offer);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved offer directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -545,14 +502,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getBankEntryRepository().findById(bankEntry.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved bank entry directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -619,14 +572,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getRatingRepository().findById(rating.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved rating directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -670,14 +619,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 				
 				if (callback != null) {
-					if (error == null) {
-						Markets.getRequestRepository().findById(request.getId(), (findError, found) -> {
-							if (findError == null && found != null) {
-								callback.accept(null, found);
-							} else {
-								callback.accept(findError, null);
-							}
-						});
+					if (error == null && saved != null) {
+						// Use the saved request directly instead of fetching it again
+						// The repository save() already returns the saved entity, so we don't need findById()
+						callback.accept(null, saved);
 					} else {
 						callback.accept(error, null);
 					}
@@ -726,19 +671,9 @@ public final class DataManager extends DataManagerAbstract {
 					Markets.getTransactionRepository().save((MarketTransaction) transaction, (error, saved) -> {
 						if (error == null && saved != null) {
 							publishEntityEvent(DatabaseEvent.EventType.INSERT, "transaction", extractEntityData(transaction));
-							// Fetch the saved transaction to return
-							Markets.getTransactionRepository().findById(transaction.getId(), (findError, found) -> {
-								if (findError == null && found != null) {
-									operationCallback.accept(null, found);
-								} else {
-									// Fetch failed, but save succeeded - return original transaction to ensure it's tracked
-									// This prevents transactions from being lost due to connection issues during fetch
-									if (findError != null && isConnectionError(findError)) {
-										Markets.getInstance().getLogger().warning("Failed to fetch saved transaction due to connection error, using original transaction. Transaction ID: " + transaction.getId());
-									}
-									operationCallback.accept(null, transaction); // Return original transaction if fetch fails
-								}
-							});
+							// Use the saved transaction directly instead of fetching it again
+							// The repository save() already returns the saved entity, so we don't need findById()
+							operationCallback.accept(null, saved);
 						} else {
 							operationCallback.accept(error, null);
 						}

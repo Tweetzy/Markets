@@ -44,6 +44,12 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 	}
 
 	@Override
+	protected void prePopulate() {
+		// Refresh categories list from market to ensure it's up-to-date
+		this.items = new ArrayList<>(this.market.getCategories());
+	}
+
+	@Override
 	protected void drawFixed() {
 
 		// view as buyer
@@ -150,12 +156,22 @@ public final class MarketOverviewGUI extends MarketsPagedGUI<Category> {
 					}
 
 					Markets.getCategoryManager().create(MarketOverviewGUI.this.market, string, created -> {
-						if (created) {
-							click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
-						} else {
-							Common.tell(click.player, "&cFailed to create category. Please check the server logs for details.");
-							click.manager.showGUI(click.player, MarketOverviewGUI.this);
-						}
+						// Ensure GUI operations happen on main thread
+						Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+							if (created) {
+								// Get fresh market instance from manager to ensure we have the updated categories
+								Market refreshedMarket = Markets.getMarketManager().getByUUID(MarketOverviewGUI.this.market.getId());
+								if (refreshedMarket != null) {
+									click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, refreshedMarket));
+								} else {
+									// Fallback to original market if refresh fails
+									click.manager.showGUI(click.player, new MarketOverviewGUI(click.player, MarketOverviewGUI.this.market));
+								}
+							} else {
+								Common.tell(click.player, "&cFailed to create category. Please check the server logs for details.");
+								click.manager.showGUI(click.player, MarketOverviewGUI.this);
+							}
+						});
 					});
 
 					return true;
