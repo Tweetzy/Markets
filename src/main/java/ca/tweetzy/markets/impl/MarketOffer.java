@@ -195,6 +195,16 @@ public final class MarketOffer implements Offer {
 				return;
 			}
 
+			// Check if item is being purchased - prevent offer acceptance during purchase
+			if (locatedItem.isBeingEdited()) {
+				unStore(deleteResult -> {
+					if (deleteResult == SynchronizeResult.SUCCESS) {
+						result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+					}
+				});
+				return;
+			}
+
 			// Also acquire lock for the market item to prevent stock issues
 			boolean itemLockAcquired = reservationManager == null || 
 				reservationManager.reserveStock(this.marketItem, this.requestAmount);
@@ -205,7 +215,21 @@ public final class MarketOffer implements Offer {
 			}
 			
 			try {
-				if (locatedItem.getStock() < this.requestAmount) {
+				// Re-check beingEdited after acquiring lock (race condition protection)
+				if (locatedItem.isBeingEdited()) {
+					unStore(deleteResult -> {
+						if (deleteResult == SynchronizeResult.SUCCESS) {
+							result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+						}
+					});
+					return;
+				}
+
+				// Reload item to get latest stock value
+				MarketItem reloadedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
+				int currentStock = (reloadedItem != null) ? reloadedItem.getStock() : locatedItem.getStock();
+
+				if (currentStock < this.requestAmount) {
 					unStore(deleteResult -> {
 						if (deleteResult == SynchronizeResult.SUCCESS) {
 							result.accept(TransactionResult.FAILED_OUT_OF_STOCK);
@@ -306,14 +330,25 @@ public final class MarketOffer implements Offer {
 				transactionResultConsumer.accept(TransactionResult.SUCCESS);
 		});
 
-		// delete the item
+		// Update stock atomically - reload to get latest value
+		MarketItem reloadedItem = Markets.getCategoryItemManager().getByUUID(marketItem.getId());
+		int currentStock = (reloadedItem != null) ? reloadedItem.getStock() : marketItem.getStock();
 
-		int newTotal = marketItem.getStock() - this.requestAmount;
-		if (newTotal < 0)
-			newTotal = 0;
+		int calculatedNewTotal = currentStock - this.requestAmount;
+		final int finalNewTotal;
+		if (calculatedNewTotal < 0) {
+			Markets.getInstance().getLogger().warning("Stock update in offer acceptance would result in negative stock for item " + marketItem.getId() + ". Current: " + currentStock + ", Requested: " + this.requestAmount);
+			finalNewTotal = 0;
+		} else {
+			finalNewTotal = calculatedNewTotal;
+		}
 
-		marketItem.setStock(newTotal);
-		marketItem.sync(null);
+		marketItem.setStock(finalNewTotal);
+		marketItem.sync(syncResult -> {
+			if (syncResult == SynchronizeResult.FAILURE) {
+				Markets.getInstance().getLogger().severe("Failed to sync stock update in offer acceptance for item " + marketItem.getId() + ". Stock may be inconsistent! Expected stock: " + finalNewTotal);
+			}
+		});
 
 		Markets.getOfflineItemPaymentManager().create(
 				this.sender,

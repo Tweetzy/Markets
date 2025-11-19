@@ -80,14 +80,35 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 			}
 
 			if (click.clickType == ClickType.SHIFT_LEFT) {
+				// Check if item is being purchased - prevent stock addition during purchase
+				if (this.marketItem.isBeingEdited()) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
+				// Check for active stock reservations (cross-server purchase protection)
+				final StockReservationManager reservationManager = Markets.getStockReservationManager();
+				if (reservationManager != null && reservationManager.isReserved(this.marketItem.getId())) {
+					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					return;
+				}
+
 				int itemCount = PlayerUtil.getItemCountInPlayerInventory(click.player, this.marketItem.getItem());
 				if (itemCount == 0) return;
 
-				this.marketItem.setStock(this.marketItem.getStock() + itemCount);
-				PlayerUtil.removeSpecificItemQuantityFromPlayer(click.player, this.marketItem.getItem(), itemCount);
+				// Create a temporary item stack to use with addStock() for proper synchronization
+				final ItemStack tempItem = this.marketItem.getItem().clone();
+				tempItem.setAmount(itemCount);
 
-				this.marketItem.sync(result -> {
-					if (result == SynchronizeResult.FAILURE) return;
+				// Use addStock() which is now properly synchronized
+				this.marketItem.addStock(tempItem, result -> {
+					if (result == SynchronizeResult.FAILURE) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
+					// Only remove items from inventory if stock addition succeeded
+					PlayerUtil.removeSpecificItemQuantityFromPlayer(click.player, this.marketItem.getItem(), itemCount);
 					drawStockButton();
 				});
 			}
@@ -130,6 +151,11 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 
 						int qty = Integer.parseInt(string);
 						
+						if (qty <= 0) {
+							Common.tell(click.player, TranslationManager.string(click.player, Translations.NOT_A_NUMBER, "value", string));
+							return false;
+						}
+						
 						// Re-check stock and beingEdited after user input (race condition protection)
 						if (marketItem.isBeingEdited()) {
 							Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
@@ -150,19 +176,37 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 							return false;
 						}
 
-						marketItem.setStock(currentStock - qty);
+						// Validate stock won't go negative (safety check)
+						int calculatedNewStock = currentStock - qty;
+						final int finalNewStock;
+						final int finalQty;
+						
+						if (calculatedNewStock < 0) {
+							Markets.getInstance().getLogger().warning("Stock withdrawal would result in negative stock for item " + marketItem.getId() + ". Current: " + currentStock + ", Withdrawing: " + qty);
+							finalNewStock = 0;
+							finalQty = currentStock; // Adjust quantity to available stock
+						} else {
+							finalNewStock = calculatedNewStock;
+							finalQty = qty;
+						}
+
+						// Update stock atomically
+						marketItem.setStock(finalNewStock);
 
 						final ItemStack item = marketItem.getItem().clone();
 						item.setAmount(1);
 
 						Bukkit.getServer().getScheduler().runTask(Markets.getInstance(), () -> {
-							for (int i = 0; i < qty; i++)
+							for (int i = 0; i < finalQty; i++)
 								PlayerUtil.giveItem(click.player, item);
 						});
 
+						final int syncNewStock = finalNewStock; // Final variable for use in lambda
 						marketItem.sync(result -> {
 							if (result == SynchronizeResult.FAILURE) {
-								Markets.getInstance().getLogger().warning("Failed to sync stock withdrawal for item " + marketItem.getId() + ". Stock may be inconsistent!");
+								Markets.getInstance().getLogger().severe("Failed to sync stock withdrawal for item " + marketItem.getId() + ". Stock may be inconsistent! Expected stock: " + syncNewStock);
+								// Attempt to rollback by giving items back to market (if possible)
+								// For now, just log the error
 							}
 							click.manager.showGUI(click.player, new MarketItemEditGUI(click.player, MarketItemEditGUI.this.market, MarketItemEditGUI.this.category, MarketItemEditGUI.this.marketItem));
 						});

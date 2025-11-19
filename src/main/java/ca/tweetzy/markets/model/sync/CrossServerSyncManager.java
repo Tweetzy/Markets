@@ -15,7 +15,6 @@ import ca.tweetzy.markets.api.market.offer.Offer;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.api.currency.Payment;
 import ca.tweetzy.markets.database.DataManager;
-import ca.tweetzy.markets.impl.*;
 import ca.tweetzy.markets.model.manager.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -198,8 +197,8 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 			}
 		} else {
 			// INSERT or UPDATE - reload from database
-			UUID marketId = UUID.fromString((String) data.get("id"));
-			marketManager.load(); // Reload all markets (could be optimized to reload single market)
+			// Note: Could be optimized to reload single market, but requires additional manager methods
+			marketManager.load();
 		}
 	}
 	
@@ -220,9 +219,9 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 	
 	private void handleMarketItemEvent(@NonNull DatabaseEvent.EventType eventType, @NonNull Map<String, Object> data) {
 		CategoryItemManager itemManager = Markets.getCategoryItemManager();
+		UUID itemId = UUID.fromString((String) data.get("id"));
 		
 		if (eventType == DatabaseEvent.EventType.DELETE) {
-			UUID itemId = UUID.fromString((String) data.get("id"));
 			MarketItem item = itemManager.getByUUID(itemId);
 			if (item != null) {
 				itemManager.remove(item);
@@ -232,35 +231,89 @@ public class CrossServerSyncManager implements DatabaseEventListener {
 					category.getItems().removeIf(categoryItem -> categoryItem.getId().equals(itemId));
 				}
 			}
-		} else {
-			// INSERT or UPDATE - reload from database
+		} else if (eventType == DatabaseEvent.EventType.UPDATE) {
+			// UPDATE - reload just this specific item's category to update it efficiently
+			// First check if item exists in cache
+			MarketItem existingItem = itemManager.getByUUID(itemId);
+			if (existingItem != null) {
+				UUID categoryId = existingItem.getOwningCategory();
+				Category category = Markets.getCategoryManager().getByUUID(categoryId);
+				if (category != null) {
+					// Reload items for this category to get updated item
+					Markets.getDataManager().getMarketItemsByCategory(categoryId, (error, items) -> {
+						if (error == null && items != null) {
+							// Find the updated item
+							MarketItem updatedItem = items.stream()
+								.filter(item -> item.getId().equals(itemId))
+								.findFirst()
+								.orElse(null);
+							
+							if (updatedItem != null) {
+								// Update item in cache
+								itemManager.remove(existingItem);
+								itemManager.add(updatedItem);
+								
+								// Update item in category
+								category.getItems().removeIf(categoryItem -> categoryItem.getId().equals(itemId));
+								category.getItems().add(updatedItem);
+							} else {
+								// Item was deleted, remove from cache
+								itemManager.remove(existingItem);
+								category.getItems().removeIf(categoryItem -> categoryItem.getId().equals(itemId));
+							}
+						}
+					});
+					return;
+				}
+			}
+			// Fallback: reload category if item not found in cache
 			UUID categoryId = UUID.fromString((String) data.get("owning_category"));
 			Category category = Markets.getCategoryManager().getByUUID(categoryId);
 			if (category != null) {
-				// Reload items for this category
-				Markets.getDataManager().getMarketItemsByCategory(categoryId, (error, items) -> {
-					if (error == null && items != null) {
-						// Remove old items from manager that are no longer in the category
-						category.getItems().forEach(oldItem -> {
-							if (!items.stream().anyMatch(newItem -> newItem.getId().equals(oldItem.getId()))) {
-								itemManager.remove(oldItem);
-							}
-						});
-						
-						// Clear and update category items
-						category.getItems().clear();
-						category.getItems().addAll(items);
-						
-						// Ensure all items are in the CategoryItemManager cache
-						items.forEach(item -> {
-							if (itemManager.getByUUID(item.getId()) == null) {
-								itemManager.add(item);
-							}
-						});
+				reloadCategoryItems(category, itemManager);
+			}
+		} else {
+			// INSERT - reload category to include new item
+			UUID categoryId = UUID.fromString((String) data.get("owning_category"));
+			Category category = Markets.getCategoryManager().getByUUID(categoryId);
+			if (category != null) {
+				reloadCategoryItems(category, itemManager);
+			}
+		}
+	}
+	
+	/**
+	 * Reload items for a category (optimized helper method)
+	 */
+	private void reloadCategoryItems(@NonNull Category category, @NonNull CategoryItemManager itemManager) {
+		Markets.getDataManager().getMarketItemsByCategory(category.getId(), (error, items) -> {
+			if (error == null && items != null) {
+				// Remove old items from manager that are no longer in the category
+				category.getItems().forEach(oldItem -> {
+					if (!items.stream().anyMatch(newItem -> newItem.getId().equals(oldItem.getId()))) {
+						itemManager.remove(oldItem);
+					}
+				});
+				
+				// Clear and update category items
+				category.getItems().clear();
+				category.getItems().addAll(items);
+				
+				// Ensure all items are in the CategoryItemManager cache
+				items.forEach(item -> {
+					if (itemManager.getByUUID(item.getId()) == null) {
+						itemManager.add(item);
+					} else {
+						// Update existing item in cache
+						MarketItem existing = itemManager.getByUUID(item.getId());
+						if (existing != null) {
+							itemManager.remove(existing);
+							itemManager.add(item);
+						}
 					}
 				});
 			}
-		}
+		});
 	}
 	
 	private void handleMarketUserEvent(@NonNull DatabaseEvent.EventType eventType, @NonNull Map<String, Object> data) {
