@@ -264,7 +264,7 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution>
+                    <!-- <execution>
                         <id>copy-files-on-build-2</id>
                         <phase>package</phase>
                         <goals>
@@ -280,7 +280,7 @@
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>
+                    </execution> -->
                 </executions>
             </plugin>
             <plugin>
