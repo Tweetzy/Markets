@@ -22,6 +22,7 @@ import ca.tweetzy.flight.dependency.Relocation;
 import ca.tweetzy.markets.model.sync.CrossServerNotificationManager;
 import ca.tweetzy.markets.model.sync.CrossServerSyncManager;
 import ca.tweetzy.markets.model.sync.StockReservationManager;
+import ca.tweetzy.markets.model.TransactionLogger;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import co.aikar.taskchain.BukkitTaskChainFactory;
@@ -71,6 +72,9 @@ public final class Markets extends FlightPlugin {
 	private CrossServerSyncManager crossServerSyncManager;
 	private StockReservationManager stockReservationManager;
 	private CrossServerNotificationManager notificationManager;
+	
+	// Transaction logger
+	private TransactionLogger transactionLogger;
 
 	// default vault economy
 	private Economy economy = null;
@@ -184,6 +188,13 @@ public final class Markets extends FlightPlugin {
 
 		// gui system
 		this.guiManager.init();
+		
+		// Initialize transaction logger
+		if (Settings.TRANSACTION_LOGGING_ENABLED.getBoolean()) {
+			this.transactionLogger = new TransactionLogger(this);
+			this.transactionLogger.start();
+			Common.log("&aTransaction logging enabled - logs stored in plugins/Markets/logs/");
+		}
 
 		// Initialize cross-server sync manager if Redis is enabled
 		if (this.dataManager.getRedisSyncManager() != null && this.dataManager.getRedisSyncManager().isEnabled()) {
@@ -231,6 +242,11 @@ public final class Markets extends FlightPlugin {
 
 	@Override
 	protected void onSleep() {
+		// Shutdown transaction logger
+		if (this.transactionLogger != null) {
+			this.transactionLogger.stop();
+		}
+		
 		// Shutdown notification manager before shutting down data manager
 		if (this.notificationManager != null) {
 			this.notificationManager.shutdown();
@@ -315,6 +331,10 @@ public final class Markets extends FlightPlugin {
 	
 	public static CrossServerNotificationManager getNotificationManager() {
 		return getInstance().notificationManager;
+	}
+	
+	public static TransactionLogger getTransactionLogger() {
+		return getInstance().transactionLogger;
 	}
 	
 	public static MarketRepository getMarketRepository() {

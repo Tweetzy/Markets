@@ -191,7 +191,11 @@ public final class CategoryItem implements MarketItem {
 	public void setStock(int stock) {
 		// Validate stock never goes negative
 		if (stock < 0) {
-			Markets.getInstance().getLogger().warning("Attempted to set negative stock for item " + this.id + ". Setting to 0 instead. Requested: " + stock);
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logWarning("STOCK_UPDATE", 
+					"ItemID: " + this.id + ", Requested: " + stock, 
+					"Attempted to set negative stock - setting to 0 instead");
+			}
 			stock = 0;
 		}
 		this.stock = stock;
@@ -242,7 +246,11 @@ public final class CategoryItem implements MarketItem {
 		synchronized (this.editLock) {
 			if (this.beingEdited) {
 				// Item is currently being purchased - cannot delete
-				Markets.getInstance().getLogger().warning("Cannot delete market item " + this.id + " - item is currently being purchased");
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logWarning("ITEM_REMOVE", 
+						"ItemID: " + this.id, 
+						"Cannot delete - item is currently being purchased");
+				}
 				if (syncResult != null) {
 					syncResult.accept(SynchronizeResult.FAILURE);
 				}
@@ -259,7 +267,11 @@ public final class CategoryItem implements MarketItem {
 			synchronized (this.editLock) {
 				this.beingEdited = false;
 			}
-			Markets.getInstance().getLogger().warning("Cannot delete market item " + this.id + " - stock is currently reserved (purchase in progress on another server)");
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logWarning("ITEM_REMOVE", 
+					"ItemID: " + this.id, 
+					"Cannot delete - stock reserved (purchase in progress on another server)");
+			}
 			if (syncResult != null) {
 				syncResult.accept(SynchronizeResult.FAILURE);
 			}
@@ -505,7 +517,11 @@ public final class CategoryItem implements MarketItem {
 					PlayerUtil.giveItem(buyer, updatedItem);
 				}
 			} catch (Exception e) {
-				Markets.getInstance().getLogger().severe("Failed to give items to buyer " + buyer.getName() + " for purchase of item " + this.id + ": " + e.getMessage());
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logError("ITEM_PURCHASE", 
+						"Buyer: " + buyer.getName() + ", ItemID: " + this.id + ", Quantity: " + newPurchaseAmount, 
+						"Failed to give items: " + e.getMessage());
+				}
 				e.printStackTrace();
 				// Rollback stock if items couldn't be given
 				if (!this.infinite) {
@@ -532,25 +548,42 @@ public final class CategoryItem implements MarketItem {
 							viewingUser.closeInventory();
 							Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
 						} catch (Exception e) {
-							Markets.getInstance().getLogger().warning("Error notifying viewing user " + viewingUser.getName() + " of out of stock: " + e.getMessage());
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logWarning("STOCK_UPDATE", 
+									"User: " + viewingUser.getName() + ", ItemID: " + this.id, 
+									"Error notifying user of out of stock: " + e.getMessage());
+							}
 						}
 					});
 					
 					// Always sync stock to 0 - never delete items
 					sync(result -> {
 						if (result == SynchronizeResult.FAILURE) {
-							Markets.getInstance().getLogger().severe("CRITICAL: Failed to sync stock update to 0 for item " + this.id + 
-								" after purchase. Items were given to buyer " + buyer.getName() + 
-								" but stock may be inconsistent! Original stock: " + originalStock + 
-								", Purchase amount: " + newPurchaseAmount);
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logError("STOCK_UPDATE", 
+									"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+									", OriginalStock: " + originalStock + ", PurchaseAmount: " + newPurchaseAmount, 
+									"CRITICAL: Failed to sync stock to 0 - attempting rollback");
+							}
 							// Attempt to restore stock to prevent duplication
 							setStock(originalStock);
 							sync(rollbackResult -> {
-								if (rollbackResult == SynchronizeResult.FAILURE) {
-									Markets.getInstance().getLogger().severe("CRITICAL: Failed to rollback stock for item " + this.id + 
-										". Manual intervention may be required!");
+								if (rollbackResult == SynchronizeResult.FAILURE && Markets.getTransactionLogger() != null) {
+									Markets.getTransactionLogger().logError("STOCK_UPDATE", 
+										"ItemID: " + this.id, 
+										"CRITICAL: Failed to rollback stock - manual intervention required!");
 								}
 							});
+						} else {
+							// Log successful purchase
+							if (Markets.getTransactionLogger() != null) {
+								Category owningCat = Markets.getCategoryManager().getByUUID(this.owningCategory);
+								Market owningMarket = owningCat != null ? Markets.getMarketManager().getByUUID(owningCat.getOwningMarket()) : null;
+								String marketName = owningMarket != null ? owningMarket.getDisplayName() : "Unknown";
+								Markets.getTransactionLogger().logItemPurchase(buyer.getName(), 
+									ItemUtil.getItemName(this.item), newPurchaseAmount, total, 
+									this.currency, marketName, seller.getName(), true);
+							}
 						}
 						if (!market.isServerMarket()) {
 							alertOutOfStock(seller, buyer, newPurchaseAmount);
@@ -560,18 +593,32 @@ public final class CategoryItem implements MarketItem {
 					// Stock still available - sync the update
 					sync(result -> {
 						if (result == SynchronizeResult.FAILURE) {
-							Markets.getInstance().getLogger().severe("CRITICAL: Failed to sync stock update for item " + this.id + 
-								" after purchase. Items were given to buyer " + buyer.getName() + 
-								" but stock may be inconsistent! Original stock: " + originalStock + 
-								", Purchase amount: " + newPurchaseAmount + ", Expected new stock: " + newStock);
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logError("STOCK_UPDATE", 
+									"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+									", OriginalStock: " + originalStock + ", PurchaseAmount: " + newPurchaseAmount + 
+									", ExpectedNewStock: " + newStock, 
+									"CRITICAL: Failed to sync stock - attempting rollback");
+							}
 							// Attempt to restore stock to prevent duplication
 							setStock(originalStock);
 							sync(rollbackResult -> {
-								if (rollbackResult == SynchronizeResult.FAILURE) {
-									Markets.getInstance().getLogger().severe("CRITICAL: Failed to rollback stock for item " + this.id + 
-										". Manual intervention may be required!");
+								if (rollbackResult == SynchronizeResult.FAILURE && Markets.getTransactionLogger() != null) {
+									Markets.getTransactionLogger().logError("STOCK_UPDATE", 
+										"ItemID: " + this.id, 
+										"CRITICAL: Failed to rollback stock - manual intervention required!");
 								}
 							});
+						} else {
+							// Log successful purchase
+							if (Markets.getTransactionLogger() != null) {
+								Category owningCat = Markets.getCategoryManager().getByUUID(this.owningCategory);
+								Market owningMarket = owningCat != null ? Markets.getMarketManager().getByUUID(owningCat.getOwningMarket()) : null;
+								String marketName = owningMarket != null ? owningMarket.getDisplayName() : "Unknown";
+								Markets.getTransactionLogger().logItemPurchase(buyer.getName(), 
+									ItemUtil.getItemName(this.item), newPurchaseAmount, total, 
+									this.currency, marketName, seller.getName(), true);
+							}
 						}
 						if (!market.isServerMarket()) {
 							// Send purchase notification (cross-server or local)
@@ -629,8 +676,10 @@ public final class CategoryItem implements MarketItem {
 					if (isCurrencyOfItem()) {
 						if (seller.isOnline() && seller.getPlayer() != null) {
 							boolean depositSuccess = Markets.getCurrencyManager().deposit(seller.getPlayer(), this.currencyItem, (int) total);
-							if (!depositSuccess) {
-								Markets.getInstance().getLogger().warning("Failed to deposit item currency to seller " + seller.getName() + " for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total);
+							if (!depositSuccess && Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logWarning("ITEM_PURCHASE", 
+									"Seller: " + seller.getName() + ", Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total, 
+									"Failed to deposit item currency to seller");
 							}
 						} else {
 							Markets.getOfflineItemPaymentManager().create(
@@ -643,19 +692,27 @@ public final class CategoryItem implements MarketItem {
 											"item_name", ItemUtil.getItemName(this.item),
 											"buyer_name", buyer.getName()
 									), created -> {
-										if (created == null) {
-											Markets.getInstance().getLogger().severe("Failed to create offline payment for seller " + seller.getUniqueId() + " for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total);
+										if (created == null && Markets.getTransactionLogger() != null) {
+											Markets.getTransactionLogger().logError("ITEM_PURCHASE", 
+												"Seller: " + seller.getUniqueId() + ", Item: " + ItemUtil.getItemName(this.item) + ", Amount: " + (int) total, 
+												"Failed to create offline payment for seller");
 										}
 									});
 						}
 					} else {
 						boolean depositSuccess = Markets.getCurrencyManager().deposit(seller, currencyPlugin, currencyName, total);
-						if (!depositSuccess) {
-							Markets.getInstance().getLogger().warning("Failed to deposit currency to seller " + seller.getName() + " for purchase. Currency: " + currencyPlugin + "/" + currencyName + ", Amount: " + total);
+						if (!depositSuccess && Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("ITEM_PURCHASE", 
+								"Seller: " + seller.getName() + ", Currency: " + currencyPlugin + "/" + currencyName + ", Amount: " + total, 
+								"Failed to deposit currency to seller");
 						}
 					}
 				} catch (Exception e) {
-					Markets.getInstance().getLogger().severe("Error paying seller " + seller.getName() + " for purchase: " + e.getMessage());
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("ITEM_PURCHASE", 
+							"Seller: " + seller.getName(), 
+							"Error paying seller: " + e.getMessage());
+					}
 					e.printStackTrace();
 				}
 			}
@@ -668,13 +725,19 @@ public final class CategoryItem implements MarketItem {
 							newPurchaseAmount,
 							tax,
 							created -> {
-								if (created == null) {
-									Markets.getInstance().getLogger().warning("Failed to create tax entry for purchase. Item: " + ItemUtil.getItemName(this.item) + ", Tax: " + tax);
+								if (created == null && Markets.getTransactionLogger() != null) {
+									Markets.getTransactionLogger().logWarning("TAX_ENTRY_CREATE", 
+										"Item: " + ItemUtil.getItemName(this.item) + ", Tax: " + tax, 
+										"Failed to create tax entry for purchase");
 								}
 							}
 					);
 				} catch (Exception e) {
-					Markets.getInstance().getLogger().warning("Error creating tax entry for purchase: " + e.getMessage());
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("TAX_ENTRY_CREATE", 
+							"Item: " + ItemUtil.getItemName(this.item), 
+							"Error creating tax entry: " + e.getMessage());
+					}
 					// Don't fail the purchase if tax entry fails
 				}
 			}
@@ -738,7 +801,11 @@ public final class CategoryItem implements MarketItem {
 		synchronized (this.editLock) {
 			if (this.beingEdited) {
 				// Item is currently being purchased - cannot add stock
-				Markets.getInstance().getLogger().warning("Cannot add stock to market item " + this.id + " - item is currently being purchased");
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logWarning("STOCK_ADD", 
+						"ItemID: " + this.id, 
+						"Cannot add stock - item is currently being purchased");
+				}
 				if (resultConsumer != null) {
 					resultConsumer.accept(SynchronizeResult.FAILURE);
 				}
@@ -755,7 +822,11 @@ public final class CategoryItem implements MarketItem {
 			synchronized (this.editLock) {
 				this.beingEdited = false;
 			}
-			Markets.getInstance().getLogger().warning("Cannot add stock to market item " + this.id + " - stock is currently reserved (purchase in progress on another server)");
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logWarning("STOCK_ADD", 
+					"ItemID: " + this.id, 
+					"Cannot add stock - stock reserved (purchase in progress on another server)");
+			}
 			if (resultConsumer != null) {
 				resultConsumer.accept(SynchronizeResult.FAILURE);
 			}
@@ -767,7 +838,11 @@ public final class CategoryItem implements MarketItem {
 				// Validate stock won't go negative (safety check)
 				int newStock = this.stock + item.getAmount();
 				if (newStock < 0) {
-					Markets.getInstance().getLogger().warning("Stock addition would result in negative stock for item " + this.id + ". Current: " + this.stock + ", Adding: " + item.getAmount());
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_ADD", 
+							"ItemID: " + this.id + ", Current: " + this.stock + ", Adding: " + item.getAmount(), 
+							"Stock addition would result in negative - setting to 0");
+					}
 					newStock = 0;
 				}
 				
@@ -796,7 +871,11 @@ public final class CategoryItem implements MarketItem {
 			synchronized (this.editLock) {
 				this.beingEdited = false;
 			}
-			Markets.getInstance().getLogger().severe("Error adding stock to market item " + this.id + ": " + e.getMessage());
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logError("STOCK_ADD", 
+					"ItemID: " + this.id, 
+					"Error adding stock: " + e.getMessage());
+			}
 			e.printStackTrace();
 			if (resultConsumer != null) {
 				resultConsumer.accept(SynchronizeResult.FAILURE);

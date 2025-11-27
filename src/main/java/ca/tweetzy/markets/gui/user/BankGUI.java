@@ -147,23 +147,156 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 							return true;
 						}
 
-						if (withdrawAmount > bankEntry.getQuantity()) {
-							Common.tell(click.player, TranslationManager.string(click.player, Translations.INSUFFICIENT_ENTRY_AMOUNT));
-							return false;
+					if (withdrawAmount > bankEntry.getQuantity()) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.INSUFFICIENT_ENTRY_AMOUNT));
+						return false;
+					}
+
+					// Anti-dupe: Close GUI immediately
+					click.gui.exit();
+					
+					// Update quantity and sync to database first (anti-dupe safeguard)
+					bankEntry.setQuantity(bankEntry.getQuantity() - withdrawAmount);
+					bankEntry.sync(result -> {
+						if (result == SynchronizeResult.FAILURE) {
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logError("BANK_WITHDRAW", 
+									"Player: " + click.player.getName() + ", EntryID: " + bankEntry.getId(), 
+									"Failed to sync bank entry");
+							}
+							return;
 						}
-
-						bankEntry.setQuantity(bankEntry.getQuantity() - withdrawAmount);
-						bankEntry.sync(result -> {
-							if (result == SynchronizeResult.FAILURE) return;
-							for (int i = 0; i < withdrawAmount; i++)
-								PlayerUtil.giveItem(click.player, bankEntry.getItem());
-
-							click.manager.showGUI(click.player, new BankGUI(BankGUI.this.parent, click.player));
-						});
-						return true;
+						
+						// Database update successful - now give items using chunked method
+						giveItemsChunked(click.player, bankEntry.getItem(), withdrawAmount);
+					});
+					return true;
 					}
 				};
 			}
+	}
+
+	/**
+	 * Gives items to a player in batched stacks and chunks over multiple ticks if needed.
+	 * This method prevents server lag from large withdrawals and includes anti-dupe safeguards.
+	 *
+	 * @param player The player to give items to
+	 * @param baseItem The item template to give (amount will be set per stack)
+	 * @param totalQuantity Total number of items to give
+	 */
+	private void giveItemsChunked(@NonNull final Player player, @NonNull final ItemStack baseItem, final int totalQuantity) {
+		final int threshold = Settings.BANK_WITHDRAWAL_CHUNK_THRESHOLD.getInt();
+		final int chunkSize = Settings.BANK_WITHDRAWAL_CHUNK_SIZE.getInt();
+		
+		// Convert quantity into stacks
+		final List<ItemStack> stacks = createBatchedStacks(baseItem, totalQuantity);
+		
+		// Check if we should chunk (threshold check: -1 = never, 0 = always, >0 = when exceeds threshold)
+		final boolean shouldChunk = threshold >= 0 && (threshold == 0 || totalQuantity > threshold);
+		
+		if (!shouldChunk) {
+			// Give all items immediately
+			for (ItemStack stack : stacks) {
+				givePlayerItems(player, stack);
+			}
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logBankWithdrawal(player.getName(), 
+					ca.tweetzy.flight.utils.ItemUtil.getItemName(baseItem), totalQuantity, false);
+			}
+			return;
+		}
+		
+		// Chunk the withdrawal over multiple ticks
+		final int itemsPerChunk = Math.max(1, chunkSize);
+		int stackIndex = 0;
+		int tickDelay = 0;
+		
+		if (Markets.getTransactionLogger() != null) {
+			Markets.getTransactionLogger().logBankWithdrawal(player.getName(), 
+				ca.tweetzy.flight.utils.ItemUtil.getItemName(baseItem), totalQuantity, true);
+		}
+		
+		while (stackIndex < stacks.size()) {
+			final List<ItemStack> chunk = new java.util.ArrayList<>();
+			int chunkItemCount = 0;
+			
+			// Build chunk - add stacks until we reach the items per chunk limit
+			while (stackIndex < stacks.size() && chunkItemCount < itemsPerChunk) {
+				final ItemStack stack = stacks.get(stackIndex);
+				chunk.add(stack);
+				chunkItemCount += stack.getAmount();
+				stackIndex++;
+			}
+			
+			final int finalChunkItemCount = chunkItemCount;
+			final int finalChunkNumber = (tickDelay / 1) + 1;
+			final int finalTotalChunks = (int) Math.ceil((double) totalQuantity / itemsPerChunk);
+			
+			// Schedule this chunk on the main thread
+			org.bukkit.Bukkit.getScheduler().runTaskLater(Markets.getInstance(), () -> {
+				// Safety check: verify player is still online
+				if (!player.isOnline()) {
+					// Player logged out - drop items at their last known location
+					final org.bukkit.Location dropLocation = player.getLocation();
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("BANK_WITHDRAW", 
+							"Player: " + player.getName() + ", Stacks: " + chunk.size(), 
+							"Player logged out during withdrawal - items dropped at last location");
+					}
+					for (ItemStack stack : chunk) {
+						dropLocation.getWorld().dropItemNaturally(dropLocation, stack);
+					}
+					return;
+				}
+				
+				// Give items in this chunk
+				for (ItemStack stack : chunk) {
+					givePlayerItems(player, stack);
+				}
+				
+				// Log progress
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logBankWithdrawalChunk(player.getName(), 
+						finalChunkNumber, finalTotalChunks, finalChunkItemCount);
+				}
+			}, tickDelay);
+			
+			tickDelay += 1; // 1 tick delay between chunks
+		}
+		
+		// Log completion (scheduled after all chunks)
+		final int finalTickDelay = tickDelay;
+		org.bukkit.Bukkit.getScheduler().runTaskLater(Markets.getInstance(), () -> {
+			if (player.isOnline() && Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logBankWithdrawalComplete(player.getName(), totalQuantity);
+			}
+		}, finalTickDelay);
+	}
+	
+	/**
+	 * Converts a quantity of items into properly batched stacks.
+	 * For example: 40,000 diamonds = 625 stacks of 64 diamonds.
+	 *
+	 * @param baseItem The item template (amount will be overridden)
+	 * @param totalQuantity Total number of items to convert into stacks
+	 * @return List of ItemStacks with proper stack amounts
+	 */
+	private List<ItemStack> createBatchedStacks(@NonNull final ItemStack baseItem, final int totalQuantity) {
+		final List<ItemStack> stacks = new java.util.ArrayList<>();
+		final int maxStackSize = baseItem.getMaxStackSize();
+		
+		int remaining = totalQuantity;
+		
+		// Create full stacks
+		while (remaining > 0) {
+			final int stackAmount = Math.min(remaining, maxStackSize);
+			final ItemStack stack = baseItem.clone();
+			stack.setAmount(stackAmount);
+			stacks.add(stack);
+			remaining -= stackAmount;
+		}
+		
+		return stacks;
 	}
 
 	private void givePlayerItems(Player player, ItemStack itemToGive) {
@@ -178,30 +311,61 @@ public final class BankGUI extends MarketsPagedGUI<BankEntry> {
 	}
 
 	private void deleteAndGiveEntry(@NonNull final BankEntry bankEntry, @NonNull final GuiClickEvent click) {
+		// Anti-dupe: Close GUI immediately to prevent double-clicks
+		click.gui.exit();
+		
+		// Delete from database first (anti-dupe safeguard)
 		bankEntry.unStore(result -> {
-			if (result == SynchronizeResult.FAILURE) return;
+			if (result == SynchronizeResult.FAILURE) {
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logError("BANK_ENTRY_DELETE", 
+						"Player: " + click.player.getName() + ", EntryID: " + bankEntry.getId(), 
+						"Failed to delete bank entry");
+				}
+				return;
+			}
+			
+			// Database deletion successful - now give items using chunked method
 			Markets.newChain().sync(() -> {
-				for (int i = 0; i < bankEntry.getQuantity(); i++)
-//					PlayerUtil.giveItem(click.player, bankEntry.getItem());
-					givePlayerItems(click.player, bankEntry.getItem());
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logBankEntryDelete(click.player.getName(), 
+						bankEntry.getId().toString(), "Player withdrew all items");
+				}
+				giveItemsChunked(click.player, bankEntry.getItem(), bankEntry.getQuantity());
 			}).execute();
-
-			updateAndRedraw();
 		});
 	}
 
 	private void deleteAndGiveTax(@NonNull final BankEntry bankEntry, @NonNull final GuiClickEvent click) {
+		// Anti-dupe: Close GUI immediately to prevent double-clicks
+		click.gui.exit();
+		
+		// Delete from database first (anti-dupe safeguard)
 		bankEntry.unStore(result -> {
-			if (result == SynchronizeResult.FAILURE) return;
+			if (result == SynchronizeResult.FAILURE) {
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logError("BANK_ENTRY_DELETE", 
+						"Admin: " + click.player.getName() + ", TaxEntryID: " + bankEntry.getId(), 
+						"Failed to delete tax bank entry");
+				}
+				return;
+			}
+			
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logBankEntryDelete(click.player.getName(), 
+					bankEntry.getId().toString(), "Admin collected tax");
+			}
+			
 			if (bankEntry.isCurrencyOfItem()) {
-				for (int i = 0; i < bankEntry.getQuantity(); i++)
-					PlayerUtil.giveItem(click.player, bankEntry.getItem());
+				// Database deletion successful - now give items using chunked method
+				Markets.newChain().sync(() -> {
+					giveItemsChunked(click.player, bankEntry.getItem(), bankEntry.getQuantity());
+				}).execute();
 			} else {
+				// For non-item currencies, deposit directly (no chunking needed)
 				final String[] currencyData = bankEntry.getCurrency().split("/");
 				Markets.getCurrencyManager().deposit(click.player, currencyData[0], currencyData[1], bankEntry.getPrice());
 			}
-
-			updateAndRedraw();
 		});
 	}
 

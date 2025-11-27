@@ -337,7 +337,11 @@ public final class MarketOffer implements Offer {
 		int calculatedNewTotal = currentStock - this.requestAmount;
 		final int finalNewTotal;
 		if (calculatedNewTotal < 0) {
-			Markets.getInstance().getLogger().warning("Stock update in offer acceptance would result in negative stock for item " + marketItem.getId() + ". Current: " + currentStock + ", Requested: " + this.requestAmount);
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logWarning("OFFER_ACCEPT", 
+					"ItemID: " + marketItem.getId() + ", Current: " + currentStock + ", Requested: " + this.requestAmount, 
+					"Stock update would result in negative - setting to 0");
+			}
 			finalNewTotal = 0;
 		} else {
 			finalNewTotal = calculatedNewTotal;
@@ -346,7 +350,20 @@ public final class MarketOffer implements Offer {
 		marketItem.setStock(finalNewTotal);
 		marketItem.sync(syncResult -> {
 			if (syncResult == SynchronizeResult.FAILURE) {
-				Markets.getInstance().getLogger().severe("Failed to sync stock update in offer acceptance for item " + marketItem.getId() + ". Stock may be inconsistent! Expected stock: " + finalNewTotal);
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logError("OFFER_ACCEPT", 
+						"ItemID: " + marketItem.getId() + ", ExpectedStock: " + finalNewTotal, 
+						"Failed to sync stock - may be inconsistent");
+				}
+			} else {
+				// Log successful offer acceptance
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logOfferAccept(this.uuid.toString(), 
+						this.senderName, 
+						Bukkit.getOfflinePlayer(this.offerTo).getName(), 
+						ca.tweetzy.flight.utils.ItemUtil.getItemName(marketItem.getItem()), 
+						this.requestAmount, this.offeredAmount);
+				}
 			}
 		});
 
@@ -370,13 +387,20 @@ public final class MarketOffer implements Offer {
 	@Override
 	public void reject(@NonNull BiConsumer<TransactionResult, OfferRejectReason> result) {
 		final MarketItem locatedItem = Markets.getCategoryItemManager().getByUUID(this.marketItem);
+		final OfferRejectReason rejectReason = locatedItem == null ? OfferRejectReason.ITEM_NO_LONGER_AVAILABLE : 
+			locatedItem.getStock() < requestAmount ? OfferRejectReason.INSUFFICIENT_STOCK : OfferRejectReason.NOT_ACCEPTED;
 
 		unStore(deleteResult -> {
 			if (deleteResult == SynchronizeResult.SUCCESS) {
-				result.accept(
-						TransactionResult.SUCCESS,
-						locatedItem == null ? OfferRejectReason.ITEM_NO_LONGER_AVAILABLE : locatedItem.getStock() < requestAmount ? OfferRejectReason.INSUFFICIENT_STOCK : OfferRejectReason.NOT_ACCEPTED
-				);
+				// Log offer rejection
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logOfferReject(this.uuid.toString(), 
+						this.senderName, 
+						Bukkit.getOfflinePlayer(this.offerTo).getName(), 
+						rejectReason.name());
+				}
+				
+				result.accept(TransactionResult.SUCCESS, rejectReason);
 			}
 		});
 	}
@@ -386,6 +410,14 @@ public final class MarketOffer implements Offer {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createOffer(this, (error, created) -> {
 			if (error == null && created != null) {
+				// Log successful offer creation
+				if (Markets.getTransactionLogger() != null) {
+					final MarketItem item = Markets.getCategoryItemManager().getByUUID(this.marketItem);
+					String itemName = item != null ? ca.tweetzy.flight.utils.ItemUtil.getItemName(item.getItem()) : "Unknown";
+					Markets.getTransactionLogger().logOfferCreate(this.senderName, 
+						Bukkit.getOfflinePlayer(this.offerTo).getName(), 
+						itemName, this.requestAmount, this.offeredAmount, this.currency);
+				}
 				stored.accept(created);
 			} else if (error != null) {
 				stored.accept(null);
@@ -400,6 +432,10 @@ public final class MarketOffer implements Offer {
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
 		Markets.getOfferRepository().deleteById(this.uuid, (error, deleted) -> {
 			if (deleted != null && deleted) {
+				// Log offer deletion
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logOfferDelete(this.uuid.toString(), "Deleted by user or system");
+				}
 				Markets.getOfferManager().remove(this);
 			}
 

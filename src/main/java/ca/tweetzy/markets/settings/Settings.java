@@ -63,7 +63,13 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CREATION_COST_COST = create("settings.creation cost.cost", 1000).withComment("How much should market's charge the player to create their market");
 	public static ConfigEntry ALLOW_ANYONE_TO_CREATE_MARKET = create("settings.allow anyone to create market", true).withComment("If true, anyone can create a market. Otherwise they will need the permission: markets.createmarket");
 	public static ConfigEntry ALLOW_BANK = create("settings.allow usage of bank", true).withComment("If true, players can use the bank. If not, offline payment for things requiring items as payment will not work!");
+	public static ConfigEntry BANK_WITHDRAWAL_CHUNK_THRESHOLD = create("settings.bank.withdrawal chunk threshold", 1000).withComment("Number of items that triggers chunked withdrawal over multiple ticks to prevent lag (0 = always chunk, -1 = never chunk)");
+	public static ConfigEntry BANK_WITHDRAWAL_CHUNK_SIZE = create("settings.bank.withdrawal chunk size", 500).withComment("How many items to process per tick when chunking large withdrawals");
 	public static ConfigEntry ALLOW_REQUESTS = create("settings.allow usage of request system", true).withComment("If true, players can use the request system");
+	
+	public static ConfigEntry TRANSACTION_LOGGING_ENABLED = create("settings.transaction logging.enabled", true).withComment("If true, all transactional actions will be logged to daily-rotated log files");
+	public static ConfigEntry TRANSACTION_LOGGING_RETENTION_DAYS = create("settings.transaction logging.retention days", 30).withComment("How many days to keep transaction log files before automatic cleanup (0 = never cleanup)");
+	
 	public static ConfigEntry CURRENCY_ALLOW_PICK = create("settings.currency.allow user to pick", true).withComment("If true, players will be able to select which currency they want to use.");
 	public static ConfigEntry CURRENCY_DEFAULT_SELECTED = create("settings.currency.default selection", "Vault/Vault").withComment("The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault");
 	public static ConfigEntry CURRENCY_ITEM_DEFAULT_SELECTED = create("settings.currency.default item selection", "DIAMOND").withComment("The default currency selection if using item only mode");

@@ -149,6 +149,12 @@ public final class MarketRequest implements Request {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createRequest(this, (error, created) -> {
 			if (error == null && created != null) {
+				// Log successful request creation
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logRequestCreate(this.ownerName, 
+						ca.tweetzy.flight.utils.ItemUtil.getItemName(this.requestedItem), 
+						this.requestedAmount, this.price, this.currency);
+				}
 				stored.accept(created);
 			} else if (error != null) {
 				stored.accept(null);
@@ -161,6 +167,12 @@ public final class MarketRequest implements Request {
 		Markets.getRequestRepository().deleteById(this.uuid, (error, deleted) -> {
 			if (deleted != null && deleted) {
 				Markets.getRequestManager().remove(this);
+				
+				// Log request deletion
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logRequestDelete(this.uuid.toString(), 
+						this.ownerName, "Deleted by user or fulfilled");
+				}
 			}
 
 			if (syncResult != null)

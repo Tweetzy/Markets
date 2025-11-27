@@ -113,10 +113,18 @@ public final class MarketBankEntry implements BankEntry {
 	public void store(@NonNull Consumer<BankEntry> stored) {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createBankEntry(this, (error, created) -> {
-			if (error == null && created != null)
+			if (error == null && created != null) {
+				// Log successful bank entry creation
+				if (Markets.getTransactionLogger() != null) {
+					org.bukkit.OfflinePlayer owner = org.bukkit.Bukkit.getOfflinePlayer(this.owner);
+					Markets.getTransactionLogger().logBankEntryCreate(owner.getName(), 
+						ca.tweetzy.flight.utils.ItemUtil.getItemName(this.item), 
+						this.quantity, this.currency, this.price);
+				}
 				stored.accept(created);
-			else if (error != null)
+			} else if (error != null) {
 				stored.accept(null);
+			}
 		});
 	}
 
@@ -136,6 +144,17 @@ public final class MarketBankEntry implements BankEntry {
 	public void sync(@Nullable Consumer<SynchronizeResult> syncResult) {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().updateBankEntry(this, (error, success) -> {
+			if (error == null && success) {
+				// Log successful bank entry update
+				if (Markets.getTransactionLogger() != null) {
+					org.bukkit.OfflinePlayer owner = org.bukkit.Bukkit.getOfflinePlayer(this.owner);
+					Markets.getTransactionLogger().logBankEntryUpdate(owner.getName(), 
+						this.id.toString(), 
+						ca.tweetzy.flight.utils.ItemUtil.getItemName(this.item), 
+						this.quantity);
+				}
+			}
+			
 			if (syncResult != null)
 				syncResult.accept(error == null && success ? SynchronizeResult.SUCCESS : SynchronizeResult.FAILURE);
 		});

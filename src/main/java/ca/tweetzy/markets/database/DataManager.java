@@ -57,6 +57,12 @@ public final class DataManager extends DataManagerAbstract {
 					// Publish database event for cross-server sync
 					publishEntityEvent(DatabaseEvent.EventType.INSERT, "markets", extractEntityData(market));
 					
+					// Log successful market creation
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logMarketCreate(market.getOwnerName(), market.getDisplayName(), 
+							market.getId().toString(), market.isServerMarket());
+					}
+					
 					if (callback != null) {
 						// Use the saved market directly instead of fetching it again
 						// The repository save() already returns the saved entity, so we don't need findById()
@@ -64,12 +70,11 @@ public final class DataManager extends DataManagerAbstract {
 					}
 				} else {
 					if (error != null) {
-						Markets.getInstance().getLogger().severe("Failed to create market. Market ID: " + market.getId() + ", Owner: " + market.getOwnerName());
-						Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
-						if (error instanceof SQLException) {
-							SQLException sqlEx = (SQLException) error;
-							Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
-							Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
+						if (Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logError("MARKET_CREATE", 
+								"MarketID: " + market.getId() + ", Owner: " + market.getOwnerName(), 
+								"Failed to create market: " + error.getMessage() + 
+								(error instanceof SQLException ? " (SQL State: " + ((SQLException)error).getSQLState() + ", Code: " + ((SQLException)error).getErrorCode() + ")" : ""));
 						}
 						error.printStackTrace();
 					}
@@ -80,7 +85,11 @@ public final class DataManager extends DataManagerAbstract {
 			});
 		} else {
 			Exception unsupportedError = new Exception("Unsupported market type: " + (market != null ? market.getClass().getName() : "null"));
-			Markets.getInstance().getLogger().severe("Failed to create market: " + unsupportedError.getMessage());
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logError("MARKET_CREATE", 
+					"MarketID: " + (market != null ? market.getId().toString() : "null"), 
+					unsupportedError.getMessage());
+			}
 			if (callback != null) {
 				callback.accept(unsupportedError, null);
 			}
@@ -94,6 +103,12 @@ public final class DataManager extends DataManagerAbstract {
 				if (error == null && saved != null) {
 					// Publish database event for cross-server sync
 					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "markets", extractEntityData(market));
+					
+					// Log successful market update
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logMarketUpdate(market.getId().toString(), 
+							market.getDisplayName(), market.getOwnerName());
+					}
 				}
 				
 				if (callback != null) {
@@ -114,6 +129,12 @@ public final class DataManager extends DataManagerAbstract {
 				Map<String, Object> data = new HashMap<>();
 				data.put("id", market.getId().toString());
 				publishEntityEvent(DatabaseEvent.EventType.DELETE, "markets", data);
+				
+				// Log successful market deletion
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logMarketDelete(market.getId().toString(), 
+						market.getDisplayName(), market.getOwnerName());
+				}
 			}
 			
 			if (callback != null) {
@@ -143,25 +164,37 @@ public final class DataManager extends DataManagerAbstract {
 				if (error == null && saved != null) {
 					publishEntityEvent(DatabaseEvent.EventType.INSERT, "category", extractEntityData(category));
 					
+					// Log successful category creation
+					if (Markets.getTransactionLogger() != null) {
+						Market owningMarket = Markets.getMarketManager().getByUUID(category.getOwningMarket());
+						String marketName = owningMarket != null ? owningMarket.getDisplayName() : "Unknown";
+						String ownerName = owningMarket != null ? owningMarket.getOwnerName() : "Unknown";
+						Markets.getTransactionLogger().logCategoryCreate(ownerName, marketName, 
+							category.getDisplayName(), category.getId().toString());
+					}
+					
 					// Use the saved category directly instead of fetching it again
 					// The repository save() already returns the saved entity, so we don't need findById()
 					if (callback != null) {
 						callback.accept(null, saved);
 					}
 				} else if (error != null) {
-					Markets.getInstance().getLogger().severe("Failed to create category. Category ID: " + category.getId() + ", Name: " + category.getName() + ", Market: " + category.getOwningMarket());
-					Markets.getInstance().getLogger().severe("Error: " + error.getMessage());
-					if (error instanceof SQLException) {
-						SQLException sqlEx = (SQLException) error;
-						Markets.getInstance().getLogger().severe("SQL State: " + sqlEx.getSQLState());
-						Markets.getInstance().getLogger().severe("Error Code: " + sqlEx.getErrorCode());
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("CATEGORY_CREATE", 
+							"CategoryID: " + category.getId() + ", Name: " + category.getName() + ", Market: " + category.getOwningMarket(), 
+							"Failed to create category: " + error.getMessage() + 
+							(error instanceof SQLException ? " (SQL State: " + ((SQLException)error).getSQLState() + ", Code: " + ((SQLException)error).getErrorCode() + ")" : ""));
 					}
 					error.printStackTrace();
 					if (callback != null) {
 						callback.accept(error, null);
 					}
 				} else {
-					Markets.getInstance().getLogger().severe("Category save returned null without error. Category ID: " + category.getId());
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("CATEGORY_CREATE", 
+							"CategoryID: " + category.getId(), 
+							"Category save returned null without error");
+					}
 					if (callback != null) {
 						callback.accept(new Exception("Category save returned null"), null);
 					}
@@ -169,7 +202,11 @@ public final class DataManager extends DataManagerAbstract {
 			});
 		} else {
 			Exception unsupportedError = new Exception("Unsupported category type: " + (category != null ? category.getClass().getName() : "null"));
-			Markets.getInstance().getLogger().severe("Failed to create category: " + unsupportedError.getMessage());
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logError("CATEGORY_CREATE", 
+					"CategoryID: " + (category != null ? category.getId().toString() : "null"), 
+					unsupportedError.getMessage());
+			}
 			if (callback != null) {
 				callback.accept(unsupportedError, null);
 			}
@@ -181,6 +218,14 @@ public final class DataManager extends DataManagerAbstract {
 			Markets.getCategoryRepository().save((MarketCategory) category, (error, saved) -> {
 				if (error == null && saved != null) {
 					publishEntityEvent(DatabaseEvent.EventType.UPDATE, "category", extractEntityData(category));
+					
+					// Log successful category update
+					if (Markets.getTransactionLogger() != null) {
+						Market owningMarket = Markets.getMarketManager().getByUUID(category.getOwningMarket());
+						String marketName = owningMarket != null ? owningMarket.getDisplayName() : "Unknown";
+						Markets.getTransactionLogger().logCategoryUpdate(category.getId().toString(), 
+							category.getDisplayName(), marketName);
+					}
 				}
 				
 				if (callback != null) {
@@ -200,6 +245,14 @@ public final class DataManager extends DataManagerAbstract {
 				Map<String, Object> data = new HashMap<>();
 				data.put("id", category.getId().toString());
 				publishEntityEvent(DatabaseEvent.EventType.DELETE, "category", data);
+				
+				// Log successful category deletion
+				if (Markets.getTransactionLogger() != null) {
+					Market owningMarket = Markets.getMarketManager().getByUUID(category.getOwningMarket());
+					String marketName = owningMarket != null ? owningMarket.getDisplayName() : "Unknown";
+					Markets.getTransactionLogger().logCategoryDelete(category.getId().toString(), 
+						category.getDisplayName(), marketName);
+				}
 			}
 			
 			if (callback != null) {
