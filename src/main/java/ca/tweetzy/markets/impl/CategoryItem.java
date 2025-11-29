@@ -79,6 +79,11 @@ public final class CategoryItem implements MarketItem {
 	
 	@Ignore
 	private volatile boolean beingEdited;
+	
+	@Ignore
+	private volatile long beingEditedTimestamp = 0;
+	
+	private static final long BEING_EDITED_TIMEOUT = 60000; // 60 seconds timeout
 
 	@Ignore
 	private List<Player> viewingUsers;
@@ -226,6 +231,8 @@ public final class CategoryItem implements MarketItem {
 		if (this.viewingUsers == null) {
 			this.viewingUsers = new ArrayList<>();
 		}
+		// Filter out offline/invalid players
+		this.viewingUsers.removeIf(player -> player == null || !player.isOnline());
 		return this.viewingUsers;
 	}
 
@@ -266,6 +273,7 @@ public final class CategoryItem implements MarketItem {
 			// Stock is reserved - wait a bit and retry, or fail
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			if (Markets.getTransactionLogger() != null) {
 				Markets.getTransactionLogger().logWarning("ITEM_REMOVE", 
@@ -283,6 +291,7 @@ public final class CategoryItem implements MarketItem {
 			// Clear beingEdited flag after deletion completes (success or failure)
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			
 			if (error != null) {
@@ -325,17 +334,37 @@ public final class CategoryItem implements MarketItem {
 
 		// Atomically check and set beingEdited flag to prevent race conditions
 		synchronized (this.editLock) {
+			// Check if flag is stuck and clear it if needed, then check if still being edited
+			if (this.beingEdited && this.beingEditedTimestamp > 0) {
+				long elapsed = System.currentTimeMillis() - this.beingEditedTimestamp;
+				if (elapsed > BEING_EDITED_TIMEOUT) {
+					// Flag is stuck - clear it
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("BEING_EDITED_FLAG", 
+							"ItemID: " + this.id + ", Elapsed: " + elapsed + "ms", 
+							"Clearing stuck beingEdited flag during purchase attempt");
+					}
+					this.beingEdited = false;
+					this.beingEditedTimestamp = 0;
+				}
+			}
+			
+			// Now check if still being edited (after potentially clearing stuck flag)
 			if (this.beingEdited) {
 				transactionResult.accept(TransactionResult.ERROR);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 				return;
 			}
+			
+			// Set flag to prevent concurrent modifications
 			this.beingEdited = true;
+			this.beingEditedTimestamp = System.currentTimeMillis();
 		}
 
 		if (removeRequested) {
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
 			return;
@@ -348,6 +377,7 @@ public final class CategoryItem implements MarketItem {
 		if (!lockAcquired) {
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
@@ -355,7 +385,12 @@ public final class CategoryItem implements MarketItem {
 		}
 		
 		try {
-			// Initial stock check
+			// Initial stock check - reload from manager to get fresh value
+			MarketItem freshItem = Markets.getCategoryItemManager().getByUUID(this.id);
+			if (freshItem != null) {
+				this.stock = freshItem.getStock();
+			}
+			
 			if (!this.infinite && this.stock == 0) {
 				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
@@ -464,18 +499,31 @@ public final class CategoryItem implements MarketItem {
 			}
 
 			// Re-validate stock after money withdrawal (prevents race condition)
-			// Also reload stock from database if Redis is enabled to get latest value
+			// Always reload stock from manager to get latest value
 			if (!this.infinite) {
-				// For cross-server sync, we need to check database stock
-				MarketItem reloadedItem = null;
-				if (reservationManager != null) {
-					// Reload item from database to get latest stock
-					reloadedItem = Markets.getCategoryItemManager().getByUUID(this.id);
-					// The lock ensures no other server can modify it, but we should still verify
+				// Reload item from manager to get latest stock
+				MarketItem reloadedItem = Markets.getCategoryItemManager().getByUUID(this.id);
+				
+				if (reloadedItem == null) {
+					// Item was deleted - rollback money withdrawal
+					if (this.isCurrencyOfItem()) {
+						Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
+					} else {
+						Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
+					}
+					transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
+					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+					if (reservationManager != null) {
+						reservationManager.releaseReservation(this.id);
+					}
+					synchronized (this.editLock) {
+						this.beingEdited = false;
+					}
+					return;
 				}
 				
-				// Use reloaded stock if available, otherwise use current stock
-				int currentStock = (reloadedItem != null) ? reloadedItem.getStock() : this.stock;
+				// Use reloaded stock value
+				int currentStock = reloadedItem.getStock();
 				
 				if (currentStock < newPurchaseAmount) {
 					// Rollback money withdrawal
@@ -495,10 +543,8 @@ public final class CategoryItem implements MarketItem {
 					return;
 				}
 				
-				// Update local stock from reloaded value if available
-				if (reloadedItem != null) {
-					this.stock = currentStock;
-				}
+				// Update local stock from reloaded value
+				this.stock = currentStock;
 			}
 
 			// Store original stock for potential rollback
@@ -766,6 +812,7 @@ public final class CategoryItem implements MarketItem {
 			// Always clear the beingEdited flag, even if an error occurred
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			
 			// Release distributed lock
@@ -787,18 +834,64 @@ public final class CategoryItem implements MarketItem {
 
 	@Override
 	public boolean isBeingEdited() {
-		return this.beingEdited;
+		// Read volatile field once for thread safety
+		boolean currentlyEdited = this.beingEdited;
+		long timestamp = this.beingEditedTimestamp;
+		
+		// Check if flag is stuck (older than timeout)
+		if (currentlyEdited && timestamp > 0) {
+			long elapsed = System.currentTimeMillis() - timestamp;
+			if (elapsed > BEING_EDITED_TIMEOUT) {
+				// Flag is stuck - clear it (only if still set, to avoid race conditions)
+				synchronized (this.editLock) {
+					// Double-check inside lock to ensure flag is still stuck
+					if (this.beingEdited && this.beingEditedTimestamp > 0) {
+						long currentElapsed = System.currentTimeMillis() - this.beingEditedTimestamp;
+						if (currentElapsed > BEING_EDITED_TIMEOUT) {
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logWarning("BEING_EDITED_FLAG", 
+									"ItemID: " + this.id + ", Elapsed: " + currentElapsed + "ms", 
+									"Clearing stuck beingEdited flag");
+							}
+							this.beingEdited = false;
+							this.beingEditedTimestamp = 0;
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return currentlyEdited;
 	}
 
 	@Override
 	public void setBeingEdited(boolean edited) {
-		this.beingEdited = edited;
+		synchronized (this.editLock) {
+			this.beingEdited = edited;
+			this.beingEditedTimestamp = edited ? System.currentTimeMillis() : 0;
+		}
 	}
 
 	@Override
 	public void addStock(@NonNull final ItemStack item, @NonNull final Consumer<SynchronizeResult> resultConsumer) {
 		// Prevent stock addition while item is being purchased (race condition protection)
 		synchronized (this.editLock) {
+			// Check if flag is stuck and clear it if needed, then check if still being edited
+			if (this.beingEdited && this.beingEditedTimestamp > 0) {
+				long elapsed = System.currentTimeMillis() - this.beingEditedTimestamp;
+				if (elapsed > BEING_EDITED_TIMEOUT) {
+					// Flag is stuck - clear it
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("BEING_EDITED_FLAG", 
+							"ItemID: " + this.id + ", Elapsed: " + elapsed + "ms", 
+							"Clearing stuck beingEdited flag during stock addition");
+					}
+					this.beingEdited = false;
+					this.beingEditedTimestamp = 0;
+				}
+			}
+			
+			// Now check if still being edited (after potentially clearing stuck flag)
 			if (this.beingEdited) {
 				// Item is currently being purchased - cannot add stock
 				if (Markets.getTransactionLogger() != null) {
@@ -811,8 +904,10 @@ public final class CategoryItem implements MarketItem {
 				}
 				return;
 			}
+			
 			// Set beingEdited to prevent new purchases during stock addition
 			this.beingEdited = true;
+			this.beingEditedTimestamp = System.currentTimeMillis();
 		}
 		
 		// Check for active stock reservations (cross-server protection)
@@ -821,6 +916,7 @@ public final class CategoryItem implements MarketItem {
 			// Stock is reserved - cannot add stock during purchase
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			if (Markets.getTransactionLogger() != null) {
 				Markets.getTransactionLogger().logWarning("STOCK_ADD", 
@@ -851,6 +947,7 @@ public final class CategoryItem implements MarketItem {
 					// Clear beingEdited flag after sync completes
 					synchronized (this.editLock) {
 						this.beingEdited = false;
+						this.beingEditedTimestamp = 0;
 					}
 					
 					if (resultConsumer != null) {
@@ -861,6 +958,7 @@ public final class CategoryItem implements MarketItem {
 				// Item doesn't match - release lock and fail
 				synchronized (this.editLock) {
 					this.beingEdited = false;
+					this.beingEditedTimestamp = 0;
 				}
 				if (resultConsumer != null) {
 					resultConsumer.accept(SynchronizeResult.FAILURE);
@@ -870,6 +968,7 @@ public final class CategoryItem implements MarketItem {
 			// Ensure lock is released on error
 			synchronized (this.editLock) {
 				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
 			}
 			if (Markets.getTransactionLogger() != null) {
 				Markets.getTransactionLogger().logError("STOCK_ADD", 

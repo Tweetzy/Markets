@@ -113,6 +113,40 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 				});
 			}
 
+			if (click.clickType == ClickType.DROP) {
+				// Handle Q key item drop
+				final ItemStack cursor = click.cursor;
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
+					if (!this.marketItem.getItem().isSimilar(cursor)) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
+					// Check if item is being purchased - prevent stock addition during purchase
+					if (this.marketItem.isBeingEdited()) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
+					// Check for active stock reservations (cross-server purchase protection)
+					final StockReservationManager reservationManager = Markets.getStockReservationManager();
+					if (reservationManager != null && reservationManager.isReserved(this.marketItem.getId())) {
+						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						return;
+					}
+
+					this.marketItem.addStock(cursor, result -> {
+						if (result == SynchronizeResult.FAILURE) {
+							Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+							return;
+						}
+
+						click.player.setItemOnCursor(CompMaterial.AIR.parseItem());
+						drawStockButton();
+					});
+				}
+			}
+
 			if (click.clickType == ClickType.RIGHT) {
 
 				if (!this.marketItem.getViewingPlayers().isEmpty()) {

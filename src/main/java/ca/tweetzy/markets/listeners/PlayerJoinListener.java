@@ -77,5 +77,19 @@ public final class PlayerJoinListener implements Listener {
 				Common.log("&cSomething went wrong while updating the market profile for&F: &e" + player.getName());
 
 		});
+		
+		// Clean up viewing lists - remove player from all categories and items they were viewing
+		Markets.getMarketManager().getManagerContent().forEach(market -> {
+			market.getCategories().forEach(category -> {
+				category.getViewingPlayers().remove(player);
+				category.getItems().forEach(item -> {
+					item.getViewingPlayers().remove(player);
+					// Clear beingEdited flag if this player was the only one editing
+					if (item.isBeingEdited() && item.getViewingPlayers().isEmpty()) {
+						item.setBeingEdited(false);
+					}
+				});
+			});
+		});
 	}
 }

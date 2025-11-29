@@ -162,6 +162,8 @@ public final class MarketCategory implements Category {
 		if (this.viewingUsers == null) {
 			this.viewingUsers = new ArrayList<>();
 		}
+		// Filter out offline/invalid players
+		this.viewingUsers.removeIf(player -> player == null || !player.isOnline());
 		return this.viewingUsers;
 	}
 

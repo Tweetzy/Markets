@@ -219,6 +219,21 @@ public final class Markets extends FlightPlugin {
 		
 		// Note: Database sync events are handled by CrossServerSyncManager, which registers itself
 		// No need for separate DatabaseSyncListener
+		
+		// Start periodic cleanup task for viewer tracking and stuck flags (every 5 minutes)
+		getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+			// Clean up invalid viewers from all markets, categories, and items
+			marketManager.getManagerContent().forEach(market -> {
+				market.getCategories().forEach(category -> {
+					category.getViewingPlayers().removeIf(player -> player == null || !player.isOnline());
+					category.getItems().forEach(item -> {
+						item.getViewingPlayers().removeIf(player -> player == null || !player.isOnline());
+						// Check and clear stuck beingEdited flags
+						item.isBeingEdited(); // This will auto-clear if stuck
+					});
+				});
+			});
+		}, 6000L, 6000L); // Every 5 minutes (6000 ticks)
 
 		// setup commands
 		this.commandManager.registerCommandDynamically(new MarketsCommand()).addSubCommands(
