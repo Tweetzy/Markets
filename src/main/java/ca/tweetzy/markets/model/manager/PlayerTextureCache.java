@@ -39,7 +39,8 @@ public final class PlayerTextureCache {
 	private static final long RATE_LIMIT_DELAY_MS = 200; // 5 requests per second max
 
 	public PlayerTextureCache() {
-		startPeriodicCleanup();
+		// Initialization deferred to start() method to avoid accessing Markets.getInstance()
+		// during plugin construction
 	}
 
 	/**
@@ -207,6 +208,14 @@ public final class PlayerTextureCache {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Start the cache and begin periodic cleanup of expired cache entries
+	 * Should be called after plugin is fully initialized
+	 */
+	public void start() {
+		startPeriodicCleanup();
 	}
 
 	/**

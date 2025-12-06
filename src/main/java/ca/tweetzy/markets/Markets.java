@@ -213,6 +213,7 @@ public final class Markets extends FlightPlugin {
 		this.offerManager.load();
 		this.requestManager.load();
 		this.transactionManager.load();
+		this.playerTextureCache.start();
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
