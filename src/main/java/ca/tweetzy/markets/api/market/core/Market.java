@@ -1,6 +1,7 @@
 package ca.tweetzy.markets.api.market.core;
 
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.*;
 import ca.tweetzy.markets.api.market.layout.Layout;
 import ca.tweetzy.markets.impl.ServerMarket;
@@ -46,7 +47,7 @@ public interface Market extends Identifiable, Displayable, Trackable, Synchroniz
 		return getOwnerUUID().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString())) ? QuickItem
 				.of(Settings.SERVER_MARKET_TEXTURE.getString())
 				.make() : QuickItem
-				.of(Bukkit.getOfflinePlayer(getOwnerUUID()))
+				.of(Markets.getPlayerTextureCache().getTexture(Bukkit.getOfflinePlayer(getOwnerUUID())))
 				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
 				.make();
 	}

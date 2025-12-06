@@ -6,6 +6,7 @@ import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.TimeUtil;
+import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.api.market.core.Rating;
 import ca.tweetzy.markets.gui.MarketsPagedGUI;
@@ -30,7 +31,7 @@ public final class MarketRatingsViewGUI extends MarketsPagedGUI<Rating> {
 	@Override
 	protected ItemStack makeDisplayItem(Rating rating) {
 		return QuickItem
-				.of(Bukkit.getOfflinePlayer(rating.getRaterUUID()))
+				.of(Markets.getPlayerTextureCache().getTexture(Bukkit.getOfflinePlayer(rating.getRaterUUID())))
 				.name(TranslationManager.string(player, Translations.GUI_RATINGS_ITEMS_RATING_NAME, "rater_name", rating.getRaterName()))
 				.lore(TranslationManager.list(player, Translations.GUI_RATINGS_ITEMS_RATING_LORE,
 						"rating_stars", StringUtils.repeat("★", rating.getStars()),

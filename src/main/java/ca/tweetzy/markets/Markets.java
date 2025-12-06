@@ -68,6 +68,7 @@ public final class Markets extends FlightPlugin {
 	private final RequestManager requestManager = new RequestManager();
 	private final OfflineItemPaymentManager offlineItemPaymentManager = new OfflineItemPaymentManager();
 	private final TransactionManager transactionManager = new TransactionManager();
+	private final PlayerTextureCache playerTextureCache = new PlayerTextureCache();
 	
 	private CrossServerSyncManager crossServerSyncManager;
 	private StockReservationManager stockReservationManager;
@@ -277,6 +278,9 @@ public final class Markets extends FlightPlugin {
 			this.stockReservationManager.shutdown();
 		}
 		
+		// Shutdown player texture cache
+		this.playerTextureCache.shutdown();
+		
 		shutdownDataManager(this.dataManager);
 	}
 
@@ -338,6 +342,10 @@ public final class Markets extends FlightPlugin {
 
 	public static RequestManager getRequestManager() {
 		return getInstance().requestManager;
+	}
+	
+	public static PlayerTextureCache getPlayerTextureCache() {
+		return getInstance().playerTextureCache;
 	}
 	
 	public static StockReservationManager getStockReservationManager() {

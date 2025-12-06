@@ -68,6 +68,14 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				return 0;
 			}
 		}).toList();
+		
+		// Pre-fetch textures for all market owners
+		List<org.bukkit.OfflinePlayer> owners = this.items.stream()
+			.filter(m -> !m.isServerMarket())
+			.map(m -> Bukkit.getOfflinePlayer(m.getOwnerUUID()))
+			.distinct()
+			.toList();
+		Markets.getPlayerTextureCache().prefetchTextures(owners);
 	}
 
 	@Override
@@ -76,7 +84,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				.of(Settings.SERVER_MARKET_TEXTURE.getString())
 				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
 				: QuickItem
-				.of(Bukkit.getOfflinePlayer(market.getOwnerUUID()))
+				.of(Markets.getPlayerTextureCache().getTexture(Bukkit.getOfflinePlayer(market.getOwnerUUID())))
 				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString());
 
 		return item

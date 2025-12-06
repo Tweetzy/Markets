@@ -44,6 +44,7 @@ public final class Settings extends FlightSettings {
 	public static final ConfigEntry SERVER_MARKET_UUID = create("settings.server market.uuid", "00000000-0000-0000-0000-000000000000", "Do not touch this");
 	public static final ConfigEntry SERVER_MARKET_TEXTURE = create("settings.server market.icon", "http://textures.minecraft.net/texture/533fc9a45be13ca57a78b21762c6e1262dae411f13048b963d972a29e07096ab", "The head texture url or item name for the server market icon");
 
+	public static final ConfigEntry PLAYER_TEXTURE_CACHE_TTL = create("settings.player texture cache.ttl", 86400, "How long (in seconds) to cache player head textures. Default is 86400 (24 hours). This prevents excessive Mojang API queries when displaying many markets.");
 
 	/*
 	========================= General Settings =========================

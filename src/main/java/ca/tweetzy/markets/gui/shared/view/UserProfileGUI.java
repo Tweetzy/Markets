@@ -64,7 +64,7 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	@Override
 	protected ItemStack makeDisplayItem(Rating rating) {
 		return QuickItem
-				.of(Bukkit.getOfflinePlayer(rating.getRaterUUID()))
+				.of(Markets.getPlayerTextureCache().getTexture(Bukkit.getOfflinePlayer(rating.getRaterUUID())))
 				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
 				.name(TranslationManager.string(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_NAME, "rater_name", rating.getRaterName()))
 				.lore(TranslationManager.list(player, Translations.GUI_USER_PROFILE_ITEMS_RATING_LORE,
