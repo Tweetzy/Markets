@@ -80,13 +80,9 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 			}
 
 			if (click.clickType == ClickType.SHIFT_LEFT) {
-				// Check if item is being purchased - prevent stock addition during purchase
-				if (this.marketItem.isBeingEdited()) {
-					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
-					return;
-				}
-
 				// Check for active stock reservations (cross-server purchase protection)
+				// Note: We don't check isBeingEdited() here because the GUI sets it when open,
+				// and addStock() will handle synchronization to prevent purchases during stock addition
 				final StockReservationManager reservationManager = Markets.getStockReservationManager();
 				if (reservationManager != null && reservationManager.isReserved(this.marketItem.getId())) {
 					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
@@ -122,13 +118,9 @@ public final class MarketItemEditGUI extends MarketsBaseGUI {
 						return;
 					}
 
-					// Check if item is being purchased - prevent stock addition during purchase
-					if (this.marketItem.isBeingEdited()) {
-						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
-						return;
-					}
-
 					// Check for active stock reservations (cross-server purchase protection)
+					// Note: We don't check isBeingEdited() here because the GUI sets it when open,
+					// and addStock() will handle synchronization to prevent purchases during stock addition
 					final StockReservationManager reservationManager = Markets.getStockReservationManager();
 					if (reservationManager != null && reservationManager.isReserved(this.marketItem.getId())) {
 						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));

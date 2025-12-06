@@ -136,6 +136,18 @@ public final class MarketTransaction implements Transaction {
 			this.type = TransactionType.ITEM_PURCHASE;
 		}
 		
+		// Validate sellerName is not null before saving
+		if (this.sellerName == null || this.sellerName.isEmpty()) {
+			Markets.getInstance().getLogger().warning("MarketTransaction with null/empty sellerName detected, using UUID as fallback. ID: " + this.id + ", Seller UUID: " + this.seller);
+			this.sellerName = this.seller != null ? this.seller.toString() : "Unknown";
+		}
+		
+		// Validate buyerName is not null before saving
+		if (this.buyerName == null || this.buyerName.isEmpty()) {
+			Markets.getInstance().getLogger().warning("MarketTransaction with null/empty buyerName detected, using UUID as fallback. ID: " + this.id + ", Buyer UUID: " + this.buyer);
+			this.buyerName = this.buyer != null ? this.buyer.toString() : "Unknown";
+		}
+		
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createTransaction(this, (error, created) -> {
 			if (error == null && created != null) {

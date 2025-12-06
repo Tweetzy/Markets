@@ -240,10 +240,29 @@ public final class CategoryItem implements MarketItem {
 	public void store(@NonNull Consumer<MarketItem> stored) {
 		// Use DataManager to ensure sync events are published
 		Markets.getDataManager().createMarketItem(this, (error, created) -> {
-			if (error == null && created != null)
+			if (error == null && created != null) {
 				stored.accept(created);
-			else if (error != null)
+			} else if (error != null) {
+				// Log the error with full context for debugging
+				Markets.getInstance().getLogger().severe("Failed to store CategoryItem:");
+				Markets.getInstance().getLogger().severe("  Item ID: " + this.id);
+				Markets.getInstance().getLogger().severe("  Category ID: " + this.owningCategory);
+				Markets.getInstance().getLogger().severe("  Item Type: " + (this.item != null ? this.item.getType().name() : "null"));
+				Markets.getInstance().getLogger().severe("  Price: " + this.price);
+				Markets.getInstance().getLogger().severe("  Stock: " + this.stock);
+				Markets.getInstance().getLogger().severe("  Error: " + error.getMessage());
+				if (error.getCause() != null) {
+					Markets.getInstance().getLogger().severe("  Cause: " + error.getCause().getMessage());
+				}
+				error.printStackTrace();
 				stored.accept(null);
+			} else {
+				// created is null but no error - this shouldn't happen but log it
+				Markets.getInstance().getLogger().warning("CategoryItem.store() returned null without error:");
+				Markets.getInstance().getLogger().warning("  Item ID: " + this.id);
+				Markets.getInstance().getLogger().warning("  Category ID: " + this.owningCategory);
+				stored.accept(null);
+			}
 		});
 	}
 
@@ -384,14 +403,121 @@ public final class CategoryItem implements MarketItem {
 			return;
 		}
 		
-		try {
-			// Initial stock check - reload from manager to get fresh value
-			MarketItem freshItem = Markets.getCategoryItemManager().getByUUID(this.id);
-			if (freshItem != null) {
-				this.stock = freshItem.getStock();
+		// For infinite stock items, skip database reload and proceed directly
+		if (this.infinite) {
+			performPurchaseAfterStockCheck(market, buyer, quantity, transactionResult, reservationManager);
+			return;
+		}
+		
+		// Initial stock check - reload from database to get fresh value (bypasses potentially stale cache)
+		// Store cached stock value as fallback in case database query fails
+		final int cachedStock = this.stock;
+		
+		Markets.getDataManager().reloadMarketItemStock(this.id, (error, dbStock) -> {
+			int stockToUse = cachedStock; // Default to cached value
+			
+			if (error != null) {
+				// Database query failed - use cached value as fallback
+				if (Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logWarning("STOCK_RELOAD", 
+						"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+						", Cached stock: " + cachedStock, 
+						"Failed to reload stock from database at purchase start: " + error.getMessage() + ". Using cached value as fallback.");
+				}
+				// stockToUse already set to cachedStock
+				// If cached is 0 and query failed, we can't proceed - fail the purchase
+				if (cachedStock == 0) {
+					transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+					if (reservationManager != null) {
+						reservationManager.releaseReservation(this.id);
+					}
+					synchronized (this.editLock) {
+						this.beingEdited = false;
+						this.beingEditedTimestamp = 0;
+					}
+					return;
+				}
+			} else if (dbStock == null || dbStock < 0) {
+				// Item not found in database or invalid result
+				// If item exists in memory with stock > 0, use cached stock as fallback
+				// This handles timing issues where items are saved but query happens before commit
+				if (cachedStock > 0) {
+					// Item exists in memory with stock - use cached value as fallback
+					stockToUse = cachedStock;
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_RELOAD", 
+							"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+							", Cached stock: " + cachedStock + ", DB result: " + dbStock, 
+							"Item not found in database but exists in memory with stock " + cachedStock + 
+							" - using cached stock as fallback (may be timing issue with async save)");
+					}
+					// Continue with purchase using cached stock - stock will be synced after purchase
+				} else {
+					// Both database and cache indicate no stock - fail the purchase
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("STOCK_RELOAD", 
+							"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+							", Cached stock: " + cachedStock + ", DB result: " + dbStock, 
+							"CRITICAL: Item not found in database and cached stock is 0 - cannot proceed with purchase. Item may need to be re-added to market.");
+					}
+					transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
+					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+					if (reservationManager != null) {
+						reservationManager.releaseReservation(this.id);
+					}
+					synchronized (this.editLock) {
+						this.beingEdited = false;
+						this.beingEditedTimestamp = 0;
+					}
+					return;
+				}
+			} else {
+				// Database query succeeded - prioritize database value when it's valid
+				// If database has stock > 0, trust it (even if cached is 0 - cache might be stale)
+				// If database is 0 but cached has stock, use cached (database might be out of sync)
+				if (dbStock > 0) {
+					// Database has stock - trust it (cache might be stale)
+					stockToUse = dbStock;
+					if (cachedStock == 0 && Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_CACHE_STALE", 
+							"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+							", DB Stock: " + dbStock + ", Cached Stock: " + cachedStock + ", Using: " + stockToUse, 
+							"Cache was stale (0) but database has stock - using database value");
+					} else if (dbStock != cachedStock && Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_DISCREPANCY", 
+							"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+							", DB Stock: " + dbStock + ", Cached Stock: " + cachedStock + ", Using: " + stockToUse, 
+							"Stock discrepancy detected - using database value");
+					}
+				} else if (cachedStock > 0) {
+					// Database says 0 but cached has stock - use cached (database might be out of sync)
+					stockToUse = cachedStock;
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_DISCREPANCY", 
+							"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+							", DB Stock: " + dbStock + ", Cached Stock: " + cachedStock + ", Using: " + stockToUse, 
+							"Database shows 0 but cache has stock - using cached value (database may be out of sync)");
+					}
+				} else {
+					// Both are 0 - use 0
+					stockToUse = 0;
+				}
+				
+				// Log debug info if no discrepancy
+				if (dbStock == cachedStock && Markets.getTransactionLogger() != null) {
+					Markets.getTransactionLogger().logWarning("STOCK_RELOAD_DEBUG", 
+						"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+						", DB Stock: " + dbStock + ", Cached Stock: " + cachedStock + ", Using: " + stockToUse, "");
+				}
 			}
 			
-			if (!this.infinite && this.stock == 0) {
+			// Update local stock with the value we're using
+			this.stock = stockToUse;
+			
+			// Only fail if both database and cached values indicate no stock
+			if (stockToUse == 0) {
+				// Both sources indicate no stock - reject purchase
 				transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
 				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
 				if (reservationManager != null) {
@@ -399,9 +525,19 @@ public final class CategoryItem implements MarketItem {
 				}
 				synchronized (this.editLock) {
 					this.beingEdited = false;
+					this.beingEditedTimestamp = 0;
 				}
 				return;
 			}
+			
+			// Continue with purchase flow using validated stock value
+			// Database reload will happen again after money withdrawal for final validation
+			performPurchaseAfterStockCheck(market, buyer, quantity, transactionResult, reservationManager);
+		});
+	}
+	
+	private void performPurchaseAfterStockCheck(@NonNull final Market market, @NonNull Player buyer, int quantity, Consumer<TransactionResult> transactionResult, StockReservationManager reservationManager) {
+		try {
 
 			final int newPurchaseAmount = this.infinite ? quantity : Math.min(quantity, stock);
 
@@ -499,111 +635,244 @@ public final class CategoryItem implements MarketItem {
 			}
 
 			// Re-validate stock after money withdrawal (prevents race condition)
-			// Always reload stock from manager to get latest value
+			// Reload stock directly from database to get latest value (bypasses cache)
 			if (!this.infinite) {
-				// Reload item from manager to get latest stock
-				MarketItem reloadedItem = Markets.getCategoryItemManager().getByUUID(this.id);
+				final double finalTotal = total;
+				final int finalNewPurchaseAmount = newPurchaseAmount;
+				final String finalCurrencyPlugin = currencyPlugin;
+				final String finalCurrencyName = currencyName;
+				// Capture cached stock before reload to handle discrepancies
+				final int cachedStockBeforeReload = this.stock;
 				
-				if (reloadedItem == null) {
-					// Item was deleted - rollback money withdrawal
-					if (this.isCurrencyOfItem()) {
-						Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
-					} else {
-						Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
-					}
-					transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
-					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-					if (reservationManager != null) {
-						reservationManager.releaseReservation(this.id);
-					}
-					synchronized (this.editLock) {
-						this.beingEdited = false;
-					}
-					return;
-				}
-				
-				// Use reloaded stock value
-				int currentStock = reloadedItem.getStock();
-				
-				if (currentStock < newPurchaseAmount) {
-					// Rollback money withdrawal
-					if (this.isCurrencyOfItem()) {
-						Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
-					} else {
-						Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
-					}
-					transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
-					Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-					if (reservationManager != null) {
-						reservationManager.releaseReservation(this.id);
-					}
-					synchronized (this.editLock) {
-						this.beingEdited = false;
-					}
-					return;
-				}
-				
-				// Update local stock from reloaded value
-				this.stock = currentStock;
-			}
-
-			// Store original stock for potential rollback
-			final int originalStock = this.stock;
-			final int newStock = this.infinite ? originalStock : (this.stock - newPurchaseAmount);
-			final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
-
-			// Update stock if not infinite (before giving items to ensure consistency)
-			if (!this.infinite) {
-				setStock(newStock);
-			}
-
-			// Give items to buyer
-			try {
-				for (int i = 0; i < newPurchaseAmount; i++) {
-					PlayerUtil.giveItem(buyer, updatedItem);
-				}
-			} catch (Exception e) {
-				if (Markets.getTransactionLogger() != null) {
-					Markets.getTransactionLogger().logError("ITEM_PURCHASE", 
-						"Buyer: " + buyer.getName() + ", ItemID: " + this.id + ", Quantity: " + newPurchaseAmount, 
-						"Failed to give items: " + e.getMessage());
-				}
-				e.printStackTrace();
-				// Rollback stock if items couldn't be given
-				if (!this.infinite) {
-					setStock(originalStock);
-				}
-				// Rollback money
-				if (this.isCurrencyOfItem()) {
-					Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
-				} else {
-					Markets.getCurrencyManager().deposit(buyer, currencyPlugin, currencyName, Taxer.getTaxedTotal(total));
-				}
-				transactionResult.accept(TransactionResult.ERROR);
-				Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
-				return;
-			}
-
-			// Update stock if not infinite
-			if (!this.infinite) {
-				// If stock reached 0, notify viewing users and sync to database
-				// Items remain in category but are hidden from non-owners (handled by getInStockItems)
-				if (newStock <= 0) {
-					getViewingPlayers().forEach(viewingUser -> {
-						try {
-							viewingUser.closeInventory();
-							Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
-						} catch (Exception e) {
+				Markets.getDataManager().reloadMarketItemStock(this.id, (error, dbStock) -> {
+					if (error != null || dbStock == null || dbStock < 0) {
+						// Item was deleted or database query failed
+						// If item exists in memory with stock > 0, use cached stock as fallback
+						if (cachedStockBeforeReload > 0) {
+							// Item exists in memory with stock - use cached value as fallback
+							int currentStock = cachedStockBeforeReload;
 							if (Markets.getTransactionLogger() != null) {
-								Markets.getTransactionLogger().logWarning("STOCK_UPDATE", 
-									"User: " + viewingUser.getName() + ", ItemID: " + this.id, 
-									"Error notifying user of out of stock: " + e.getMessage());
+								Markets.getTransactionLogger().logWarning("STOCK_RELOAD", 
+									"ItemID: " + this.id + ", Buyer: " + buyer.getName() + ", After money withdrawal", 
+									"Item not found in database but exists in memory with stock " + cachedStockBeforeReload + 
+									" - using cached stock as fallback (may be timing issue with async save)");
 							}
+							
+							// Update local stock with cached value
+							this.stock = currentStock;
+							
+							// Check if we have enough stock
+							if (currentStock < finalNewPurchaseAmount) {
+								// Stock insufficient - rollback money withdrawal
+								if (Markets.getTransactionLogger() != null) {
+									Markets.getTransactionLogger().logWarning("STOCK_VALIDATION", 
+										"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+										", Requested: " + finalNewPurchaseAmount + ", Available: " + currentStock, 
+										"Stock insufficient after money withdrawal - rolling back");
+								}
+								if (this.isCurrencyOfItem()) {
+									Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(finalTotal));
+								} else {
+									Markets.getCurrencyManager().deposit(buyer, finalCurrencyPlugin, finalCurrencyName, Taxer.getTaxedTotal(finalTotal));
+								}
+								transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+								Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+								if (reservationManager != null) {
+									reservationManager.releaseReservation(this.id);
+								}
+								synchronized (this.editLock) {
+									this.beingEdited = false;
+									this.beingEditedTimestamp = 0;
+								}
+								return;
+							}
+							
+							// Continue with purchase using cached stock
+							completePurchase(market, buyer, finalNewPurchaseAmount, finalTotal, tax, updatedItem, reservationManager, transactionResult);
+							return;
+						} else {
+							// Both database and cache indicate no stock - rollback money withdrawal
+							if (Markets.getTransactionLogger() != null) {
+								Markets.getTransactionLogger().logError("STOCK_RELOAD", 
+									"ItemID: " + this.id + ", Buyer: " + buyer.getName() + ", After money withdrawal", 
+									"CRITICAL: Failed to reload stock from database: " + (error != null ? error.getMessage() : "Item not found") + 
+									" and cached stock is 0. Item may have been deleted from database. Rolling back purchase.");
+							}
+							if (this.isCurrencyOfItem()) {
+								Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(finalTotal));
+							} else {
+								Markets.getCurrencyManager().deposit(buyer, finalCurrencyPlugin, finalCurrencyName, Taxer.getTaxedTotal(finalTotal));
+							}
+							transactionResult.accept(TransactionResult.NO_LONGER_AVAILABLE);
+							Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+							if (reservationManager != null) {
+								reservationManager.releaseReservation(this.id);
+							}
+							synchronized (this.editLock) {
+								this.beingEdited = false;
+								this.beingEditedTimestamp = 0;
+							}
+							return;
 						}
-					});
+					}
 					
-					// Always sync stock to 0 - never delete items
-					sync(result -> {
+					// Prioritize database value when it's valid (same logic as initial check)
+					// If database has stock > 0, trust it (even if cached is 0 - cache might be stale)
+					// If database is 0 but cached has stock, use cached (database might be out of sync)
+					int currentStock;
+					if (dbStock > 0) {
+						// Database has stock - trust it (cache might be stale)
+						currentStock = dbStock;
+						if (cachedStockBeforeReload == 0 && Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("STOCK_CACHE_STALE", 
+								"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+								", DB Stock: " + dbStock + ", Cached Stock: " + cachedStockBeforeReload + ", Using: " + currentStock, 
+								"Cache was stale (0) but database has stock after money withdrawal - using database value");
+						} else if (dbStock != cachedStockBeforeReload && Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("STOCK_DISCREPANCY", 
+								"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+								", DB Stock: " + dbStock + ", Cached Stock: " + cachedStockBeforeReload + ", Using: " + currentStock, 
+								"Stock discrepancy detected after money withdrawal - using database value");
+						}
+					} else if (cachedStockBeforeReload > 0) {
+						// Database says 0 but cached has stock - use cached (database might be out of sync)
+						currentStock = cachedStockBeforeReload;
+						if (Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("STOCK_DISCREPANCY", 
+								"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+								", DB Stock: " + dbStock + ", Cached Stock: " + cachedStockBeforeReload + ", Using: " + currentStock, 
+								"Database shows 0 but cache has stock after money withdrawal - using cached value (database may be out of sync)");
+						}
+					} else {
+						// Both are 0 - use 0
+						currentStock = 0;
+					}
+					
+					if (currentStock < finalNewPurchaseAmount) {
+						// Stock insufficient - rollback money withdrawal
+						if (Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("STOCK_VALIDATION", 
+								"ItemID: " + this.id + ", Buyer: " + buyer.getName() + 
+								", Requested: " + finalNewPurchaseAmount + ", Available: " + currentStock, 
+								"Stock insufficient after money withdrawal - rolling back");
+						}
+						if (this.isCurrencyOfItem()) {
+							Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(finalTotal));
+						} else {
+							Markets.getCurrencyManager().deposit(buyer, finalCurrencyPlugin, finalCurrencyName, Taxer.getTaxedTotal(finalTotal));
+						}
+						transactionResult.accept(TransactionResult.FAILED_OUT_OF_STOCK);
+						Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+						if (reservationManager != null) {
+							reservationManager.releaseReservation(this.id);
+						}
+						synchronized (this.editLock) {
+							this.beingEdited = false;
+							this.beingEditedTimestamp = 0;
+						}
+						return;
+					}
+					
+					// Update local stock from database value
+					this.stock = currentStock;
+					
+					// Continue with purchase completion
+					completePurchase(market, buyer, finalNewPurchaseAmount, finalTotal, tax, updatedItem, reservationManager, transactionResult);
+				});
+				return; // Exit early, completion will happen in callback
+		} else {
+			// Infinite stock - continue directly
+			completePurchase(market, buyer, newPurchaseAmount, total, tax, updatedItem, reservationManager, transactionResult);
+		}
+		} catch (Exception e) {
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logError("PURCHASE_ERROR", 
+					"ItemID: " + this.id + ", Buyer: " + buyer.getName(), 
+					"Error during purchase: " + e.getMessage());
+			}
+			e.printStackTrace();
+			transactionResult.accept(TransactionResult.ERROR);
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+			if (reservationManager != null) {
+				reservationManager.releaseReservation(this.id);
+			}
+			synchronized (this.editLock) {
+				this.beingEdited = false;
+				this.beingEditedTimestamp = 0;
+			}
+		} finally {
+			// Always clear the beingEdited flag, even if an error occurred
+			// Note: This will be cleared in the callback or error handler, but this ensures cleanup
+			// The flag is already cleared in individual return paths, but this is a safety net
+		}
+	}
+	
+	private void completePurchase(@NonNull final Market market, @NonNull Player buyer, int newPurchaseAmount, double total, double tax, ItemStack updatedItem, StockReservationManager reservationManager, Consumer<TransactionResult> transactionResult) {
+		// Store original stock for potential rollback
+		final int originalStock = this.stock;
+		final int newStock = this.infinite ? originalStock : (this.stock - newPurchaseAmount);
+		final OfflinePlayer seller = Bukkit.getOfflinePlayer(market.getOwnerUUID());
+		
+		// Extract currency info for payment
+		final String[] currencyParts = this.currency.split("/");
+		final String currencyPlugin = currencyParts[0];
+		final String currencyName = currencyParts[1];
+
+		// Update stock if not infinite (before giving items to ensure consistency)
+		if (!this.infinite) {
+			setStock(newStock);
+		}
+
+		// Give items to buyer
+		try {
+			for (int i = 0; i < newPurchaseAmount; i++) {
+				PlayerUtil.giveItem(buyer, updatedItem);
+			}
+		} catch (Exception e) {
+			if (Markets.getTransactionLogger() != null) {
+				Markets.getTransactionLogger().logError("ITEM_PURCHASE", 
+					"Buyer: " + buyer.getName() + ", ItemID: " + this.id + ", Quantity: " + newPurchaseAmount, 
+					"Failed to give items: " + e.getMessage());
+			}
+			e.printStackTrace();
+			// Rollback stock if items couldn't be given
+			if (!this.infinite) {
+				setStock(originalStock);
+			}
+			// Rollback money
+			final String[] rollbackCurrencyParts = this.currency.split("/");
+			final String rollbackCurrencyPlugin = rollbackCurrencyParts[0];
+			final String rollbackCurrencyName = rollbackCurrencyParts[1];
+			if (this.isCurrencyOfItem()) {
+				Markets.getCurrencyManager().deposit(buyer, this.currencyItem, (int) Taxer.getTaxedTotal(total));
+			} else {
+				Markets.getCurrencyManager().deposit(buyer, rollbackCurrencyPlugin, rollbackCurrencyName, Taxer.getTaxedTotal(total));
+			}
+			transactionResult.accept(TransactionResult.ERROR);
+			Common.tell(buyer, TranslationManager.string(buyer, Translations.ITEM_OUT_OF_STOCK));
+			return;
+		}
+
+		// Update stock if not infinite
+		if (!this.infinite) {
+			// If stock reached 0, notify viewing users and sync to database
+			// Items remain in category but are hidden from non-owners (handled by getInStockItems)
+			if (newStock <= 0) {
+				getViewingPlayers().forEach(viewingUser -> {
+					try {
+						viewingUser.closeInventory();
+						Common.tell(viewingUser, TranslationManager.string(viewingUser, Translations.ITEM_OUT_OF_STOCK));
+					} catch (Exception e) {
+						if (Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logWarning("STOCK_UPDATE", 
+								"User: " + viewingUser.getName() + ", ItemID: " + this.id, 
+								"Error notifying user of out of stock: " + e.getMessage());
+						}
+					}
+				});
+				
+				// Always sync stock to 0 - never delete items
+				sync(result -> {
 						if (result == SynchronizeResult.FAILURE) {
 							if (Markets.getTransactionLogger() != null) {
 								Markets.getTransactionLogger().logError("STOCK_UPDATE", 
@@ -629,6 +898,14 @@ public final class CategoryItem implements MarketItem {
 								Markets.getTransactionLogger().logItemPurchase(buyer.getName(), 
 									ItemUtil.getItemName(this.item), newPurchaseAmount, total, 
 									this.currency, marketName, seller.getName(), true);
+							}
+							// Cleanup: Clear beingEdited flag and release reservation after successful sync
+							if (reservationManager != null) {
+								reservationManager.releaseReservation(this.id);
+							}
+							synchronized (this.editLock) {
+								this.beingEdited = false;
+								this.beingEditedTimestamp = 0;
 							}
 						}
 						if (!market.isServerMarket()) {
@@ -664,6 +941,14 @@ public final class CategoryItem implements MarketItem {
 								Markets.getTransactionLogger().logItemPurchase(buyer.getName(), 
 									ItemUtil.getItemName(this.item), newPurchaseAmount, total, 
 									this.currency, marketName, seller.getName(), true);
+							}
+							// Cleanup: Clear beingEdited flag and release reservation after successful sync
+							if (reservationManager != null) {
+								reservationManager.releaseReservation(this.id);
+							}
+							synchronized (this.editLock) {
+								this.beingEdited = false;
+								this.beingEditedTimestamp = 0;
 							}
 						}
 						if (!market.isServerMarket()) {
@@ -807,19 +1092,19 @@ public final class CategoryItem implements MarketItem {
 					totalFixed
 			));
 
-			transactionResult.accept(TransactionResult.SUCCESS);
-		} finally {
-			// Always clear the beingEdited flag, even if an error occurred
-			synchronized (this.editLock) {
-				this.beingEdited = false;
-				this.beingEditedTimestamp = 0;
+			// Cleanup: Clear beingEdited flag and release reservation for infinite items
+			// (Limited items handle cleanup in their sync callbacks)
+			if (this.infinite) {
+				if (reservationManager != null) {
+					reservationManager.releaseReservation(this.id);
+				}
+				synchronized (this.editLock) {
+					this.beingEdited = false;
+					this.beingEditedTimestamp = 0;
+				}
 			}
-			
-			// Release distributed lock
-			if (reservationManager != null) {
-				reservationManager.releaseReservation(this.id);
-			}
-		}
+
+		transactionResult.accept(TransactionResult.SUCCESS);
 	}
 
 	@Override
@@ -876,7 +1161,7 @@ public final class CategoryItem implements MarketItem {
 	public void addStock(@NonNull final ItemStack item, @NonNull final Consumer<SynchronizeResult> resultConsumer) {
 		// Prevent stock addition while item is being purchased (race condition protection)
 		synchronized (this.editLock) {
-			// Check if flag is stuck and clear it if needed, then check if still being edited
+			// Check if flag is stuck and clear it if needed
 			if (this.beingEdited && this.beingEditedTimestamp > 0) {
 				long elapsed = System.currentTimeMillis() - this.beingEditedTimestamp;
 				if (elapsed > BEING_EDITED_TIMEOUT) {
@@ -891,21 +1176,9 @@ public final class CategoryItem implements MarketItem {
 				}
 			}
 			
-			// Now check if still being edited (after potentially clearing stuck flag)
-			if (this.beingEdited) {
-				// Item is currently being purchased - cannot add stock
-				if (Markets.getTransactionLogger() != null) {
-					Markets.getTransactionLogger().logWarning("STOCK_ADD", 
-						"ItemID: " + this.id, 
-						"Cannot add stock - item is currently being purchased");
-				}
-				if (resultConsumer != null) {
-					resultConsumer.accept(SynchronizeResult.FAILURE);
-				}
-				return;
-			}
-			
 			// Set beingEdited to prevent new purchases during stock addition
+			// Note: We allow stock addition even if beingEdited was set by the GUI,
+			// as the method will manage the flag itself to prevent concurrent purchases
 			this.beingEdited = true;
 			this.beingEditedTimestamp = System.currentTimeMillis();
 		}

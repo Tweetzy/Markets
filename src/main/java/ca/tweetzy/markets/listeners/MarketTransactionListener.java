@@ -15,12 +15,44 @@ public final class MarketTransactionListener implements Listener {
 
 	@EventHandler
 	public void onTransactionEvent(final MarketTransactionEvent event) {
+		// Get seller name with fallback logic
+		final UUID sellerUUID = event.getSeller().getUniqueId();
+		String sellerName = null;
+		
+		// Try to get Market first - most reliable source for owner name
+		final var market = Markets.getMarketManager().getByOwner(sellerUUID);
+		if (market != null) {
+			sellerName = market.getOwnerName();
+		}
+		
+		// Fallback to server market name or OfflinePlayer name
+		if (sellerName == null || sellerName.isEmpty()) {
+			if (sellerUUID.equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString()))) {
+				sellerName = Settings.NAME.getString();
+			} else {
+				sellerName = event.getSeller().getName();
+			}
+		}
+		
+		// Final fallback to UUID string if name is still null
+		if (sellerName == null || sellerName.isEmpty()) {
+			sellerName = sellerUUID.toString();
+			Markets.getInstance().getLogger().warning("Could not retrieve seller name for transaction, using UUID: " + sellerUUID);
+		}
+		
+		// Get buyer name with fallback logic
+		String buyerName = event.getBuyer().getName();
+		if (buyerName == null || buyerName.isEmpty()) {
+			buyerName = event.getBuyer().getUniqueId().toString();
+			Markets.getInstance().getLogger().warning("Could not retrieve buyer name for transaction, using UUID: " + event.getBuyer().getUniqueId());
+		}
+		
 		final Transaction transaction = new MarketTransaction(
 				UUID.randomUUID(),
 				event.getBuyer().getUniqueId(),
-				event.getBuyer().getName(),
-				event.getSeller().getUniqueId(),
-				event.getSeller().getUniqueId().equals(UUID.fromString(Settings.SERVER_MARKET_UUID.getString())) ? Settings.NAME.getString() : event.getSeller().getName(),
+				buyerName,
+				sellerUUID,
+				sellerName,
 				event.getType(),
 				event.getItem(),
 				event.getCurrency(),

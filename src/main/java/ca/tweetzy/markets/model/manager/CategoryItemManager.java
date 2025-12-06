@@ -43,6 +43,16 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 				category.getItems().add(storedItem);
 				created.accept(true);
 			} else {
+				// Log the initial store failure
+				Markets.getInstance().getLogger().warning("CategoryItemManager.create() - Initial store() returned null:");
+				Markets.getInstance().getLogger().warning("  Item ID: " + marketItem.getId());
+				Markets.getInstance().getLogger().warning("  Category ID: " + category.getId());
+				Markets.getInstance().getLogger().warning("  Category Name: " + category.getName());
+				Markets.getInstance().getLogger().warning("  Item Type: " + (item != null ? item.getType().name() : "null"));
+				Markets.getInstance().getLogger().warning("  Price: " + price);
+				Markets.getInstance().getLogger().warning("  Stock: " + item.getAmount());
+				Markets.getInstance().getLogger().warning("  Currency: " + currency);
+				
 				// If store failed, check if item might have been saved anyway (connection issue during fetch)
 				// Try to reload from DB as fallback
 				Markets.getDataManager().getMarketItemsByCategory(category.getId(), (error, items) -> {
@@ -55,13 +65,29 @@ public final class CategoryItemManager extends ListManager<MarketItem> {
 						
 						if (foundItem != null) {
 							// Item was saved, add to cache
+							Markets.getInstance().getLogger().info("CategoryItemManager.create() - Item found in fallback query, adding to cache");
 							add(foundItem);
 							category.getItems().add(foundItem);
 							created.accept(true);
 						} else {
+							// Fallback also failed - log final failure
+							Markets.getInstance().getLogger().severe("CategoryItemManager.create() - Final failure: Item not found in fallback query");
+							Markets.getInstance().getLogger().severe("  Item ID: " + marketItem.getId());
+							Markets.getInstance().getLogger().severe("  Category ID: " + category.getId());
+							Markets.getInstance().getLogger().severe("  Total items in category: " + items.size());
 							created.accept(false);
 						}
 					} else {
+						// Fallback query failed - log the error
+						Markets.getInstance().getLogger().severe("CategoryItemManager.create() - Fallback query failed:");
+						Markets.getInstance().getLogger().severe("  Item ID: " + marketItem.getId());
+						Markets.getInstance().getLogger().severe("  Category ID: " + category.getId());
+						if (error != null) {
+							Markets.getInstance().getLogger().severe("  Error: " + error.getMessage());
+							error.printStackTrace();
+						} else {
+							Markets.getInstance().getLogger().severe("  Error: getMarketItemsByCategory returned null items without error");
+						}
 						created.accept(false);
 					}
 				});

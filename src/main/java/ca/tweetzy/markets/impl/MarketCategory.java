@@ -200,7 +200,17 @@ public final class MarketCategory implements Category {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> syncResult) {
-		Markets.getCategoryRepository().deleteById(this.id, (error, deleted) -> {
+		// Use DataManager to ensure proper event publishing and error handling
+		Markets.getDataManager().deleteCategory(this, (error, deleted) -> {
+			if (error != null) {
+				Markets.getInstance().getLogger().severe("Failed to delete category " + this.id + ": " + error.getMessage());
+				if (error.getCause() != null) {
+					error.getCause().printStackTrace();
+				} else {
+					error.printStackTrace();
+				}
+			}
+			
 			if (deleted != null && deleted) {
 				Markets.getMarketManager().getByUUID(this.owningMarket).getCategories().removeIf(category -> category.getId().equals(this.id));
 				Markets.getCategoryManager().remove(this);

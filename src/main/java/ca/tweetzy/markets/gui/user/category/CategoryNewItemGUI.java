@@ -185,25 +185,50 @@ public final class CategoryNewItemGUI extends MarketsBaseGUI {
 
 			this.marketItem.setItem(placedItem.clone());
 			this.marketItem.setStock(placedItem.clone().getAmount());
-			if (this.marketItem.getPrice() <= 0) return;
+			
+			// Validate price before proceeding
+			if (this.marketItem.getPrice() <= 0) {
+				Common.tell(click.player, TranslationManager.string(click.player, Translations.MUST_BE_HIGHER_THAN_ZERO, "value", String.valueOf(this.marketItem.getPrice())));
+				return;
+			}
 
 			if (this.market.isServerMarket()) {
 				this.marketItem.setIsAcceptingOffers(false);
 			}
 
+			// Store item reference before removal for potential restoration
+			final ItemStack itemToCreate = placedItem.clone();
+			
+			// Remove item from slot - will be restored if creation fails
 			setItem(1, 4, CompMaterial.AIR.parseItem());
 
 			// create the item
 			Bukkit.getScheduler().runTaskLaterAsynchronously(Markets.getInstance(), () -> {
+				// If GUI closed before async task, return item to player
 				if (!click.gui.isOpen()) {
 					Common.log(String.format("&7Strange activity detected from %s, closing inv & pressing add item btn simultaneously. This could just be lag.", click.player.getName()));
+					Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+						PlayerUtil.giveItem(click.player, itemToCreate);
+					});
 					return;
 				}
 
 				Markets.getCategoryItemManager().create(this.category, this.marketItem.getItem(), this.marketItem.getCurrency(), this.marketItem.getCurrencyItem(), this.marketItem.getPrice(), this.marketItem.isPriceForAll(), this.marketItem.isAcceptingOffers(), this.marketItem.isInfinite(), created -> {
-					if (created) {
-						click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
-					}
+					Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+						if (created) {
+							click.manager.showGUI(click.player, new MarketCategoryEditGUI(this.player, this.market, this.category));
+						} else {
+							// Creation failed - restore item and show error
+							Common.tell(click.player, "&cFailed to add item to category. Please try again.");
+							Markets.getInstance().getLogger().warning("Failed to create market item for player " + click.player.getName() + " in category " + this.category.getId());
+							
+							// Restore item to player's inventory
+							PlayerUtil.giveItem(click.player, itemToCreate);
+							
+							// Reopen the GUI so user can try again
+							click.manager.showGUI(click.player, new CategoryNewItemGUI(this.player, this.market, this.category, this.marketItem));
+						}
+					});
 				});
 			}, Settings.INTERNAL_ADD_ITEM_DELAY.getInt());
 

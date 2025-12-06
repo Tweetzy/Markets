@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -44,6 +45,11 @@ public class MarketsEntityMapper<T> implements EntityMapper<T> {
     private void analyzeEntity() {
         for (Field field : entityClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(Ignore.class)) {
+                continue;
+            }
+            
+            // Skip static fields (constants, class-level fields)
+            if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
             

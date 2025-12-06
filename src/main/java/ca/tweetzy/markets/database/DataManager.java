@@ -277,9 +277,54 @@ public final class DataManager extends DataManagerAbstract {
 
 	public void createMarketItem(@NonNull final MarketItem marketItem, final Callback<MarketItem> callback) {
 		if (marketItem instanceof CategoryItem) {
-			Markets.getMarketItemRepository().save((CategoryItem) marketItem, (error, saved) -> {
+			final CategoryItem categoryItem = (CategoryItem) marketItem;
+			
+			// Validation: Check if category exists
+			final Category category = Markets.getCategoryManager().getByUUID(categoryItem.getOwningCategory());
+			if (category == null) {
+				final Exception validationError = new Exception("Category does not exist: " + categoryItem.getOwningCategory());
+				Markets.getInstance().getLogger().severe("DataManager.createMarketItem() - Validation failed:");
+				Markets.getInstance().getLogger().severe("  Item ID: " + categoryItem.getId());
+				Markets.getInstance().getLogger().severe("  Category ID: " + categoryItem.getOwningCategory());
+				Markets.getInstance().getLogger().severe("  Error: " + validationError.getMessage());
+				if (callback != null) {
+					callback.accept(validationError, null);
+				}
+				return;
+			}
+			
+			// Validation: Check if item is valid (not air)
+			if (categoryItem.getItem() == null || categoryItem.getItem().getType() == CompMaterial.AIR.get()) {
+				final Exception validationError = new Exception("Cannot create market item with AIR or null item");
+				Markets.getInstance().getLogger().severe("DataManager.createMarketItem() - Validation failed:");
+				Markets.getInstance().getLogger().severe("  Item ID: " + categoryItem.getId());
+				Markets.getInstance().getLogger().severe("  Category ID: " + categoryItem.getOwningCategory());
+				Markets.getInstance().getLogger().severe("  Item Type: " + (categoryItem.getItem() != null ? categoryItem.getItem().getType().name() : "null"));
+				Markets.getInstance().getLogger().severe("  Error: " + validationError.getMessage());
+				if (callback != null) {
+					callback.accept(validationError, null);
+				}
+				return;
+			}
+			
+			Markets.getMarketItemRepository().save(categoryItem, (error, saved) -> {
 				if (error == null && saved != null) {
 					publishEntityEvent(DatabaseEvent.EventType.INSERT, "category_item", extractEntityData(marketItem));
+				} else if (error != null) {
+					// Log repository save errors with full context
+					Markets.getInstance().getLogger().severe("DataManager.createMarketItem() - Repository save failed:");
+					Markets.getInstance().getLogger().severe("  Item ID: " + categoryItem.getId());
+					Markets.getInstance().getLogger().severe("  Category ID: " + categoryItem.getOwningCategory());
+					Markets.getInstance().getLogger().severe("  Category Name: " + (category != null ? category.getName() : "unknown"));
+					Markets.getInstance().getLogger().severe("  Item Type: " + (categoryItem.getItem() != null ? categoryItem.getItem().getType().name() : "null"));
+					Markets.getInstance().getLogger().severe("  Price: " + categoryItem.getPrice());
+					Markets.getInstance().getLogger().severe("  Stock: " + categoryItem.getStock());
+					Markets.getInstance().getLogger().severe("  Currency: " + categoryItem.getCurrency());
+					Markets.getInstance().getLogger().severe("  Error: " + error.getMessage());
+					if (error.getCause() != null) {
+						Markets.getInstance().getLogger().severe("  Cause: " + error.getCause().getMessage());
+					}
+					error.printStackTrace();
 				}
 				
 				if (callback != null) {
@@ -293,8 +338,10 @@ public final class DataManager extends DataManagerAbstract {
 				}
 			});
 		} else {
+			final Exception typeError = new Exception("Unsupported market item type: " + (marketItem != null ? marketItem.getClass().getName() : "null"));
+			Markets.getInstance().getLogger().severe("DataManager.createMarketItem() - Unsupported type: " + typeError.getMessage());
 			if (callback != null) {
-				callback.accept(new Exception("Unsupported market item type"), null);
+				callback.accept(typeError, null);
 			}
 		}
 	}
@@ -381,6 +428,80 @@ public final class DataManager extends DataManagerAbstract {
 						List<MarketItem> marketItems = (List<MarketItem>) (List<?>) items;
 						callback.accept(null, marketItems);
 					} else {
+						callback.accept(error, null);
+					}
+				}
+			});
+	}
+
+	/**
+	 * Reload a market item's stock value directly from the database.
+	 * This bypasses the cache to ensure we get the latest stock value.
+	 * 
+	 * @param itemId The UUID of the market item
+	 * @param callback Callback with the stock value (or -1 if item not found or error)
+	 */
+	public void reloadMarketItemStock(@NonNull final UUID itemId, @NonNull final Callback<Integer> callback) {
+		// Use repository to find item by ID - this handles UUIDs correctly
+		Markets.getMarketItemRepository().findById(itemId, (error, item) -> {
+			if (callback != null) {
+				if (error == null && item != null) {
+					// Successfully retrieved item - get stock from it
+					int stockValue = item.getStock();
+					if (Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logWarning("STOCK_RELOAD_DEBUG", 
+							"ItemID: " + itemId + ", Stock reload successful: " + stockValue, "");
+					}
+					callback.accept(null, stockValue);
+				} else {
+					// Error or item not found - log detailed information for debugging
+					if (error != null && Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("STOCK_RELOAD", 
+							"ItemID: " + itemId + " (UUID: " + itemId.toString() + ")", 
+							"Failed to reload stock from database using repository.findById(): " + error.getMessage() + 
+							(error.getCause() != null ? " (Cause: " + error.getCause().getMessage() + ")" : ""));
+						if (error.getCause() != null) {
+							error.getCause().printStackTrace();
+						}
+					} else if (item == null && Markets.getTransactionLogger() != null) {
+						Markets.getTransactionLogger().logError("STOCK_RELOAD", 
+							"ItemID: " + itemId + " (UUID: " + itemId.toString() + ")", 
+							"Repository findById() returned null - item not found in database. " +
+							"This may indicate: 1) Item was never saved, 2) UUID mismatch, 3) Database connection issue, 4) Timing issue with async save");
+					}
+					callback.accept(error, -1);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Reload a market item directly from the database.
+	 * This bypasses the cache to ensure we get the latest data.
+	 * 
+	 * @param itemId The UUID of the market item
+	 * @param callback Callback with the reloaded MarketItem (or null if not found or error)
+	 */
+	public void reloadMarketItem(@NonNull final UUID itemId, @NonNull final Callback<MarketItem> callback) {
+		// Use QueryBuilder to query item directly from database
+		queryBuilder.select("category_item")
+			.where("id", itemId.toString())
+			.fetchFirst(rs -> {
+				try {
+					return extractMarketItem(rs);
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}, (error, item) -> {
+				if (callback != null) {
+					if (error == null) {
+						callback.accept(null, item);
+					} else {
+						if (Markets.getTransactionLogger() != null) {
+							Markets.getTransactionLogger().logError("ITEM_RELOAD", 
+								"ItemID: " + itemId, 
+								"Failed to reload item from database: " + error.getMessage());
+						}
 						callback.accept(error, null);
 					}
 				}

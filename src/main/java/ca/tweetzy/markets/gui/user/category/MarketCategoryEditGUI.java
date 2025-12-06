@@ -17,6 +17,7 @@ import ca.tweetzy.markets.gui.shared.view.content.MarketCategoryViewGUI;
 import ca.tweetzy.markets.gui.shared.view.content.MarketViewGUI;
 import ca.tweetzy.markets.gui.user.market.MarketOverviewGUI;
 import ca.tweetzy.markets.model.FloodGateCheck;
+import ca.tweetzy.markets.model.sync.StockReservationManager;
 import ca.tweetzy.markets.settings.Settings;
 import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
@@ -146,9 +147,54 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 				return;
 			}
 
+			// Check if any items are being edited (purchased) or have stock reservations
+			StockReservationManager reservationManager = Markets.getStockReservationManager();
+			boolean hasBlockedItems = false;
+			String blockedItemName = null;
+			
+			for (MarketItem item : this.category.getItems()) {
+				if (item.isBeingEdited()) {
+					hasBlockedItems = true;
+					blockedItemName = ItemUtil.getItemName(item.getItem());
+					break;
+				}
+				if (reservationManager != null && reservationManager.isReserved(item.getId())) {
+					hasBlockedItems = true;
+					blockedItemName = ItemUtil.getItemName(item.getItem());
+					break;
+				}
+			}
+			
+			if (hasBlockedItems) {
+				Common.tell(click.player, "&cCannot delete category: Item \"" + blockedItemName + "\" is currently being purchased. Please wait and try again.");
+				return;
+			}
+
 			if (Settings.USE_ADDITIONAL_CONFIRMS.getBoolean()) {
 				click.manager.showGUI(click.player, new ConfirmGUI(this, click.player, confirmed -> {
 					if (!confirmed) {
+						click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, this.market, this.category));
+						return;
+					}
+
+					// Re-check beingEdited and reservations before deletion (race condition protection)
+					boolean stillBlocked = false;
+					String stillBlockedItemName = null;
+					for (MarketItem item : this.category.getItems()) {
+						if (item.isBeingEdited()) {
+							stillBlocked = true;
+							stillBlockedItemName = ItemUtil.getItemName(item.getItem());
+							break;
+						}
+						if (reservationManager != null && reservationManager.isReserved(item.getId())) {
+							stillBlocked = true;
+							stillBlockedItemName = ItemUtil.getItemName(item.getItem());
+							break;
+						}
+					}
+					
+					if (stillBlocked) {
+						Common.tell(click.player, "&cCannot delete category: Item \"" + stillBlockedItemName + "\" is currently being purchased. Please wait and try again.");
 						click.manager.showGUI(click.player, new MarketCategoryEditGUI(click.player, this.market, this.category));
 						return;
 					}
@@ -165,12 +211,36 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 								});
 
 								performCategoryDeletion(click);
+							} else {
+								Common.tell(click.player, "&cFailed to delete category items. Error: " + (error != null ? error.getMessage() : "Unknown error"));
+								Markets.getInstance().getLogger().warning("Failed to delete market items for category " + this.category.getId() + ": " + (error != null ? error.getMessage() : "Unknown error"));
 							}
 						});
 					} else
 						performCategoryDeletion(click);
 				}));
 			} else {
+				// Re-check beingEdited and reservations before deletion (race condition protection)
+				boolean stillBlocked = false;
+				String stillBlockedItemName = null;
+				for (MarketItem item : this.category.getItems()) {
+					if (item.isBeingEdited()) {
+						stillBlocked = true;
+						stillBlockedItemName = ItemUtil.getItemName(item.getItem());
+						break;
+					}
+					if (reservationManager != null && reservationManager.isReserved(item.getId())) {
+						stillBlocked = true;
+						stillBlockedItemName = ItemUtil.getItemName(item.getItem());
+						break;
+					}
+				}
+				
+				if (stillBlocked) {
+					Common.tell(click.player, "&cCannot delete category: Item \"" + stillBlockedItemName + "\" is currently being purchased. Please wait and try again.");
+					return;
+				}
+
 				// remove items first if any
 				if (!this.category.getItems().isEmpty()) {
 					this.category.getItems().forEach(item -> item.getViewingPlayers().clear());
@@ -183,6 +253,9 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 							});
 
 							performCategoryDeletion(click);
+						} else {
+							Common.tell(click.player, "&cFailed to delete category items. Error: " + (error != null ? error.getMessage() : "Unknown error"));
+							Markets.getInstance().getLogger().warning("Failed to delete market items for category " + this.category.getId() + ": " + (error != null ? error.getMessage() : "Unknown error"));
 						}
 					});
 				} else
@@ -310,7 +383,14 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 					// Check if item is being edited (purchased) - prevent deletion during purchase
 					if (marketItem.isBeingEdited()) {
-						Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+						Common.tell(click.player, "&cCannot delete item: This item is currently being purchased. Please wait a moment and try again.");
+						return;
+					}
+					
+					// Check for stock reservations (cross-server purchases)
+					StockReservationManager itemReservationManager = Markets.getStockReservationManager();
+					if (itemReservationManager != null && itemReservationManager.isReserved(marketItem.getId())) {
+						Common.tell(click.player, "&cCannot delete item: This item is currently being purchased on another server. Please wait a moment and try again.");
 						return;
 					}
 
@@ -318,9 +398,9 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 					marketItem.unStore(result -> {
 						if (result != SynchronizeResult.SUCCESS) {
-							// Show error message to user
-							Common.tell(click.player, "&cFailed to delete item. Please try again. If the problem persists, check server logs.");
-							Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName());
+							// Show specific error message to user
+							Common.tell(click.player, "&cFailed to delete item. The item may be currently in use. Please wait a moment and try again.");
+							Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName() + ". Result: " + result);
 							reopen(click);
 							return;
 						}
@@ -339,7 +419,14 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 			} else {
 				// Check if item is being edited (purchased) - prevent deletion during purchase
 				if (marketItem.isBeingEdited()) {
-					Common.tell(click.player, TranslationManager.string(click.player, Translations.PLAYERS_LOOKING_AT_ITEM));
+					Common.tell(click.player, "&cCannot delete item: This item is currently being purchased. Please wait a moment and try again.");
+					return;
+				}
+				
+				// Check for stock reservations (cross-server purchases)
+				StockReservationManager itemReservationManager = Markets.getStockReservationManager();
+				if (itemReservationManager != null && itemReservationManager.isReserved(marketItem.getId())) {
+					Common.tell(click.player, "&cCannot delete item: This item is currently being purchased on another server. Please wait a moment and try again.");
 					return;
 				}
 
@@ -347,9 +434,9 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 
 				marketItem.unStore(result -> {
 					if (result != SynchronizeResult.SUCCESS) {
-						// Show error message to user
-						Common.tell(click.player, "&cFailed to delete item. Please try again. If the problem persists, check server logs.");
-						Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName());
+						// Show specific error message to user
+						Common.tell(click.player, "&cFailed to delete item. The item may be currently in use. Please wait a moment and try again.");
+						Markets.getInstance().getLogger().warning("Failed to delete market item " + marketItem.getId() + " for player " + click.player.getName() + ". Result: " + result);
 						reopen(click);
 						return;
 					}
