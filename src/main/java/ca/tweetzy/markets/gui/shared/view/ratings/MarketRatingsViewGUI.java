@@ -15,6 +15,7 @@ import ca.tweetzy.markets.settings.Translations;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,8 +25,19 @@ public final class MarketRatingsViewGUI extends MarketsPagedGUI<Rating> {
 
 	public MarketRatingsViewGUI(Gui parent, @NonNull final Player player, @NonNull final Market market) {
 		super(parent, player, TranslationManager.string(player, Translations.GUI_RATINGS_TITLE, "market_display_name", market.getDisplayName()), 6, market.getRatings());
+		setAsync(true);
 		setDefaultItem(QuickItem.bg(Settings.GUI_RATINGS_BACKGROUND.getItemStack()));
 		draw();
+	}
+
+	@Override
+	protected void prePopulate() {
+		// Pre-fetch textures for all raters
+		List<OfflinePlayer> raters = this.items.stream()
+			.map(rating -> Bukkit.getOfflinePlayer(rating.getRaterUUID()))
+			.distinct()
+			.toList();
+		Markets.getPlayerTextureCache().prefetchTextures(raters);
 	}
 
 	@Override

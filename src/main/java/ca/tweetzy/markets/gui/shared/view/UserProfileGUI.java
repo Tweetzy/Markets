@@ -38,13 +38,23 @@ public final class UserProfileGUI extends MarketsPagedGUI<Rating> {
 	}
 
 	@Override
+	protected void prePopulate() {
+		// Pre-fetch textures for all raters
+		List<OfflinePlayer> raters = this.items.stream()
+			.map(rating -> Bukkit.getOfflinePlayer(rating.getRaterUUID()))
+			.distinct()
+			.toList();
+		Markets.getPlayerTextureCache().prefetchTextures(raters);
+	}
+
+	@Override
 	protected void drawFixed() {
 		final MarketUser user = Markets.getPlayerManager().get(this.profileUser.getUniqueId());
 
 		ItemStack texture = user.isServerMarket() ? QuickItem
 				.of(Settings.SERVER_MARKET_TEXTURE.getString())
 				.make() : QuickItem
-				.of(this.profileUser)
+				.of(Markets.getPlayerTextureCache().getTexture(this.profileUser))
 				.fallbackTexture(Settings.SERVER_MARKET_TEXTURE.getString())
 				.make();
 

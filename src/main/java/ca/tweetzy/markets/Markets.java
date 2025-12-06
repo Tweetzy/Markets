@@ -16,6 +16,7 @@ import ca.tweetzy.markets.database.repository.*;
 import ca.tweetzy.markets.impl.MarketsAPIImpl;
 import ca.tweetzy.markets.listeners.MarketTransactionListener;
 import ca.tweetzy.markets.listeners.PlayerJoinListener;
+import ca.tweetzy.markets.api.market.core.Market;
 import ca.tweetzy.markets.model.manager.*;
 import ca.tweetzy.flight.dependency.Dependency;
 import ca.tweetzy.flight.dependency.Relocation;
@@ -32,7 +33,9 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public final class Markets extends FlightPlugin {
 
@@ -214,6 +217,22 @@ public final class Markets extends FlightPlugin {
 		this.requestManager.load();
 		this.transactionManager.load();
 		this.playerTextureCache.start();
+
+		// Prefetch textures for market owners at startup (if enabled)
+		if (Settings.PLAYER_TEXTURE_STARTUP_PREFETCH_ENABLED.getBoolean()) {
+			// Get all market owners with open markets (most likely to be viewed)
+			List<UUID> marketOwners = this.marketManager.getManagerContent().stream()
+				.filter(Market::isOpen)
+				.map(Market::getOwnerUUID)
+				.distinct()
+				.toList();
+			
+			int limit = Settings.PLAYER_TEXTURE_STARTUP_PREFETCH_LIMIT.getInt();
+			if (limit > 0 && !marketOwners.isEmpty()) {
+				Common.log("&aPrefetching textures for " + Math.min(marketOwners.size(), limit) + " market owners...");
+				this.playerTextureCache.prefetchMarketOwnersAtStartup(marketOwners, limit);
+			}
+		}
 
 		// listeners
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

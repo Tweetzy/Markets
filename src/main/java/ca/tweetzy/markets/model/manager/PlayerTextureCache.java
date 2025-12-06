@@ -1,5 +1,11 @@
 package ca.tweetzy.markets.model.manager;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -15,6 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ca.tweetzy.markets.Markets;
 import ca.tweetzy.markets.settings.Settings;
@@ -164,6 +173,16 @@ public final class PlayerTextureCache {
 					// ConcurrentHashMap.put() is thread-safe and fast
 					// This won't block even if called from main thread later
 					textureCache.put(uuid, new CachedTexture(texture, System.currentTimeMillis() + ttl));
+					
+					// Log successful texture fetch if logging is enabled
+					if (Settings.PLAYER_TEXTURE_CACHE_LOGGING_ENABLED.getBoolean()) {
+						Markets.getInstance().getLogger().info("Cached texture for " + player.getName() + " (" + uuid + "): " + texture);
+					}
+				} else {
+					// Log failed texture fetch if logging is enabled
+					if (Settings.PLAYER_TEXTURE_CACHE_LOGGING_ENABLED.getBoolean()) {
+						Markets.getInstance().getLogger().warning("Failed to fetch texture for " + player.getName() + " (" + uuid + ") - returned null");
+					}
 				}
 			} catch (Exception e) {
 				// Silently fail and use default texture
@@ -184,30 +203,170 @@ public final class PlayerTextureCache {
 
 	/**
 	 * Fetch texture from player using Mojang API
-	 * Note: The actual texture fetching is handled by Flight's XSkull library.
-	 * This method queues the player for texture fetching, which will happen
-	 * when XSkull processes the profile. The cache will be populated naturally
-	 * as textures are successfully fetched by XSkull.
+	 * Fetches the player's skin texture URL from Mojang's session server
+	 * 
+	 * @param player The offline player to fetch texture for
+	 * @return The texture URL, or null if fetching failed
 	 */
 	private String fetchTextureFromPlayer(OfflinePlayer player) {
-		// The texture will be fetched by XSkull when the item is created
-		// We can't directly fetch it here without duplicating XSkull's logic
-		// The cache will help on subsequent loads after XSkull has fetched the texture
-		return null; // Return null to use default texture, XSkull will handle actual fetching
+		if (player == null || !player.hasPlayedBefore()) {
+			return null;
+		}
+
+		UUID uuid = player.getUniqueId();
+		String uuidString = uuid.toString().replace("-", "");
+
+		try {
+			// Call Mojang's session server API
+			URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuidString);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(5000); // 5 second timeout
+			connection.setReadTimeout(5000);
+			connection.setRequestProperty("User-Agent", "Markets-Plugin/1.0");
+
+			int responseCode = connection.getResponseCode();
+			if (responseCode != HttpURLConnection.HTTP_OK) {
+				// Player might not exist or API is unavailable
+				return null;
+			}
+
+			// Read response
+			try (BufferedReader reader = new BufferedReader(
+					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+				StringBuilder response = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					response.append(line);
+				}
+
+				// Parse JSON response
+				JsonObject profileJson = JsonParser.parseString(response.toString()).getAsJsonObject();
+				
+				// Get the properties array
+				if (!profileJson.has("properties") || !profileJson.get("properties").isJsonArray()) {
+					return null;
+				}
+
+				var propertiesArray = profileJson.getAsJsonArray("properties");
+				if (propertiesArray.size() == 0) {
+					return null;
+				}
+
+				// Find the textures property
+				for (var element : propertiesArray) {
+					JsonObject property = element.getAsJsonObject();
+					if ("textures".equals(property.get("name").getAsString())) {
+						String value = property.get("value").getAsString();
+						
+						// Decode base64 value
+						String decoded = new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
+						JsonObject texturesJson = JsonParser.parseString(decoded).getAsJsonObject();
+						
+						// Get the SKIN texture URL
+						if (texturesJson.has("textures") && texturesJson.get("textures").isJsonObject()) {
+							JsonObject textures = texturesJson.getAsJsonObject("textures");
+							if (textures.has("SKIN") && textures.get("SKIN").isJsonObject()) {
+								JsonObject skin = textures.getAsJsonObject("SKIN");
+								if (skin.has("url")) {
+									String textureUrl = skin.get("url").getAsString();
+									// Ensure URL uses HTTP (not HTTPS) for compatibility with QuickItem/XSkull
+									// Mojang may return HTTPS URLs, but we need HTTP for texture loading
+									if (textureUrl.startsWith("https://")) {
+										textureUrl = textureUrl.replace("https://", "http://");
+									}
+									return textureUrl;
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			// Silently fail - return null to use default texture
+			// Logging could be added here if needed for debugging
+		}
+
+		return null;
 	}
 
 	/**
 	 * Pre-fetch textures for a batch of players
+	 * Thread-safe: Multiple threads can call this simultaneously without causing duplicate fetches.
+	 * The queueFetch method uses atomic operations to ensure each UUID is only queued once.
 	 */
 	public void prefetchTextures(List<OfflinePlayer> players) {
 		for (OfflinePlayer player : players) {
 			if (player != null && player.hasPlayedBefore()) {
 				UUID uuid = player.getUniqueId();
-				if (!isCached(uuid) && !pendingFetches.contains(uuid)) {
+				// Only check cache - queueFetch will atomically check pendingFetches
+				// This eliminates race condition window and redundant checks
+				if (!isCached(uuid)) {
 					queueFetch(uuid, player);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Pre-fetch textures for market owners at startup
+	 * Only prefetches owners with open markets (most likely to be viewed)
+	 * Runs asynchronously and respects the configured limit
+	 * 
+	 * @param marketOwners List of UUIDs of market owners to prefetch
+	 * @param limit Maximum number of textures to prefetch
+	 */
+	public void prefetchMarketOwnersAtStartup(List<UUID> marketOwners, int limit) {
+		if (marketOwners == null || marketOwners.isEmpty() || limit <= 0) {
+			return;
+		}
+
+		// Run asynchronously to not block startup
+		fetchExecutor.submit(() -> {
+			int prefetched = 0;
+			int skipped = 0;
+			
+			for (UUID ownerUUID : marketOwners) {
+				if (prefetched >= limit) {
+					break;
+				}
+
+				try {
+					// Check if already cached
+					if (isCached(ownerUUID)) {
+						skipped++;
+						continue;
+					}
+
+					// Get offline player (may do disk I/O, but we're on async thread)
+					OfflinePlayer player = Markets.getInstance().getServer().getOfflinePlayer(ownerUUID);
+					
+					if (player != null && player.hasPlayedBefore()) {
+						// Queue for fetch
+						if (!pendingFetches.contains(ownerUUID)) {
+							queueFetch(ownerUUID, player);
+							prefetched++;
+							
+							// Log progress every 25 players if logging is enabled
+							if (Settings.PLAYER_TEXTURE_CACHE_LOGGING_ENABLED.getBoolean() && prefetched % 25 == 0) {
+								Markets.getInstance().getLogger().info("Prefetching textures: " + prefetched + "/" + Math.min(limit, marketOwners.size()) + " queued...");
+							}
+						} else {
+							skipped++;
+						}
+					} else {
+						skipped++;
+					}
+				} catch (Exception e) {
+					// Skip on error, continue with next player
+					skipped++;
+				}
+			}
+
+			if (Settings.PLAYER_TEXTURE_CACHE_LOGGING_ENABLED.getBoolean()) {
+				Markets.getInstance().getLogger().info("Texture prefetch queued: " + prefetched + " players (skipped " + skipped + " already cached/pending)");
+			}
+		});
 	}
 
 	/**

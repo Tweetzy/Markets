@@ -45,6 +45,10 @@ public final class Settings extends FlightSettings {
 	public static final ConfigEntry SERVER_MARKET_TEXTURE = create("settings.server market.icon", "http://textures.minecraft.net/texture/533fc9a45be13ca57a78b21762c6e1262dae411f13048b963d972a29e07096ab", "The head texture url or item name for the server market icon");
 
 	public static final ConfigEntry PLAYER_TEXTURE_CACHE_TTL = create("settings.player texture cache.ttl", 86400, "How long (in seconds) to cache player head textures. Default is 86400 (24 hours). This prevents excessive Mojang API queries when displaying many markets.");
+	public static final ConfigEntry PLAYER_TEXTURE_CACHE_LOGGING_ENABLED = create("settings.player texture cache.logging enabled", false, "Whether to log texture cache operations (fetches, prefetches, etc.). Useful for debugging but can be verbose. Default: false.");
+	
+	public static final ConfigEntry PLAYER_TEXTURE_STARTUP_PREFETCH_ENABLED = create("settings.player texture cache.startup prefetch.enabled", true, "Whether to prefetch textures for market owners at startup. This improves GUI loading speed but may delay plugin enable slightly.");
+	public static final ConfigEntry PLAYER_TEXTURE_STARTUP_PREFETCH_LIMIT = create("settings.player texture cache.startup prefetch.limit", 100, "Maximum number of player textures to prefetch at startup. Lower values = faster startup, higher values = more textures ready immediately. Recommended: 50-200.");
 
 	/*
 	========================= General Settings =========================
