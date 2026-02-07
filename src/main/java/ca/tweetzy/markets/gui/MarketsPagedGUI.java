@@ -144,6 +144,8 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 						final T object = slotToObject.get(slot);
 						setButton(slot, itemStack, click -> this.onClick(object, click));
 					}
+
+					drawFixed();
 				}).execute();
 			}
 		}

@@ -97,8 +97,7 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				)).make();
 	}
 
-	@Override
-	protected void drawFixed() {
+	private void drawFilterButton(){
 		setButton(getRows() - 1, 8, QuickItem
 				.of(Settings.GUI_ALL_MARKETS_ITEMS_FILTER_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_ALL_MARKETS_ITEMS_FILTER_NAME))
@@ -108,10 +107,12 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 			if (next != null) {
 				this.marketUser.setMarketSortType(next);
 			}
-			draw();
+
+			drawFilterButton();
 		});
+	}
 
-
+	private void drawSearchButton() {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_ALL_MARKETS_ITEMS_SEARCH_ITEM.getItemStack())
 				.name(TranslationManager.string(this.player, Translations.GUI_ALL_MARKETS_ITEMS_SEARCH_NAME))
@@ -129,6 +130,12 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 				return true;
 			}
 		});
+	}
+
+	@Override
+	protected void drawFixed() {
+		drawFilterButton();
+		drawSearchButton();
 	}
 
 	@Override
