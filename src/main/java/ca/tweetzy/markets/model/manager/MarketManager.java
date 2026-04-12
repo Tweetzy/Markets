@@ -35,8 +35,8 @@ public final class MarketManager extends ListManager<Market> {
 		final List<Market> possibleSearchMarkets = getOpenMarketsExclusive(searcher).stream().filter(market -> !market.getBannedUsers().contains(searcher.getUniqueId())).toList();
 //		final List<Market> possibleSearchMarkets = getOpenMarketsInclusive();
 
-		// populate items into search list - pass null to hide items with 0 stock (non-owner view)
-		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems(null))));
+		// populate items into search list - pass searcher to show 0 stock items if they're the owner, otherwise hide them
+		possibleSearchMarkets.forEach(market -> market.getCategories().forEach(category -> marketItems.addAll(category.getInStockItems(searcher))));
 		return marketItems.stream().filter(marketItem -> Filterer.searchByItemInfo(keywords, marketItem.getItem())).collect(Collectors.toList());
 	}
 

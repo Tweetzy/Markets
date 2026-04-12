@@ -3,8 +3,10 @@ package ca.tweetzy.markets.model.currency;
 import ca.tweetzy.markets.api.currency.AbstractCurrency;
 import ca.tweetzy.markets.impl.currency.CoinEngineCurrency;
 import ca.tweetzy.markets.settings.Settings;
-import su.nightexpress.coinsengine.api.CoinsEngineAPI;
-import su.nightexpress.coinsengine.api.currency.Currency;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI;
+import su.nightexpress.excellenteconomy.api.currency.ExcellentCurrency;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,13 @@ public final class CoinEngineEconomyLoader extends CurrencyLoader {
 	public List<AbstractCurrency> getCurrencies() {
 		final List<AbstractCurrency> currencies = new ArrayList<>();
 
-		for (Currency currency : CoinsEngineAPI.getCurrencyManager().getCurrencies()) {
+		RegisteredServiceProvider<ExcellentEconomyAPI> provider =
+				Bukkit.getServer().getServicesManager().getRegistration(ExcellentEconomyAPI.class);
+		if (provider == null)
+			return currencies;
+
+		ExcellentEconomyAPI api = provider.getProvider();
+		for (ExcellentCurrency currency : api.getCurrencies()) {
 			boolean blackListed = false;
 
 			for (String blacklisted : Settings.CURRENCY_BLACKLISTED.getStringList()) {
@@ -30,7 +38,6 @@ public final class CoinEngineEconomyLoader extends CurrencyLoader {
 
 				if (blacklistSplit[1].equalsIgnoreCase(currency.getId()))
 					blackListed = true;
-
 			}
 
 			if (!blackListed)

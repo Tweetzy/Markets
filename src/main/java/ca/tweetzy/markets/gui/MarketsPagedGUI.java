@@ -145,7 +145,13 @@ public abstract class MarketsPagedGUI<T> extends BaseGUI {
 						setButton(slot, itemStack, click -> this.onClick(object, click));
 					}
 
+					if (this.autoApplyBackExit)
+						applyBackExit();
+
 					drawFixed();
+
+					if (this.autoApplyBackExit)
+						applyBackExit();
 				}).execute();
 			}
 		}

@@ -289,7 +289,7 @@ public final class MarketCategoryEditGUI extends MarketsPagedGUI<MarketItem> {
 			}
 
 			if (click.clickType == ClickType.LEFT) {
-				click.manager.showGUI(click.player, new ItemSelectorGUI(this, false, (event, selected) -> {
+				click.manager.showGUI(click.player, new ItemSelectorGUI(this, click.player, false, (event, selected) -> {
 
 					if (selected != null) {
 						this.category.setIcon(selected);

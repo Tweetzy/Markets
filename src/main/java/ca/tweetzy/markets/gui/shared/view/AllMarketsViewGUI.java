@@ -126,7 +126,14 @@ public final class AllMarketsViewGUI extends MarketsPagedGUI<Market> {
 
 			@Override
 			public boolean onResult(String string) {
-				click.manager.showGUI(click.player, new MarketSearchGUI(AllMarketsViewGUI.this, click.player, string));
+				final Player p = click.player;
+				final String searchKeywords = string;
+				final var manager = click.manager;
+				Bukkit.getScheduler().runTask(Markets.getInstance(), () -> {
+					if (p != null && p.isOnline()) {
+						manager.showGUI(p, new MarketSearchGUI(AllMarketsViewGUI.this, p, searchKeywords));
+					}
+				});
 				return true;
 			}
 		});

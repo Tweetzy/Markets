@@ -224,7 +224,7 @@ public final class RequestCreateGUI extends MarketsBaseGUI {
 			}
 
 			if (click.clickType == ClickType.LEFT) {
-				click.manager.showGUI(click.player, new ItemSelectorGUI(this, false, (event, selected) -> {
+				click.manager.showGUI(click.player, new ItemSelectorGUI(this, click.player, false, (event, selected) -> {
 
 					if (selected != null) {
 						final ItemStack item = selected;

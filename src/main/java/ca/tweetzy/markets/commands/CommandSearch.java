@@ -22,16 +22,15 @@ public final class CommandSearch extends Command {
 		if (args.length < 1) {
 			return ReturnType.FAIL;
 		}
-
-		if (sender instanceof final Player player) {
-			final StringBuilder builder = new StringBuilder();
-
-			for (int i = 0; i < args.length; i++) {
-				builder.append(args[i]).append(" ");
-			}
-
-			Markets.getGuiManager().showGUI(player, new MarketSearchGUI(null, player, builder.toString().trim()));
+		if (!(sender instanceof Player)) {
+			return ReturnType.FAIL;
 		}
+		final Player player = (Player) sender;
+		final StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < args.length; i++) {
+			builder.append(args[i]).append(" ");
+		}
+		Markets.getGuiManager().showGUI(player, new MarketSearchGUI(null, player, builder.toString().trim()));
 		return ReturnType.SUCCESS;
 	}
 

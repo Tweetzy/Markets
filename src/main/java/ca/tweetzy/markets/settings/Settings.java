@@ -173,6 +173,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry GUI_MATERIAL_PICKER_ITEMS_SEARCH = create("gui.material picker.items.search.item", CompMaterial.DARK_OAK_SIGN.name());
 	public static ConfigEntry GUI_MATERIAL_PICKER_ITEMS_RESET = create("gui.material picker.items.reset.item", CompMaterial.LAVA_BUCKET.name());
 	public static ConfigEntry GUI_MATERIAL_PICKER_ITEMS_AIR = create("gui.material picker.items.air.item", CompMaterial.WHITE_DYE.name());
+	public static ConfigEntry GUI_MATERIAL_PICKER_BACKGROUND= create("gui.material picker.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 
 
 	public static ConfigEntry GUI_MAIN_VIEW_BACKGROUND = create("gui.main view.items.background", CompMaterial.BLACK_STAINED_GLASS_PANE.name());

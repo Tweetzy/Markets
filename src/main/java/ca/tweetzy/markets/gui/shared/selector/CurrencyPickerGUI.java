@@ -53,7 +53,7 @@ public final class CurrencyPickerGUI extends MarketsPagedGUI<AbstractCurrency> {
 					)).make(), click -> {
 
 				if (click.clickType == ClickType.RIGHT) {
-					click.manager.showGUI(click.player, new ItemSelectorGUI(this, false, (event, selected) -> {
+					click.manager.showGUI(click.player, new ItemSelectorGUI(this, click.player, false, (event, selected) -> {
 						if (selected != null) {
 							this.selectedCurrency.accept(new ItemCurrency(), selected);
 						}

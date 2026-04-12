@@ -2,52 +2,71 @@ package ca.tweetzy.markets.impl.currency;
 
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.markets.api.currency.IconableCurrency;
-import ca.tweetzy.markets.settings.Settings;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import su.nightexpress.coinsengine.api.CoinsEngineAPI;
-import su.nightexpress.coinsengine.api.currency.Currency;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import su.nightexpress.excellenteconomy.api.ExcellentEconomyAPI;
 
 public final class CoinEngineCurrency extends IconableCurrency {
 
-	private final Currency currency;
+	private final ExcellentEconomyAPI api;
+	private final String currencyId;
 
-	public CoinEngineCurrency(String currencyName) {
-		super("CoinsEngine", currencyName, "", CompMaterial.PAPER.parseItem());
-		this.currency = CoinsEngineAPI.getCurrency(currencyName);
+	public CoinEngineCurrency(String currencyId) {
+		super("CoinsEngine", currencyId, "", CompMaterial.PAPER.parseItem());
 
-		if (this.currency != null) {
-			setDisplayName(this.currency.getName());
+		RegisteredServiceProvider<ExcellentEconomyAPI> provider =
+				Bukkit.getServer().getServicesManager().getRegistration(ExcellentEconomyAPI.class);
+		this.api = provider != null ? provider.getProvider() : null;
+		this.currencyId = currencyId;
 
-			if (Settings.CURRENCY_ICONS_OVERRIDE.getBoolean())
-				setIcon(Settings.CURRENCY_ICONS.getItemStack());
-
-			if (this.currency.isVaultEconomy())
-				setVault(true);
+		if (this.api != null && this.api.hasCurrency(currencyId)) {
+			setDisplayName(currencyId);
 		}
 	}
 
 	@Override
 	public boolean has(OfflinePlayer player, double amount) {
-		if (this.currency == null)
+		if (this.currencyId == null || this.api == null)
 			return false;
 
-		return CoinsEngineAPI.getBalance(player.getUniqueId(), this.currency) >= amount;
+		Double balance = this.api.getBalanceAsync(player.getUniqueId(), this.currencyId)
+				.exceptionally(ex -> 0.0)
+				.join();
+
+		return balance >= amount;
 	}
 
 	@Override
 	public boolean withdraw(OfflinePlayer player, double amount) {
-		if (this.currency == null)
+		if (this.currencyId == null || this.api == null)
 			return false;
 
-		return CoinsEngineAPI.removeBalance(player.getUniqueId(), this.currency, amount);
+		Player online = player.getPlayer();
+		if (online != null && online.isOnline())
+			return this.api.withdraw(online, this.currencyId, amount);
+
+		return this.api.withdrawAsync(player.getUniqueId(), this.currencyId, amount)
+				.thenApply(r -> r != null && r.success())
+				.exceptionally(ex -> false)
+				.join();
 	}
 
 	@Override
 	public boolean deposit(OfflinePlayer player, double amount) {
-		if (this.currency == null)
+		if (this.currencyId == null || this.api == null)
 			return false;
 
-		return CoinsEngineAPI.addBalance(player.getUniqueId(), this.currency, amount);
+		Player online = player.getPlayer();
+		if (online != null && online.isOnline())
+			return this.api.deposit(online, this.currencyId, amount);
+
+		return this.api.depositAsync(player.getUniqueId(), this.currencyId, amount)
+				.thenApply(r -> r != null && r.success())
+				.exceptionally(ex -> false)
+				.join();
 	}
 }
+
 

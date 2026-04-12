@@ -147,7 +147,7 @@ public final class MarketSettingsGUI extends MarketsBaseGUI {
 
 		if (click.clickType == ClickType.RIGHT) {
 
-			click.manager.showGUI(click.player, new ItemSelectorGUI(this, true, (event, selected) -> {
+			click.manager.showGUI(click.player, new ItemSelectorGUI(this, click.player, true, (event, selected) -> {
 				if (selected != null)
 					if (layoutType == MarketLayoutType.HOME)
 						this.market.getHomeLayout().setBackgroundItem(selected);

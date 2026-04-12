@@ -4,6 +4,7 @@ import ca.tweetzy.markets.api.*;
 import ca.tweetzy.markets.Markets;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -26,20 +27,12 @@ public interface Category extends Identifiable, UserIdentifiable, Displayable, T
 		return getInStockItems(null);
 	}
 
-	default List<MarketItem> getInStockItems(@NonNull Player viewer) {
-		// Get the market to check ownership
+	default List<MarketItem> getInStockItems(@Nullable Player viewer) {
+		// Null viewer = non-owner view (hide zero-stock items). Must not throw.
 		Market market = Markets.getMarketManager().getByUUID(getOwningMarket());
-		boolean isOwner = market != null && viewer != null && market.getOwnerUUID().equals(viewer.getUniqueId());
-		
+		final boolean isOwner = (market != null && viewer != null && market.getOwnerUUID().equals(viewer.getUniqueId()));
 		return getItems().stream()
-			.filter(item -> {
-				// Show items with stock > 0 to everyone
-				if (item.getStock() > 0) {
-					return true;
-				}
-				// Show items with stock = 0 only to the owner
-				return isOwner;
-			})
+			.filter(item -> item.getStock() > 0 || isOwner)
 			.collect(Collectors.toList());
 	}
 }
